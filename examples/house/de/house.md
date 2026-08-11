@@ -62,7 +62,7 @@ Treppe hinunter.
 Dreitausend Bücher, von denen zweitausendneunhundert Attrappen sind: bemalte
 Holzrücken. Die echten hundert stehen zusammen in einem Regal, und je länger
 du die Titel liest, desto panischer wirst du: Bücher über Beschwörungen. Über Bindungen. Über Wahnsinn.
-Die Macht der wahren Namen. Bücher darüber, wie man etwas ruft — und drei
+Die Macht der wahren Namen. Bücher darüber, wie man etwas ruft - und drei
 deutlich dünnere darüber, wie man es wieder loswird.
 
 {!Du schlägst eines auf und liest eine halbe Seite über das, was ein Gerufener als Lohn verlangt, und in welcher Reihenfolge er es sich nimmt. Du stellst das Buch zurück und wischst dir die Hand am Mantel ab.|Die Bücher sind noch da. Du bist noch da. Nur eines von beidem beruhigt dich.}
@@ -116,7 +116,7 @@ Du schließt die Tür hinter dir mit mehr Sorgfalt, als Türen sonst verdienen.
 
 # Die schmale Tür {#tower-door}
 
-Am Ende des Flurs eine schmale Tür, der Riegel vorgelegt — von deiner Seite.
+Am Ende des Flurs eine schmale Tür, der Riegel vorgelegt - von deiner Seite.
 Wer immer das eingerichtet hat, wollte niemanden am Hineingehen hindern.
 
 ~ fear = fear + 1

@@ -7,7 +7,7 @@
 Vor dir ein schmiedeeisernes Tor, dahinter ein Haus, in dem hinter genau einem Fenster Licht
 brennt. Auf dem Torbogen steht ein Name, den der Efeu verdeckt.
 
-* {knows("MECHANIKER")} [Noch einmal unter die Haube sehen](#road) Du siehst nach, mit der Routine von tausend Pannen. Verteiler trocken, Zündung tot — aber tot auf eine Art, die dir neu ist. Ein Wagen, der nicht anspringen will, klingt anders als einer, der nicht anspringen kann.
+* {knows("MECHANIKER")} [Noch einmal unter die Haube sehen](#road) Du siehst nach, mit der Routine von tausend Pannen. Verteiler trocken, Zündung tot - aber tot auf eine Art, die dir neu ist. Ein Wagen, der nicht anspringen will, klingt anders als einer, der nicht anspringen kann.
   ~ fear = fear + 1
 * [Läuten](#gate)
 * [An der Mauer entlanggehen](#wall) Man muss ja nicht gleich klingeln.
@@ -164,7 +164,7 @@ Dann hebt er sein Glas und wartet. Es ist die Sorte Warten, bei der einem
 auffällt, dass er selbst noch keinen Schluck getrunken hat.
 
 * [Austrinken](#drugged)
-* {knows("VERTRETER")} [Loben, anstoßen, abstellen — und dabei keinen Schluck nehmen]() Zwanzig Jahre Kundschaft: Du lobst die Farbe, das Bukett, den Abgang, und stellst das Glas dabei so oft ab und wieder hin, dass am Ende niemand mehr weiß, wie voll es je gewesen ist. Der älteste Trick im Koffer.
+* {knows("VERTRETER")} [Loben, anstoßen, abstellen - und dabei keinen Schluck nehmen]() Zwanzig Jahre Kundschaft: Du lobst die Farbe, das Bukett, den Abgang, und stellst das Glas dabei so oft ab und wieder hin, dass am Ende niemand mehr weiß, wie voll es je gewesen ist. Der älteste Trick im Koffer.
   ~ remember("NUECHTERN")
 * [Beim Anstoßen das Glas kippen und den Wein in die Aspidistra gießen]()
   { test_luck() }
@@ -195,8 +195,8 @@ Der Wein ist wirklich ausgezeichnet, und das zweite Glas ist besser als das
 erste. Das dritte schenkt er ein, ohne dass du dich an das zweite erinnern
 kannst. Der Kronleuchter hängt schief. Dann der ganze Raum. Das
 Letzte, was du siehst, ist der Hausherr, der aufsteht und dabei nicht zu dir
-herübersieht. Warum sieht er nicht her, denkst du noch. Man sieht doch nach —
-man sieht doch —
+herübersieht. Warum sieht er nicht her, denkst du noch. Man sieht doch nach -
+man sieht doch -
 
 ~ fear = fear + 1
 ~ remember("BETAEUBT")

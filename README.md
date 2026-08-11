@@ -19,7 +19,7 @@ node --test 'test/*.test.js'
 route instead and prints where it ended up, which makes a bug reproducible;
 `--json` turns that into something a tool can read, as it does for `lint`.
 `simulate --runs 300` plays many games with a curious pseudo-random reader and
-reports the endings, dead ends and average length — that is how the fear stat
+reports the endings, dead ends and average length - that is how the fear stat
 in the house example was found to punish every second visit to the same room.
 `mcp` serves lint, play and simulate as MCP tools over stdio, so an agent can
 playtest a book against the real runtime; `.mcp.json` registers it.
@@ -74,7 +74,7 @@ resolver narrates.
 **Translations carry text, not logic.** The default language owns the
 structure; every other language is a catalogue of paragraphs and button
 labels, matched in source order. Where a language genuinely needs different
-logic — a plural only it branches on — it may override a whole node, and the
+logic - a plural only it branches on - it may override a whole node, and the
 linter says so (L019). See `examples/thornwood-book/en/crypt.md`.
 
 ## What is not here yet
@@ -89,7 +89,7 @@ offending text. Warnings carry a code from SPEC 11; `--strict` turns them into
 errors and is what CI uses.
 
 Every example in SPEC.md is a test case, and the three collision rules are
-table-driven in `test/lexer.test.js` — that is where a Markdown dialect breaks
+table-driven in `test/lexer.test.js` - that is where a Markdown dialect breaks
 first.
 
 ## Licence
@@ -98,5 +98,5 @@ Mozilla Public License 2.0, see [LICENSE](LICENSE).
 
 MPL is per file: change one of these files and your version of that file stays
 open, while a book, a game or a product built with them can be licensed however
-you like. The exported HTML carries the runtime, so it carries the notice too —
+you like. The exported HTML carries the runtime, so it carries the notice too -
 the exporter writes it in for you.

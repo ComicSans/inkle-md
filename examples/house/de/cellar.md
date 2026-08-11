@@ -67,7 +67,7 @@ genau das ist, was er zu sein vorgibt, und du bist beinahe erleichtert.
 { visits(wine) == 1 }
   ~ fear = max(fear - 1, 0)
 
-{knows("SCHLAEFER-ERLEDIGT"): Der Tisch am Durchgang ist jetzt frei.|An einem Tisch beim Durchgang schläft ein Mann in einer Kutte, den Kopf auf den Armen. Neben ihm steht ein Krug, aus dem es nach Würzwein riecht — vor der Andacht wird hier offenbar ausgeschenkt.}
+{knows("SCHLAEFER-ERLEDIGT"): Der Tisch am Durchgang ist jetzt frei.|An einem Tisch beim Durchgang schläft ein Mann in einer Kutte, den Kopf auf den Armen. Neben ihm steht ein Krug, aus dem es nach Würzwein riecht - vor der Andacht wird hier offenbar ausgeschenkt.}
 
 {knows("GEHEIMGANG"): Von dieser Seite ist das Weinregal nur ein Weinregal. Man muss die Lüge kennen, um sie zu sehen.}
 
@@ -173,7 +173,7 @@ Du sprichst ihn aus. Er ist nicht schwer auszusprechen, was das Erstaunlichste
 an ihm ist.
 
 Der Gesang bricht ab. Der Hausherr wird sehr still. "Woher", sagt er, und
-weiter kommt er nicht. Etwas verlässt ihn — Haltung, Farbe, Größe, in dieser
+weiter kommt er nicht. Etwas verlässt ihn - Haltung, Farbe, Größe, in dieser
 Reihenfolge. Namen sind Verträge, hast du irgendwo gelesen, vermutlich heute
 Nacht. Seiner ist soeben gekündigt worden.
 

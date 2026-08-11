@@ -478,7 +478,7 @@ reader-visible field; without it the key is shown as it stands.
 inventory panel is called, what the attack button says, which font the page
 uses: all of that belongs to the view layer of section 12, which knows about
 screens. A book that carries its own layout stops being portable to the next
-one. `strings:` is the exception that proves it — it holds only lines the
+one. `strings:` is the exception that proves it - it holds only lines the
 story tells, such as who wounded whom, and not one button label.
 
 `setup:` is character creation: the runtime shows each block in order before
@@ -909,7 +909,7 @@ Saves live in `localStorage` under one key per book, plus export and import as
 a JSON string so a reader can move a game between devices without an account.
 
 The sheet also lists the code words the reader has been told to note, in the
-order they were remembered — the Lone Wolf convention, where noting the word
+order they were remembered - the Lone Wolf convention, where noting the word
 is the reader's own act. A book that wants a secret keeps it out of
 `remember()` and in its structure.
 
@@ -965,7 +965,7 @@ gamebook that way. `endings` counts only runs that actually reached an
 ending; a run that hits the step limit is reported as unfinished, not as an
 ending at whatever node it happened to stand in.
 
-`inkle-md mcp` serves the same three checks — lint, play, simulate — as MCP
+`inkle-md mcp` serves the same three checks - lint, play, simulate - as MCP
 tools over stdio, so an agent can playtest a book against the real runtime
 instead of parsing terminal output. The server speaks JSON-RPC 2.0, one
 message per line, and needs no dependency.
