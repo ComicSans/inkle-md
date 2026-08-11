@@ -127,7 +127,7 @@ function render(s) {
     if (last) out.push(`Runde ${last.round}: ${last.text}`);
     out.push(`(a) angreifen${fight.luck ? '  (l) Glück versuchen' : ''}${fight.canFlee ? '  (f) fliehen' : ''}`);
   } else if (s.current.ended) {
-    out.push('\n— Ende —');
+    out.push('\n- Ende -');
   } else {
     out.push('');
     s.current.choices.forEach((choice, i) => out.push(`  ${i + 1}) ${choice.label}`));

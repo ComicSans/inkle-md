@@ -100,7 +100,7 @@ function mount(json, root, options = {}) {
     const items = el('ul', { class: 'items' });
     for (const item of story.inventory) {
       const label = item.uses > 1 ? `${item.name} (${ui.uses(item.uses)})` : item.name;
-      const line = el('li', {}, [el('span', { text: label + (item.equipped ? ` — ${ui.equipped}` : '') })]);
+      const line = el('li', {}, [el('span', { text: label + (item.equipped ? ` - ${ui.equipped}` : '') })]);
       if (item.usable) {
         line.append(el('button', {
           class: 'small', 'aria-label': `${ui.use}: ${item.name}`,
@@ -143,7 +143,7 @@ function mount(json, root, options = {}) {
 
     story.setup.forEach((block, i) => {
       const group = el('fieldset', {}, [
-        el('legend', { text: `${text(block.title)} — ${ui.pick(block.pick)}` }),
+        el('legend', { text: `${text(block.title)} - ${ui.pick(block.pick)}` }),
       ]);
       for (const option of block.from) {
         const id = `setup-${i}-${option.item ?? option.remember}`;
