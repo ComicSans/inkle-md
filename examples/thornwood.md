@@ -80,7 +80,13 @@ Das Wasser ist klar genug, dass du den Grund siehst. Etwas Helles liegt darin.
   + [Noch einmal suchen]() Diesmal nur Kies.
   ---
   Du wischst dir die Hand an der Hose ab.
-* {test("skill")} [Über den Bach springen](#crypt) Du landest sicher auf der anderen Seite.
+* [Über den Bach springen]()
+  { test("skill") }
+    Du landest sicher drüben und schlägst dich zum Dickicht durch.
+    -> thicket
+  { else }
+    Du rutschst am nassen Stein ab und schlägst dir das Knie auf.
+    ~ stamina = stamina - 2
 + [Zurück zur Hecke](#begin)
 ---
 Der Bach zieht weiter, ohne sich um dich zu kümmern.

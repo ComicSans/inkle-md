@@ -27,6 +27,8 @@ The water is clear enough to show the bottom. Something pale lies in it.
 
 Your fingers close around a coin.
 
-You land safely on the far side.
+You land safely on the far bank and push through to the thicket.
+
+You slip on a wet stone and gash your knee.
 
 The brook runs on, indifferent to you.

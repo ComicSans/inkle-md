@@ -233,7 +233,10 @@ error, not a silent stop (E110).
   repeated writes it twice.
 - `{ condition }` before the link makes the choice conditional. It goes before
   the link so that a reader skimming the file sees first whether an option
-  appears at all.
+  appears at all. A condition asks what is true, it does not roll: an option
+  that appears or vanishes by dice flickers whenever the page is drawn again.
+  Put the roll inside the choice, where the reader can see what it decided,
+  which is what L020 checks.
 - Nesting is by indentation, at most three levels:
 
 ```markdown
@@ -798,6 +801,7 @@ uses `--strict`.
 | L017 | `strings:` key left at its English default while others are overridden | warning |
 | L018 | Consumable without `effect:`, or `effect:` on a non-consumable | warning |
 | L019 | A node a translation overrides, so its state is language-specific | info |
+| L020 | A choice whose condition rolls dice, so it flickers between visits | warning |
 | L011 | Line longer than 80 characters in the source | info |
 | L012 | Choice text duplicated within one node | warning |
 | L013 | Node with more than seven choices | info |

@@ -21,7 +21,13 @@ Das Wasser ist klar genug, dass du den Grund siehst. Etwas Helles liegt darin.
 
 * [Danach greifen]() Deine Finger schließen sich um eine Münze.
   ~ gold = gold + 3
-* {test("skill")} [Über den Bach springen](#crypt.crypt) Du landest sicher auf der anderen Seite.
+* [Über den Bach springen]()
+  { test("skill") }
+    Du landest sicher drüben und schlägst dich zum Dickicht durch.
+    -> thicket
+  { else }
+    Du rutschst am nassen Stein ab und schlägst dir das Knie auf.
+    ~ stamina = stamina - 2
 + [Zurück zur Hecke](#begin)
 ---
 Der Bach zieht weiter, ohne sich um dich zu kümmern.

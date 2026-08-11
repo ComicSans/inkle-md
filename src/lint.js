@@ -22,7 +22,11 @@ const LEVELS = {
   L001: 'warning', L002: 'warning', L005: 'warning', L006: 'warning',
   L007: 'info', L008: 'warning', L009: 'warning', L010: 'info',
   L012: 'warning', L013: 'info', L016: 'warning', L017: 'warning', L018: 'warning',
+  L020: 'warning',
 };
+
+/** Anything that consumes the dice stream. */
+const RANDOM_CALLS = new Set(['roll', 'random', 'test', 'test_luck']);
 
 export function lint(story, { table, config, lang }) {
   const out = [];
@@ -69,6 +73,11 @@ export function lint(story, { table, config, lang }) {
           add('L013', `node "${id}" offers ${op.items.length} choices at once`, node.source);
         }
         for (const item of op.items) {
+          if (item.when && rolls(item.when)) {
+            add('L020',
+              `a choice in "${id}" decides whether to appear by rolling dice, so it flickers ` +
+              'between visits; roll inside the choice instead', item.source);
+          }
           const text = plain(item.label);
           if (choiceLabels.has(text)) {
             add('L012', `node "${id}" repeats the choice "${text}"`, item.source);
@@ -264,6 +273,13 @@ function pathLengths(start, graph) {
 function fights(ops, enemy) {
   let found = false;
   walkOps(ops, (op) => { if (op.op === 'combat' && op.enemies.includes(enemy)) found = true; });
+  return found;
+}
+
+/** True when an expression reaches for the dice. */
+function rolls(expr) {
+  let found = false;
+  walkExpression(expr, (e) => { if (e.call && RANDOM_CALLS.has(e.call)) found = true; });
   return found;
 }
 

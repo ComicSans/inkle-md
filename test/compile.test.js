@@ -96,6 +96,11 @@ test('the example book compiles without warnings', () => {
   assert.equal(story.config.strings['combat.tie'].default, 'Die Klingen kreuzen sich, ohne dass etwas daraus wird.');
 });
 
+test('a choice that rolls to decide whether it appears is flagged', () => {
+  const { warnings } = compile('# A {#a}\n\n* {test("gold")} [Luck](#a)\n+ [On](#b)\n\n# B {#b}\n\n-> END\n');
+  assert.ok(warnings.messages.some((m) => m.code === 'L020'));
+});
+
 test('the reachability report counts what the linter walked', () => {
   const { warnings } = compile('# A {#a}\n\n* [On](#b)\n\n# B {#b}\n\n-> END\n\n# Lost {#lost}\n\n-> END\n');
   assert.equal(warnings.report.nodes, 3);
