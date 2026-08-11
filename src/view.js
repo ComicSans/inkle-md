@@ -45,9 +45,13 @@ const UI = {
  *   embeds the game has its own language and its own scripts reading it.
  * @param {(where: {node: string, lang: string}) => void} [options.onRender]
  *   called after every redraw with the node the reader is on.
+ * @param {string} [options.heading] tag for the book's title, 'h1' by default.
+ *   A page that already has a heading of its own passes the level below it, so
+ *   the document keeps one outline instead of two.
  */
 function mount(json, root, options = {}) {
   const setDocumentLang = options.setDocumentLang !== false;
+  const headingTag = options.heading ?? 'h1';
   const key = `inkle-md:${json.meta.start}`;
   let story = new Story(json, { lang: preferredLanguage(json) });
   let ui = UI[story.lang] ?? UI.en;
@@ -207,7 +211,7 @@ function mount(json, root, options = {}) {
     root.lang = story.lang;
 
     const header = el('header', {}, [
-      el('h1', { text: text(json.meta.title) ?? '' }),
+      el(headingTag, { text: text(json.meta.title) ?? '' }),
       toolbar(),
     ]);
     root.append(header);
