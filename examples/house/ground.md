@@ -34,7 +34,7 @@ Abgeräumt bis auf zwei Gläser: deins und seins. Seins ist unberührt. Auf der
 Anrichte steht die Karaffe, daneben ein Fläschchen ohne Etikett, das die
 Frage nach dem Wein hinreichend beantwortet.
 
-{knows("NUECHTERN"): Die Aspidistra in der Ecke lässt die Blätter hängen. Du fühlst dich ein wenig schuldig, aber nur ihr gegenüber.}
+{knows("ASPIDISTRA"): Die Aspidistra in der Ecke lässt die Blätter hängen. Du fühlst dich ein wenig schuldig, aber nur ihr gegenüber.}
 
 { visits(dining) == 1 }
   ~ fear = fear + 1
@@ -57,24 +57,24 @@ Einmachgläsern, sorgfältig beschriftet. Mit Vornamen.
 
 * [Die Pastete einpacken](#kitchen) Sie riecht nach Wild. Du beschließt, das zu glauben.
   ~ take("pie")
-* [Die Gläser genauer ansehen](#kitchen) Eingelegtes, in Essig. Es sieht aus wie Gemüse, und du wiederholst das Wort Gemüse innerlich so lange, bis es hält. Das elfte Glas ist leer und trägt noch keinen Namen, nur ein frisches Etikett.
+* [Die Gläser genauer ansehen](#kitchen) Eingelegtes, in Essig. Es sieht aus wie Gemüse, und du wiederholst das Wort Gemüse innerlich so lange, bis es hält. Elf Gläser tragen Namen. Das zwölfte ist leer, und das Etikett darauf ist neu. Der Leim daran glänzt noch feucht. Deine ANGST steigt.
   ~ fear = fear + 2
 + [Zurück in die Halle](#hall)
 
 # Das Arbeitszimmer {#study}
 
 Ein Schreibtisch mit grüner Lampe, dahinter Regale voller Bücher über
-Landwirtschaft, die genauso gemalt aussehen wie die in der Bibliothek. Auf
-dem Tisch liegt ein Tagebuch mit einer Messingschließe, daneben ein silberner
-Brieföffner.
+Landwirtschaft, deren Rücken gemalt sind wie Kulissen. Auf dem Tisch liegt
+ein Tagebuch mit einer Messingschließe, daneben ein silberner Brieföffner.
 
 * [Das Tagebuch öffnen]()
   { test("luck") }
     Buchhaltung: Lieferungen, Löhne, Gäste. Die Gäste sind einzeln
     aufgeführt, mit Ankunftsdatum. Die Spalte für die Abreise ist leer,
     seitenweise. Auf dem Vorsatzblatt steht ein Name, der nicht der ist,
-    unter dem sich der Hausherr vorgestellt hat — und es ist derselbe, den
-    der Efeu am Torbogen verdeckt.
+    unter dem sich der Hausherr vorgestellt hat, in Buchstaben, die deine
+    Augen nur widerwillig loslassen. Du sprichst ihn zweimal lautlos vor
+    dich hin, bis er sitzt.
     ~ remember("WAHRER-NAME")
     ~ fear = fear + 1
   { else }

@@ -19,10 +19,10 @@ Die Glocke klingt tiefer, als ein Gegenstand dieser Größe klingen dürfte.
 Danach passiert eine Weile nichts, was dir Zeit gibt, über deine
 Entscheidungen der letzten Stunde nachzudenken.
 
-Dann öffnet sich das Tor. Von selbst. Sehr langsam, mit dem Geräusch, das
-Türen in Geschichten machen, die schlecht ausgehen.
+{Dann öffnet sich das Tor. Von selbst. Sehr langsam, mit dem Geräusch, das Türen in Geschichten machen, die schlecht ausgehen.|Das Tor steht offen, wie du es verlassen hast. Es hat es nicht eilig, denkst du. Es hat ja dich.}
 
-~ fear = fear + 1
+{ visits(gate) == 1 }
+  ~ fear = fear + 1
 
 * [Hindurchgehen](#drive)
 + [Es dir anders überlegen und die Mauer probieren](#wall)
@@ -74,7 +74,7 @@ kommt. Die Kette, stellst du beim Näherkommen fest, hängt an nichts.
 
 !combat hound
   win  -> door
-  flee [Rennen](#door) Du erreichst die Tür mit dem Atem eines Ertrinkenden und der Würde eines Mannes, der vor einem Hund gerannt ist.
+  flee [Rennen](#door) Du erreichst die Tür mit dem Atem eines Ertrinkenden und der Würde von jemandem, der vor einem Hund gerannt ist.
 
 # Vor der Tür {#door}
 
@@ -93,6 +93,9 @@ als abwartend bezeichnen könnte.
 Im Lichtkegel: eine Halle, eine Treppe, und auf der dritten Stufe sitzt
 jemand, der sich nicht bewegt, solange du hinsiehst. Du siehst eine Weile hin.
 Es bleibt dabei.
+
+Erst als der Lichtkegel zu zittern beginnt, merkst du, dass deine Hand es
+tut. Deine ANGST steigt.
 
 ~ fear = fear + 1
 ~ remember("AUF-DER-TREPPE")
@@ -116,7 +119,7 @@ höflich wäre.
 
 {knows("AUF-DER-TREPPE"): Hinter ihm liegt die Treppe, die du durch das Seitenfenster gesehen hast. Die dritte Stufe, auf der eben noch jemand saß, ist leer.}
 
-{knows("HUND-FREUND"): Der Butler sieht den Hund an. Der Hund sieht den Butler an. Der Butler beschließt, keinen Hund gesehen zu haben.}
+{knows("HUND-FREUND"): Der Butler sieht den Hund an. Der Hund sieht den Butler an. Dann sieht der Butler wieder dich an, als sei da nie ein Hund gewesen.}
 
 "Der Herr des Hauses", sagt er, "bittet zu Tisch. Das Gedeck steht bereits."
 Er sagt es nicht wie eine Einladung, sondern wie eine Wettervorhersage.
@@ -167,14 +170,16 @@ auffällt, dass er selbst noch keinen Schluck getrunken hat.
 * [Beim Anstoßen das Glas kippen und den Wein in die Aspidistra gießen]()
   { test("luck") }
     Die Pflanze nimmt es hin wie eine, die schon anderes geschluckt hat. Der
-    Hausherr bemerkt nichts. Der Butler vielleicht, aber der Butler bemerkt
-    grundsätzlich alles und sagt grundsätzlich nichts.
+    Hausherr bemerkt nichts. Der Butler hat nichts gesehen. Da bist du fast
+    sicher. Fast.
     ~ remember("NUECHTERN")
+    ~ remember("ASPIDISTRA")
   { else }
     Ein Blatt der Aspidistra färbt sich noch am Tisch braun. Der Hausherr
     sieht es, sieht dich an und hebt sein Glas ein zweites Mal, diesmal ohne
     zu lächeln.
     ~ remember("NUECHTERN")
+    ~ remember("ASPIDISTRA")
     ~ fear = fear + 1
 * [Ablehnen und vom empfindlichen Magen sprechen]() Der Butler räumt dein Glas mit dem Gesicht eines Mannes ab, dessen Abend soeben komplizierter geworden ist.
   ~ remember("NUECHTERN")
@@ -189,9 +194,10 @@ kürzer als der Weg dorthin.
 
 Der Wein ist wirklich ausgezeichnet, und das zweite Glas ist besser als das
 erste. Das dritte schenkt er ein, ohne dass du dich an das zweite erinnern
-kannst. Der Kronleuchter hängt schief, dann hängt der ganze Raum schief, und
-das Letzte, was du siehst, ist der Hausherr, der beim Aufstehen nicht zu dir
-herübersieht. Man sieht nicht nach Dingen, die erledigt sind.
+kannst. Der Kronleuchter hängt schief. Dann hängt der ganze Raum schief. Das
+Letzte, was du siehst, ist der Hausherr, der aufsteht und dabei nicht zu dir
+herübersieht. Warum sieht er nicht her, denkst du noch. Man sieht doch nach —
+man sieht doch —
 
 ~ fear = fear + 1
 ~ remember("BETAEUBT")

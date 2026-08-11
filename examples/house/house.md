@@ -6,7 +6,7 @@ vor zweihundert Jahren. Vermutlich ein Vorfahre. Vermutlich.
 
 Der Schlüssel steckt außen.
 
-* [Ihn nach innen holen und abschließen]() Das Schloss dreht sich zweimal. Du fühlst dich sofort besser und weißt nicht recht, warum das dumm ist.
+* [Ihn nach innen holen und abschließen]() Das Schloss dreht sich zweimal. Du fühlst dich sofort besser. Erst unter der Bettdecke meldet sich der Gedanke: Ein Schlüssel, der außen steckt, soll niemanden aussperren. Er soll einschließen.
   ~ remember("ABGESCHLOSSEN")
 * [Das Porträt abhängen]() Dahinter ist die Tapete heller, und in der Mitte des hellen Flecks sitzt ein Loch von der Größe eines Auges. Du hängst das Bild zurück und rückst es sehr gerade.
   ~ fear = fear + 1
@@ -43,6 +43,9 @@ Irgendwann musst du hinaus.
 Du liegst mit geschlossenen Augen im Dunkeln und hörst zu, wie das Haus sich
 setzt. Häuser setzen sich. Häuser atmen nicht.
 
+Du hörst es trotzdem: ein, aus, geduldig, direkt über deinem Gesicht, keine
+Handbreit hinter dem Stoff des Baldachins. Deine ANGST steigt.
+
 ~ fear = fear + 2
 
 * [Aufstehen](#landing)
@@ -55,16 +58,18 @@ Treppe hinunter.
 
 * [In die Bibliothek](#library)
 * [Die Tür mit dem Handtuch](#bathroom)
-* [Die schmale Tür am Ende](#tower-door)
+* {not knows("BETAEUBT")} [Die schmale Tür am Ende](#tower-door)
 + [Die Treppe hinunter](#ground.hall)
 
 # Die Bibliothek {#library}
 
 Dreitausend Bücher, von denen zweitausendneunhundert Attrappe sind: bemalte
-Holzrücken. Die echten hundert stehen zusammen in einem Regal und handeln alle
-von derselben Sache.
+Holzrücken. Die echten hundert stehen zusammen in einem Regal, und je länger
+du die Titel liest, desto stiller wird es in dir: Beschwörungen. Bindungen.
+Die Macht der wahren Namen. Bücher darüber, wie man etwas ruft — und drei
+deutlich dünnere darüber, wie man es wieder loswird.
 
-{!Du liest eine halbe Seite und wünschst dir, du hättest es nicht getan.|Die Bücher sind noch da. Du bist noch da. Das eine beruhigt dich, das andere nicht.}
+{!Du schlägst eines auf und liest eine halbe Seite über das, was ein Gerufener als Lohn verlangt, und in welcher Reihenfolge er es sich nimmt. Du stellst das Buch zurück und wischst dir die Hand am Mantel ab.|Die Bücher sind noch da. Du bist noch da. Nur eines von beidem beruhigt dich.}
 
 { visits(library) == 1 }
   ~ fear = fear + 1
@@ -74,11 +79,14 @@ von derselben Sache.
     Hinter dem dritten Band liegt ein Schlüssel, an dem ein Papierschild hängt: "Keller".
     ~ take("cellar-key")
   { else }
-    Staub, Holz, und ein Buch, das du lieber wieder zuschlägst.
+    Staub, Holz, und ein aufgeschlagenes Buch mit einer Liste von Daten in
+    sauberer, alter Tinte. Der unterste Eintrag ist von heute. Deine ANGST
+    steigt.
     ~ fear = fear + 1
 * [Den Schürhaken vom Kamin mitnehmen](#library) Er ist schwer und wiegt gut in der Hand, was in diesem Haus ein Argument ist.
   ~ take("poker")
-  ~ equip("poker")
+  { not has("dagger") }
+    ~ equip("poker")
 + [Zurück auf den Flur](#landing)
 ---
 Du hast in dieser Bibliothek gesehen, was zu sehen war.
@@ -101,7 +109,9 @@ Niemand da. Die Seife ist benutzt.
     ~ remember("DER-SPIEGEL")
   { else }
     Im Spiegel steht der Raum, wie er ist, bis auf die Wanne. In der sitzt
-    jemand und sieht dich freundlich an.
+    jemand und sieht dich freundlich an. Dann hebt er, sehr langsam, eine
+    Hand aus dem Wasser und winkt. Du fährst herum: Die Wanne hinter dir ist
+    leer. Im Spiegel winkt er immer noch. Deine ANGST steigt.
     ~ fear = fear + 2
 ---
 Du schließt die Tür hinter dir mit mehr Sorgfalt, als Türen sonst verdienen.
@@ -130,9 +140,13 @@ Armlehnen, ein Fenster, Mondlicht.
 
 # Das Turmzimmer {#tower}
 
-Du wachst in einem runden Zimmer auf, auf einem Stuhl, an dessen Armlehnen
-Riemen angebracht sind. Man hat sie nicht festgezogen. Das wirkt weniger wie
-Gnade als wie Routine: wohin solltest du schon gehen.
+Du wachst auf, und das Erste, was du weißt, ist: Das ist nicht dein Bett.
+Das Zweite: Du sitzt. Dein Mund schmeckt nach Wein und Watte, dein Herz
+hämmert dir bis in die Fingerspitzen, und unter deinen Händen liegen die
+Armlehnen eines Stuhls, an denen Riemen angebracht sind.
+
+Man hat sie nicht festgezogen. Das wirkt weniger wie Gnade als wie Routine:
+Wohin solltest du schon gehen. Deine ANGST steigt.
 
 ~ fear = fear + 2
 
@@ -146,7 +160,7 @@ warte sie seit Jahren auf besseres Publikum.
 "Neu hier?", fragt sie. Ihre Stimme klingt wie eine, die lange nicht benutzt
 wurde und sich darüber nicht beklagen will.
 
-* [Höflich bleiben und zuhören]() Sie sieht dich lange an. "Gute Erziehung", sagt sie. "Die ist hier selten geworden." Sie war vor dreißig Jahren mit dem Wagen liegengeblieben, auch im Regen; das Haus wiederholt sich gern. "Der Hausherr", sagt sie, "hat einen Namen, den er aus den Büchern heraushält. Er steht im Tagebuch in seinem Arbeitszimmer, und auf dem Torbogen, unter dem Efeu. Sprich ihn aus, wenn er dir gegenübersteht, und sieh dann zu, dass du eine Tür findest."
+* [Höflich bleiben und zuhören]() Sie sieht dich lange an. "Gute Erziehung", sagt sie. "Die ist hier selten geworden." Sie war vor dreißig Jahren mit dem Wagen liegengeblieben, auch im Regen; das Haus wiederholt sich gern. "Der Hausherr", sagt sie, "hat einen Namen, den er aus den Büchern heraushält. Er steht im Tagebuch in seinem Arbeitszimmer, und auf dem Torbogen, unter dem Efeu. Sprich ihn aus, wenn er dir gegenübersteht, und sieh dann zu, dass du eine Tür findest." Dann beugt sie sich vor und nennt ihn dir, langsam und zweimal, wie man einem Kind etwas Wichtiges aufträgt. Der Name fühlt sich kalt an, noch im Ohr.
   ~ remember("WAHRER-NAME")
   ~ fear = max(fear - 1, 0)
 * [Ohne Umschweife nach dem Ausgang fragen]() Sie deutet auf die Treppe. "Da", sagt sie und verliert das Interesse an dir mit einer Geschwindigkeit, die kränkend wäre, hättest du nicht gerade andere Sorgen.

@@ -1,7 +1,8 @@
 # Die Kellertreppe {#stairs}
 
-Von der Treppe aus siehst du Licht unter der Kellertür, und du hörst etwas,
-das entweder ein Gesang ist oder eine sehr geduldige Maschine.
+Die Kellertür liegt im Schatten hinter der großen Treppe. Darunter brennt
+Licht, und du hörst etwas, das entweder ein Gesang ist oder eine sehr
+geduldige Maschine.
 
 {knows("KELLER-VERBOTEN"): Der Keller, hatte der Butler gesagt, steht niemandem offen.}
 
@@ -14,7 +15,8 @@ das entweder ein Gesang ist oder eine sehr geduldige Maschine.
 
 Der Gesang ist Latein, aber falsches Latein, so wie jemand es spricht, der es
 von jemandem gelernt hat, der es auch nicht konnte. Zwischen den Zeilen fällt
-dein Name.
+dein Name. Dein Herz setzt einen Schlag aus. Dann fällt dir das Abendessen
+wieder ein: die Fragen, das aufmerksame Zuhören, das Nicken.
 
 { visits(listen) == 1 }
   ~ fear = fear + 1
@@ -26,7 +28,7 @@ dein Name.
 
 # Der Butler kommt {#servant-fight}
 
-Die Tür gibt nicht nach. Dafür gibt der Flur hinter dir jemanden her: den
+Die Tür gibt nicht nach. Dafür gibt die Halle hinter dir jemanden her: den
 Butler, mit einer Kerze in der einen und etwas Länglichem in der anderen Hand.
 
 "Sie waren im Keller nicht vorgesehen", sagt er, beinahe bedauernd.
@@ -97,8 +99,8 @@ Hinter der hinteren Tür: der Gesang.
 # Zwischen den Fässern {#wine-loot}
 
 Unter der Kutte trug er einen krummen Dolch, dessen Klinge gewellt ist wie
-Wasser, in das jemand einen Stein geworfen hat. Es ist keine Klinge zum
-Briefeöffnen.
+Wasser, in das jemand einen Stein geworfen hat. Es ist keine Klinge, mit der
+man Briefe öffnet.
 
 ~ take("kris")
 ~ equip("kris")
@@ -108,11 +110,15 @@ Briefeöffnen.
 
 # Der Keller {#rite}
 
-Zwölf Gestalten in Kutten, ein Kreis aus Kreide, in der Mitte ein Stuhl. Auf
-der Lehne hängt dein Mantel. Du hattest ihn im Zimmer gelassen.
+Zwölf Gestalten in Kutten, ein Kreis aus Kreide, in der Mitte ein Stuhl. Der
+Gesang bricht nicht ab, als du eintrittst. Niemand dreht sich um. Sie haben
+dich erwartet, und zwar genau hier. Deine ANGST steigt.
 
-Vorne steht der Hausherr, als Einziger ohne Kutte. Vermutlich muss man sich
-nichts überziehen, wenn man selbst das ist, was gerufen wird.
+{knows("BETAEUBT"): Auf der Lehne des Stuhls hängt dein Mantel. Man hat ihn dir abgenommen, während du geschlafen hast, und ordentlich aufgehängt.|Auf der Lehne des Stuhls hängt dein Mantel. Du hattest ihn oben im Zimmer gelassen.}
+
+Vorne steht der Hausherr, als Einziger ohne Kutte. Vermutlich, denkst du,
+muss man sich nichts überziehen, wenn man selbst das ist, was gerufen wird.
+Es ist ein alberner Gedanke. Er wird gleich sehr viel weniger albern sein.
 
 {knows("MEIN-NAME"): Jetzt sprechen sie deinen Namen deutlicher aus, und einer korrigiert die Aussprache.}
 
@@ -150,8 +156,9 @@ Du sprichst ihn aus. Er ist nicht schwer auszusprechen, was das Erstaunlichste
 an ihm ist.
 
 Der Gesang bricht ab. Der Hausherr wird sehr still. "Woher", sagt er, und
-weiter kommt er nicht, denn Namen sind Verträge, und seiner ist soeben
-gekündigt worden.
+weiter kommt er nicht. Etwas verlässt ihn — Haltung, Farbe, Größe, in dieser
+Reihenfolge. Namen sind Verträge, hast du irgendwo gelesen, vermutlich heute
+Nacht. Seiner ist soeben gekündigt worden.
 
 {knows("KRUG-GEWUERZT"): Die Kutten, die noch stehen können, stehen jetzt woanders: näher an der Tür.}
 
@@ -160,6 +167,9 @@ gekündigt worden.
 # Was im Keller wartet {#thing}
 
 {visits(alone) > 0: Der Hausherr lächelt noch, während er aufhört, ein Mann zu sein. Was übrig bleibt, hat in dem Kreidekreis nie gesessen. Es hat ihn gehalten.|Der Kreis ist offen, und was darin gewartet hat, wartet nicht mehr.}
+
+Es ist größer als der Raum, in dem es steht. Dein Verstand weigert sich, das
+zu erklären, und du bist ihm dankbar dafür. Deine ANGST steigt.
 
 ~ fear = fear + 1
 
