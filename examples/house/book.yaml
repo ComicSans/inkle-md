@@ -1,11 +1,11 @@
-title: Das Haus hinter dem Moor
+title: { de: Das Haus hinter dem Moor, en: The House Behind the Moor }
 author: inkle-md
 version: 0.3.0
 start: arrival.road
 
 languages:
   default: de
-  available: [de]
+  available: [de, en]
 
 chapters:
   - arrival.md
@@ -14,48 +14,48 @@ chapters:
   - cellar.md
 
 stats:
-  skill:    { name: Geschick, start: "roll(1,6) + 6",  max: start }
-  stamina:  { name: Ausdauer, start: "roll(2,6) + 12", max: start }
-  luck:     { name: Glück,    start: "roll(1,6) + 6",  max: start }
-  fear:     { name: Angst, start: 0, max: 15 }
-  gold:     { name: Gold,     start: 8 }
+  skill:    { name: { de: Geschick, en: Skill }, start: "roll(1,6) + 6",  max: start }
+  stamina:  { name: { de: Ausdauer, en: Stamina }, start: "roll(2,6) + 12", max: start }
+  luck:     { name: { de: Glück, en: Luck },    start: "roll(1,6) + 6",  max: start }
+  fear:     { name: { de: Angst, en: Fear }, start: 0, max: 15 }
+  gold:     { name: { de: Gold, en: Gold },     start: 8 }
 
 inventory:
   slots: 8
   start: [lantern, notebook]
 
 items:
-  dagger:    { name: Silberdolch, kind: weapon, attack_bonus: 1 }
-  kris:      { name: Krummer Opferdolch, kind: weapon, attack_bonus: 2, damage_override: 3 }
-  coat:      { name: Dein Mantel, kind: armour, defence: 1 }
-  poker:     { name: Schürhaken, kind: weapon }
-  lantern:   { name: Sturmlaterne, kind: gear }
-  notebook:  { name: Notizbuch, kind: gear }
-  crucifix:  { name: Kruzifix, kind: gear }
-  cellar-key: { name: Kellerschlüssel, kind: gear }
-  phial:     { name: Fläschchen ohne Etikett, kind: gear }
-  pie:       { name: Kalte Pastete, kind: consumable, uses: 1,
+  dagger:    { name: { de: Silberdolch, en: Silver Dagger }, kind: weapon, attack_bonus: 1 }
+  kris:      { name: { de: Krummer Opferdolch, en: Curved Sacrificial Dagger }, kind: weapon, attack_bonus: 2, damage_override: 3 }
+  coat:      { name: { de: Dein Mantel, en: Your Coat }, kind: armour, defence: 1 }
+  poker:     { name: { de: Schürhaken, en: Poker }, kind: weapon }
+  lantern:   { name: { de: Sturmlaterne, en: Storm Lantern }, kind: gear }
+  notebook:  { name: { de: Notizbuch, en: Notebook }, kind: gear }
+  crucifix:  { name: { de: Kruzifix, en: Crucifix }, kind: gear }
+  cellar-key: { name: { de: Kellerschlüssel, en: Cellar Key }, kind: gear }
+  phial:     { name: { de: Fläschchen ohne Etikett, en: Unlabelled Phial }, kind: gear }
+  pie:       { name: { de: Kalte Pastete, en: Cold Pie }, kind: consumable, uses: 1,
                effect: "stamina = min(stamina + 3, stamina_max)",
                when: "not in_combat" }
-  brandy:    { name: Flachmann, kind: consumable, uses: 3,
+  brandy:    { name: { de: Flachmann, en: Hip Flask }, kind: consumable, uses: 3,
                effect: "fear = max(fear - 1, 0)" }
-  bandage:   { name: Verbandzeug, kind: consumable, uses: 2,
+  bandage:   { name: { de: Verbandzeug, en: Bandages }, kind: consumable, uses: 2,
                effect: "stamina = min(stamina + 4, stamina_max)",
                when: "not in_combat" }
 
 setup:
-  - title: Womit reist du?
+  - title: { de: Womit reist du?, en: What do you travel with? }
     pick: 1
     from:
-      - { label: Mit einem Silberdolch im Stiefel, item: dagger }
-      - { label: Mit einem Flachmann in der Manteltasche, item: brandy }
-      - { label: Mit Verbandzeug in der Tasche, item: bandage }
-  - title: Was steht in deinen Papieren?
+      - { label: { de: Mit einem Silberdolch im Stiefel, en: With a silver dagger in your boot }, item: dagger }
+      - { label: { de: Mit einem Flachmann in der Manteltasche, en: With a hip flask in your coat pocket }, item: brandy }
+      - { label: { de: Mit Verbandzeug in der Tasche, en: With bandages in your bag }, item: bandage }
+  - title: { de: Was steht in deinen Papieren?, en: What do your papers say? }
     pick: 1
     from:
-      - { label: Handlungsreisender für Kurzwaren, remember: VERTRETER }
-      - { label: Automechaniker, remember: MECHANIKER }
-      - { label: Journalist, remember: JOURNALIST }
+      - { label: { de: Handlungsreisender für Kurzwaren, en: Travelling salesman in haberdashery }, remember: VERTRETER }
+      - { label: { de: Automechaniker, en: Motor mechanic }, remember: MECHANIKER }
+      - { label: { de: Journalist, en: Journalist }, remember: JOURNALIST }
 
 combat:
   attack: "skill + roll(2,6) + weapon_attack"
@@ -64,10 +64,10 @@ combat:
   luck_in_combat: true
 
 enemies:
-  hound:   { name: Kettenhund, skill: 7, stamina: 6, flee_after: 2 }
-  servant: { name: Der Diener, skill: 8, stamina: 9, flee_after: 4 }
-  cultist: { name: Verschlafener Kultist, skill: 6, stamina: 6, flee_after: 2 }
-  thing:   { name: Was im Keller wartet, skill: 9, stamina: 12, flee_after: 3 }
+  hound:   { name: { de: Kettenhund, en: Chained Hound }, skill: 7, stamina: 6, flee_after: 2 }
+  servant: { name: { de: Der Diener, en: The Servant }, skill: 8, stamina: 9, flee_after: 4 }
+  cultist: { name: { de: Verschlafener Kultist, en: Drowsy Cultist }, skill: 6, stamina: 6, flee_after: 2 }
+  thing:   { name: { de: Was im Keller wartet, en: What Waits in the Cellar }, skill: 9, stamina: 12, flee_after: 3 }
 
 death:
   when: "stamina <= 0 or fear >= fear_max"
@@ -81,6 +81,6 @@ checks:
   succeeds: at-most
 
 strings:
-  combat.hit:   "Du triffst {enemy}."
-  combat.taken: "{enemy} trifft dich."
-  combat.tie:   "Ihr weicht einander aus, und nichts geschieht."
+  combat.hit:   { de: "Du triffst {enemy}.", en: "You strike {enemy}." }
+  combat.taken: { de: "{enemy} trifft dich.", en: "{enemy} strikes you." }
+  combat.tie:   { de: "Ihr weicht einander aus, und nichts geschieht.", en: "You circle each other, and nothing comes of it." }
