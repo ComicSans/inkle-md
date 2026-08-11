@@ -12,6 +12,7 @@
  * inkle-md export   <entry> [--out file.html] [--strict]
  * inkle-md play     <entry> [--seed N] [--lang xx] [--script 1,2,a,a] [--json]
  * inkle-md simulate <entry> [--runs N] [--json]
+ * inkle-md mcp
  *
  * `entry` is a .md file or a book.yaml.
  */
@@ -22,12 +23,16 @@ import { dirname } from 'node:path';
 import { compileFile } from './compile.js';
 import { exportHtml } from './export.js';
 import { play, simulate } from './play.js';
+import { serveMcp } from './mcp.js';
 import { CompileError } from './errors.js';
 
 const LEVEL_ORDER = { info: 0, warning: 1 };
 
 function main(argv) {
   const [command, entry, ...rest] = argv;
+  if (command === 'mcp') {
+    return serveMcp().then(() => 0);
+  }
   if (!command || !entry || ['-h', '--help'].includes(command)) {
     process.stdout.write([
       'usage:',
@@ -36,6 +41,7 @@ function main(argv) {
       '  inkle-md export   <entry> [--out FILE] [--strict]',
       '  inkle-md play     <entry> [--seed N] [--lang xx] [--script 1,2,a] [--json]',
       '  inkle-md simulate <entry> [--runs N] [--json]',
+      '  inkle-md mcp',
       '',
     ].join('\n'));
     return command ? 1 : 0;

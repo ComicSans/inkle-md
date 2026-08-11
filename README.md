@@ -18,9 +18,11 @@ node --test 'test/*.test.js'
 `play` walks a book in the terminal. With `--script 1,2,a,a` it walks a fixed
 route instead and prints where it ended up, which makes a bug reproducible;
 `--json` turns that into something a tool can read, as it does for `lint`.
-`simulate --runs 300` plays many games with pseudo-random choices and reports
-the endings, dead ends and average length — that is how the fear stat in the
-house example was found to punish every second visit to the same room.
+`simulate --runs 300` plays many games with a curious pseudo-random reader and
+reports the endings, dead ends and average length — that is how the fear stat
+in the house example was found to punish every second visit to the same room.
+`mcp` serves lint, play and simulate as MCP tools over stdio, so an agent can
+playtest a book against the real runtime; `.mcp.json` registers it.
 
 The export is one HTML file with no external requests: 53 kB, 15 kB gzipped,
 which is inside the 30 kB budget of SPEC 12.
@@ -42,10 +44,11 @@ which is inside the 30 kB budget of SPEC 12.
 | `src/view.js` | The view layer: labels, presentation, accessibility, SPEC 12 |
 | `src/export.js` | One self-contained HTML file, SPEC 12 |
 | `src/play.js` | Playing from the terminal, scripted replays, simulation |
-| `src/cli.js` | `build`, `lint`, `export`, `play`, `simulate` |
+| `src/mcp.js` | lint, play and simulate as MCP tools over stdio |
+| `src/cli.js` | `build`, `lint`, `export`, `play`, `simulate`, `mcp` |
 | `examples/thornwood.md` | One file, one language: creation, combat, two endings |
 | `examples/thornwood-book/` | The same book as a project: two chapters, German and English |
-| `examples/house/` | A full-length book: 24 nodes, a fear stat that kills, three endings |
+| `examples/house/` | A full-length book: 46 nodes, a fear stat that kills, secrets, three endings |
 
 ## Two rules worth knowing before writing a book
 
