@@ -1,66 +1,63 @@
 # Die Landstraße {#road}
 
-{visits(road) == 1: Der Wagen ist stehengeblieben, wie Wagen es tun: ohne Vorwarnung, im Regen, achtzehn Meilen hinter der letzten Ortschaft mit einem Namen. Der Motor gibt ein Geräusch von sich, das keinerlei Hoffnung ausdrückt.|Der Regen trommelt aufs Wagendach, als wollte er dich daran erinnern, dass er mehr Geduld hat als du.}
+{visits(road) == 1: Der Wagen ist liegengeblieben, wie Wagen es tun: ohne Vorwarnung, im Regen, achtzehn Meilen hinter der letzten Ortschaft mit einem Namen. Der Motor gibt ein Geräusch von sich, das keinerlei Hoffnung ausdrückt.|Der Regen trommelt aufs Wagendach und ist ausdauernder, als deine Geduld.}
 
 {&Irgendwo hinter dir bellt etwas.|Das Bellen ist näher als eben.|Jetzt bellt nichts mehr, was du für keine Verbesserung hältst.}
 
-Vor dir ein schmiedeeisernes Tor, dahinter ein Haus, in dem genau ein Fenster
-brennt. Auf dem Torbogen steht ein Name, den der Efeu freundlicherweise
-verdeckt.
+Vor dir ein schmiedeeisernes Tor, dahinter ein Haus, in dem hinter genau einem Fenster Licht
+brennt. Auf dem Torbogen steht ein Name, den der Efeu verdeckt.
 
-* {knows("MECHANIKER")} [Noch einmal unter die Haube sehen](#road) Du siehst nach, mit der Routine von tausend Pannen. Verteiler trocken, Zündung tot — aber tot auf eine Art, die dir neu ist. Ein Wagen, der nicht anspringen will, klingt anders als einer, der nicht anspringen darf.
+* {knows("MECHANIKER")} [Noch einmal unter die Haube sehen](#road) Du siehst nach, mit der Routine von tausend Pannen. Verteiler trocken, Zündung tot — aber tot auf eine Art, die dir neu ist. Ein Wagen, der nicht anspringen will, klingt anders als einer, der nicht anspringen kann.
   ~ fear = fear + 1
 * [Läuten](#gate)
 * [An der Mauer entlanggehen](#wall) Man muss ja nicht gleich klingeln.
 
 # Am Tor {#gate}
 
-Die Glocke klingt tiefer, als ein Gegenstand dieser Größe klingen dürfte.
+Die Glocke klingt tiefer, als du erwartet hast.
+
 Danach passiert eine Weile nichts, was dir Zeit gibt, über deine
-Entscheidungen der letzten Stunde nachzudenken.
+Situation der letzten Stunde nachzudenken. Du bist mit der Lage nicht zufrieden.
 
-{Dann öffnet sich das Tor. Von selbst. Sehr langsam, mit dem Geräusch, das Türen in Geschichten machen, die schlecht ausgehen.|Das Tor steht offen, wie du es verlassen hast. Es hat es nicht eilig, denkst du. Es hat ja dich.}
-
-{ visits(gate) == 1 }
-  ~ fear = fear + 1
+{Dann öffnet sich das Tor. Von selbst. Sehr langsam, mit dem Geräusch, das Türen in Geschichten machen, die schlecht ausgehen.|Das Tor steht offen, wie du es verlassen hast. }
 
 * [Hindurchgehen](#drive)
 + [Es dir anders überlegen und die Mauer probieren](#wall)
 
 # An der Mauer {#wall}
 
-Mannshoch, oben Glasscherben in Mörtel, eine Bruchstelle vom letzten Frost.
+Mannshoch, Risse in Mörtel, eine Bruchstelle vom letzten Frost. Abweisend.
 Der Hausherr hält offenbar wenig von unangemeldeten Gästen, was ihn dir
 beinahe sympathisch macht.
 
 + [Hinüberklettern]()
   { test("skill") }
-    Du kommst sauber über die Bruchstelle und landest im Gras, das nasser ist
-    als alles, was du bisher kanntest.
+    Du kommst sauber über die Mauer und landest im Gras.
     ~ remember("UEBER-DIE-MAUER")
     -> drive
   { else }
-    Eine Scherbe zieht dir den Handrücken auf. Du stellst fest, dass du seit
-    Jahren nicht mehr geklettert bist, und dass das gute Gründe hatte.
+    Eine Scherbe schneidet dir den Handrücken auf. Du stellst fest, dass du seit
+    Jahren nicht mehr geklettert bist und dass das gute Gründe hatte.
     ~ stamina = stamina - 2
     ~ fear = fear + 1
 + [Zurück zum Tor](#gate)
 ---
-Der Regen wird stärker, als wollte er dich zu etwas drängen.
+Der Regen wird stärker, als wollte er dich zur Tür drängen.
 
 -> gate
 
 # Die Auffahrt {#drive}
 
 Kies, Pfützen, und ein Kettenhund, der ohne vorheriges Bellen aus dem Dunkeln
-kommt. Die Kette, stellst du beim Näherkommen fest, hängt an nichts.
+kommt, einfach auftauchte und dich nun begutachtet. 
+Die Kette, stellst du beim Näherkommen fest, hängt an nichts.
 
 ~ fear = fear + 1
 
 * [Stehenbleiben und ihm den Handrücken hinhalten]()
   { test_luck() }
     Er schnuppert, wägt ab und entscheidet sich gegen die Berufsehre. Als du
-    weitergehst, geht er mit, als hätte er dich hierher bestellt.
+    weitergehst, geht er mit, als würde er zu dir gehören.
     ~ remember("HUND-FREUND")
     ~ calm(1)
     -> door
@@ -74,7 +71,7 @@ kommt. Die Kette, stellst du beim Näherkommen fest, hängt an nichts.
 
 !combat hound
   win  -> door
-  flee [Rennen](#door) Du erreichst die Tür mit dem Atem eines Ertrinkenden und der Würde von jemandem, der vor einem Hund gerannt ist.
+  flee [Rennen](#door) Du erreichst die Tür mit dem Atem eines Ertrinkenden und der Würde von jemandem, der eben um sein Leben gerannt ist.
 
 # Vor der Tür {#door}
 
@@ -105,9 +102,7 @@ tut. Deine ANGST steigt.
 
 # Nachdenken im Regen {#wait}
 
-Du denkst nach. Das Ergebnis lautet, dass du im Regen stehst und nachdenkst.
-
-~ fear = fear + 1
+Du denkst nach. Das Ergebnis lautet, dass du im Regen stehst, nachdenkst und keine Optionen hast.
 
 * [Jetzt klopfen](#hall)
 
@@ -121,11 +116,11 @@ höflich wäre.
 
 {knows("HUND-FREUND"): Der Butler sieht den Hund an. Der Hund sieht den Butler an. Dann sieht der Butler wieder dich an, als sei da nie ein Hund gewesen.}
 
-"Der Herr des Hauses", sagt er, "bittet zu Tisch. Das Gedeck steht bereits."
-Er sagt es nicht wie eine Einladung, sondern wie eine Wettervorhersage.
+"Der Herr des Hauses", sagt er schnarrend, "bittet zu Tisch. Treten Sie ein."
+Er sagt es nicht wie eine Einladung, sondern wie ein Nachrichtensprecher.
 
 * [Ihm folgen](#dinner)
-* [Nach dem Weg zum nächsten Telefon fragen](#servant) "Die Leitung", sagt er, "ist seit dem Krieg tot. Es war ein kurzer Krieg, hier draußen."
+* [Nach dem Weg zum nächsten Telefon fragen](#servant) "Die Leitung", sagt er, "ist seit dem Krieg tot."
 
 # Der Butler {#servant}
 
@@ -136,16 +131,17 @@ länger, damit du merkst, dass er gewartet hat.
 "Das Haus steht Ihnen offen", sagt er. "Bis auf den Keller. Der Keller steht
 niemandem offen."
 
-~ fear = fear + 1
+Ansonsten ignoriert er deine Fragen.
+
 ~ remember("KELLER-VERBOTEN")
 
 * [Zu Tisch gehen](#dinner)
 + [Fragen, was im Keller ist]() "Nichts", sagt er, mit einer Betonung auf dem Nichts, die dir noch eine Weile nachgehen wird.
   ~ fear = fear + 1
-+ [Kehrtmachen, zur Haustür]() Du drehst dich um. Der Butler steht bereits zwischen dir und der Tür, ohne dass du Schritte gehört hättest. "Zu Tisch", sagt er. Es klingt nicht unfreundlich. Es klingt endgültig.
++ [Kehrtmachen, zur Haustür]() Du drehst dich um. Der Butler steht bereits zwischen dir und der Tür, ohne dass du Schritte gehört hättest. "Dort entlang", sagt er und deutet von der Tür weg. Es klingt nicht unfreundlich. Es klingt endgültig.
   ~ fear = fear + 1
 ---
-Er hält dir die Tür zum Speisezimmer auf, und zwar so lange, dass Bleiben
+Er hält dir die Tür zum Speisezimmer auf, und zwar so lange, dass Abwarten
 keine Möglichkeit mehr ist.
 
 -> dinner
@@ -160,7 +156,6 @@ Er stellt Fragen über deine Reise, deine Familie, ob dich jemand erwartet. Bei
 der letzten Frage hört er besonders aufmerksam zu.
 
 * [Wahrheitsgemäß antworten, dass dich niemand erwartet]() Er nickt, langsam und zufrieden, und schenkt nach.
-  ~ fear = fear + 1
   ~ remember("NIEMAND-WARTET")
 * [Einen Bruder erfinden, der um Mitternacht anruft]() Sein Lächeln bleibt, wo es ist, aber es steht nun etwas anders darin.
   ~ remember("DER-BRUDER")
@@ -198,7 +193,7 @@ kürzer als der Weg dorthin.
 
 Der Wein ist wirklich ausgezeichnet, und das zweite Glas ist besser als das
 erste. Das dritte schenkt er ein, ohne dass du dich an das zweite erinnern
-kannst. Der Kronleuchter hängt schief. Dann hängt der ganze Raum schief. Das
+kannst. Der Kronleuchter hängt schief. Dann der ganze Raum. Das
 Letzte, was du siehst, ist der Hausherr, der aufsteht und dabei nicht zu dir
 herübersieht. Warum sieht er nicht her, denkst du noch. Man sieht doch nach —
 man sieht doch —

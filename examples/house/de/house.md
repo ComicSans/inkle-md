@@ -17,7 +17,7 @@ Du schläfst schneller ein, als dir lieb ist.
 
 # Um Mitternacht {#midnight}
 
-{visits(midnight) == 1: Du wachst auf, weil es aufgehört hat zu regnen, und der Regen war das einzige Geräusch gewesen, das hierher gehörte.|Die Stille ist noch da. Sie ist nicht leer.}
+{visits(midnight) == 1: Du wachst auf, weil es aufgehört hat zu regnen, und der Regen war das einzige Geräusch gewesen, das hierher gehörte.|Die Stille ist noch da. Sie ist nicht beruhigend.}
 
 {visits(midnight) == 1 and knows("ABGESCHLOSSEN"): Jemand versucht die Klinke. Zweimal. Dann Schritte, die sich entfernen.}
 
@@ -28,7 +28,7 @@ Du schläfst schneller ein, als dir lieb ist.
 { visits(midnight) == 1 }
   ~ fear = fear + 1
 
-* [Unter dem Bett nachsehen](#midnight) Dort liegt eine Kiste, in der Kiste ein Kruzifix, an dem jemand mit den Zähnen gearbeitet hat.
+* [Unter dem Bett nachsehen](#midnight) Dort liegt eine Kiste, in der Kiste ein Kruzifix, Bissspuren im Holz.
   ~ take("crucifix")
   ~ fear = fear + 1
 + [Auf den Flur gehen](#landing)
@@ -59,9 +59,9 @@ Treppe hinunter.
 
 # Die Bibliothek {#library}
 
-Dreitausend Bücher, von denen zweitausendneunhundert Attrappe sind: bemalte
+Dreitausend Bücher, von denen zweitausendneunhundert Attrappen sind: bemalte
 Holzrücken. Die echten hundert stehen zusammen in einem Regal, und je länger
-du die Titel liest, desto stiller wird es in dir: Beschwörungen. Bindungen.
+du die Titel liest, desto panischer wirst du: Bücher über Beschwörungen. Über Bindungen. Über Wahnsinn.
 Die Macht der wahren Namen. Bücher darüber, wie man etwas ruft — und drei
 deutlich dünnere darüber, wie man es wieder loswird.
 
@@ -75,7 +75,7 @@ deutlich dünnere darüber, wie man es wieder loswird.
     Hinter dem dritten Band liegt ein Schlüssel, an dem ein Papierschild hängt: "Keller".
     ~ take("cellar-key")
   { else }
-    Staub, Holz, und ein aufgeschlagenes Buch mit einer Liste von Daten in
+    Staub, Holz, und ein aufgeschlagenes Buch mit einer Liste von Datumsangaben in
     sauberer, alter Tinte. Der unterste Eintrag ist von heute. Deine ANGST
     steigt.
     ~ fear = fear + 1
@@ -150,15 +150,15 @@ Wohin solltest du schon gehen. Deine ANGST steigt.
 
 # Die Weiße Dame {#lady}
 
-{visits(lady) == 1: Im Mondlicht steht eine Frau, die keinen Schatten wirft und aussieht, als warte sie seit Jahren auf besseres Publikum.|Sie steht noch im Mondlicht und wartet, ob von dir etwas kommt, das sich zu hören lohnt.}
+{visits(lady) == 1: Im Mondlicht steht eine Frau, die keinen Schatten wirft und aussieht, als warte sie seit Jahren, Jahrhunderten, auf Besuch.|Sie steht noch im Mondlicht und wartet, ob von dir etwas kommt, das sich zu hören lohnt.}
 
 {visits(lady) == 1: "Neu hier?", fragt sie. Ihre Stimme klingt wie eine, die lange nicht benutzt wurde und sich darüber nicht beklagen will.}
 
-* [Höflich bleiben und zuhören](#lady) Sie sieht dich lange an. "Gute Erziehung", sagt sie. "Die ist hier selten geworden." Sie war vor dreißig Jahren mit dem Wagen liegengeblieben, auch im Regen; das Haus wiederholt sich gern. "Der Hausherr", sagt sie, "hat einen Namen, den er aus den Büchern heraushält. Er steht im Tagebuch in seinem Arbeitszimmer, und auf dem Torbogen, unter dem Efeu. Sprich ihn aus, wenn er dir gegenübersteht, und sieh dann zu, dass du eine Tür findest." Dann beugt sie sich vor und nennt ihn dir, langsam und zweimal, wie man einem Kind etwas Wichtiges aufträgt. Der Name fühlt sich kalt an, noch im Ohr.
+* [Höflich bleiben und zuhören](#lady) Sie sieht dich lange an. "Gute Erziehung", sagt sie. "Die ist hier selten geworden." Sie war vor Jahren hier gestrandet, auch im Regen. "Der Hausherr", sagt sie, "hat einen Namen, den er aus den Büchern heraushält. Er steht im Tagebuch in seinem Arbeitszimmer, und auf dem Torbogen, unter dem Efeu. Sprich ihn aus, wenn er dir gegenübersteht, und sieh dann zu, dass du schnell davonkommst." Dann beugt sie sich vor und nennt ihn dir, langsam und zweimal, wie man einem Kind etwas Wichtiges aufträgt.
   ~ remember("WAHRER-NAME")
   ~ arrival.calm(1)
-* [Nach dem Ausgang fragen](#lady) Sie deutet auf die Treppe. "Da", sagt sie und verliert für einen Moment das Interesse an dir, mit einer Geschwindigkeit, die kränkend wäre, hättest du nicht gerade andere Sorgen.
-* [Fragen, was mit ihr geschehen ist](#lady) Sie sieht an sich hinunter, als müsse sie nachschlagen. "Ich war unhöflich", sagt sie schließlich. "Zum Wein." Mehr sagt sie nicht, und du fragst nicht nach, denn ihr Blick geht dabei zu dem Stuhl mit den Riemen.
+* [Nach dem Ausgang fragen](#lady) Sie deutet auf die Treppe. "Die einzige Tür", sagt sie und verliert für einen Moment das Interesse an dir, mit einer Geschwindigkeit, die kränkend wäre, hättest du nicht gerade andere Sorgen.
+* [Fragen, was mit ihr geschehen ist](#lady) Sie sieht an sich hinunter, als müsse sie nachschlagen. "Ich war unhöflich", sagt sie schließlich. Mehr nicht, und du fragst nicht nach, denn ihr Blick geht dabei zu dem Stuhl mit den Riemen.
   ~ fear = fear + 1
 + [Dich verabschieden]()
 ---
@@ -180,7 +180,7 @@ hinaus wie jemand, der den Ausblick auswendig kennt und trotzdem prüft.
   { else }
     Die Tür gewinnt die ersten beiden Versuche.
     ~ stamina = stamina - 2
-    Beim dritten gibt sie nach, und das Haus wirkt beinahe enttäuscht.
+    Beim dritten gibt sie nach, das Haus gewinnt nicht immer.
 * {knows("BETAEUBT")} [Durch das Fenster und den Efeu hinunter]()
   { test("skill") }
     Der Efeu trägt dich ein Stockwerk tiefer, wo ein Fenster offen steht. Du

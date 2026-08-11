@@ -4,7 +4,7 @@ Die Halle ist größer, wenn niemand darin auf dich wartet. Die Standuhr an der
 Wand schlägt einmal, obwohl ihr Zifferblatt drei Uhr behauptet. Vielleicht
 zählt sie etwas anderes als Stunden.
 
-{~Irgendwo über dir schließt sich leise eine Tür.|Die Standuhr holt hörbar Luft und schlägt dann doch nicht.|Unter deinen Füßen, sehr fern, setzt der Gesang neu an.}
+{~Irgendwo über dir schließt sich leise eine Tür.|Das Räderwerk der Standuhr holt hörbar Anlauf und schlägt dann doch nicht.|Unter deinen Füßen, sehr fern, setzt Gesang ein.}
 
 { visits(hall) == 1 }
   ~ fear = fear + 1

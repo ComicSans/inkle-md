@@ -62,7 +62,7 @@ hält, was du erst nach dem dritten Spinnennetz herausfindest.
 # Der Weinkeller {#wine}
 
 Fässer, Flaschen, ehrlicher Staub. Es ist der erste Raum in diesem Haus, der
-genau das ist, was er zu sein vorgibt, und du bist beinahe gerührt.
+genau das ist, was er zu sein vorgibt, und du bist beinahe erleichtert.
 
 { visits(wine) == 1 }
   ~ fear = max(fear - 1, 0)
@@ -111,7 +111,7 @@ man Briefe öffnet.
 
 # Der Keller {#rite}
 
-{visits(rite) == 1: Zwölf Gestalten in Kutten, ein Kreis aus Kreide, in der Mitte ein Stuhl. Der Gesang bricht nicht ab, als du eintrittst. Niemand dreht sich um. Sie haben dich erwartet, und zwar genau hier. Deine ANGST steigt.|Der Kreis, die Kutten, der Gesang: Alles ist noch da, und alles weiß, dass du wieder da bist.}
+{visits(rite) == 1: Zwölf Gestalten in Kutten, ein Kreis aus Kreide, in der Mitte ein Stuhl. Der Gesang bricht nicht ab, als du eintrittst. Niemand dreht sich um. Deine ANGST steigt.|Der Kreis, die Kutten, der Gesang: Alles ist noch da, und alle wissen, dass du wieder da bist.}
 
 {not has("coat") and knows("BETAEUBT"): Auf der Lehne des Stuhls hängt dein Mantel. Man hat ihn dir abgenommen, während du geschlafen hast, und ordentlich aufgehängt.}
 
@@ -123,7 +123,7 @@ man Briefe öffnet.
 
 {visits(rite) == 1 and knows("NIEMAND-WARTET"): Beim Abendessen hattest du erwähnt, dass dich niemand erwartet. Der Hausherr hat es sich offenbar notiert.}
 
-{visits(rite) == 1 and knows("DER-SPIEGEL"): Das Kruzifix ist wieder warm, diesmal von Anfang an.}
+{visits(rite) == 1 and knows("DER-SPIEGEL"): Das Kruzifix ist wieder warm, glüht fast in deiner Tasche.}
 
 {visits(rite) == 1 and knows("NUECHTERN"): Der Hausherr sieht zu dir herüber und dann zu dem leeren Stuhl, als wolle er anmerken, dass es einen bequemeren Weg hierher gegeben hätte.}
 
@@ -139,7 +139,7 @@ man Briefe öffnet.
   ~ equip("coat")
   ~ fear = fear + 1
 * {knows("WAHRER-NAME")} [Den Namen aussprechen, den der Efeu verdeckt](#named)
-* {knows("KRUG-GEWUERZT")} [Am Türrahmen lehnen und dem Würzwein Zeit geben](#alone) Nacheinander setzen sich elf Gestalten, erst würdevoll, dann gar nicht mehr.
+* {knows("KRUG-GEWUERZT")} [Am Türrahmen lehnen und dem Würzwein Zeit geben](#alone) Nacheinander setzen sich elf Gestalten, erst würdevoll, dann schnell.
   ~ arrival.calm(2)
 * {has("crucifix")} [Das Kruzifix hochhalten](#break) Es wird so heiß, dass du es fast fallen lässt, und der Gesang bricht ab.
 * {knows("KRUG-GEWUERZT")} [Den Kreidekreis verwischen, solange die Kutten schwanken](#thing) Die, die dich aufhalten wollen, müssten dazu erst aufstehen. Sie versuchen es. Es sieht aus wie eine schlechte Turnstunde.
@@ -182,13 +182,13 @@ Nacht. Seiner ist soeben gekündigt worden.
 Du versuchst, den Namen noch einmal zu denken. Er ist fort. Verbraucht wie
 ein Streichholz.
 
-{knows("KRUG-GEWUERZT"): Die Kutten, die noch stehen können, stehen jetzt woanders: näher an der Tür.}
+{knows("KRUG-GEWUERZT"): Die Kutten, die noch stehen können, wanken zur Tür.}
 
 -> break
 
 # Was im Keller wartet {#thing}
 
-{visits(alone) > 0: Der Hausherr lächelt noch, während er aufhört, ein Mann zu sein. Was übrig bleibt, hat in dem Kreidekreis nie gesessen. Es hat ihn gehalten.|Der Kreis ist offen, und was darin gewartet hat, wartet nicht mehr.}
+{visits(alone) > 0: Der Hausherr lächelt noch, während er aufhört, ein Mann zu sein. Was übrig bleibt, hat in dem Kreidekreis nie gesessen. Es hat ihn gehalten.|Der Kreis ist offen, und was darin gewartet hat, ist da.}
 
 Es ist größer als der Raum, in dem es steht. Dein Verstand weigert sich, das
 zu erklären, und du bist ihm dankbar dafür. Deine ANGST steigt.
@@ -241,13 +241,12 @@ das nie anders gewesen.
 
 {knows("DER-BRUDER"): Hinter dir sagt jemand höflich, man werde deinen Bruder benachrichtigen.}
 
-{knows("HUND-FREUND"): Am Tor schließt sich dir der Hund an, ohne zu fragen, und sieht nicht zurück. Er wirkt wie jemand, der gekündigt hat.}
+{knows("HUND-FREUND"): Am Tor schließt sich dir der Hund an, ohne zu fragen, und sieht ebenfalls nicht zurück.}
 
 {uses("brandy") > 0: Im Flachmann schwappt noch ein Rest. Du hebst ihn im Gehen dem Haus entgegen und trinkst keinen Schluck davon. Nicht aus diesem Anlass.}
 
 Zwei Meilen weiter kommt dir ein Milchwagen entgegen. Der Fahrer nimmt dich
-mit, sieht dich von der Seite an und fragt nichts. Die {gold} Goldstücke in
-deiner Tasche reichen für die Fahrt und für zwei Frühstücke.
+mit, sieht dich von der Seite an und fragt nichts. 
 
 Du bist entkommen. Das Haus steht noch, der Keller auch, und beide werden
 Gäste haben.
