@@ -2,10 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "preview",
+      "name": "spielprobe",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8731"],
-      "port": 8731
+      "runtimeArgs": ["-m", "http.server", "8321", "-d", "build"],
+      "port": 8321
     }
   ]
 }
