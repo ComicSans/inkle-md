@@ -870,6 +870,7 @@ story.choose(index);                  // take a choice
 story.current;                        // { text: [...], choices: [...], stats }
 story.combat;                         // active combat, or null
 story.inventory;                      // [{ id, name, kind, uses, equipped, usable }]
+story.memory;                         // code words in the order they were noted
 story.useItem(id);                    // honours the item's when:
 story.equipItem(id);
 story.canUndo;                        // false when the stack is empty or depth is 0
@@ -906,6 +907,11 @@ Themes follow `prefers-color-scheme` and can be overridden by the reader.
 
 Saves live in `localStorage` under one key per book, plus export and import as
 a JSON string so a reader can move a game between devices without an account.
+
+The sheet also lists the code words the reader has been told to note, in the
+order they were remembered — the Lone Wolf convention, where noting the word
+is the reader's own act. A book that wants a secret keeps it out of
+`remember()` and in its structure.
 
 ### 12.3 Accessibility
 

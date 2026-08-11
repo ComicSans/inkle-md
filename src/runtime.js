@@ -154,6 +154,13 @@ export class Story {
     });
   }
 
+  /** The code words the reader has been told to note down, in the order
+   *  they were remembered. The sheet shows them; that is the Lone Wolf
+   *  convention, where the book itself says "note this word". */
+  get memory() {
+    return [...this.state.memory];
+  }
+
   // --- playing -----------------------------------------------------------
 
   choose(index) {

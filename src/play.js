@@ -66,7 +66,7 @@ function runScript(s, options) {
     combat: s.combat ? { enemy: s.combat.name, stamina: s.combat.enemy.stamina, round: s.combat.round } : null,
     stats: Object.fromEntries(s.stats.map((x) => [x.name, x.max ? `${x.value}/${x.max}` : x.value])),
     inventory: s.inventory.map((i) => i.id),
-    memory: s.state.memory,
+    memory: s.memory,
     seed: s.state.seed,
     rolls: s.state.rolls,
     log,
@@ -142,10 +142,12 @@ function stats(s) {
 }
 
 function inventory(s) {
-  if (s.inventory.length === 0) return 'Du trägst nichts bei dir.';
-  return s.inventory
-    .map((i) => `  ${i.id}  ${i.name}${i.uses > 1 ? ` (${i.uses})` : ''}${i.equipped ? ' [ausgerüstet]' : ''}${i.usable ? ' [benutzbar]' : ''}`)
-    .join('\n');
+  const lines = s.inventory.length === 0
+    ? ['Du trägst nichts bei dir.']
+    : s.inventory
+      .map((i) => `  ${i.id}  ${i.name}${i.uses > 1 ? ` (${i.uses})` : ''}${i.equipped ? ' [ausgerüstet]' : ''}${i.usable ? ' [benutzbar]' : ''}`);
+  if (s.memory.length > 0) lines.push(`Gemerkt: ${s.memory.map((w) => w.toUpperCase()).join(', ')}`);
+  return lines.join('\n');
 }
 
 /** Wraps at 76 columns, because a terminal is not a browser. */

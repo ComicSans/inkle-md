@@ -19,7 +19,7 @@ const UI = {
   en: {
     attack: 'Attack', flee: 'Flee', luck: 'Test your luck',
     belongings: 'Belongings', use: 'Use', equip: 'Equip', equipped: 'equipped',
-    back: 'Go back', restart: 'Start again', save: 'Save', saved: 'Saved',
+    back: 'Go back', restart: 'Start again', save: 'Save', saved: 'Saved', memory: 'Noted',
     resume: 'Continue', language: 'Language', begin: 'Begin', theEnd: 'The end',
     character: 'Character', pick: (n) => `Choose ${n}`, uses: (n) => `${n} left`,
     pickFirst: 'Make your choice to begin.',
@@ -28,7 +28,7 @@ const UI = {
   de: {
     attack: 'Angreifen', flee: 'Fliehen', luck: 'Glück versuchen',
     belongings: 'Gepäck', use: 'Benutzen', equip: 'Ausrüsten', equipped: 'ausgerüstet',
-    back: 'Zurück', restart: 'Neu beginnen', save: 'Speichern', saved: 'Gespeichert',
+    back: 'Zurück', restart: 'Neu beginnen', save: 'Speichern', saved: 'Gespeichert', memory: 'Gemerkt',
     resume: 'Weiterspielen', language: 'Sprache', begin: 'Losgehen', theEnd: 'Ende',
     character: 'Held', pick: (n) => `Wähle ${n}`, uses: (n) => `noch ${n}`,
     pickFirst: 'Triff deine Wahl, dann kann es losgehen.',
@@ -101,10 +101,16 @@ function mount(json, root) {
       items.append(line);
     }
 
+    const words = story.memory;
+    const memory = el('ul', { class: 'items memory' },
+      words.map((word) => el('li', { text: word.toUpperCase() })));
+
     return el('aside', { class: 'sheet', 'aria-label': ui.character }, [
       stats,
       story.inventory.length > 0 ? el('h2', { text: ui.belongings }) : null,
       story.inventory.length > 0 ? items : null,
+      words.length > 0 ? el('h2', { text: ui.memory }) : null,
+      words.length > 0 ? memory : null,
     ]);
   }
 

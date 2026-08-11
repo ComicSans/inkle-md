@@ -290,6 +290,15 @@ test('the house survives three hundred playthroughs', () => {
   assert.deepEqual([...ends].sort(), ['cellar.break', 'cellar.flight', 'cellar.jar', 'cellar.undone']);
 });
 
+test('code words appear on the sheet, in the order they were noted', () => {
+  const s = new Story(house(), { seed: 1 });
+  s.begin([['dagger'], ['JOURNALIST']]);
+  assert.deepEqual(s.memory, ['journalist']);
+
+  s.go('arrival.window');
+  assert.deepEqual(s.memory, ['journalist', 'auf-der-treppe']);
+});
+
 test('a save from another book or version is rejected', () => {
   const s = new Story(house(), { seed: 1 });
   s.begin([['dagger'], ['VERTRETER']]);
