@@ -1,0 +1,975 @@
+# inkle-md, draft 0.6
+
+A gamebook language written in Markdown: ink semantics, Markdown syntax, plus a
+fixed RPG layer modelled on the 1980s gamebooks. The goal is that an author can
+read this document in ten minutes and then write anything a Fighting Fantasy or
+Lone Wolf volume needed, and that the source file stays readable in any editor
+and on GitHub.
+
+Decided on 2026-08-11: Markdown dialect rather than an ink subset, English
+keywords, built-in combat, multi-file projects with dotted cross-file
+references, no image support for now, translations that carry text but not
+logic, and no presentation anywhere in a book.
+
+## 1. Principles
+
+1. **Where Markdown already has a spelling, use it.** A heading is a node, a
+   link is a divert, a list item is a choice.
+2. **One concept, one spelling.** Where ink offers three ways to do a thing,
+   one survives. Where a character carries several meanings, one survives.
+3. **Declare in the frontmatter, narrate in the text.** No configuration in
+   the middle of prose.
+4. **State is a flat object.** No call stack in the save. A save is JSON you
+   can read and, if it comes to it, repair by hand.
+5. **Randomness is reproducible.** Seed plus counter in the save.
+6. **The export is one file.** No framework, no network access at runtime.
+
+The price of choosing Markdown: the official `inklecate` compiler cannot check
+these files, and the ink documentation applies only by analogy. Our compiler is
+the only authority, so it needs precise errors with line numbers and a test
+suite from day one. Sections 10 and 11 exist for that reason.
+
+## 2. What makes ink dense, and what replaces it
+
+- **`{ }` carries six meanings** in ink: print a variable, alternatives,
+  conditional text, if/else, switch, visit counts. Which one applies is decided
+  by a character far inside the braces.
+  Here: printing, alternatives and conditional text stay inline; branching is
+  an indented block. Switch is gone. Section 4.6 states the disambiguation
+  rule that makes this decidable in one pass.
+- **Four kinds of divert** (`->`, `-> x ->`, `->->`, `<-`) that look alike and
+  behave very differently. Here: one divert, one arrow.
+- **`[...]` inside a choice** splits button text from follow-on text, at three
+  possible positions with three different results. Here: the link text is the
+  button, everything after the link is follow-on text. One rule, no cases.
+
+## 3. Project layout and imports
+
+### 3.1 Single file
+
+A single `.md` file with YAML frontmatter at the very top, between two `---`
+lines, followed by the story. Sufficient for a short book.
+
+**A single-file book has no namespace.** Ids are bare everywhere: in diverts,
+in `start:`, in `death.goto`, in `visits()` and in the `node` and `visits`
+fields of a save. A dot in a reference is an error there (E040). Adding a
+second file later means qualifying references, which is a mechanical rewrite
+the linter can point at, and the reason `as:` exists in 3.2.
+
+### 3.2 Multi-file project
+
+```
+my-book/
+  book.yaml         # everything the frontmatter would hold
+  start.md
+  forest.md
+  crypt.md
+```
+
+`book.yaml` carries the declarations of section 6 plus the file list:
+
+```yaml
+title: The Thornwood
+version: 1.4.0
+start: start.begin          # qualified id of the first node
+chapters:
+  - start.md
+  - forest.md
+  - crypt.md
+  - file: appendix/bestiary.md
+    as: beast               # namespace override
+```
+
+Chapter files may carry their own frontmatter, but only `title:`. The
+namespace is set in `book.yaml` and nowhere else, because `book.yaml` already
+owns the file list; `namespace:` in a chapter file is E011. Declarations that
+affect the whole book (stats, inventory, items, combat, enemies, setup,
+death, undo, strings)
+belong in `book.yaml` and are an error anywhere else (E012). The reason is
+principle 3: one place to look.
+
+`start:` is optional and defaults to the first node of the first chapter.
+
+### 3.3 Namespaces and references
+
+In a multi-file project, every file is a namespace. The namespace is the file
+name without extension (`crypt.md` becomes `crypt`), lowercased, with spaces,
+slashes and dots replaced by hyphens, or the explicit `as:` from the chapter
+list. Ids derived from a heading are slugged the same way, so a title like
+"The Crypt, Pt. 2" can never produce a second dot.
+
+- Node ids are unique **within their file**.
+- Inside a file, `-> chamber` refers to that file's `chamber`.
+- Across files, `-> crypt.chamber`. Exactly one dot: namespace, then id.
+- If a bare reference does not resolve locally, it is an error, never a silent
+  search of other files. Ambiguity is not resolved by proximity.
+
+In a multi-file project the qualified form is used everywhere an id appears
+outside its own file: diverts, choice links (`[Go down](#crypt.chamber)`),
+`visits()`, `turns_since()`, `goto:` and `start:` in `book.yaml`, and the
+`node`, `visits` and `seen` fields of a save. A single-file book keeps all of
+these bare, per 3.1.
+
+Namespaces do not nest. A path has at most one dot. If a book ever outgrows
+that, the answer is a longer `as:` alias, not a second level.
+
+### 3.4 Languages
+
+A book may exist in several languages at once. The structure is shared and
+only the text differs, so a reader can switch language mid-game without losing
+their place.
+
+```yaml
+languages:
+  default: de
+  available: [de, en]
+chapters:
+  - start.md
+  - crypt.md
+```
+
+Each language gets a directory named after it, holding the same chapter file
+names: `de/start.md`, `en/start.md`. A book without a `languages:` block has
+exactly one language, named `default`.
+
+**The default language owns the logic. Translations carry text only.** A
+translated file is a catalogue: headings that name the node, paragraphs in the
+order the node prints them, and list items in the order the node offers them.
+It has no diverts, no conditions, no assignments, no directives, and its list
+items carry no links.
+
+```markdown
+# The Iron Gate {#gate}
+
+The gate closes the crypt off to the north.
+
+The key turns as though it had been waiting for you.
+
+Without the key the gate stays what it is.
+
+* Take the key
+* Back to the light
+```
+
+Paragraphs replace paragraphs and list items replace button labels, each in
+source order, counted as two separate streams so that nesting never has to be
+mirrored. Conditional arms, gather text and combat exit text are paragraphs
+like any other. A translation with a different count is E071, and a node the
+default language does not have, or does not translate, is E070.
+
+Because there is one structure, the ids of 9.1 line up, and those ids are what
+`taken` and `alts` in the save are keyed by. Translated headings therefore
+need an explicit `{#id}`: a derived id would follow the translated title and
+drift apart from the original.
+
+**A translation may override a whole node** where a language needs different
+logic, not just different words: a plural that only one language branches on, a
+form of address that depends on a stat. Write the node with logic, exactly as
+in the default language, and it replaces that node entirely for that language.
+E071 does not apply to an overridden node, and the linter says so (L019),
+because its choice and alternative ids are then its own; what that means for a
+language switch is stated in 12.1.
+
+The runtime carries the language in the save as `lang` and can switch it at
+any point, including mid-combat: outside overridden nodes nothing but the text
+changes.
+
+### 3.5 Scope of everything else
+
+Variables, inventory, memory words and visit counts are global to the book.
+Only node ids are namespaced. This keeps the save flat (section 8).
+
+## 4. The narrative text
+
+Indentation is two spaces, everywhere. Tabs are an error, not a style
+preference, because indentation carries meaning here.
+
+### 4.1 Nodes
+
+```markdown
+# The Crypt {#crypt}
+## The Second Chamber {#chamber}
+```
+
+`#` is a node, `##` a subnode. The heading text is the title for humans; the
+id in `{# }` is the name used by diverts. Headings and subheadings are
+structure for readers only, and both produce plain nodes for the compiler.
+
+Without an explicit id, one is derived from the title. That is fine for
+throwaway nodes and unwanted in a published book, because renaming the title
+then breaks every divert. The linter warns (L005).
+
+`###` and deeper are not nodes; they are headings inside prose.
+
+### 4.2 Diverts
+
+A divert with no choice sits alone on a line:
+
+```markdown
+-> chamber
+-> crypt.chamber
+-> END
+```
+
+`-> END` ends the story. A node that neither diverts nor offers a choice is an
+error, not a silent stop (E110).
+
+### 4.3 Choices
+
+```markdown
+* [Open the door](#hall) You press the latch down.
++ [Look around](#room)
+* {skill > 8} [Bend the bars apart](#gate)
+* [Run](#flight)
+```
+
+- `*` is once-only, `+` is sticky. Both are Markdown bullets, so a renderer
+  shows a list.
+- **The marker requires a following space.** `*The wind howls.*` and
+  `**No!**` are emphasis, not choices. This is Markdown's own rule, and it is
+  why nesting uses indentation rather than ink's `**` and `***`.
+- The link text is the button. Everything after the link is text printed after
+  the choice is taken. The button text is not repeated; an author who wants it
+  repeated writes it twice.
+- `{ condition }` before the link makes the choice conditional. It goes before
+  the link so that a reader skimming the file sees first whether an option
+  appears at all.
+- Nesting is by indentation, at most three levels:
+
+```markdown
+* [Ask the innkeeper]() He wipes out a mug.
+  * [Ask about the road]() "North, but not at night."
+  * [Ask about the tower]() He says nothing.
+  ---
+  You put a coin on the counter.
+* [Leave](#road)
+```
+
+`[Text]()` with an empty target means: stay here, then show the next level.
+This is ink's weave with Markdown indentation. The empty link renders as a
+link that goes nowhere, rather than one that jumps to the top of the page.
+
+### 4.4 Gathers
+
+A line of `---` at the indentation of the choices it gathers. Rendered it is a
+horizontal rule; read aloud it is "the threads join again here". An id is
+optional: `--- {#after-inn}`.
+
+A gather must follow a choice or a choice's indented block, never a paragraph:
+`---` under a paragraph turns that paragraph into a heading in every Markdown
+renderer. The compiler rejects it (E120).
+
+### 4.5 Varying text
+
+```markdown
+{For the first time|Once again|Yet again} you stand before it.
+{&A crack|A crunch|Silence} in the undergrowth.
+{!A raven calls.|}
+{~Left|Right|Straight on}
+{has("lantern"): The light reaches far.|It is pitch dark.}
+You have {gold} gold pieces left.
+```
+
+Sequence, cycle `&`, once-only `!`, random `~`, conditional `:`, and printing.
+Alternatives inside alternatives do not exist.
+
+### 4.6 Branching
+
+Multi-line, by indentation, never with `-` at the start of a line, so that
+nothing collides with choices:
+
+```markdown
+{ gold >= 10 }
+  The innkeeper nods and points up the stairs.
+  -> room
+{ gold >= 3 }
+  He points at the stable.
+  -> straw
+{ else }
+  He points at the door.
+  -> alley
+```
+
+**Disambiguation rule.** A line beginning with `{` is inline text if any of
+these hold: the first character inside is `&`, `!` or `~`; the contents
+contain `|` or `:`; or no indented line follows. Otherwise it is a block
+header. This keeps `{!A raven calls.}` and a bare `{gold}` on their own line
+meaning what they look like.
+
+### 4.7 Assignments
+
+```markdown
+~ gold = gold - 3
+~ stamina -= 2
+~ take("silver key")
+```
+
+Operators: `+ - * / %`, `== != > < >= <=`, `and or not`. Word forms only.
+Numbers are integers. No floating point, no string comparison.
+
+`~` is always at the start of a line, never mid-line. Execution follows source
+order, so
+
+```markdown
+~ gold -= 3
+You have {gold} coins left.
+```
+
+prints the reduced amount. Inside a choice, assignments go on their own
+indented lines below it.
+
+### 4.8 Marking a kind of text
+
+```markdown
+The letter is written in a shaky hand. {.letter}
+```
+
+`{.name}` at the end of a paragraph says what kind of text this is, not what
+it should look like. The view layer decides whether a letter is indented,
+boxed or italic. There is no other formatting control and no image support in
+this draft.
+
+### 4.9 Functions
+
+```markdown
+# fn heal(amount)
+~ stamina = min(stamina + amount, stamina_max)
+~ return stamina
+```
+
+The declared name is the id; a function node carries no `{# }` (E011). Called
+as `{heal(4)}` in text or `~ heal(4)` as a statement, resolved in the local
+namespace first and qualified as `crypt.heal(4)` across files. No reference
+parameters, no divert targets as parameters. A divert to a function node is an
+error (E042).
+
+## 5. Built-in functions
+
+| Function | Meaning |
+|---|---|
+| `roll(n, sides)` | Sum of n dice with `sides` faces |
+| `random(min, max)` | Integer in range, both bounds inclusive |
+| `test_luck()` | 2d6 against `luck`, decrements `luck`, returns true or false |
+| `test(stat)` | 2d6 against the stat, no decrement, returns true or false |
+| `has(item)` / `take(item)` / `drop(item)` | Inventory |
+| `take(item, n)` | Grants n uses of a consumable |
+| `uses(item)` | Uses left, 0 when the item is absent |
+| `use(item)` | Applies the item's effect, spends one use, returns true or false |
+| `equip(item)` / `equipped(item)` | Equip a weapon or armour, and test whether that item is the equipped one |
+| `remember(word)` / `knows(word)` / `forget(word)` | Code words, Lone Wolf style |
+| `visits(node)` | How often the node has been entered |
+| `turns()` / `turns_since(node)` | Turns total, turns since that node |
+| `choice_count()` | Number of choices currently visible |
+| `min(a,b)` / `max(a,b)` / `abs(a)` | Arithmetic |
+
+`take()` fails silently when the inventory is full; `has("...")` after it is
+the way to check. Item and code word names are plain strings, compared
+case-insensitively after trimming; they appear only as arguments, never as
+values, which is why the ban on string comparison in 4.7 costs nothing.
+
+`has(x)` is exactly `uses(x) > 0`. A non-consumable counts as one use, and
+taking one that is already held changes nothing. `in_combat`, `weapon_attack`,
+`weapon_damage` and `armour_defence` are built-in read-only variables.
+
+## 6. Frontmatter: the character sheet
+
+```yaml
+title: The Thornwood
+author: ...
+version: 1.4.0
+start: start.begin
+
+stats:
+  skill:    { name: Skill,   start: "roll(1,6) + 6",  max: start }
+  stamina:  { name: Stamina, start: "roll(2,6) + 12", max: start }
+  luck:     { name: Luck,    start: "roll(1,6) + 6",  max: start }
+  gold:     { name: Gold,    start: 12 }
+  rations:  { name: Rations, start: 10 }
+
+inventory:
+  slots: 8
+  start: [sword, leather-armour, lantern, provisions]
+
+items:
+  sword:         { name: Sword, kind: weapon }
+  axe:           { name: Battleaxe, kind: weapon, attack_bonus: 1, damage_override: 3 }
+  leather-armour:{ name: Leather Armour, kind: armour, defence: 1 }
+  lantern:       { name: Lantern, kind: gear }
+  provisions:    { name: Provisions, kind: consumable, uses: 10,
+                   effect: "stamina = min(stamina + 4, stamina_max)",
+                   when: "not in_combat" }
+  potion-skill:  { name: Potion of Skill, kind: consumable, uses: 1,
+                   effect: "skill = skill_max" }
+
+setup:
+  - title: Choose your weapon
+    pick: 1
+    from:
+      - { label: Sword,    item: sword }
+      - { label: Battleaxe, item: axe }
+  - title: Choose five disciplines
+    pick: 5
+    from:
+      - { label: Camouflage,  remember: CAMOUFLAGE }
+      - { label: Sixth Sense, remember: SIXTH_SENSE }
+      - { label: Healing,     remember: HEALING }
+
+combat:
+  attack: "skill + roll(2,6) + weapon_attack"
+  damage: "max(weapon_damage, 2) - armour_defence"
+  rule: higher-wins
+  luck_in_combat: true
+
+enemies:
+  goblin:     { name: Goblin,     skill: 5, stamina: 6, flee_after: 3 }
+  cave-troll: { name: Cave Troll, skill: 9, stamina: 11 }
+
+death:
+  when: "stamina <= 0"
+  goto: crypt.death
+
+undo:
+  depth: 10
+
+strings:
+  combat.hit:   "You wound {enemy}."
+  combat.taken: "{enemy} wounds you."
+  combat.tie:   "The blades meet and nothing comes of it."
+```
+
+Every stat becomes a global variable; `max: start` means "the opening roll is
+also the ceiling", the Fighting Fantasy rule, and exposes `<key>_max` as a
+read-only variable. The key is the identifier the story does arithmetic on,
+`name:` is what a reader sees and takes a language table like any other
+reader-visible field; without it the key is shown as it stands.
+
+**Nothing here describes presentation.** How a stat is drawn, what the
+inventory panel is called, what the attack button says, which font the page
+uses: all of that belongs to the view layer of section 12, which knows about
+screens. A book that carries its own layout stops being portable to the next
+one. `strings:` is the exception that proves it — it holds only lines the
+story tells, such as who wounded whom, and not one button label.
+
+`setup:` is character creation: the runtime shows each block in order before
+the first node, each one a "pick `pick` from this list". A pick grants an item
+(`item:`), a code word (`remember:`) or both. That covers the weapon and
+potion choice of Fighting Fantasy, the five disciplines of Lone Wolf and the
+spell list of Sorcery!. Without `setup:` the story starts immediately.
+
+`death.when` is evaluated after every assignment and every combat round; when
+it becomes true the runtime diverts to `death.goto`.
+
+**Any field a reader can see may be a language table instead of a scalar**, in
+`title:`, item `name:`, setup titles and labels, enemy `name:` and every entry
+of `strings:`:
+
+```yaml
+items:
+  sword: { name: { de: Schwert, en: Sword }, kind: weapon }
+```
+
+A scalar means the same text in every language. A table missing a declared
+language is E072.
+
+`strings:` holds the lines the combat resolver narrates, which the author
+cannot write by hand because they happen round by round. The runtime ships
+English defaults and a book overrides what it needs; the list above is
+complete. `{enemy}` is the only placeholder. A book written in another
+language should override all of them, which is what L017 checks.
+
+### 6.1 Items
+
+`items:` is optional. An item that is never declared is just its own name, a
+key or a rope, which keeps short books free of bookkeeping. A declared item
+gains a display name and a kind:
+
+- `weapon`: `attack_bonus:` and `damage_override:` surface as the read-only
+  variables `weapon_attack` and `weapon_damage`, so the combat formula can
+  name them. Exactly one weapon is equipped at a time.
+- `armour`: `defence:` surfaces as `armour_defence`. Exactly one is equipped.
+- `gear`: carried, tested with `has()`, nothing automatic.
+- `consumable`: has `uses:` and an `effect:`, an assignment run when the item
+  is used. `when:` restricts when it may be used; `in_combat` is a built-in
+  variable for exactly this. The last use removes the item.
+
+The runtime shows the inventory as a list and offers Use and Equip itself, so
+eating provisions or drinking a potion needs no choice written by the author.
+`slots:` counts entries, not uses, so ten provisions occupy one slot.
+
+An item in `inventory.start` or in a `setup:` block that is neither declared
+nor a bare string is an error (E060); an unknown `kind:` is E061.
+
+## 7. Combat
+
+One directive, indented exits. An exit is a name followed by either a plain
+divert or the choice form of 4.3, so the author writes the button label and
+the follow-on text in the spelling they already know:
+
+```markdown
+!combat goblin
+  win  -> crypt.treasure
+  lose -> crypt.death
+  flee [Run for the stairs](#forest.clearing) You leave your shield behind.
+```
+
+`win` and `lose` are outcomes, not decisions, so a link text there is printed
+rather than shown as a button. `flee` is a decision, so its link text is the
+button the player sees once fleeing becomes possible. Without a link text the
+view layer names the button itself.
+
+The runtime resolves it round by round: both sides roll `combat.attack`, the
+higher total costs the loser `combat.damage` stamina, never below zero, a tie
+costs nothing. Nothing is added behind the author's back: equipment reaches
+the fight only through `weapon_attack`, `weapon_damage` and `armour_defence`,
+and a formula that does not name them ignores equipment entirely. Both are
+evaluated for the enemy too, where the equipment variables read zero, so
+`armour_defence` only ever protects the player.
+With `luck_in_combat`, the player may test luck after each hit, with the usual
+consequences (more damage dealt on a lucky hit, less taken on a lucky escape).
+`flee` appears as an exit once `flee_after` rounds have passed and costs two
+stamina, the Fighting Fantasy rule.
+
+Several enemies in sequence: `!combat goblin, goblin, cave-troll`.
+
+Consumables whose `when:` allows it can be used between rounds from the
+inventory panel, which is how a potion mid-fight works without the author
+writing anything.
+
+`win` is required. `lose` is optional and defaults to `death.goto`. `flee` is
+an error unless the enemy declares `flee_after` (E150).
+
+This fixes one rule system. An author who wants a different one writes combat
+by hand with `roll()`, variables and a sticky choice, and never uses the
+directive.
+
+## 8. Runtime and save state
+
+```json
+{
+  "version": 1,
+  "story": "thornwood@1.4.0",
+  "seed": 1837465,
+  "rolls": 42,
+  "node": "crypt.chamber",
+  "vars": { "gold": 9, "stamina": 14, "skill": 11, "luck": 7 },
+  "inventory": { "sword": 1, "silver key": 1, "provisions": 7 },
+  "equipped": { "weapon": "sword", "armour": null },
+  "memory": ["KRAKEN"],
+  "visits": { "crypt.crypt": 2, "forest.clearing": 1 },
+  "lang": "de",
+  "taken": { "crypt.chamber:c0": 1 },
+  "alts": { "crypt.crypt:a0": 2 },
+  "picks": { "crypt.crypt:a0": 1 },
+  "visible": [0, 1],
+  "screen": [{ "node": "crypt.chamber", "at": [0], "class": null }],
+  "fight": null,
+  "turn": 37,
+  "seen": ["start.begin", "forest.clearing", "crypt.crypt"],
+  "undo": []
+}
+```
+
+`taken` counts how often each choice has been picked, which is what makes `*`
+once-only; `alts` holds the position of each sequence and cycle. Both are
+keyed by the ids the compiler hands out (9.1).
+
+`at` is the position inside the current node as an index path, `[2, 0, 1]`
+being "op 2, its item 0, op 1 inside it". It is not a call stack: there are no
+return addresses and no frames of their own, which is what principle 4 rules
+out.
+
+The rest is what the page is showing, so that reloading, undoing or switching
+language repaints without replaying anything: `screen` names the text ops that
+are visible, `picks` what each alternative on them settled on, `visible` which
+choices were offered, and `fight` the enemies still standing. A condition may
+roll dice, so re-deciding any of this on a repaint would move the stream and
+change the page under the reader.
+
+`rolls` is the counter of the random stream: roll n follows deterministically
+from `seed` and n. Any playthrough can be replayed exactly, and reloading a
+save produces the same roll as before rather than a fresh one.
+
+### 8.1 Undo
+
+A book may offer undo back to the last **root choice**: a choice at
+indentation level zero. Nested choices, gathers and combat rounds are not undo
+points, so undo never unwinds a single line of dialogue, only the decision
+that led into it.
+
+```yaml
+undo:
+  depth: 10        # number of root choices that can be taken back, 0 disables
+```
+
+The runtime writes a checkpoint immediately before executing a level-zero
+choice. A checkpoint is the complete flat state of section 8 minus the undo
+stack itself, so the stack cannot grow into itself. Checkpoints ride along in
+the save under `"undo": [ ... ]`, which is why `depth` is capped rather than
+unlimited.
+
+`rolls` is restored with everything else. Repeating the same choice therefore
+reproduces the same dice, and undo cannot be used to re-roll a failed luck
+test; it only lets a reader take a different path. That is also why undo past
+a death is allowed: it costs nothing that determinism has not already closed
+off.
+
+Node references in a save are qualified exactly as the book writes them: the
+example above is a multi-file project, a single-file book saves `"node":
+"chamber"`. Unknown fields are ignored on load; a `version` higher than the
+runtime knows is refused with a clear message rather than partially applied.
+
+## 9. The two JSON formats
+
+### 9.1 Story JSON, the compiler output
+
+Readable and checkable by hand, which is the deliberate contrast to ink's
+container bytecode.
+
+```json
+{
+  "format": 1,
+  "meta": { "title": { "de": "…" }, "version": "1.4.0", "start": "start.begin",
+            "languages": ["de", "en"], "default": "de",
+            "files": ["de/start.md", "de/crypt.md"] },
+  "config": { "stats": {}, "inventory": {}, "items": {}, "setup": [], "combat": {},
+              "enemies": {}, "death": {}, "undo": {}, "strings": {} },
+  "nodes": {
+   "de": {
+    "crypt.chamber": {
+      "title": "The Second Chamber",
+      "file": 1, "line": 42,
+      "body": [
+        { "op": "text", "parts": ["A silver key lies on the sarcophagus."] },
+        { "op": "choices", "items": [
+          { "id": "chamber:c0", "label": ["Take the key"],
+            "body": [
+              { "op": "text", "parts": ["Something sighs in the dark."] },
+              { "op": "call", "fn": "take", "args": [{ "lit": "silver key" }], "line": 44 }
+            ] },
+          { "id": "chamber:c1", "sticky": true, "label": ["Back to the light"],
+            "target": "start.begin" }
+        ] },
+        { "op": "divert", "target": "start.begin" }
+      ]
+    }
+   },
+   "en": { "crypt.chamber": { "…": "same structure, translated text" } }
+  }
+}
+```
+
+Nothing redundant is emitted, because a story file is shipped to every reader:
+
+- file names live once in `meta.files`; a node carries its index, and the ops
+  inside it carry a bare line number;
+- `line` appears only where something can fail at runtime, which means on
+  assignments, calls, combat, conditional choices and branch arms;
+- defaults are left out. A choice is once-only, unconditional, targetless and
+  without a body unless it says otherwise, and `target` is a plain string, or
+  `0` for the end of the story;
+- a run of plain text is a string rather than `{"t":"lit","v":"…"}`.
+
+For the two-chapter example that is 40% smaller than the verbose form, and
+easier to read by eye, which was the point of not shipping ink's bytecode.
+
+Expressions are small prefix trees: `{ "op": ">=", "args": [{ "var": "gold" }, { "lit": 10 }] }`.
+
+Ops are `text`, `choices`, `branch`, `divert`, `combat`, `assign`, `call`,
+`return` and `label` (a named gather). Text is a list of parts: `lit`, `print`,
+`alt` and `cond`. `-> END` is `{ "end": true }` in place of a `ref`.
+
+Weave needs no op of its own: a run of choices at one depth is one `choices`
+op, and whatever follows it in the same container is the gather. A choice with
+`"target": null` runs its own body and then falls through to exactly that.
+
+Anything the runtime has to remember carries an id: choices as
+`node:c<n>`, alternatives as `node:a<n>`. That is what `taken` and `alts` in
+the save are keyed by.
+
+### 9.2 Save JSON
+
+Section 8, versioned, unknown fields ignored.
+
+## 10. Parser
+
+The grammar is line-oriented; the line kind is decided by the first non-space
+characters, with exactly three ambiguous cases, all resolved above.
+
+### 10.1 Pipeline
+
+1. **Read** files listed in `book.yaml`, or the single file. Assign namespaces.
+2. **Frontmatter** parsed as YAML, validated against the schema of section 6.
+   Expression strings (`start:`, `when:`, `attack:`, `damage:`, `death.when`)
+   go through the expression parser at this point, not at runtime. `effect:`
+   is parsed as an assignment, the same production as a `~` line without the
+   `~`, and is the only YAML field that is a statement rather than an
+   expression.
+3. **Line scan** per file: classify every line, build the indentation tree.
+   Tabs, odd indentation and indentation jumps of more than one level are
+   errors here.
+4. **Parse** each block into ops; expressions via a Pratt parser.
+5. **Resolve** ids: collect all node ids per namespace, then resolve every
+   divert, choice link, `visits()`, `turns_since()`, `goto:` and `start:`.
+6. **Check** the rules of section 11.
+7. **Emit** story JSON.
+
+### 10.2 Line kinds
+
+| Starts with | Kind | Note |
+|---|---|---|
+| `# ` / `## ` | node / subnode | `# fn name(...)` is a function node |
+| `### ` and deeper | text | heading inside prose |
+| `* ` / `+ ` | choice | the space is required |
+| `---` alone | gather | must follow a choice (E120) |
+| `-> ` | divert | |
+| `~ ` | assignment or call | |
+| `!name` | directive | `!combat` today; `![` is not a directive |
+| `{` | text or block header | rule in 4.6 |
+| anything else | text | but see directive bodies below |
+
+Inside the indented block of a directive the classification changes: a line is
+an exit name followed by either `-> target` or `[label](#target)` plus
+optional follow-on text, and anything else is an error (E152). This is the only
+place where indentation changes what a line means, and it is why directives
+are a closed list rather than an extension point.
+
+### 10.3 Error codes
+
+Errors abort compilation. Every message carries file, line, column and the
+offending text.
+
+| Code | Error |
+|---|---|
+| E010 | Frontmatter missing, malformed, or not at the top of the file |
+| E011 | Unknown key in frontmatter |
+| E012 | Book-wide declaration in a chapter file |
+| E020 | Tab used for indentation |
+| E021 | Indentation not a multiple of two |
+| E022 | Indentation jumps more than one level |
+| E030 | Duplicate node id within a namespace |
+| E031 | Duplicate namespace |
+| E040 | Reference with more than one dot, or any dot in a single-file book |
+| E041 | Unresolved reference |
+| E042 | Reference to a function node from a divert |
+| E060 | Undeclared item used where a declaration is required |
+| E061 | Unknown item `kind:` |
+| E062 | Unknown key in `strings:` |
+| E070 | A node exists in one language but not in another |
+| E071 | A node's choices or alternatives differ between languages |
+| E072 | A language table is missing a declared language |
+| E100 | Choice without a link |
+| E110 | Node with neither divert nor choice |
+| E120 | Gather not preceded by a choice |
+| E121 | Nesting deeper than three levels |
+| E130 | Malformed expression |
+| E131 | Unknown function or variable |
+| E132 | Wrong argument count |
+| E140 | Function node without `~ return` on some path |
+| E150 | `flee` exit for an enemy without `flee_after` |
+| E151 | `!combat` with an unknown enemy or without a `win` exit |
+| E152 | Malformed line in a directive block |
+
+### 10.4 Test suite
+
+Every example in this document is a test case. Each error code needs at least
+one file that triggers it and one near-miss that must not. The three collision
+rules (4.3 space after the marker, 4.4 gather after a choice, 4.6 inline
+versus block) get their own table-driven tests, because they are where a
+Markdown dialect breaks first.
+
+## 11. Linter
+
+Warnings do not abort compilation; `--strict` turns them into errors, and CI
+uses `--strict`.
+
+| Code | Rule | Level |
+|---|---|---|
+| L001 | Node unreachable from `start` | warning |
+| L002 | Node reachable but with no path to any `-> END` | warning |
+| L003 | Choice that can never appear (condition statically false) | warning |
+| L004 | Sticky choice in a node with no other exit | warning |
+| L005 | Node id derived from the title rather than declared | warning |
+| L006 | Variable written but never read, or read but never written | warning |
+| L007 | Enemy declared but never fought | info |
+| L008 | Item taken but never tested with `has()`, or tested but never granted | warning |
+| L009 | Code word remembered but never tested, or tested but never set | warning |
+| L010 | Stat declared but never used | info |
+| L016 | Item declared but never granted anywhere | warning |
+| L017 | `strings:` key left at its English default while others are overridden | warning |
+| L018 | Consumable without `effect:`, or `effect:` on a non-consumable | warning |
+| L019 | A node a translation overrides, so its state is language-specific | info |
+| L011 | Line longer than 80 characters in the source | info |
+| L012 | Choice text duplicated within one node | warning |
+| L013 | Node with more than seven choices | info |
+| L014 | `death.goto` unreachable by any other route (dead-end check) | info |
+| L015 | Prose in a node that only diverts (unreachable text) | warning |
+
+L008 and L009 are the ones that actually catch bugs in a gamebook: a key that
+is never granted, a code word that is never set. They need the whole book, so
+they run after resolution across all namespaces.
+
+The linter also emits a **reachability report**: node count, unreachable
+nodes, endings found, longest and shortest path from start to an ending,
+counted over choices without evaluating conditions. That report is the closest
+thing to proofreading a branching book.
+
+## 12. Web export
+
+`inkle-md build book.yaml --out play.html` produces a single HTML file: story
+JSON embedded as a `<script type="application/json">`, runtime below it,
+target under 30 kB compressed. No framework, no external resources, no network
+access at runtime.
+
+### 12.1 Runtime API
+
+The runtime is one class, so the same code serves the export and any embedding:
+
+```js
+const story = new Story(json, { lang: 'de' });
+story.setup;                          // creation blocks, or null
+story.begin(picks);                   // answers the setup, rolls the stats
+story.choose(index);                  // take a choice
+story.current;                        // { text: [...], choices: [...], stats }
+story.combat;                         // active combat, or null
+story.inventory;                      // [{ id, name, kind, uses, equipped, usable }]
+story.useItem(id);                    // honours the item's when:
+story.equipItem(id);
+story.canUndo;                        // false when the stack is empty or depth is 0
+story.undo();                         // back to before the last root choice
+story.lang;                           // current language
+story.languages;                      // what the book offers
+story.setLanguage('en');              // allowed at any point, including mid-combat
+story.save();                         // save JSON per section 8
+story.load(save);
+story.seed(n);
+```
+
+`setLanguage` re-renders the current node in the new language and keeps the
+whole save: the ids of 9.1 are shared, so `taken` and `alts` carry over. In a
+node one language overrides (3.4) the ids are that language's own, so on a
+switch the keys that do not exist on the other side are kept in the save but
+ignored while reading; switching back restores them. Nothing is discarded,
+because a reader who switches twice should not lose a once-only line they
+already saw.
+
+Text is delivered as an array of paragraphs, each with its CSS classes, so the
+host decides how to render. Combat is exposed as state plus `attack()` and
+`flee()`, never as a blocking loop.
+
+### 12.2 Presentation
+
+Presentation lives here and only here: the export ships a stylesheet with CSS
+custom properties for font, measure and four colours each for light and dark,
+plus a rule per `{.name}` a book uses, plus the labels for its own buttons and
+panels in each language the book declares. None of that is readable from the
+story JSON, which is the point of section 6's rule.
+
+Themes follow `prefers-color-scheme` and can be overridden by the reader.
+
+Saves live in `localStorage` under one key per book, plus export and import as
+a JSON string so a reader can move a game between devices without an account.
+
+### 12.3 Accessibility
+
+Part of the export, not a later pass:
+
+- choices are real buttons in a list, reachable and operable by keyboard, with
+  number keys 1 to 9 as shortcuts;
+- new text is announced through `aria-live="polite"`, and focus moves to the
+  new section after every choice;
+- the character sheet is a description list, not a table of bars, with the
+  numeric value in the accessible name;
+- the inventory is a list whose Use and Equip controls are buttons, with the
+  remaining uses in each button's accessible name, and a status message after
+  every use so the effect is not visible only in a bar;
+- no animation under `prefers-reduced-motion`;
+- contrast at least 4.5:1 in both themes; nothing conveyed by colour alone;
+- the whole page works at 200% zoom and at 320 px width.
+
+## 13. Full example
+
+```markdown
+---
+title: The Crypt Under the Thorn
+start: begin
+stats:
+  skill:   { start: "roll(1,6) + 6",  max: start, ui: bar }
+  stamina: { start: "roll(2,6) + 12", max: start, ui: bar }
+  luck:    { start: "roll(1,6) + 6",  max: start, ui: bar }
+  gold:    { start: 12, ui: number }
+inventory:
+  slots: 8
+  start: [sword, lantern, provisions]
+items:
+  sword:      { name: Sword, kind: weapon }
+  lantern:    { name: Lantern, kind: gear }
+  provisions: { name: Provisions, kind: consumable, uses: 10,
+                effect: "stamina = min(stamina + 4, stamina_max)",
+                when: "not in_combat" }
+combat:
+  attack: "skill + roll(2,6)"
+  damage: 2
+  rule: higher-wins
+enemies:
+  goblin: { name: Goblin, skill: 5, stamina: 6, flee_after: 3 }
+death:
+  when: "stamina <= 0"
+  goto: death
+undo:
+  depth: 10
+---
+
+# At the Forest Edge {#begin}
+
+The path forks before a thorn hedge. {&A crack|A crunch|Silence} in the
+undergrowth.
+
+* [Left, into the thicket](#thicket)
+* [Right, towards the brook](#brook)
+* {has("lantern")} [Into the gap under the hedge](#crypt) You squeeze through.
+
+# The Crypt {#crypt}
+
+{!Cold air meets you.|You know the way by now.}
+
+A goblin starts up out of an alcove.
+
+!combat goblin
+  win  -> chamber
+  lose -> death
+  flee [Back through the gap](#thicket) You scramble out, thorns tearing at you.
+
+## The Second Chamber {#chamber}
+
+A silver key lies on the sarcophagus.
+
+* [Take the key]() Something sighs in the dark.
+  ~ take("silver key")
+  ~ remember("KRAKEN")
++ [Back to the light](#begin)
+---
+-> begin
+
+# Dead {#death}
+
+Your adventure ends here.
+-> END
+```
+
+## 14. Open points
+
+1. **Images.** Out of scope for this draft. When they return, the syntax is
+   Markdown's own `![alt](file)`, with alt text required, and the export gains
+   a decision about embedding versus files alongside.
+2. **Undo across a save boundary.** The stack rides in the save, so a reader
+   who exports a save can undo on another device as well. Whether that is
+   wanted, or whether the stack should be dropped on export, is open.
+
+## 15. Next steps
+
+1. Grammar and parser per section 10, with every example in this file as the
+   test suite, and the three collision rules table-driven.
+2. Freeze story JSON (9.1), then the runtime, then the compiler.
+3. Linter per section 11, with the reachability report as its visible output.
+4. Acceptance criterion is one complete small book with combat, character
+   creation and two endings, not one test case per feature.

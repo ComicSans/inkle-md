@@ -1,0 +1,89 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * Copyright 2026 Tobias Reithmeier
+ */
+
+/**
+ * Compile errors per SPEC.md section 10.3 and lint codes per section 11.
+ * Every error carries file, line and column so a message can point at the
+ * offending text rather than at the book.
+ */
+
+export const ERRORS = {
+  E010: 'Frontmatter missing, malformed, or not at the top of the file',
+  E011: 'Unknown key in frontmatter',
+  E012: 'Book-wide declaration in a chapter file',
+  E020: 'Tab used for indentation',
+  E021: 'Indentation not a multiple of two',
+  E022: 'Indentation jumps more than one level',
+  E030: 'Duplicate node id within a namespace',
+  E031: 'Duplicate namespace',
+  E040: 'Malformed reference',
+  E041: 'Unresolved reference',
+  E042: 'Divert to a function node',
+  E060: 'Undeclared item used where a declaration is required',
+  E061: 'Unknown item kind',
+  E062: 'Unknown key in strings',
+  E100: 'Choice without a link',
+  E110: 'Node with neither divert nor choice',
+  E120: 'Gather not preceded by a choice',
+  E121: 'Nesting deeper than three levels',
+  E130: 'Malformed expression',
+  E131: 'Unknown function or variable',
+  E132: 'Wrong argument count',
+  E140: 'Function node without a return on some path',
+  E150: 'Flee exit for an enemy without flee_after',
+  E151: 'Combat with an unknown enemy or without a win exit',
+  E152: 'Malformed line in a directive block',
+};
+
+export class CompileError extends Error {
+  /**
+   * @param {string} code one of ERRORS
+   * @param {string} detail what is wrong here, concretely
+   * @param {{file?: string, line?: number, column?: number, text?: string}} at
+   */
+  constructor(code, detail, at = {}) {
+    const where = `${at.file ?? '<input>'}:${at.line ?? 0}:${at.column ?? 1}`;
+    super(`${where}: ${code} ${ERRORS[code] ?? ''}\n  ${detail}` +
+      (at.text ? `\n  > ${at.text}` : ''));
+    this.name = 'CompileError';
+    this.code = code;
+    this.detail = detail;
+    this.file = at.file;
+    this.line = at.line;
+    this.column = at.column ?? 1;
+    this.text = at.text;
+  }
+}
+
+/** Collects errors so one run can report more than the first failure. */
+export class ErrorBag {
+  constructor() {
+    /** @type {CompileError[]} */ this.errors = [];
+    /** @type {{code: string, level: string, detail: string, file?: string, line?: number}[]} */
+    this.warnings = [];
+  }
+
+  add(code, detail, at) {
+    this.errors.push(new CompileError(code, detail, at));
+  }
+
+  warn(code, level, detail, at = {}) {
+    this.warnings.push({ code, level, detail, file: at.file, line: at.line });
+  }
+
+  get ok() {
+    return this.errors.length === 0;
+  }
+
+  /** Throws the first error, with the rest attached. */
+  throwIfFailed() {
+    if (this.ok) return;
+    const first = this.errors[0];
+    first.all = this.errors;
+    throw first;
+  }
+}

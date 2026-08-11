@@ -1,0 +1,63 @@
+title: { de: Die Gruft unter dem Weißdorn, en: The Crypt Under the Thorn }
+author: inkle-md
+version: 0.1.0
+start: start.begin
+
+languages:
+  default: de
+  available: [de, en]
+
+chapters:
+  - start.md
+  - file: crypt.md
+    as: crypt
+
+stats:
+  skill:   { name: { de: Geschick, en: Skill },    start: "roll(1,6) + 6",  max: start }
+  stamina: { name: { de: Ausdauer, en: Stamina },  start: "roll(2,6) + 12", max: start }
+  luck:    { name: { de: Glück, en: Luck },        start: "roll(1,6) + 6",  max: start }
+  gold:    { name: { de: Gold, en: Gold },         start: 12 }
+
+inventory:
+  slots: 8
+  start: [lantern, provisions]
+
+items:
+  sword:      { name: { de: Schwert, en: Sword }, kind: weapon }
+  axe:        { name: { de: Streitaxt, en: Battleaxe }, kind: weapon,
+                attack_bonus: 1, damage_override: 3 }
+  lantern:    { name: { de: Laterne, en: Lantern }, kind: gear }
+  silver-key: { name: { de: Silberner Schlüssel, en: Silver Key }, kind: gear }
+  provisions: { name: { de: Proviant, en: Provisions }, kind: consumable, uses: 10,
+                effect: "stamina = min(stamina + 4, stamina_max)",
+                when: "not in_combat" }
+
+setup:
+  - title: { de: Wähle deine Waffe, en: Choose your weapon }
+    pick: 1
+    from:
+      - { label: { de: Schwert, en: Sword }, item: sword }
+      - { label: { de: Streitaxt, en: Battleaxe }, item: axe }
+
+combat:
+  attack: "skill + roll(2,6) + weapon_attack"
+  damage: "max(weapon_damage, 2) - armour_defence"
+  rule: higher-wins
+  luck_in_combat: true
+
+enemies:
+  goblin: { name: { de: Goblin, en: Goblin }, skill: 5, stamina: 6, flee_after: 3 }
+
+death:
+  when: "stamina <= 0"
+  goto: crypt.death
+
+undo:
+  depth: 10
+
+strings:
+  combat.hit:       { de: "Du triffst {enemy}.", en: "You wound {enemy}." }
+  combat.taken:     { de: "{enemy} trifft dich.", en: "{enemy} wounds you." }
+  combat.tie:       { de: Die Klingen kreuzen sich ohne Treffer.,
+                      en: The blades meet and nothing comes of it. }
+

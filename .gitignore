@@ -1,0 +1,16 @@
+# Compiler and export output
+build/
+dist/
+
+# Dependencies, should any ever appear
+node_modules/
+
+# Editors and operating systems
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Local tooling state
+.tokensave/
+.claude/settings.local.json

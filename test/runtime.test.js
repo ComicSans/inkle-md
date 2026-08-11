@@ -1,0 +1,257 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * Copyright 2026 Tobias Reithmeier
+ */
+
+/**
+ * The runtime of SPEC.md 8 and 12.1, driven against the compiled examples.
+ */
+
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+import { compileFile } from '../src/compile.js';
+import { Story } from '../src/runtime.js';
+import { compile } from './helpers.js';
+
+const here = dirname(fileURLToPath(import.meta.url));
+const example = () => compileFile(join(here, '..', 'examples', 'thornwood.md')).story;
+const book = () => compileFile(join(here, '..', 'examples', 'thornwood-book', 'book.yaml')).story;
+
+/** Starts a story with a fixed seed and the first setup option. */
+function play(story, options = {}) {
+  const s = new Story(story, { seed: 12345, ...options });
+  if (s.setup) s.begin(s.setup.map((block) => block.from.slice(0, block.pick).map((o) => o.item)));
+  return s;
+}
+
+test('a story starts, prints text and offers choices', () => {
+  const s = play(example());
+  assert.equal(s.current.node, 'begin');
+  assert.match(s.current.text[0].text, /Der Pfad teilt sich/);
+  assert.ok(s.current.choices.length >= 2);
+  assert.deepEqual(s.stats.map((x) => x.name), ['skill', 'stamina', 'luck', 'gold']);
+});
+
+test('setup grants what was picked, and stats are rolled once', () => {
+  const s = play(example());
+  assert.ok(s.inventory.some((i) => i.id === 'sword'));
+  assert.ok(s.inventory.some((i) => i.id === 'provisions' && i.uses === 10));
+  const skill = s.stats.find((x) => x.name === 'skill');
+  assert.equal(skill.value, skill.max);
+});
+
+test('the same seed replays exactly', () => {
+  const a = play(example());
+  const b = play(example());
+  assert.deepEqual(a.stats, b.stats);
+  a.choose(0); b.choose(0);
+  assert.deepEqual(a.current.text, b.current.text);
+});
+
+test('a once-only choice disappears, a sticky one stays', () => {
+  const s = play(example());
+  const pick = (re) => s.choose(s.current.choices.find((c) => re.test(c.label)).index);
+
+  pick(/Dickicht/);                              // once-only, into the thicket
+  assert.equal(s.current.node, 'thicket');
+  pick(/Zurück/);                                // sticky, back to the hedge
+  assert.equal(s.current.node, 'begin');
+  assert.ok(!s.current.choices.some((c) => /Dickicht/.test(c.label)), 'once-only is gone');
+  assert.ok(s.current.choices.some((c) => /Bach/.test(c.label)));
+});
+
+test('an alternative advances, and a once-only alternative runs dry', () => {
+  const s = play(example());
+  const pick = (re) => s.choose(s.current.choices.find((c) => re.test(c.label)).index);
+  const first = s.current.text[0].text;
+
+  pick(/Dickicht/);
+  assert.match(s.current.text[0].text, /Dornen fahren dir über die Arme/);
+
+  pick(/Zurück/);
+  assert.notEqual(s.current.text[0].text, first, 'the cycle moved on');
+
+  pick(/Bach/);
+  pick(/Zurück/);
+  assert.notEqual(s.current.text[0].text, first);
+});
+
+test('a choice with a body runs it, then falls through to the gather', () => {
+  const s = play(example());
+  s.choose(1);                                      // to the brook
+  const gold = s.stats.find((x) => x.name === 'gold').value;
+  const reach = s.current.choices.find((c) => /Danach greifen/.test(c.label));
+  s.choose(reach.index);
+  assert.equal(s.stats.find((x) => x.name === 'gold').value, gold + 3);
+  assert.match(s.current.text.map((t) => t.text).join(' '), /Finger schließen sich/);
+});
+
+test('combat runs round by round and ends in an exit', () => {
+  const s = play(example());
+  const gap = s.current.choices.find((c) => /Spalt/.test(c.label));
+  s.choose(gap.index);
+  assert.equal(s.current.node, 'crypt');
+  assert.ok(s.combat, 'a fight started');
+  assert.equal(s.combat.enemy.stamina, 6);
+
+  let guard = 0;
+  while (s.combat && guard++ < 100) s.attack();
+  assert.ok(guard < 100, 'the fight ended');
+  assert.ok(['chamber', 'death'].includes(s.current.node));
+});
+
+test('death diverts where the frontmatter says', () => {
+  const s = play(example());
+  s.state.vars.stamina = 1;
+  const gap = s.current.choices.find((c) => /Spalt/.test(c.label));
+  s.choose(gap.index);
+  let guard = 0;
+  while (s.combat && guard++ < 100) s.attack();
+  if (s.state.vars.stamina <= 0) assert.equal(s.current.node, 'death');
+});
+
+test('items are taken, tested and used', () => {
+  const s = play(example());
+  const before = s.stats.find((x) => x.name === 'stamina').value;
+  s.state.vars.stamina = before - 6;
+  assert.equal(s.useItem('provisions'), true);
+  assert.equal(s.stats.find((x) => x.name === 'stamina').value, before - 2);
+  assert.equal(s.inventory.find((i) => i.id === 'provisions').uses, 9);
+});
+
+test('a consumable is refused where its when: forbids it', () => {
+  const s = play(example());
+  const gap = s.current.choices.find((c) => /Spalt/.test(c.label));
+  s.choose(gap.index);
+  assert.ok(s.combat);
+  assert.equal(s.useItem('provisions'), false, 'not in combat');
+});
+
+test('save and load restore the position and the dice', () => {
+  const s = play(example());
+  s.choose(1);
+  const save = s.save();
+  const text = s.current.text.map((t) => t.text);
+
+  const other = new Story(example(), { seed: 999 });
+  other.load(save);
+  assert.equal(other.current.node, s.current.node);
+  assert.deepEqual(other.current.text.map((t) => t.text), text);
+  assert.equal(other.state.rolls, save.rolls);
+});
+
+test('undo goes back to the last root choice, not to a nested one', () => {
+  const s = play(example());
+  const pick = (re) => s.choose(s.current.choices.find((c) => re.test(c.label)).index);
+
+  pick(/Bach/);                                  // root choice in "begin"
+  pick(/Danach greifen/);                        // root choice in "brook"
+  const gold = s.stats.find((x) => x.name === 'gold').value;
+  pick(/Noch einmal suchen/);                    // nested: no checkpoint of its own
+
+  assert.equal(s.canUndo, true);
+  s.undo();
+  assert.equal(s.current.node, 'brook');
+  assert.equal(s.stats.find((x) => x.name === 'gold').value, gold - 3, 'the coin is back in the water');
+
+  s.undo();
+  assert.equal(s.current.node, 'begin');
+  assert.equal(s.canUndo, false);
+});
+
+test('undo restores the dice, so the same choice rolls the same', () => {
+  const s = play(example());
+  const pick = (re) => s.choose(s.current.choices.find((c) => re.test(c.label)).index);
+  pick(/Bach/);
+  const rolls = s.state.rolls;
+  const text = s.current.text.map((t) => t.text);
+  s.undo();
+  pick(/Bach/);
+  assert.equal(s.state.rolls, rolls);
+  assert.deepEqual(s.current.text.map((t) => t.text), text);
+});
+
+test('a language switch keeps the position and the state', () => {
+  const s = play(book());
+  assert.equal(s.lang, 'de');
+  s.choose(0);
+  const node = s.current.node;
+  const taken = { ...s.state.taken };
+
+  s.setLanguage('en');
+  assert.equal(s.current.node, node);
+  assert.deepEqual(s.state.taken, taken);
+  assert.match(s.current.text[0].text, /Thorns rake|You know the way/);
+  assert.ok(s.current.choices.some((c) => /Back to the hedge/.test(c.label)));
+});
+
+test('an overridden node runs its own logic', () => {
+  const s = play(book(), { lang: 'en' });
+  s.state.vars.gold = 1;
+  s.go('crypt.daylight');
+  assert.match(s.current.text.map((t) => t.text).join(' '), /a single gold piece/);
+
+  s.state.vars.gold = 7;
+  s.go('crypt.daylight');
+  assert.match(s.current.text.map((t) => t.text).join(' '), /7 gold pieces/);
+
+  // The German original has no branch there, just one sentence.
+  s.setLanguage('de');
+  assert.match(s.current.text.map((t) => t.text).join(' '), /Goldstücken in der Tasche/);
+});
+
+test('a story function is called and returns', () => {
+  const { story } = compile([
+    '# fn double(n)', '~ return n + n', '',
+    '# A {#a}', '', 'Twice: {double(3)}.', '-> END', '',
+  ].join('\n'));
+  const s = new Story(story, { seed: 1 });
+  assert.match(s.current.text[0].text, /Twice: 6\./);
+});
+
+test('a finished story loads as finished', () => {
+  const s = play(example());
+  s.go('death');
+  assert.equal(s.current.ended, true);
+
+  const other = new Story(example(), { seed: 1 });
+  other.load(s.save());
+  assert.equal(other.current.ended, true);
+  assert.equal(other.current.text.length > 0, true);
+});
+
+test('a story function called as a statement resolves across files', () => {
+  const s = play(book());
+  const pick = (re) => s.choose(s.current.choices.find((c) => re.test(c.label)).index);
+  pick(/Spalt/);
+  let guard = 0;
+  while (s.combat && guard++ < 80) s.attack();
+  if (s.current.node !== 'crypt.chamber') return;    // died on the way, fine
+
+  pick(/Schlüssel nehmen/);                          // stays in the chamber, key in hand
+  assert.equal(s.current.node, 'crypt.chamber');
+  assert.ok(s.inventory.some((i) => i.id === 'silver-key'));
+
+  const before = s.state.vars.stamina;
+  pick(/eisernen Tor/);                              // the gate calls heal(2)
+  assert.equal(s.current.node, 'crypt.gate');
+  assert.equal(s.state.vars.stamina, Math.min(before + 2, s.state.vars.stamina_max));
+
+  pick(/Hinaus ins Licht/);
+  assert.equal(s.current.ended, true);
+});
+
+test('when every choice is filtered out, the container runs on', () => {
+  const { story } = compile([
+    '# A {#a}', '', '* {gold > 99} [Never](#b)', '---', 'Nothing happened.', '-> END', '',
+    '# B {#b}', '', '-> END', '',
+  ].join('\n'));
+  const s = new Story(story, { seed: 1 });
+  assert.match(s.current.text[0].text, /Nothing happened/);
+  assert.equal(s.current.ended, true);
+});
