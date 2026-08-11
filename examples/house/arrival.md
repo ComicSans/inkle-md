@@ -114,7 +114,7 @@ Die Tür geht auf, bevor deine Hand den Klopfer erreicht. Dahinter ein Butler,
 der aussieht, als hätte er auf genau dich gewartet, und zwar länger, als es
 höflich wäre.
 
-{knows("AUF-DER-TREPPE"): Die dritte Stufe ist leer.}
+{knows("AUF-DER-TREPPE"): Hinter ihm liegt die Treppe, die du durch das Seitenfenster gesehen hast. Die dritte Stufe, auf der eben noch jemand saß, ist leer.}
 
 {knows("HUND-FREUND"): Der Butler sieht den Hund an. Der Hund sieht den Butler an. Der Butler beschließt, keinen Hund gesehen zu haben.}
 
@@ -126,8 +126,9 @@ Er sagt es nicht wie eine Einladung, sondern wie eine Wettervorhersage.
 
 # Der Butler {#servant}
 
-Er wartet, bis du fertig bist, und wartet dann noch einen Moment länger,
-damit du merkst, dass er gewartet hat.
+Du fragst weiter: nach einem Gasthof, einer Werkstatt, dem nächsten Ort mit
+Lichtern. Er wartet, bis du fertig bist, und wartet dann noch einen Moment
+länger, damit du merkst, dass er gewartet hat.
 
 "Das Haus steht Ihnen offen", sagt er. "Bis auf den Keller. Der Keller steht
 niemandem offen."
