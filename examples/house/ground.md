@@ -4,6 +4,8 @@ Die Halle ist größer, wenn niemand darin auf dich wartet. Die Standuhr an der
 Wand schlägt einmal, obwohl ihr Zifferblatt drei Uhr behauptet. Vielleicht
 zählt sie etwas anderes als Stunden.
 
+{~Irgendwo über dir schließt sich leise eine Tür.|Die Standuhr holt hörbar Luft und schlägt dann doch nicht.|Unter deinen Füßen, sehr fern, setzt der Gesang neu an.}
+
 { visits(hall) == 1 }
   ~ fear = fear + 1
 
@@ -18,6 +20,8 @@ zählt sie etwas anderes als Stunden.
 Das Pendel schwingt, aber falsch: links oben zögert es jedes Mal einen
 Moment, wie ein Mann, der beim Lügen Luft holt. Hinter dem Uhrenkasten zieht
 es.
+
+{knows("MECHANIKER"): Du brauchst keine zwei Sekunden: Dieses Pendel treibt kein Uhrwerk. Es wird getrieben. Die Frage ist nur, wozu eine Uhr gut sein soll, die etwas anderes misst als Zeit.}
 
 * [Den Kasten öffnen]() Kein Uhrwerk. Eine Treppe, abwärts, gemauert für Leute, die es eilig haben und dabei nicht gesehen werden wollen.
   ~ remember("GEHEIMGANG")
@@ -67,14 +71,21 @@ Ein Schreibtisch mit grüner Lampe, dahinter Regale voller Bücher über
 Landwirtschaft, deren Rücken gemalt sind wie Kulissen. Auf dem Tisch liegt
 ein Tagebuch mit einer Messingschließe, daneben ein silberner Brieföffner.
 
-* [Das Tagebuch öffnen]()
-  { test("luck") }
+* {knows("JOURNALIST")} [Das Tagebuch überfliegen, wie man Akten überfliegt](#study) Zwanzig Jahre Lokalteil: Du liest quer, von hinten nach vorn, und die Geschichte steht da wie immer zwischen den Spalten. Ankunftsdaten, seitenweise, ohne eine einzige Abreise. Und auf dem Vorsatzblatt ein Name, der nicht der ist, unter dem sich der Hausherr vorgestellt hat. Du sprichst ihn zweimal lautlos vor dich hin, bis er sitzt.
+
+  Der letzte Eintrag, in derselben ruhigen Handschrift: "Der Zwölfte kommt zu Fuß. Es ist alles vorbereitet." {.letter}
+  ~ remember("WAHRER-NAME")
+  ~ fear = fear + 1
+* {not knows("JOURNALIST")} [Das Tagebuch öffnen]()
+  { test_luck() }
     Buchhaltung: Lieferungen, Löhne, Gäste. Die Gäste sind einzeln
     aufgeführt, mit Ankunftsdatum. Die Spalte für die Abreise ist leer,
     seitenweise. Auf dem Vorsatzblatt steht ein Name, der nicht der ist,
     unter dem sich der Hausherr vorgestellt hat, in Buchstaben, die deine
     Augen nur widerwillig loslassen. Du sprichst ihn zweimal lautlos vor
     dich hin, bis er sitzt.
+
+    Der letzte Eintrag, in derselben ruhigen Handschrift: "Der Zwölfte kommt zu Fuß. Es ist alles vorbereitet." {.letter}
     ~ remember("WAHRER-NAME")
     ~ fear = fear + 1
   { else }
@@ -93,7 +104,7 @@ glauben sollst.
 
 -> hall
 
-# Ertappt {#caught}
+## Ertappt {#caught}
 
 Der Butler steht in der Tür, mit einem Leuchter in der einen und etwas
 Länglichem in der anderen Hand. "Das Arbeitszimmer", sagt er, "gehört zu den
@@ -103,7 +114,7 @@ Räumen, die dem Herrn besonders am Herzen liegen."
   win  -> caught-won
   flee [Hinaus und die Tür hinter dir zuschlagen](#hall) Du lässt ihn stehen und die Höflichkeit gleich mit.
 
-# Der Schlüsselbund {#caught-won}
+## Der Schlüsselbund {#caught-won}
 
 An seinem Gürtel hängt ein Schlüsselbund. Einer der Schlüssel trägt ein
 Papierschild: "Keller". Du nimmst ihn und versuchst dabei, nicht auf den

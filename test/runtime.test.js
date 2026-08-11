@@ -278,7 +278,7 @@ test('the house survives three hundred playthroughs', () => {
 
   for (let seed = 1; seed <= 300; seed++) {
     const s = new Story(story, { seed });
-    s.begin([[s.setup[0].from[seed % 3].item]]);
+    s.begin([[s.setup[0].from[seed % 3].item], [s.setup[1].from[(seed >> 2) % 3].remember]]);
 
     const run = walk(s, { seed, maxSteps: 200 });
     assert.ok(!run.deadEnd, `dead end at ${s.current.node} (seed ${seed})`);
@@ -287,12 +287,26 @@ test('the house survives three hundred playthroughs', () => {
   }
 
   // Every ending is reachable by play, not just by the reachability report.
-  assert.deepEqual([...ends].sort(), ['cellar.break', 'cellar.flight', 'cellar.undone']);
+  assert.deepEqual([...ends].sort(), ['cellar.break', 'cellar.flight', 'cellar.jar', 'cellar.undone']);
+});
+
+test('a save from another book or version is rejected', () => {
+  const s = new Story(house(), { seed: 1 });
+  s.begin([['dagger'], ['VERTRETER']]);
+  const save = s.save();
+  save.story = 'Ein anderes Haus@0.1.0';
+
+  const t = new Story(house(), { seed: 1 });
+  assert.throws(() => t.load(save), /anderes Haus/);
+
+  const ok = new Story(house(), { seed: 1 });
+  ok.load(s.save());
+  assert.equal(ok.current.node, s.current.node);
 });
 
 test('fear kills, and only counts a room the first time', () => {
   const s = new Story(house(), { seed: 3 });
-  s.begin([['brandy']]);
+  s.begin([['brandy'], ['JOURNALIST']]);
   const max = s.state.vars.fear_max;
 
   s.go('house.library');

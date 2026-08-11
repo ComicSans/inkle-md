@@ -1,17 +1,15 @@
 # Das Gästezimmer {#room}
 
-Vier Wände, ein Bett mit Baldachin, ein Waschtisch, ein Porträt über dem
-Kamin. Der Mann auf dem Porträt hat die Augen des Hausherrn und die Mode von
-vor zweihundert Jahren. Vermutlich ein Vorfahre. Vermutlich.
+{visits(room) == 1: Vier Wände, ein Bett mit Baldachin, ein Waschtisch, ein Porträt über dem Kamin. Der Mann auf dem Porträt hat die Augen des Hausherrn und die Mode von vor zweihundert Jahren. Vermutlich ein Vorfahre. Vermutlich.|Die Kerze ist ein Stück kürzer geworden. Das Bett wartet.}
 
-Der Schlüssel steckt außen.
+{visits(room) == 1: Der Schlüssel steckt außen.}
 
-* [Ihn nach innen holen und abschließen]() Das Schloss dreht sich zweimal. Du fühlst dich sofort besser. Erst unter der Bettdecke meldet sich der Gedanke: Ein Schlüssel, der außen steckt, soll niemanden aussperren. Er soll einschließen.
+* [Den Schlüssel nach innen holen und abschließen](#room) Das Schloss dreht sich zweimal. Du fühlst dich sofort besser. Gleich darauf meldet sich der Gedanke: Ein Schlüssel, der außen steckt, soll niemanden aussperren. Er soll einschließen.
   ~ remember("ABGESCHLOSSEN")
-* [Das Porträt abhängen]() Dahinter ist die Tapete heller, und in der Mitte des hellen Flecks sitzt ein Loch von der Größe eines Auges. Du hängst das Bild zurück und rückst es sehr gerade.
+* [Das Porträt abhängen](#room) Dahinter ist die Tapete heller, und in der Mitte des hellen Flecks sitzt ein Loch von der Größe eines Auges. Du hängst das Bild zurück und rückst es sehr gerade.
   ~ fear = fear + 1
   ~ remember("GUCKLOCH")
-* [Beides lassen und dich angezogen aufs Bett legen]()
++ [Dich angezogen aufs Bett legen]()
 ---
 Du schläfst schneller ein, als dir lieb ist.
 
@@ -19,24 +17,22 @@ Du schläfst schneller ein, als dir lieb ist.
 
 # Um Mitternacht {#midnight}
 
-Du wachst auf, weil es aufgehört hat zu regnen, und der Regen war das einzige
-Geräusch gewesen, das hierher gehörte.
+{visits(midnight) == 1: Du wachst auf, weil es aufgehört hat zu regnen, und der Regen war das einzige Geräusch gewesen, das hierher gehörte.|Die Stille ist noch da. Sie ist nicht leer.}
 
-{knows("ABGESCHLOSSEN"): Jemand versucht die Klinke. Zweimal. Dann Schritte, die sich entfernen.|Die Tür steht einen Spalt offen. Du hast sie geschlossen.}
+{visits(midnight) == 1 and knows("ABGESCHLOSSEN"): Jemand versucht die Klinke. Zweimal. Dann Schritte, die sich entfernen.}
 
-{knows("GUCKLOCH"): Zum Porträt siehst du nicht hinüber. Es könnte jemand zurücksehen.}
+{visits(midnight) == 1 and not knows("ABGESCHLOSSEN"): Die Tür steht einen Spalt offen. Du hast sie geschlossen.}
 
-~ fear = fear + 1
+{visits(midnight) == 1 and knows("GUCKLOCH"): Zum Porträt siehst du nicht hinüber. Es könnte jemand zurücksehen.}
 
-* [Auf den Flur gehen](#landing)
-* [Unter dem Bett nachsehen]() Dort liegt eine Kiste, in der Kiste ein Kruzifix, an dem jemand mit den Zähnen gearbeitet hat.
+{ visits(midnight) == 1 }
+  ~ fear = fear + 1
+
+* [Unter dem Bett nachsehen](#midnight) Dort liegt eine Kiste, in der Kiste ein Kruzifix, an dem jemand mit den Zähnen gearbeitet hat.
   ~ take("crucifix")
   ~ fear = fear + 1
++ [Auf den Flur gehen](#landing)
 + [Liegen bleiben und die Augen schließen](#stay)
----
-Irgendwann musst du hinaus.
-
--> landing
 
 # Liegen bleiben {#stay}
 
@@ -75,7 +71,7 @@ deutlich dünnere darüber, wie man es wieder loswird.
   ~ fear = fear + 1
 
 * [Das Regal genauer untersuchen]()
-  { test("luck") }
+  { test_luck() }
     Hinter dem dritten Band liegt ein Schlüssel, an dem ein Papierschild hängt: "Keller".
     ~ take("cellar-key")
   { else }
@@ -154,17 +150,17 @@ Wohin solltest du schon gehen. Deine ANGST steigt.
 
 # Die Weiße Dame {#lady}
 
-Im Mondlicht steht eine Frau, die keinen Schatten wirft und aussieht, als
-warte sie seit Jahren auf besseres Publikum.
+{visits(lady) == 1: Im Mondlicht steht eine Frau, die keinen Schatten wirft und aussieht, als warte sie seit Jahren auf besseres Publikum.|Sie steht noch im Mondlicht und wartet, ob von dir etwas kommt, das sich zu hören lohnt.}
 
-"Neu hier?", fragt sie. Ihre Stimme klingt wie eine, die lange nicht benutzt
-wurde und sich darüber nicht beklagen will.
+{visits(lady) == 1: "Neu hier?", fragt sie. Ihre Stimme klingt wie eine, die lange nicht benutzt wurde und sich darüber nicht beklagen will.}
 
-* [Höflich bleiben und zuhören]() Sie sieht dich lange an. "Gute Erziehung", sagt sie. "Die ist hier selten geworden." Sie war vor dreißig Jahren mit dem Wagen liegengeblieben, auch im Regen; das Haus wiederholt sich gern. "Der Hausherr", sagt sie, "hat einen Namen, den er aus den Büchern heraushält. Er steht im Tagebuch in seinem Arbeitszimmer, und auf dem Torbogen, unter dem Efeu. Sprich ihn aus, wenn er dir gegenübersteht, und sieh dann zu, dass du eine Tür findest." Dann beugt sie sich vor und nennt ihn dir, langsam und zweimal, wie man einem Kind etwas Wichtiges aufträgt. Der Name fühlt sich kalt an, noch im Ohr.
+* [Höflich bleiben und zuhören](#lady) Sie sieht dich lange an. "Gute Erziehung", sagt sie. "Die ist hier selten geworden." Sie war vor dreißig Jahren mit dem Wagen liegengeblieben, auch im Regen; das Haus wiederholt sich gern. "Der Hausherr", sagt sie, "hat einen Namen, den er aus den Büchern heraushält. Er steht im Tagebuch in seinem Arbeitszimmer, und auf dem Torbogen, unter dem Efeu. Sprich ihn aus, wenn er dir gegenübersteht, und sieh dann zu, dass du eine Tür findest." Dann beugt sie sich vor und nennt ihn dir, langsam und zweimal, wie man einem Kind etwas Wichtiges aufträgt. Der Name fühlt sich kalt an, noch im Ohr.
   ~ remember("WAHRER-NAME")
-  ~ fear = max(fear - 1, 0)
-* [Ohne Umschweife nach dem Ausgang fragen]() Sie deutet auf die Treppe. "Da", sagt sie und verliert das Interesse an dir mit einer Geschwindigkeit, die kränkend wäre, hättest du nicht gerade andere Sorgen.
+  ~ arrival.calm(1)
+* [Nach dem Ausgang fragen](#lady) Sie deutet auf die Treppe. "Da", sagt sie und verliert für einen Moment das Interesse an dir, mit einer Geschwindigkeit, die kränkend wäre, hättest du nicht gerade andere Sorgen.
+* [Fragen, was mit ihr geschehen ist](#lady) Sie sieht an sich hinunter, als müsse sie nachschlagen. "Ich war unhöflich", sagt sie schließlich. "Zum Wein." Mehr sagt sie nicht, und du fragst nicht nach, denn ihr Blick geht dabei zu dem Stuhl mit den Riemen.
   ~ fear = fear + 1
++ [Dich verabschieden]()
 ---
 Als du dich an der Tür noch einmal umdrehst, steht sie am Fenster und sieht
 hinaus wie jemand, der den Ausblick auswendig kennt und trotzdem prüft.
@@ -175,6 +171,9 @@ hinaus wie jemand, der den Ausblick auswendig kennt und trotzdem prüft.
 
 {knows("BETAEUBT"): Unten endet die Wendeltreppe an der schmalen Tür. Der Riegel ist von außen vorgelegt. Die Tür ist alt, der Rahmen ist älter.|Unten steht die schmale Tür offen, wie du sie gelassen hast.}
 
+{choice_count() == 1: Es gibt nur einen Weg, und er führt hinunter.}
+
+* {knows("BETAEUBT") and knows("MECHANIKER")} [Die Scharniere mit dem Taschenmesser aushängen]() Riegel sind Überzeugungssache, Scharniere sind Physik. Die Tür lehnt sich dir in die Arme wie ein müder Kollege.
 * {knows("BETAEUBT")} [Die Schulter benutzen]()
   { test("skill") }
     Der Riegel hält. Der Rahmen nicht.

@@ -1,6 +1,6 @@
 title: Das Haus hinter dem Moor
 author: inkle-md
-version: 0.2.0
+version: 0.3.0
 start: arrival.road
 
 languages:
@@ -26,7 +26,8 @@ inventory:
 
 items:
   dagger:    { name: Silberdolch, kind: weapon, attack_bonus: 1 }
-  kris:      { name: Krummer Opferdolch, kind: weapon, attack_bonus: 2 }
+  kris:      { name: Krummer Opferdolch, kind: weapon, attack_bonus: 2, damage_override: 3 }
+  coat:      { name: Dein Mantel, kind: armour, defence: 1 }
   poker:     { name: Schürhaken, kind: weapon }
   lantern:   { name: Sturmlaterne, kind: gear }
   notebook:  { name: Notizbuch, kind: gear }
@@ -49,6 +50,12 @@ setup:
       - { label: Mit einem Silberdolch im Stiefel, item: dagger }
       - { label: Mit einem Flachmann in der Manteltasche, item: brandy }
       - { label: Mit Verbandzeug in der Tasche, item: bandage }
+  - title: Was steht in deinen Papieren?
+    pick: 1
+    from:
+      - { label: Handlungsreisender für Kurzwaren, remember: VERTRETER }
+      - { label: Automechaniker, remember: MECHANIKER }
+      - { label: Journalist, remember: JOURNALIST }
 
 combat:
   attack: "skill + roll(2,6) + weapon_attack"

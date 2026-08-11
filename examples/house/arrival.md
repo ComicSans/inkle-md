@@ -1,8 +1,6 @@
 # Die Landstraße {#road}
 
-Der Wagen ist stehengeblieben, wie Wagen es tun: ohne Vorwarnung, im Regen,
-achtzehn Meilen hinter der letzten Ortschaft mit einem Namen. Der Motor gibt
-ein Geräusch von sich, das keinerlei Hoffnung ausdrückt.
+{visits(road) == 1: Der Wagen ist stehengeblieben, wie Wagen es tun: ohne Vorwarnung, im Regen, achtzehn Meilen hinter der letzten Ortschaft mit einem Namen. Der Motor gibt ein Geräusch von sich, das keinerlei Hoffnung ausdrückt.|Der Regen trommelt aufs Wagendach, als wollte er dich daran erinnern, dass er mehr Geduld hat als du.}
 
 {&Irgendwo hinter dir bellt etwas.|Das Bellen ist näher als eben.|Jetzt bellt nichts mehr, was du für keine Verbesserung hältst.}
 
@@ -10,6 +8,8 @@ Vor dir ein schmiedeeisernes Tor, dahinter ein Haus, in dem genau ein Fenster
 brennt. Auf dem Torbogen steht ein Name, den der Efeu freundlicherweise
 verdeckt.
 
+* {knows("MECHANIKER")} [Noch einmal unter die Haube sehen](#road) Du siehst nach, mit der Routine von tausend Pannen. Verteiler trocken, Zündung tot — aber tot auf eine Art, die dir neu ist. Ein Wagen, der nicht anspringen will, klingt anders als einer, der nicht anspringen darf.
+  ~ fear = fear + 1
 * [Läuten](#gate)
 * [An der Mauer entlanggehen](#wall) Man muss ja nicht gleich klingeln.
 
@@ -33,7 +33,7 @@ Mannshoch, oben Glasscherben in Mörtel, eine Bruchstelle vom letzten Frost.
 Der Hausherr hält offenbar wenig von unangemeldeten Gästen, was ihn dir
 beinahe sympathisch macht.
 
-* [Hinüberklettern]()
++ [Hinüberklettern]()
   { test("skill") }
     Du kommst sauber über die Bruchstelle und landest im Gras, das nasser ist
     als alles, was du bisher kanntest.
@@ -44,7 +44,7 @@ beinahe sympathisch macht.
     Jahren nicht mehr geklettert bist, und dass das gute Gründe hatte.
     ~ stamina = stamina - 2
     ~ fear = fear + 1
-* [Zurück zum Tor](#gate)
++ [Zurück zum Tor](#gate)
 ---
 Der Regen wird stärker, als wollte er dich zu etwas drängen.
 
@@ -58,11 +58,11 @@ kommt. Die Kette, stellst du beim Näherkommen fest, hängt an nichts.
 ~ fear = fear + 1
 
 * [Stehenbleiben und ihm den Handrücken hinhalten]()
-  { test("luck") }
+  { test_luck() }
     Er schnuppert, wägt ab und entscheidet sich gegen die Berufsehre. Als du
     weitergehst, geht er mit, als hätte er dich hierher bestellt.
     ~ remember("HUND-FREUND")
-    ~ fear = max(fear - 1, 0)
+    ~ calm(1)
     -> door
   { else }
     Er entscheidet sich für die Berufsehre.
@@ -70,7 +70,7 @@ kommt. Die Kette, stellst du beim Näherkommen fest, hängt an nichts.
 ---
 -> dogfight
 
-# Der Kettenhund {#dogfight}
+## Der Kettenhund {#dogfight}
 
 !combat hound
   win  -> door
@@ -142,6 +142,8 @@ niemandem offen."
 * [Zu Tisch gehen](#dinner)
 + [Fragen, was im Keller ist]() "Nichts", sagt er, mit einer Betonung auf dem Nichts, die dir noch eine Weile nachgehen wird.
   ~ fear = fear + 1
++ [Kehrtmachen, zur Haustür]() Du drehst dich um. Der Butler steht bereits zwischen dir und der Tür, ohne dass du Schritte gehört hättest. "Zu Tisch", sagt er. Es klingt nicht unfreundlich. Es klingt endgültig.
+  ~ fear = fear + 1
 ---
 Er hält dir die Tür zum Speisezimmer auf, und zwar so lange, dass Bleiben
 keine Möglichkeit mehr ist.
@@ -167,8 +169,10 @@ Dann hebt er sein Glas und wartet. Es ist die Sorte Warten, bei der einem
 auffällt, dass er selbst noch keinen Schluck getrunken hat.
 
 * [Austrinken](#drugged)
+* {knows("VERTRETER")} [Loben, anstoßen, abstellen — und dabei keinen Schluck nehmen]() Zwanzig Jahre Kundschaft: Du lobst die Farbe, das Bukett, den Abgang, und stellst das Glas dabei so oft ab und wieder hin, dass am Ende niemand mehr weiß, wie voll es je gewesen ist. Der älteste Trick im Koffer.
+  ~ remember("NUECHTERN")
 * [Beim Anstoßen das Glas kippen und den Wein in die Aspidistra gießen]()
-  { test("luck") }
+  { test_luck() }
     Die Pflanze nimmt es hin wie eine, die schon anderes geschluckt hat. Der
     Hausherr bemerkt nichts. Der Butler hat nichts gesehen. Da bist du fast
     sicher. Fast.
@@ -190,7 +194,7 @@ kürzer als der Weg dorthin.
 
 -> house.room
 
-# Der Wein {#drugged}
+## Der Wein {#drugged}
 
 Der Wein ist wirklich ausgezeichnet, und das zweite Glas ist besser als das
 erste. Das dritte schenkt er ein, ohne dass du dich an das zweite erinnern
@@ -203,3 +207,8 @@ man sieht doch —
 ~ remember("BETAEUBT")
 
 -> house.tower
+
+# fn calm(n)
+
+~ fear = max(fear - n, 0)
+~ return fear
