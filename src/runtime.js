@@ -97,7 +97,7 @@ export class Story {
         throw new Error(`setup block ${i} takes ${block.pick} pick(s), got ${chosen.length}`);
       }
       for (const key of chosen) {
-        const option = block.from.find((o) => o.item === key || flat(o.label, this.lang) === key);
+        const option = block.from.find((o) => o.item === key || o.remember === key || flat(o.label, this.lang) === key);
         if (!option) throw new Error(`unknown setup option "${key}"`);
         if (option.item) this.#take(option.item, 1);
         if (option.remember) this.#remember(option.remember);
@@ -302,6 +302,9 @@ export class Story {
 
   load(save) {
     if (save.version > 1) throw new Error(`save version ${save.version} is newer than this runtime`);
+    if (save.story !== this.state.story) {
+      throw new Error(`save is from "${save.story}", this book is "${this.state.story}"`);
+    }
     this.state = structuredClone(save);
     this.lang = this.json.nodes[save.lang] ? save.lang : this.json.meta.default;
     this.state.lang = this.lang;

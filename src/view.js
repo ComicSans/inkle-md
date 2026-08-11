@@ -259,6 +259,7 @@ function mount(json, root) {
   }
 
   function restart() {
+    try { localStorage.removeItem(key); } catch { /* private mode */ }
     story = new Story(json, { lang: story.lang });
     if (!story.setup) save();
     render();
@@ -292,7 +293,11 @@ function mount(json, root) {
 
   const saved = loadSaved();
   if (saved) {
-    try { story.load(saved); } catch { /* an old save from another version */ }
+    try { story.load(saved); } catch {
+      // An old save from another book or version: it would resume garbage,
+      // so it is dropped rather than retried on every reload.
+      try { localStorage.removeItem(key); } catch { /* private mode */ }
+    }
   }
   render();
 }

@@ -604,6 +604,12 @@ directive.
 once-only; `alts` holds the position of each sequence and cycle. Both are
 keyed by the ids the compiler hands out (9.1).
 
+`story` is title and version of the book that wrote the save, and loading
+rejects a save whose `story` does not match the running book: every other
+field is keyed against a specific book's nodes and choice ids, so a save from
+another version would resume as plausible-looking garbage. Bumping `version:`
+in the frontmatter is therefore also the way to declare old saves invalid.
+
 `at` is the position inside the current node as an index path, `[2, 0, 1]`
 being "op 2, its item 0, op 1 inside it". It is not a call stack: there are no
 return addresses and no frames of their own, which is what principle 4 rules
