@@ -16,6 +16,7 @@ import { dirname, join } from 'node:path';
 
 import { compileFile } from '../src/compile.js';
 import { Story } from '../src/runtime.js';
+import { walk } from '../src/play.js';
 import { compile } from './helpers.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -279,19 +280,14 @@ test('the house survives three hundred playthroughs', () => {
     const s = new Story(story, { seed });
     s.begin([[s.setup[0].from[seed % 3].item]]);
 
-    let steps = 0;
-    while (!s.current.ended && steps++ < 200) {
-      if (s.combat) { s.attack(); continue; }
-      const choices = s.current.choices;
-      assert.ok(choices.length > 0, `dead end at ${s.current.node} (seed ${seed})`);
-      s.choose(choices[(seed * 7 + steps * 3) % choices.length].index);
-    }
-    assert.ok(s.current.ended, `seed ${seed} never finished`);
+    const run = walk(s, { seed, maxSteps: 200 });
+    assert.ok(!run.deadEnd, `dead end at ${s.current.node} (seed ${seed})`);
+    assert.ok(run.ended, `seed ${seed} never finished`);
     ends.add(s.current.node);
   }
 
   // Every ending is reachable by play, not just by the reachability report.
-  assert.deepEqual([...ends].sort(), ['house.break', 'house.flight', 'house.undone']);
+  assert.deepEqual([...ends].sort(), ['cellar.break', 'cellar.flight', 'cellar.undone']);
 });
 
 test('fear kills, and only counts a room the first time', () => {
@@ -306,7 +302,7 @@ test('fear kills, and only counts a room the first time', () => {
 
   s.state.vars.fear = max - 1;
   s.go('house.stay');                       // costs two
-  assert.equal(s.current.node, 'house.undone');
+  assert.equal(s.current.node, 'cellar.undone');
   assert.equal(s.current.ended, true);
 });
 

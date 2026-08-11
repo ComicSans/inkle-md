@@ -945,6 +945,19 @@ balance problem shows up there long before it shows up in a playthrough: the
 fear stat of the house example punished every second visit to the same room,
 and three hundred games said so in a second.
 
+The simulated reader is curious, not random: at a crossroads an option not
+yet tried in this run comes first, and only when every visible option has
+been tried once does the walk fall back to cycling. A purely cyclic walker
+never leaves a hub room with a sticky "go back" choice, and no human reads a
+gamebook that way. `endings` counts only runs that actually reached an
+ending; a run that hits the step limit is reported as unfinished, not as an
+ending at whatever node it happened to stand in.
+
+`inkle-md mcp` serves the same three checks — lint, play, simulate — as MCP
+tools over stdio, so an agent can playtest a book against the real runtime
+instead of parsing terminal output. The server speaks JSON-RPC 2.0, one
+message per line, and needs no dependency.
+
 ## 13. Full example
 
 ```markdown

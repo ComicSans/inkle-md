@@ -179,17 +179,11 @@ export function simulate(story, { runs = 300, maxSteps = 200 } = {}) {
       .slice(0, block.pick)
       .map((o) => o.item ?? o.remember)));
 
-    let step = 0;
-    while (!s.current.ended && step < maxSteps) {
-      step++;
-      if (s.combat) { s.attack(); continue; }
-      const choices = s.current.choices;
-      if (choices.length === 0) { deadEnds.push({ seed, node: s.current.node }); break; }
-      s.choose(choices[(seed * 7 + step * 3) % choices.length].index);
-    }
-    steps += step;
-    if (!s.current.ended) unfinished++;
-    endings[s.current.node] = (endings[s.current.node] ?? 0) + 1;
+    const run = walk(s, { seed, maxSteps });
+    steps += run.steps;
+    if (run.deadEnd) deadEnds.push({ seed, node: s.current.node });
+    if (run.ended) endings[s.current.node] = (endings[s.current.node] ?? 0) + 1;
+    else unfinished++;
   }
 
   return {
@@ -199,4 +193,28 @@ export function simulate(story, { runs = 300, maxSteps = 200 } = {}) {
     unfinished,
     averageSteps: Math.round((steps / runs) * 10) / 10,
   };
+}
+
+/**
+ * One playthrough with a curious reader: an option not yet tried this run
+ * comes first, and only when every visible option has been tried once does
+ * the walk fall back to cycling. A book full of hub rooms with sticky "go
+ * back" choices would trap a purely cyclic walker forever, and no human
+ * reads a gamebook that way.
+ */
+export function walk(s, { seed = 1, maxSteps = 200 } = {}) {
+  const taken = new Set();
+  let steps = 0;
+  while (!s.current.ended && steps < maxSteps) {
+    steps++;
+    if (s.combat) { s.attack(); continue; }
+    const choices = s.current.choices;
+    if (choices.length === 0) return { ended: false, deadEnd: true, steps };
+    const fresh = choices.filter((c) => !taken.has(`${s.current.node}#${c.index}`));
+    const pool = fresh.length > 0 ? fresh : choices;
+    const pick = pool[(seed * 7 + steps * 3) % pool.length];
+    taken.add(`${s.current.node}#${pick.index}`);
+    s.choose(pick.index);
+  }
+  return { ended: s.current.ended, deadEnd: false, steps };
 }

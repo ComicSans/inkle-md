@@ -1,6 +1,6 @@
 title: Das Haus hinter dem Moor
 author: inkle-md
-version: 0.1.0
+version: 0.2.0
 start: arrival.road
 
 languages:
@@ -10,12 +10,14 @@ languages:
 chapters:
   - arrival.md
   - house.md
+  - ground.md
+  - cellar.md
 
 stats:
   skill:    { name: Geschick, start: "roll(1,6) + 6",  max: start }
   stamina:  { name: Ausdauer, start: "roll(2,6) + 12", max: start }
   luck:     { name: Glück,    start: "roll(1,6) + 6",  max: start }
-  fear:     { name: Angst,    start: 0, max: 12 }
+  fear:     { name: Angst, start: 0, max: 15 }
   gold:     { name: Gold,     start: 8 }
 
 inventory:
@@ -24,11 +26,16 @@ inventory:
 
 items:
   dagger:    { name: Silberdolch, kind: weapon, attack_bonus: 1 }
+  kris:      { name: Krummer Opferdolch, kind: weapon, attack_bonus: 2 }
   poker:     { name: Schürhaken, kind: weapon }
   lantern:   { name: Sturmlaterne, kind: gear }
   notebook:  { name: Notizbuch, kind: gear }
   crucifix:  { name: Kruzifix, kind: gear }
   cellar-key: { name: Kellerschlüssel, kind: gear }
+  phial:     { name: Fläschchen ohne Etikett, kind: gear }
+  pie:       { name: Kalte Pastete, kind: consumable, uses: 1,
+               effect: "stamina = min(stamina + 3, stamina_max)",
+               when: "not in_combat" }
   brandy:    { name: Flachmann, kind: consumable, uses: 3,
                effect: "fear = max(fear - 1, 0)" }
   bandage:   { name: Verbandzeug, kind: consumable, uses: 2,
@@ -52,11 +59,12 @@ combat:
 enemies:
   hound:   { name: Kettenhund, skill: 7, stamina: 6, flee_after: 2 }
   servant: { name: Der Diener, skill: 8, stamina: 9, flee_after: 4 }
+  cultist: { name: Verschlafener Kultist, skill: 6, stamina: 6, flee_after: 2 }
   thing:   { name: Was im Keller wartet, skill: 9, stamina: 12, flee_after: 3 }
 
 death:
   when: "stamina <= 0 or fear >= fear_max"
-  goto: house.undone
+  goto: cellar.undone
 
 undo:
   depth: 10
