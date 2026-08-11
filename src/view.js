@@ -316,7 +316,10 @@ function mount(json, root, options = {}) {
     // reader is inside the game or nowhere in particular, and never while they
     // are typing.
     const target = event.target;
-    if (target && target !== document.body && !root.contains(target)) return;
+    const elsewhere = target instanceof Element
+      && target !== document.body && target !== document.documentElement
+      && !root.contains(target);
+    if (elsewhere) return;
     if (target?.isContentEditable || /^(input|textarea|select)$/i.test(target?.tagName ?? '')) return;
     if (/^[1-9]$/.test(event.key)) {
       const button = root.querySelector(`button[data-key="${event.key}"]`);
