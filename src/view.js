@@ -57,6 +57,7 @@ function mount(json, root, options = {}) {
   const setDocumentLang = options.setDocumentLang !== false;
   const headingTag = options.heading ?? 'h1';
   const key = `inkle-md:${json.meta.start}`;
+  const open = new Set();   // aufgeklappte Abschnitte des Heldenbogens
   const wanted = json.meta.languages.includes(options.lang)
     ? options.lang
     : preferredLanguage(json);
@@ -129,11 +130,28 @@ function mount(json, root, options = {}) {
 
     return el('aside', { class: 'sheet', 'aria-label': ui.character }, [
       stats,
-      story.inventory.length > 0 ? el('h2', { text: ui.belongings }) : null,
-      story.inventory.length > 0 ? items : null,
-      words.length > 0 ? el('h2', { text: ui.memory }) : null,
-      words.length > 0 ? memory : null,
+      story.inventory.length > 0 ? fold('items', ui.belongings, items) : null,
+      words.length > 0 ? fold('memory', ui.memory, memory) : null,
     ]);
+  }
+
+  /**
+   * Gepäck und gemerkte Stichworte stehen zusammengeklappt da: sie
+   * interessieren zwischendurch, nicht in jedem Absatz, und der Werteblock
+   * soll neben der Prosa nicht zur zweiten Spalte anwachsen. Der Zustand
+   * gehört dem Lesenden, nicht dem Spielstand - er überlebt den Neuaufbau
+   * nach jeder Wahl, aber kein Neuladen.
+   */
+  function fold(key, label, content) {
+    const box = el('details', { class: 'fold' }, [
+      el('summary', {}, [el('h2', { text: label })]),
+      content,
+    ]);
+    box.open = open.has(key);
+    box.addEventListener('toggle', () => {
+      if (box.open) open.add(key); else open.delete(key);
+    });
+    return box;
   }
 
   function setupScreen() {

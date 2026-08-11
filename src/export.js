@@ -65,6 +65,11 @@ button:disabled { opacity: .5; cursor: default; }
   .toolbar button, .toolbar select, button.small { min-height: 44px; padding: .5rem .8rem; }
 }
 .sheet { font-size: .9rem; border: 1px solid var(--line); border-radius: .4rem; padding: .8rem 1rem; }
+/* Gepäck und Gemerktes klappen auf; die Überschrift bleibt die Zeile, die
+   man anklickt. */
+.fold summary { cursor: pointer; }
+.fold summary::-webkit-details-marker { color: var(--edge); }
+.fold summary h2 { display: inline-block; margin: .8rem 0 .3rem; }
 .stats { display: grid; grid-template-columns: auto 1fr; gap: .2rem .8rem; margin: 0; }
 .stats dt { text-transform: capitalize; }
 .stats dd { margin: 0; display: flex; align-items: center; gap: .5rem; }
