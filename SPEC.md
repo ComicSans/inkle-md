@@ -128,9 +128,11 @@ chapters:
   - crypt.md
 ```
 
-Each language gets a directory named after it, holding the same chapter file
-names: `de/start.md`, `en/start.md`. A book without a `languages:` block has
-exactly one language, named `default`.
+From the second language on, each one gets a directory named after it, holding
+the same chapter file names: `de/start.md`, `en/start.md`. A book that declares
+a single language keeps its chapters where they are, because naming the
+language a book is written in should not cost a directory level. A book without
+a `languages:` block has exactly one language, named `default`.
 
 **The default language owns the logic. Translations carry text only.** A
 translated file is a catalogue: headings that name the node, paragraphs in the

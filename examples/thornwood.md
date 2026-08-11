@@ -2,6 +2,10 @@
 title: Die Gruft unter dem Weißdorn
 author: inkle-md
 version: 0.1.0
+languages:
+  default: de
+  available: [de]
+
 start: begin
 
 stats:

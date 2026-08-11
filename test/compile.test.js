@@ -93,7 +93,8 @@ test('the example book compiles without warnings', () => {
   assert.equal(warnings.report.unreachable, 0);
   assert.equal(warnings.report.endings, 2);
   assert.equal(story.meta.start, 'begin');
-  assert.equal(story.config.strings['combat.tie'].default, 'Die Klingen kreuzen sich, ohne dass etwas daraus wird.');
+  assert.equal(story.meta.default, 'de');   // the book names its language
+  assert.equal(story.config.strings['combat.tie'].de, 'Die Klingen kreuzen sich, ohne dass etwas daraus wird.');
 });
 
 test('a choice that rolls to decide whether it appears is flagged', () => {

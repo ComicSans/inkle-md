@@ -3,6 +3,10 @@ author: inkle-md
 version: 0.1.0
 start: arrival.road
 
+languages:
+  default: de
+  available: [de]
+
 chapters:
   - arrival.md
   - house.md

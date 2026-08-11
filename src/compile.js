@@ -57,15 +57,26 @@ function compileProject(bookPath) {
   });
 
   // One directory per language, holding the same chapter file names (SPEC 3.4).
+  // A book with a single language keeps its chapters in the root: declaring
+  // `languages:` to name that language should not cost a directory level.
+  const perLanguage = languages.available.length > 1;
   const variants = languages.available.map((lang) => ({
     lang,
     files: plan.map(({ file, namespace }) => {
-      const path = languages.explicit ? join(root, lang, file) : join(root, file);
-      return { file: path, source: readFileSync(path, 'utf8'), namespace };
+      const path = perLanguage ? join(root, lang, file) : join(root, file);
+      return { file: path, source: readChapter(path, bookPath), namespace };
     }),
   }));
 
   return compileSources(variants, { entry: bookPath, book: data });
+}
+
+function readChapter(path, bookPath) {
+  try {
+    return readFileSync(path, 'utf8');
+  } catch {
+    throw new CompileError('E010', `cannot read the chapter file "${path}"`, { file: bookPath, line: 1 });
+  }
 }
 
 function namespaceOf(file) {
@@ -91,7 +102,10 @@ export function compileSources(input, ctx = {}) {
   const primary = buildVariant(primaryVariant, config, ctx, bag);
   config = primary.config;
 
-  const built = [{ lang: primaryVariant.lang, table: primary.table }];
+  // A single-file book names its language in its own frontmatter, which is
+  // only known once that frontmatter has been read.
+  const primaryLang = ctx.book ? primaryVariant.lang : config.languages.default;
+  const built = [{ lang: primaryLang, table: primary.table }];
   for (const variant of variants) {
     if (variant === primaryVariant) continue;
     built.push({ lang: variant.lang, table: translateVariant(variant, primary.table, { ...ctx, config }, bag) });
@@ -128,7 +142,7 @@ export function compileSources(input, ctx = {}) {
   });
 
   // The linter works on the compiler's tree, not on the slimmed output.
-  const warnings = lint(story, { table: primary.table, config, lang: primaryVariant.lang });
+  const warnings = lint(story, { table: primary.table, config, lang: primaryLang });
   for (const { lang, table } of built) {
     for (const node of table.values()) {
       if (node.overridden) {
