@@ -37,7 +37,9 @@ export function lint(story, { table, config, lang }) {
   // by E070 and E071, so walking them again would only duplicate.
   const nodes = Object.fromEntries(table);
   const graph = buildGraph(nodes);
-  const reachable = walkGraph(story.meta.start, graph);
+  // death.goto is an edge like any other: every assignment can take it.
+  const entries = [story.meta.start, config.death?.goto].filter(Boolean);
+  const reachable = walkGraph(entries, graph);
 
   for (const [id, node] of Object.entries(nodes)) {
     if (node.kind === 'function') continue;
@@ -88,9 +90,11 @@ export function lint(story, { table, config, lang }) {
     }, (expr) => {
       walkExpression(expr, (e) => {
         if (e.var !== undefined) read.add(e.var);
+        if (e.call === 'test_luck') read.add('luck');
         if (!e.call) return;
         const arg = e.args?.[0]?.lit;
         if (typeof arg !== 'string') return;
+        if (e.call === 'test') read.add(arg);
         if (e.call === 'take' || e.call === 'equip') granted.add(arg);
         if (e.call === 'has' || e.call === 'uses' || e.call === 'equipped' || e.call === 'use') tested.add(arg);
         if (e.call === 'remember') remembered.add(arg);
@@ -209,9 +213,9 @@ function buildGraph(nodes) {
   return graph;
 }
 
-function walkGraph(start, graph) {
+function walkGraph(starts, graph) {
   const seen = new Set();
-  const queue = [start];
+  const queue = [...starts];
   while (queue.length > 0) {
     const id = queue.pop();
     if (!id || seen.has(id)) continue;

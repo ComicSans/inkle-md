@@ -1,0 +1,67 @@
+title: Das Haus hinter dem Moor
+author: inkle-md
+version: 0.1.0
+start: arrival.road
+
+chapters:
+  - arrival.md
+  - house.md
+
+stats:
+  skill:    { name: Geschick, start: "roll(1,6) + 6",  max: start }
+  stamina:  { name: Ausdauer, start: "roll(2,6) + 12", max: start }
+  luck:     { name: Glück,    start: "roll(1,6) + 6",  max: start }
+  fear:     { name: Angst,    start: 0, max: 12 }
+  gold:     { name: Gold,     start: 8 }
+
+inventory:
+  slots: 8
+  start: [lantern, notebook]
+
+items:
+  dagger:    { name: Silberdolch, kind: weapon, attack_bonus: 1 }
+  poker:     { name: Schürhaken, kind: weapon }
+  lantern:   { name: Sturmlaterne, kind: gear }
+  notebook:  { name: Notizbuch, kind: gear }
+  crucifix:  { name: Kruzifix, kind: gear }
+  cellar-key: { name: Kellerschlüssel, kind: gear }
+  brandy:    { name: Flachmann, kind: consumable, uses: 3,
+               effect: "fear = max(fear - 1, 0)" }
+  bandage:   { name: Verbandzeug, kind: consumable, uses: 2,
+               effect: "stamina = min(stamina + 4, stamina_max)",
+               when: "not in_combat" }
+
+setup:
+  - title: Womit reist du?
+    pick: 1
+    from:
+      - { label: Mit einem Silberdolch im Stiefel, item: dagger }
+      - { label: Mit einem Flachmann in der Manteltasche, item: brandy }
+      - { label: Mit Verbandzeug in der Tasche, item: bandage }
+
+combat:
+  attack: "skill + roll(2,6) + weapon_attack"
+  damage: "max(weapon_damage, 2) - armour_defence"
+  rule: higher-wins
+  luck_in_combat: true
+
+enemies:
+  hound:   { name: Kettenhund, skill: 7, stamina: 6, flee_after: 2 }
+  servant: { name: Der Diener, skill: 8, stamina: 9, flee_after: 4 }
+  thing:   { name: Was im Keller wartet, skill: 9, stamina: 12, flee_after: 3 }
+
+death:
+  when: "stamina <= 0 or fear >= fear_max"
+  goto: house.undone
+
+undo:
+  depth: 10
+
+checks:
+  dice: "roll(2,6)"
+  succeeds: at-most
+
+strings:
+  combat.hit:   "Du triffst {enemy}."
+  combat.taken: "{enemy} trifft dich."
+  combat.tie:   "Ihr weicht einander aus, und nichts geschieht."

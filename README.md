@@ -36,6 +36,7 @@ which is inside the 30 kB budget of SPEC 12.
 | `src/cli.js` | `build`, `lint` and `export` |
 | `examples/thornwood.md` | One file, one language: creation, combat, two endings |
 | `examples/thornwood-book/` | The same book as a project: two chapters, German and English |
+| `examples/house/` | A full-length book: 24 nodes, a fear stat that kills, three endings |
 
 ## Two rules worth knowing before writing a book
 

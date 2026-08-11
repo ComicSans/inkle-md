@@ -20,6 +20,7 @@ import { compile } from './helpers.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const example = () => compileFile(join(here, '..', 'examples', 'thornwood.md')).story;
+const house = () => compileFile(join(here, '..', 'examples', 'house', 'book.yaml')).story;
 const book = () => compileFile(join(here, '..', 'examples', 'thornwood-book', 'book.yaml')).story;
 
 /** Starts a story with a fixed seed and the first setup option. */
@@ -268,6 +269,45 @@ checks:
   }).story;
   const t = new Story(other, { seed: 7 });
   assert.notEqual(t.current.text[0].text, s.current.text[0].text);
+});
+
+test('the house survives three hundred playthroughs', () => {
+  const story = house();
+  const ends = new Set();
+
+  for (let seed = 1; seed <= 300; seed++) {
+    const s = new Story(story, { seed });
+    s.begin([[s.setup[0].from[seed % 3].item]]);
+
+    let steps = 0;
+    while (!s.current.ended && steps++ < 200) {
+      if (s.combat) { s.attack(); continue; }
+      const choices = s.current.choices;
+      assert.ok(choices.length > 0, `dead end at ${s.current.node} (seed ${seed})`);
+      s.choose(choices[(seed * 7 + steps * 3) % choices.length].index);
+    }
+    assert.ok(s.current.ended, `seed ${seed} never finished`);
+    ends.add(s.current.node);
+  }
+
+  // Every ending is reachable by play, not just by the reachability report.
+  assert.deepEqual([...ends].sort(), ['house.break', 'house.flight', 'house.undone']);
+});
+
+test('fear kills, and only counts a room the first time', () => {
+  const s = new Story(house(), { seed: 3 });
+  s.begin([['brandy']]);
+  const max = s.state.vars.fear_max;
+
+  s.go('house.library');
+  const first = s.state.vars.fear;
+  s.go('house.library');
+  assert.equal(s.state.vars.fear, first, 'a second visit does not frighten again');
+
+  s.state.vars.fear = max - 1;
+  s.go('house.stay');                       // costs two
+  assert.equal(s.current.node, 'house.undone');
+  assert.equal(s.current.ended, true);
 });
 
 test('when every choice is filtered out, the container runs on', () => {
