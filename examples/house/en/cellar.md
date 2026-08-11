@@ -168,11 +168,11 @@ just been terminated.
 
 You try to think the name once more. It is gone. Spent like a match.
 
-{knows("KRUG-GEWUERZT"): The robes that can still stand are now standing somewhere else: closer to the door.}
+{knows("KRUG-GEWUERZT"): The robes that can still stand are staggering towards the door.}
 
 # What Waits in the Cellar {#thing}
 
-{visits(alone) > 0: The master is still smiling as he stops being a man. What remains never sat inside the chalk circle. It held him.|The circle is open, and what waited inside it waits no longer.}
+{visits(alone) > 0: The master is still smiling as he stops being a man. What remains never sat inside the chalk circle. It held him.|The circle is open, and what waited inside it is here.}
 
 It is larger than the room it stands in. Your mind declines to explain that,
 and you are grateful to it. Your FEAR rises.
@@ -215,13 +215,12 @@ had never been otherwise.
 
 {knows("DER-BRUDER"): Behind you, someone says politely that your brother will be notified.}
 
-{knows("HUND-FREUND"): At the gate the hound joins you without asking, and does not look back. He has the air of someone who has handed in his notice.}
+{knows("HUND-FREUND"): At the gate the hound joins you without asking, and does not look back either.}
 
 {uses("brandy") > 0: A swallow or two still sloshes in the hip flask. You raise it to the house as you go, and drink none of it. Not on this occasion.}
 
 Two miles on, a milk lorry comes towards you. The driver takes you along,
-looks at you sideways, and asks nothing. The {gold} gold pieces in your
-pocket cover the ride and two breakfasts.
+looks at you sideways, and asks nothing.
 
 You have escaped. The house still stands, the cellar too, and both will have
 guests.
