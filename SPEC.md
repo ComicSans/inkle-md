@@ -906,7 +906,9 @@ a JSON string so a reader can move a game between devices without an account.
 Part of the export, not a later pass:
 
 - choices are real buttons in a list, reachable and operable by keyboard, with
-  number keys 1 to 9 as shortcuts;
+  number keys 1 to 9 as shortcuts. The number is shown next to the label and
+  announced through `aria-keyshortcuts`, while the accessible name stays the
+  choice itself;
 - new text is announced through `aria-live="polite"`, and focus moves to the
   new section after every choice;
 - the character sheet is a description list, not a table of bars, with the
@@ -915,7 +917,13 @@ Part of the export, not a later pass:
   remaining uses in each button's accessible name, and a status message after
   every use so the effect is not visible only in a bar;
 - no animation under `prefers-reduced-motion`;
-- contrast at least 4.5:1 in both themes; nothing conveyed by colour alone;
+- contrast at least 4.5:1 for text in both themes, and at least 3:1 for the
+  outline of anything operable, which is a different value and the one that
+  gets forgotten; nothing conveyed by colour alone;
+- what a combat round did is a status message, so it reaches a screen reader
+  without the focus moving;
+- a control that is disabled says why, next to it and as its description;
+- touch targets are at least 44 px on a coarse pointer;
 - the whole page works at 200% zoom and at 320 px width.
 
 ## 13. Full example

@@ -22,6 +22,7 @@ const UI = {
     back: 'Go back', restart: 'Start again', save: 'Save', saved: 'Saved',
     resume: 'Continue', language: 'Language', begin: 'Begin', theEnd: 'The end',
     character: 'Character', pick: (n) => `Choose ${n}`, uses: (n) => `${n} left`,
+    pickFirst: 'Make your choice to begin.',
     round: (n) => `Round ${n}`, choices: 'What do you do?',
   },
   de: {
@@ -30,6 +31,7 @@ const UI = {
     back: 'Zurück', restart: 'Neu beginnen', save: 'Speichern', saved: 'Gespeichert',
     resume: 'Weiterspielen', language: 'Sprache', begin: 'Losgehen', theEnd: 'Ende',
     character: 'Held', pick: (n) => `Wähle ${n}`, uses: (n) => `noch ${n}`,
+    pickFirst: 'Triff deine Wahl, dann kann es losgehen.',
     round: (n) => `Runde ${n}`, choices: 'Was tust du?',
   },
 };
@@ -130,8 +132,11 @@ function mount(json, root) {
             const value = option.item ?? option.remember;
             if (block.pick === 1) picks[i].clear();
             if (event.target.checked) picks[i].add(value); else picks[i].delete(value);
-            form.querySelector('button[type=submit]').disabled =
-              picks.some((set, j) => set.size !== story.setup[j].pick);
+            const ready = picks.every((set, j) => set.size === story.setup[j].pick);
+            const submit = form.querySelector('button[type=submit]');
+            submit.setAttribute('aria-disabled', String(!ready));
+            submit.disabled = !ready;
+            form.querySelector('.hint').textContent = ready ? '' : ui.pickFirst;
           },
         });
         group.append(el('div', { class: 'option' }, [input, el('label', { for: id, text: text(option.label) })]));
@@ -139,7 +144,12 @@ function mount(json, root) {
       form.append(group);
     });
 
-    form.append(el('button', { type: 'submit', text: ui.begin, disabled: 'disabled' }));
+    const hint = el('p', { class: 'hint', role: 'status', text: ui.pickFirst });
+    form.append(hint, el('button', {
+      type: 'submit', text: ui.begin, disabled: 'disabled',
+      'aria-disabled': 'true', 'aria-describedby': 'setup-hint',
+    }));
+    hint.id = 'setup-hint';
     return form;
   }
 
@@ -152,7 +162,10 @@ function mount(json, root) {
     ]);
 
     const last = fight.log[fight.log.length - 1];
-    if (last) panel.append(el('p', { class: 'blow', text: `${ui.round(last.round)}: ${last.text}` }));
+    panel.append(el('p', {
+      class: 'blow', role: 'status', 'aria-live': 'polite',
+      text: last ? `${ui.round(last.round)}: ${last.text}` : '',
+    }));
 
     const actions = el('div', { class: 'choices' });
     if (fight.luck) {
@@ -202,11 +215,17 @@ function mount(json, root) {
     } else {
       const choices = el('ul', { class: 'choices', 'aria-label': ui.choices });
       story.current.choices.forEach((choice, index) => {
-        choices.append(el('li', {}, [el('button', {
-          text: choice.label,
+        const button = el('button', {
+          // The number is decoration for the eye; the accessible name stays
+          // the choice itself.
+          'aria-label': choice.label,
           'data-key': index < 9 ? String(index + 1) : null,
+          'aria-keyshortcuts': index < 9 ? String(index + 1) : null,
           onclick: () => { story.choose(choice.index); save(); render(); },
-        })]));
+        });
+        if (index < 9) button.append(el('kbd', { text: String(index + 1), 'aria-hidden': 'true' }));
+        button.append(document.createTextNode(choice.label));
+        choices.append(el('li', {}, [button]));
       });
       page.append(choices);
     }
