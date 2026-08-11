@@ -48,9 +48,12 @@ button, select {
   width: 100%;
 }
 button:hover:not(:disabled), select:hover { border-color: var(--accent); }
-button:focus-visible, select:focus-visible, .prose:focus-visible {
+button:focus-visible, select:focus-visible {
   outline: 3px solid var(--accent); outline-offset: 2px;
 }
+/* The prose takes focus after every choice so that a screen reader starts at
+   the new text. It is not operable, so it shows no focus ring. */
+.prose:focus, .prose:focus-visible { outline: none; }
 button:disabled { opacity: .5; cursor: default; }
 .toolbar { display: flex; gap: .5rem; align-items: center; }
 .toolbar button, .toolbar select, button.small { width: auto; padding: .3rem .6rem; font-size: .85rem; }
