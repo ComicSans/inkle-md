@@ -54,6 +54,19 @@ test('conditions, alternatives and prints parse into inline parts', () => {
   assert.equal(parts[4].t, 'cond');
 });
 
+test('a paragraph runs to the next blank line', () => {
+  const ops = firstBody([
+    '# A {#a}', '',
+    'Erste Zeile,', 'zweite Zeile,', 'dritte Zeile.', '',
+    'Ein zweiter Absatz.', '',
+    '-> END', '',
+  ].join('\n'));
+
+  assert.equal(ops.length, 3);
+  assert.deepEqual(ops[0].parts, ['Erste Zeile, zweite Zeile, dritte Zeile.']);
+  assert.deepEqual(ops[1].parts, ['Ein zweiter Absatz.']);
+});
+
 test('a trailing class is lifted off the text', () => {
   const ops = firstBody('# A {#a}\n\nThe letter. {.letter}\n-> END\n');
   assert.equal(ops[0].class, 'letter');

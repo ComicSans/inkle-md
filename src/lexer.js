@@ -30,9 +30,10 @@ export function lex(body, ctx) {
   /** @type {any[]} */
   const lines = [];
 
+  let blank = true;   // the start of a file begins a paragraph
   rawLines.forEach((raw, index) => {
     const line = (ctx.startLine ?? 1) + index;
-    if (raw.trim() === '') return;
+    if (raw.trim() === '') { blank = true; return; }
     const at = { file, line, text: raw };
 
     const leading = raw.match(/^[ \t]*/)[0];
@@ -42,7 +43,8 @@ export function lex(body, ctx) {
     if (leading.length % INDENT_UNIT !== 0) {
       throw new CompileError('E021', `indentation is ${leading.length} spaces`, at);
     }
-    lines.push({ depth: leading.length / INDENT_UNIT, line, file, text: raw.trim(), raw });
+    lines.push({ depth: leading.length / INDENT_UNIT, line, file, text: raw.trim(), raw, blankBefore: blank });
+    blank = false;
   });
 
   for (let i = 0; i < lines.length; i++) {

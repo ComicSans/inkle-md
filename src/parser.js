@@ -155,8 +155,20 @@ function parseContainer(lines, depth, state) {
       }
 
       case 'text': {
-        ops.push({ ...parseInline(cur.text, cur, state), source: pos(cur) });
-        i++;
+        // A paragraph runs to the next blank line, as in Markdown: the line
+        // breaks an author uses to keep the source narrow are not breaks in
+        // the text.
+        const parts = [cur.text];
+        let last = i;
+        while (last + 1 < lines.length
+          && lines[last + 1].kind === 'text'
+          && lines[last + 1].depth === depth
+          && !lines[last + 1].blankBefore) {
+          last++;
+          parts.push(lines[last].text);
+        }
+        ops.push({ ...parseInline(parts.join(' '), cur, state), source: pos(cur) });
+        i = last + 1;
         break;
       }
 

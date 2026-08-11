@@ -35,7 +35,7 @@ suite from day one. Sections 10 and 11 exist for that reason.
   conditional text, if/else, switch, visit counts. Which one applies is decided
   by a character far inside the braces.
   Here: printing, alternatives and conditional text stay inline; branching is
-  an indented block. Switch is gone. Section 4.6 states the disambiguation
+  an indented block. Switch is gone. Section 4.7 states the disambiguation
   rule that makes this decidable in one pass.
 - **Four kinds of divert** (`->`, `-> x ->`, `->->`, `<-`) that look alike and
   behave very differently. Here: one divert, one arrow.
@@ -264,7 +264,14 @@ A gather must follow a choice or a choice's indented block, never a paragraph:
 `---` under a paragraph turns that paragraph into a heading in every Markdown
 renderer. The compiler rejects it (E120).
 
-### 4.5 Varying text
+### 4.5 Paragraphs
+
+A paragraph runs to the next blank line, exactly as in Markdown. The line
+breaks an author uses to keep the source readable are not breaks in the text,
+so a paragraph may be wrapped at any width and still arrives as one paragraph.
+A translation counts paragraphs the same way (3.4).
+
+### 4.6 Varying text
 
 ```markdown
 {For the first time|Once again|Yet again} you stand before it.
@@ -278,7 +285,7 @@ You have {gold} gold pieces left.
 Sequence, cycle `&`, once-only `!`, random `~`, conditional `:`, and printing.
 Alternatives inside alternatives do not exist.
 
-### 4.6 Branching
+### 4.7 Branching
 
 Multi-line, by indentation, never with `-` at the start of a line, so that
 nothing collides with choices:
@@ -301,7 +308,7 @@ contain `|` or `:`; or no indented line follows. Otherwise it is a block
 header. This keeps `{!A raven calls.}` and a bare `{gold}` on their own line
 meaning what they look like.
 
-### 4.7 Assignments
+### 4.8 Assignments
 
 ```markdown
 ~ gold = gold - 3
@@ -323,7 +330,7 @@ You have {gold} coins left.
 prints the reduced amount. Inside a choice, assignments go on their own
 indented lines below it.
 
-### 4.8 Marking a kind of text
+### 4.9 Marking a kind of text
 
 ```markdown
 The letter is written in a shaky hand. {.letter}
@@ -334,7 +341,7 @@ it should look like. The view layer decides whether a letter is indented,
 boxed or italic. There is no other formatting control and no image support in
 this draft.
 
-### 4.9 Functions
+### 4.10 Functions
 
 ```markdown
 # fn heal(amount)
@@ -385,7 +392,7 @@ about 17%. A book with a d10 table instead writes `dice: "roll(1,10)"`.
 `take()` fails silently when the inventory is full; `has("...")` after it is
 the way to check. Item and code word names are plain strings, compared
 case-insensitively after trimming; they appear only as arguments, never as
-values, which is why the ban on string comparison in 4.7 costs nothing.
+values, which is why the ban on string comparison in 4.8 costs nothing.
 
 `has(x)` is exactly `uses(x) > 0`. A non-consumable counts as one use, and
 taking one that is already held changes nothing. `in_combat`, `weapon_attack`,
@@ -748,7 +755,7 @@ characters, with exactly three ambiguous cases, all resolved above.
 | `-> ` | divert | |
 | `~ ` | assignment or call | |
 | `!name` | directive | `!combat` today; `![` is not a directive |
-| `{` | text or block header | rule in 4.6 |
+| `{` | text or block header | rule in 4.7 |
 | anything else | text | but see directive bodies below |
 
 Inside the indented block of a directive the classification changes: a line is
@@ -797,7 +804,7 @@ offending text.
 
 Every example in this document is a test case. Each error code needs at least
 one file that triggers it and one near-miss that must not. The three collision
-rules (4.3 space after the marker, 4.4 gather after a choice, 4.6 inline
+rules (4.3 space after the marker, 4.4 gather after a choice, 4.7 inline
 versus block) get their own table-driven tests, because they are where a
 Markdown dialect breaks first.
 

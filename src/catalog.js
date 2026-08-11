@@ -46,7 +46,8 @@ export function parseCatalog(body, ctx) {
 
   const state = { counter: 0, node: { id: 'catalog' }, catalog: true };
 
-  for (const line of lines) {
+  for (let index = 0; index < lines.length; index++) {
+    const line = lines[index];
     if (line.kind === 'heading' || line.kind === 'function') {
       finish();
       const m = line.text.match(/\{#([^}]+)\}\s*$/);
@@ -64,9 +65,21 @@ export function parseCatalog(body, ctx) {
     currentLines.push(line);
 
     switch (line.kind) {
-      case 'text':
-        current.paragraphs.push(parseInline(line.text, line, state).parts);
+      case 'text': {
+        // Same paragraph rule as the story parser, or the two would count
+        // different numbers of paragraphs and E071 would fire on good text.
+        const parts = [line.text];
+        while (index + 1 < lines.length
+          && lines[index + 1].kind === 'text'
+          && lines[index + 1].depth === line.depth
+          && !lines[index + 1].blankBefore) {
+          index++;
+          currentLines.push(lines[index]);
+          parts.push(lines[index].text);
+        }
+        current.paragraphs.push(parseInline(parts.join(' '), line, state).parts);
         break;
+      }
       case 'choice': {
         if (LINK_RE.test(line.text)) { current.overrideLines.push(line); break; }
         const m = line.text.match(LABEL_RE);
