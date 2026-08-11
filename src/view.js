@@ -143,14 +143,14 @@ function mount(json, root, options = {}) {
    * nach jeder Wahl, aber kein Neuladen.
    */
   function fold(key, label, content) {
-    const box = el('details', { class: 'fold' }, [
-      el('summary', {}, [el('h2', { text: label })]),
-      content,
-    ]);
+    // Am click und nicht am toggle: toggle wird in die Warteschlange gestellt
+    // und liefe erst nach dem nächsten Neuaufbau, der Abschnitt klappte dann
+    // bei jeder Wahl wieder zu.
+    const head = el('summary', {
+      onclick: () => { if (box.open) open.delete(key); else open.add(key); },
+    }, [el('h2', { text: label })]);
+    const box = el('details', { class: 'fold' }, [head, content]);
     box.open = open.has(key);
-    box.addEventListener('toggle', () => {
-      if (box.open) open.add(key); else open.delete(key);
-    });
     return box;
   }
 
