@@ -4,7 +4,7 @@ The hall is bigger when no one is waiting for you in it. The grandfather
 clock against the wall strikes once, although its face claims three o'clock.
 Perhaps it counts something other than hours.
 
-{~Somewhere above you a door closes softly.|The grandfather clock audibly draws breath and then does not strike after all.|Beneath your feet, very far down, the chanting starts up again.}
+{~Somewhere above you a door closes softly.|The works of the grandfather clock audibly gather themselves and then do not strike after all.|Beneath your feet, very far down, chanting starts up.}
 
 * Take a closer look at the grandfather clock
 * Into the dining room

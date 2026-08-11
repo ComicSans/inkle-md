@@ -39,7 +39,7 @@ From the butler's belt hangs a key. You take it and try not to look down at
 him.
 
 * Unlock
-* Nothing for it — to the front door
+* Nothing for it - to the front door
 
 # The Secret Passage {#passage}
 
@@ -53,9 +53,9 @@ discover only after the third cobweb.
 # The Wine Cellar {#wine}
 
 Barrels, bottles, honest dust. It is the first room in this house that is
-exactly what it claims to be, and you are almost moved.
+exactly what it claims to be, and you are almost relieved.
 
-{knows("SCHLAEFER-ERLEDIGT"): The table by the doorway is free now.|At a table by the doorway a man in a robe lies asleep, head on his arms. Beside him stands a jug that smells of spiced wine — drinks are evidently served before the service.}
+{knows("SCHLAEFER-ERLEDIGT"): The table by the doorway is free now.|At a table by the doorway a man in a robe lies asleep, head on his arms. Beside him stands a jug that smells of spiced wine - drinks are evidently served before the service.}
 
 {knows("GEHEIMGANG"): From this side the wine rack is just a wine rack. You have to know the lie to see it.}
 
@@ -91,7 +91,7 @@ which someone has thrown a stone. It is not a blade for opening letters.
 
 # The Cellar {#rite}
 
-{visits(rite) == 1: Twelve figures in robes, a circle of chalk, in the middle a chair. The chanting does not falter as you enter. No one turns round. They have been expecting you, and precisely here. Your FEAR rises.|The circle, the robes, the chanting: everything is still there, and everything knows you are back.}
+{visits(rite) == 1: Twelve figures in robes, a circle of chalk, in the middle a chair. The chanting does not falter as you enter. No one turns round. Your FEAR rises.|The circle, the robes, the chanting: everything is still there, and they all know you are back.}
 
 {not has("coat") and knows("BETAEUBT"): Over the back of the chair hangs your coat. It was taken from you while you slept, and hung up neatly.}
 
@@ -103,7 +103,7 @@ which someone has thrown a stone. It is not a blade for opening letters.
 
 {visits(rite) == 1 and knows("NIEMAND-WARTET"): At dinner you mentioned that no one is expecting you. The master, it appears, made a note of it.}
 
-{visits(rite) == 1 and knows("DER-SPIEGEL"): The crucifix is warm again, this time from the start.}
+{visits(rite) == 1 and knows("DER-SPIEGEL"): The crucifix is warm again, all but glowing in your pocket.}
 
 {visits(rite) == 1 and knows("NUECHTERN"): The master looks over at you, and then at the empty chair, as if to remark that there had been a more comfortable way here.}
 
@@ -124,7 +124,7 @@ robe stirs. No one stops you. It is the eeriest thing this house has done to
 you yet.
 
 One after another, eleven figures sit down, at first with dignity, then
-without any.
+quickly.
 
 It grows so hot you nearly drop it, and the chanting stops.
 
@@ -162,7 +162,7 @@ You speak it. It is not hard to pronounce, which is the most astonishing
 thing about it.
 
 The chanting stops. The master goes very still. "From where," he says, and
-gets no further. Something leaves him — posture, colour, size, in that
+gets no further. Something leaves him - posture, colour, size, in that
 order. Names are contracts, you read somewhere, presumably tonight. His has
 just been terminated.
 

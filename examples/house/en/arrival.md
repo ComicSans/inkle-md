@@ -1,60 +1,62 @@
 # The Country Road {#road}
 
-{visits(road) == 1: The car has died the way cars do: without warning, in the rain, eighteen miles past the last village with a name. The engine makes a noise that expresses no hope whatsoever.|The rain drums on the car roof, as if to remind you that it has more patience than you do.}
+{visits(road) == 1: The car has died the way cars do: without warning, in the rain, eighteen miles past the last village with a name. The engine makes a noise that expresses no hope whatsoever.|The rain drums on the car roof, and it lasts longer than your patience.}
 
 {&Somewhere behind you, something barks.|The barking is closer than it was.|Now nothing barks at all, which you do not count as an improvement.}
 
-Before you stands a wrought-iron gate, beyond it a house with exactly one lit
-window. There is a name on the archway, which the ivy kindly covers.
+Before you stands a wrought-iron gate, beyond it a house with light burning
+behind exactly one window. There is a name on the archway, which the ivy
+covers.
 
 * Take another look under the bonnet
 * Ring the bell
 * Walk along the wall
 
 You take a look, with the routine of a thousand breakdowns. Distributor dry,
-ignition dead — but dead in a way that is new to you. A car that will not
-start sounds different from a car that may not start.
+ignition dead - but dead in a way that is new to you. A car that will not
+start sounds different from a car that cannot start.
 
 You don't have to ring straight away, after all.
 
 # At the Gate {#gate}
 
-The bell rings deeper than an object of that size has any right to. Then
-nothing happens for a while, which gives you time to reflect on the last
-hour's decisions.
+The bell rings deeper than you expected.
 
-{Then the gate opens. By itself. Very slowly, with the sound that doors make in stories that end badly.|The gate stands open, the way you left it. It is in no hurry, you think. It has you.}
+Then nothing happens for a while, which gives you time to reflect on the
+situation of the last hour. You are not happy with it.
+
+{Then the gate opens. By itself. Very slowly, with the sound that doors make in stories that end badly.|The gate stands open, the way you left it. }
 
 * Go through
 * Think better of it and try the wall
 
 # At the Wall {#wall}
 
-Man-high, broken glass set in mortar along the top, one gap left by last
-winter's frost. The master of the house evidently thinks little of
+Man-high, cracks in the mortar, one gap left by last winter's frost.
+Forbidding. The master of the house evidently thinks little of
 unannounced guests, which almost endears him to you.
 
 * Climb over
 * Back to the gate
 
-You come over the gap cleanly and land in grass that is wetter than anything
-you have ever known.
+You come over the wall cleanly and land in the grass.
 
-A shard opens the back of your hand. You establish that you have not climbed
-anything in years, and that there were good reasons for that.
+A shard cuts open the back of your hand. You establish that you have not
+climbed anything in years and that there were good reasons for that.
 
-The rain gets heavier, as if it wanted to hurry you towards something.
+The rain gets heavier, as if it wanted to drive you towards the door.
 
 # The Drive {#drive}
 
 Gravel, puddles, and a chained hound that comes out of the dark without
-barking first. The chain, you notice as you get closer, hangs from nothing.
+barking first, simply there, and now taking stock of you.
+The chain, you notice as you get closer, hangs from nothing.
 
 * Stand still and offer him the back of your hand
 * Skip the negotiation
 
 He sniffs, weighs the matter, and decides against professional honour. When
-you walk on, he walks with you, as if he had summoned you here himself.
+you walk on, he walks with you, as if he belonged to you.
 
 He decides in favour of professional honour.
 
@@ -63,7 +65,7 @@ He decides in favour of professional honour.
 * Run
 
 You reach the door with the breath of the drowning and the dignity of someone
-who has just run from a dog.
+who has just run for their life.
 
 # At the Door {#door}
 
@@ -90,7 +92,8 @@ the trembling. Your FEAR rises.
 
 # Thinking in the Rain {#wait}
 
-You think. The result is that you are standing in the rain, thinking.
+You think. The result is that you are standing in the rain, thinking, and out
+of options.
 
 * Knock now
 
@@ -104,15 +107,14 @@ than would be polite.
 
 {knows("HUND-FREUND"): The butler looks at the hound. The hound looks at the butler. Then the butler looks back at you, as if there had never been a hound.}
 
-"The master of the house," he says, "requests your company at dinner. The
-place is already laid." He does not say it like an invitation. He says it
-like a weather forecast.
+"The master of the house," he says in a rasp, "requests your company at
+dinner. Do come in." He does not say it like an invitation. He says it like
+a newsreader.
 
 * Follow him
 * Ask the way to the nearest telephone
 
-"The line," he says, "has been dead since the war. It was a short war, out
-here."
+"The line," he says, "has been dead since the war."
 
 # The Butler {#servant}
 
@@ -123,6 +125,8 @@ notice him waiting.
 "The house is open to you," he says. "Except for the cellar. The cellar is
 open to no one."
 
+Beyond that he ignores your questions.
+
 * Go in to dinner
 * Ask what is in the cellar
 * Turn around, back to the front door
@@ -131,11 +135,11 @@ open to no one."
 a while.
 
 You turn around. The butler is already standing between you and the door,
-without your having heard footsteps. "Dinner," he says. It does not sound
-unfriendly. It sounds final.
+without your having heard footsteps. "That way," he says, and points away
+from the door. It does not sound unfriendly. It sounds final.
 
 He holds the dining-room door open for you, and holds it so long that
-staying ceases to be an option.
+waiting ceases to be an option.
 
 # Dinner {#dinner}
 
@@ -149,7 +153,7 @@ expecting you. On the last question he listens with particular care.
 * Answer truthfully that no one is expecting you
 * Invent a brother who telephones at midnight
 * Drink up
-* Praise it, clink glasses, set it down — and never take a sip
+* Praise it, clink glasses, set it down - and never take a sip
 * Tip the glass as you toast and pour the wine into the aspidistra
 * Decline, citing a delicate stomach
 
@@ -181,6 +185,6 @@ shorter than the way there.
 
 The wine really is excellent, and the second glass is better than the first.
 The third he pours without your being able to remember the second. The
-chandelier hangs crooked. Then the whole room hangs crooked. The last thing
+chandelier hangs crooked. Then the whole room. The last thing
 you see is the master of the house, rising and not looking over at you. Why
-does he not look, you still think. One does look — one does —
+does he not look, you still think. One does look - one does -
