@@ -48,12 +48,19 @@ const UI = {
  * @param {string} [options.heading] tag for the book's title, 'h1' by default.
  *   A page that already has a heading of its own passes the level below it, so
  *   the document keeps one outline instead of two.
+ * @param {string} [options.lang] the language to open in, if the book has it.
+ *   The export asks the browser, which is the best it can do. A page that is
+ *   itself written in one language knows better, and an English page opening a
+ *   German book because of a browser setting is nobody's idea of correct.
  */
 function mount(json, root, options = {}) {
   const setDocumentLang = options.setDocumentLang !== false;
   const headingTag = options.heading ?? 'h1';
   const key = `inkle-md:${json.meta.start}`;
-  let story = new Story(json, { lang: preferredLanguage(json) });
+  const wanted = json.meta.languages.includes(options.lang)
+    ? options.lang
+    : preferredLanguage(json);
+  let story = new Story(json, { lang: wanted });
   let ui = UI[story.lang] ?? UI.en;
 
   const el = (tag, props = {}, children = []) => {
