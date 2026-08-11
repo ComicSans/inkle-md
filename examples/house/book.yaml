@@ -18,7 +18,6 @@ stats:
   stamina:  { name: { de: Ausdauer, en: Stamina }, start: "roll(2,6) + 12", max: start }
   luck:     { name: { de: Glück, en: Luck },    start: "roll(1,6) + 6",  max: start }
   fear:     { name: { de: Angst, en: Fear }, start: 0, max: 15 }
-  gold:     { name: { de: Gold, en: Gold },     start: 8 }
 
 inventory:
   slots: 8
