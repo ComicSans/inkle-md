@@ -926,6 +926,25 @@ Part of the export, not a later pass:
 - touch targets are at least 44 px on a coarse pointer;
 - the whole page works at 200% zoom and at 320 px width.
 
+## 12.4 Playing without a browser
+
+`inkle-md play <entry>` walks a book in the terminal, which is how an author
+reads their own text before anyone else does. Two flags make it a tool rather
+than a toy:
+
+- `--script 1,2,a,a` walks a fixed route and prints where it ended up. With a
+  seed, that route is exactly reproducible, which is what turns "it broke
+  somewhere in the crypt" into a bug report.
+- `--json` returns the same as data: node, text, choices, stats, inventory,
+  code words, the dice counter, and a log of which move led where. `lint`
+  takes the flag too.
+
+`inkle-md simulate <entry> --runs 300` plays many games with pseudo-random
+choices and reports the endings, the dead ends and the average length. A
+balance problem shows up there long before it shows up in a playthrough: the
+fear stat of the house example punished every second visit to the same room,
+and three hundred games said so in a second.
+
 ## 13. Full example
 
 ```markdown
