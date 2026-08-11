@@ -36,7 +36,18 @@ const UI = {
   },
 };
 
-function mount(json, root) {
+/**
+ * @param {object} json story JSON per SPEC 9.1
+ * @param {HTMLElement} root where the game is drawn
+ * @param {object} [options] only for a host that is not the export
+ * @param {boolean} [options.setDocumentLang] write the book's language to
+ *   <html lang>. True for the export, whose document is the game. A page that
+ *   embeds the game has its own language and its own scripts reading it.
+ * @param {(where: {node: string, lang: string}) => void} [options.onRender]
+ *   called after every redraw with the node the reader is on.
+ */
+function mount(json, root, options = {}) {
+  const setDocumentLang = options.setDocumentLang !== false;
   const key = `inkle-md:${json.meta.start}`;
   let story = new Story(json, { lang: preferredLanguage(json) });
   let ui = UI[story.lang] ?? UI.en;
@@ -190,7 +201,10 @@ function mount(json, root) {
   function render() {
     root.textContent = '';
     ui = UI[story.lang] ?? UI.en;
-    document.documentElement.lang = story.lang;
+    if (setDocumentLang) document.documentElement.lang = story.lang;
+    // The game speaks the book's language even where the page around it does
+    // not, so a screen reader pronounces it correctly either way.
+    root.lang = story.lang;
 
     const header = el('header', {}, [
       el('h1', { text: text(json.meta.title) ?? '' }),
@@ -200,6 +214,7 @@ function mount(json, root) {
 
     if (story.setup) {
       root.append(el('main', {}, [setupScreen()]));
+      options.onRender?.({ node: null, lang: story.lang });
       return;
     }
 
@@ -238,6 +253,7 @@ function mount(json, root) {
 
     root.append(page, characterPanel());
     prose.focus();
+    options.onRender?.({ node: story.current.node, lang: story.lang });
   }
 
   function toolbar() {
@@ -291,6 +307,13 @@ function mount(json, root) {
   // Number keys pick a choice, as a gamebook always let you.
   document.addEventListener('keydown', (event) => {
     if (event.metaKey || event.ctrlKey || event.altKey) return;
+    // In the export the game is the whole document, so anything goes. Embedded
+    // in a page it is one region among several: a key only counts while the
+    // reader is inside the game or nowhere in particular, and never while they
+    // are typing.
+    const target = event.target;
+    if (target && target !== document.body && !root.contains(target)) return;
+    if (target?.isContentEditable || /^(input|textarea|select)$/i.test(target?.tagName ?? '')) return;
     if (/^[1-9]$/.test(event.key)) {
       const button = root.querySelector(`button[data-key="${event.key}"]`);
       if (button) { button.click(); event.preventDefault(); }

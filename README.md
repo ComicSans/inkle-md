@@ -27,6 +27,19 @@ playtest a book against the real runtime; `.mcp.json` registers it.
 The export is one HTML file with no external requests: 53 kB, 15 kB gzipped,
 which is inside the 30 kB budget of SPEC 12.
 
+A page can host the game instead of exporting it. Concatenate `runtime.js` and
+`view.js` with `export ` stripped - that is all `export.js` does - and mount it
+into an element of your own:
+
+```js
+mount(story, root, { setDocumentLang: false, onRender: ({ node }) => … });
+```
+
+`setDocumentLang: false` leaves `<html lang>` to the page, which owns it; the
+game marks its own region either way. `onRender` reports the node the reader is
+on after every redraw, so a host can follow along in the source: `meta.files`
+names the chapter files and every node carries its `file` and `line`.
+
 ## What is here
 
 | Path | What it does |
