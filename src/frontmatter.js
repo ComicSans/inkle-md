@@ -16,8 +16,10 @@ import { parseExpression, parseStatement } from './expr.js';
 const BOOK_KEYS = new Set([
   'title', 'author', 'version', 'start', 'chapters', 'languages',
   'stats', 'inventory', 'items', 'setup', 'combat', 'enemies',
-  'death', 'undo', 'strings',
+  'death', 'undo', 'strings', 'checks',
 ]);
+
+const CHECK_DIRECTIONS = new Set(['at-most', 'at-least']);
 
 const CHAPTER_KEYS = new Set(['title']);
 
@@ -106,6 +108,12 @@ export function validateFrontmatter(data, ctx) {
     enemies: {},
     death: null,
     undo: { depth: data.undo?.depth ?? 0 },
+    // How test() and test_luck() roll. The default is the Fighting Fantasy
+    // rule: two six-sided dice, success at or under the stat.
+    checks: {
+      dice: asExpression(data.checks?.dice ?? 'roll(2,6)', 'checks.dice', at),
+      succeeds: data.checks?.succeeds ?? 'at-most',
+    },
     strings: Object.fromEntries(Object.entries(STRING_KEYS)
       .map(([key, value]) => [key, i18n(value, lang, key, at)])),
   };
@@ -189,6 +197,11 @@ export function validateFrontmatter(data, ctx) {
       when: asExpression(data.death.when, 'death.when', at),
       goto: data.death.goto ?? null,
     };
+  }
+
+  if (!CHECK_DIRECTIONS.has(config.checks.succeeds)) {
+    throw new CompileError('E011',
+      `checks.succeeds is "${config.checks.succeeds}", not at-most or at-least`, at);
   }
 
   for (const [key, value] of Object.entries(data.strings ?? {})) {

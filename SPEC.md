@@ -352,8 +352,8 @@ error (E042).
 |---|---|
 | `roll(n, sides)` | Sum of n dice with `sides` faces |
 | `random(min, max)` | Integer in range, both bounds inclusive |
-| `test_luck()` | 2d6 against `luck`, decrements `luck`, returns true or false |
-| `test(stat)` | 2d6 against the stat, no decrement, returns true or false |
+| `test_luck()` | A check against `luck`, then `luck` drops by one, never below zero |
+| `test(stat)` | A check against the stat, with nothing spent |
 | `has(item)` / `take(item)` / `drop(item)` | Inventory |
 | `take(item, n)` | Grants n uses of a consumable |
 | `uses(item)` | Uses left, 0 when the item is absent |
@@ -364,6 +364,21 @@ error (E042).
 | `turns()` / `turns_since(node)` | Turns total, turns since that node |
 | `choice_count()` | Number of choices currently visible |
 | `min(a,b)` / `max(a,b)` / `abs(a)` | Arithmetic |
+
+**A check** rolls `checks.dice` and compares it to the value. With
+`succeeds: at-most`, the roll has to come in at or under the value, which is
+the Fighting Fantasy rule and the default; with `at-least` it has to reach it.
+Both `test()` and `test_luck()` go through the same rule, so they cannot drift
+apart, and both consume the dice stream of section 8.
+
+```yaml
+checks:
+  dice: "roll(2,6)"      # the default
+  succeeds: at-most      # at-most or at-least
+```
+
+With the default, a stat of 10 succeeds about 62% of the time and a stat of 7
+about 17%. A book with a d10 table instead writes `dice: "roll(1,10)"`.
 
 `take()` fails silently when the inventory is full; `has("...")` after it is
 the way to check. Item and code word names are plain strings, compared
@@ -433,6 +448,10 @@ death:
 
 undo:
   depth: 10
+
+checks:
+  dice: "roll(2,6)"
+  succeeds: at-most
 
 strings:
   combat.hit:   "You wound {enemy}."

@@ -121,6 +121,7 @@ export function compileSources(input, ctx = {}) {
       enemies: config.enemies,
       death: config.death,
       undo: config.undo,
+      checks: config.checks,
       strings: config.strings,
     },
     built,

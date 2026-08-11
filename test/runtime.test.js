@@ -246,6 +246,30 @@ test('a story function called as a statement resolves across files', () => {
   assert.equal(s.current.ended, true);
 });
 
+test('a check rolls the declared dice, in the declared direction', () => {
+  const frontmatter = `---
+title: T
+stats:
+  skill: { start: 12 }
+checks:
+  dice: "roll(2,6)"
+  succeeds: at-most
+---
+`;
+  const { story } = compile('# A {#a}\n\n{test("skill"): passed|failed}\n-> END\n', { frontmatter });
+  const s = new Story(story, { seed: 7 });
+  assert.match(s.current.text[0].text, /passed|failed/);
+  assert.equal(s.state.rolls, 2, 'two dice came off the stream');
+
+  // The same seed, the other direction: a skill of 12 that has to be reached
+  // by 2d6 can only fail on most rolls, so the two disagree.
+  const other = compile('# A {#a}\n\n{test("skill"): passed|failed}\n-> END\n', {
+    frontmatter: frontmatter.replace('at-most', 'at-least'),
+  }).story;
+  const t = new Story(other, { seed: 7 });
+  assert.notEqual(t.current.text[0].text, s.current.text[0].text);
+});
+
 test('when every choice is filtered out, the container runs on', () => {
   const { story } = compile([
     '# A {#a}', '', '* {gold > 99} [Never](#b)', '---', 'Nothing happened.', '-> END', '',

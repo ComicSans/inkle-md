@@ -175,6 +175,7 @@ function configExpressions(config) {
   }
   if (config.combat) out.push(config.combat.attack, config.combat.damage);
   if (config.death) out.push(config.death.when);
+  if (config.checks) out.push(config.checks.dice);
   for (const item of Object.values(config.items)) {
     if (item.when) out.push(item.when);
     if (item.effect?.value) out.push(item.effect.value);

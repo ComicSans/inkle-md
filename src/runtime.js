@@ -686,7 +686,7 @@ export class Story {
       }
       case 'random': return this.#random(value(0), value(1));
       case 'test_luck': return this.#testLuck();
-      case 'test': return this.#random(1, 6) + this.#random(1, 6) <= this.#variable(value(0), overrides);
+      case 'test': return this.#check(this.#variable(value(0), overrides));
       case 'has': return this.#has(value(0));
       case 'take': return this.#take(value(0), args[1] ? value(1) : null);
       case 'drop': { delete this.state.inventory[key(value(0))]; return true; }
@@ -800,9 +800,18 @@ export class Story {
     return min + ((x >>> 0) % (max - min + 1));
   }
 
+  /**
+   * A test rolls `checks.dice` against a value: with `at-most` the roll has to
+   * come in at or under it, the Fighting Fantasy rule, with `at-least` at or
+   * over it. One place decides, so test() and test_luck() cannot drift apart.
+   */
+  #check(against) {
+    const roll = this.#evaluate(this.config.checks.dice);
+    return this.config.checks.succeeds === 'at-least' ? roll >= against : roll <= against;
+  }
+
   #testLuck() {
-    const roll = this.#random(1, 6) + this.#random(1, 6);
-    const lucky = roll <= (this.state.vars.luck ?? 0);
+    const lucky = this.#check(this.state.vars.luck ?? 0);
     this.state.vars.luck = Math.max(0, (this.state.vars.luck ?? 0) - 1);
     return lucky;
   }
