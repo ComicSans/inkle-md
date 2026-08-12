@@ -397,11 +397,11 @@ export function checkAndResolve(nodes, table, { config, multi, bag }) {
         return;
       }
       if (op.op === 'assign') {
-        // Travel is an assignment whose value came from place() (21.2), and
+        // Travel is an assignment whose value came from place() (19.2), and
         // L026 has no other way to recognise it once the call is folded away.
         if (namesPlace(op.value)) op.place = true;
         // A fact name is in scope, so this has to come before the E131 below
-        // or the reader would be told a fact is not a stat (17.2).
+        // or the reader would be told a fact is not a stat (15.2).
         if (config.facts?.[op.target]) {
           bag.add('E164', `"${op.target}" is a fact; a book only reads it`, op.source ?? node.source);
         } else if (!scope.has(op.target)) {
@@ -588,7 +588,7 @@ function checkExpression(expr, scope, node, at, bag, resolve, functions, config 
       e.ref = resolve(e.ref, node.namespace, at);
     }
     // place("ridge") is an index the linter can check and the author never
-    // writes as a number (21.2); nothing of it survives into the runtime.
+    // writes as a number (19.2); nothing of it survives into the runtime.
     if (e.call === 'place') {
       const id = e.args?.[0]?.lit;
       const index = (config?.places ?? []).findIndex((p) => p.id === String(id));

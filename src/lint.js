@@ -230,7 +230,7 @@ export function lint(story, { table, config, lang }) {
   }
 
   // L025: the same walk again, with every host fact at its fallback, which is
-  // the book a reader gets with no host at all (11, 17.4).
+  // the book a reader gets with no host at all (11, 15.4).
   if (Object.values(config.facts ?? {}).some((f) => f.source === 'host')) {
     const constants = factConstants(config);
     const offline = buildGraph(nodes, (when) => fold(when, constants) === 0);
@@ -389,7 +389,7 @@ function rolls(expr) {
 
 /**
  * The turn an event first fires, when that can be read off the declaration.
- * Deliberately narrow (23): only a counter of `turns()` against a literal, or
+ * Deliberately narrow (21): only a counter of `turns()` against a literal, or
  * a `when:` of the shape `turns() >= 300`. A threshold that depends on the
  * reader is not a thing a static longest path can be compared against.
  */
@@ -402,7 +402,7 @@ function firstFiring(event) {
   return when.op === '>' ? right.lit + 1 : right.lit;
 }
 
-/** True when a container assigns something that came from place() (21.2). */
+/** True when a container assigns something that came from place() (19.2). */
 function setsPlace(ops) {
   let found = false;
   walkOps(ops ?? [], (op) => { if (op.op === 'assign' && op.place) found = true; });

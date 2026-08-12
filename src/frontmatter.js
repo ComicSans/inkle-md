@@ -132,7 +132,7 @@ export function validateFrontmatter(data, ctx) {
     places: [],
   };
 
-  // Facts keep their declaration order: 17.3 makes that order the whole
+  // Facts keep their declaration order: 15.3 makes that order the whole
   // dependency rule, so a plain object built in order is the data structure.
   for (const [name, spec] of Object.entries(data.facts ?? {})) {
     if (typeof spec !== 'object' || spec === null) {
@@ -202,7 +202,7 @@ export function validateFrontmatter(data, ctx) {
     config.facts[name] = fact;
   }
 
-  // Declaration order is the dependency rule (17.3), so a fact may only name
+  // Declaration order is the dependency rule (15.3), so a fact may only name
   // the ones already declared above it. That is the whole cycle check.
   const declaredSoFar = new Set();
   for (const [name, fact] of Object.entries(config.facts)) {
@@ -246,7 +246,7 @@ export function validateFrontmatter(data, ctx) {
       counter: spec.counter === undefined ? null
         : parseExpression(String(spec.counter), { ...at, text: String(spec.counter) }),
       every: spec.every === undefined ? null : Math.trunc(spec.every),
-      // Default 1, per 19.1: a book that wants a month of damage says so.
+      // Default 1, per 17.1: a book that wants a month of damage says so.
       max_catchup: spec.max_catchup === undefined ? 1 : Math.trunc(spec.max_catchup),
       declaredCatchup: spec.max_catchup !== undefined,
       when: spec.when === undefined || spec.when === null ? null

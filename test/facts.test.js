@@ -6,7 +6,7 @@
  */
 
 /**
- * Facts, boundaries, events and places: SPEC.md sections 16 to 23.
+ * Facts, boundaries, events and places: SPEC.md sections 14 to 21.
  *
  * Every example in those sections appears here, plus the two checks section
  * 26 asks for by name: a fact computed twice from an identical state, and the
@@ -44,7 +44,7 @@ function play(declarations, body, extraStats) {
   return new Story(story, { seed: 7 });
 }
 
-// --- 17.1, declaration ------------------------------------------------------
+// --- 15.1, declaration ------------------------------------------------------
 
 const DAY = `facts:
   day_length: { source: fixed, value: 24 }
@@ -54,7 +54,7 @@ const DAY = `facts:
                 value: 'time % day_length >= 20 or time % day_length < 6' }
 `;
 
-test('the declaration of 17.1 compiles, and its facts reach the story JSON', () => {
+test('the declaration of 15.1 compiles, and its facts reach the story JSON', () => {
   const { story } = book(DAY);
   const facts = story.config.facts;
   assert.equal(facts.day_length.source, 'fixed');
@@ -128,7 +128,7 @@ test('E163: declaration order is the dependency rule', () => {
     { frontmatter: bare("facts:\n  a: { source: derived, value: 'b + 1' }\n  b: { source: fixed, value: 2 }\n") });
   expectError('# A {#a}\n\n-> END\n', 'E163',
     { frontmatter: bare("facts:\n  a: { source: derived, value: 'a + 1' }\n") });
-  // The same two the other way round is exactly what 17.3 allows.
+  // The same two the other way round is exactly what 15.3 allows.
   book("facts:\n  b: { source: fixed, value: 2 }\n  a: { source: derived, value: 'b + 1' }\n");
 });
 
@@ -287,7 +287,7 @@ test('a fact computed twice from an identical state gives the same value', () =>
   assert.deepEqual(again.facts, { ...first, elapsed: 0 });
 });
 
-// --- 17.4, host facts -------------------------------------------------------
+// --- 15.4, host facts -------------------------------------------------------
 
 const HOST = `facts:
   elapsed: { source: host, range: [0, 3600], fallback: 0 }
@@ -310,7 +310,7 @@ test('a host value is clamped into its range and consumed by its boundary', () =
   assert.equal(s.facts.tick, 60);
   assert.equal(s.state.vars.time, 72);
 
-  // The next boundary does not spend the same seconds again (18.2).
+  // The next boundary does not spend the same seconds again (16.2).
   s.choose(0);
   assert.equal(s.facts.elapsed, 0);
   assert.equal(s.state.vars.time, 81);

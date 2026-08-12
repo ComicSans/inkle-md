@@ -34,7 +34,7 @@ export async function play(story, options = {}) {
   const s = new Story(story, { seed: options.seed, lang: options.lang });
   if (s.setup) s.begin(pickSetup(s, options.picks));
   // The host brings time in at every boundary after the first; `elapsed` is
-  // 0 at the first one, and without a host it stays at its fallback (17.4).
+  // 0 at the first one, and without a host it stays at its fallback (15.4).
   if (options.script) return runScript(s, options);
   return interactive(s, options);
 }

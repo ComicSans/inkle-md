@@ -140,7 +140,7 @@ function main(argv) {
   return 0;
 }
 
-/** `--host elapsed=60,fuel=3` into the bag a boundary takes in (17.4). */
+/** `--host elapsed=60,fuel=3` into the bag a boundary takes in (15.4). */
 function parseHost(text) {
   if (!text) return null;
   const bag = {};
