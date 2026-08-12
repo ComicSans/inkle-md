@@ -1924,8 +1924,7 @@ He stares back at me.
 
 { teacup }
   ~ drugged = 1
-  , sipping at my tea as though we were old friends
-.
+{teacup: , sipping at my tea as though we were old friends|}.
 
 * [Watch him]()
   His face is telling me nothing. I've seen Harris broad and full of laughter. Today he is tight, as much part of the military machine as the device in Hut 5.

@@ -91,6 +91,7 @@ export function importInk(source, options = {}) {
 
   const ctx = { labels, flags, constants, refFunctions, knots, notes };
   const nodes = knots.map((knot) => ({ ...knot, tree: weave(knot.items, ctx) }));
+  for (const node of nodes) weldGlue(node.tree.children, notes);
   for (const node of nodes) closeWeaves(node);
   liftTargets(nodes, ctx);
   liftDeepWeaves(nodes, ctx);
@@ -126,9 +127,91 @@ function stripComments(lines, notes) {
       notes.add(index + 1, 'TODO line dropped');
       text = '';
     }
-    out.push({ line: index + 1, text });
+    out.push({ line: index + 1, text: text.replace(/\u2014/g, '-') });
   }
   return out;
+}
+
+/**
+ * Welds what ink glued. Inside a paragraph SPEC 4.5 joins the lines already,
+ * but glue also reaches across a conditional block, and there the sentence
+ * would break into three. A block whose arms only print becomes inline
+ * conditional text (SPEC 4.6); what it also assigns stays a block, moved in
+ * front of the paragraph so it still runs before the line is printed.
+ */
+function weldGlue(children, notes) {
+  for (const child of children) {
+    if (child.children) weldGlue(child.children, notes);
+    for (const arm of child.arms ?? []) if (arm.tree) weldGlue(arm.tree.children, notes);
+  }
+
+  // A block whose arms only print, and print glued, is inline conditional
+  // text; it folds into the line it was glued to, or into one of its own.
+  for (let index = 0; index < children.length; index += 1) {
+    const branch = children[index];
+    if (branch.kind !== 'branch') continue;
+    const printed = inlineArms(branch);
+    if (!printed) continue;
+
+    const left = children[index - 1];
+    const glued = left && left.kind === 'text' && left.glue?.after;
+    const line = glued ? left : { kind: 'text', text: '', glue: { before: false, after: true }, children: [], line: branch.line };
+
+    const [first, other] = printed;
+    line.text = `${line.text}{${first.condition}: ${first.text}|${other ? other.text : ''}}`;
+    line.glue = { before: line.glue.before, after: true };
+    for (const [at, arm] of printed.entries()) branch.arms[at].tree.children = arm.rest;
+
+    const keep = printed.some((arm) => arm.rest.length > 0);
+    // What the arms assign still has to run before the line is printed.
+    children.splice(glued ? index - 1 : index, glued ? 2 : 1, ...(keep ? [branch, line] : [line]));
+    index = Math.max(-1, index - 2);
+  }
+
+  for (let index = 0; index < children.length - 1; index += 1) {
+    const left = children[index];
+    const right = children[index + 1];
+    if (left.kind !== 'text' || !left.glue?.after) continue;
+    if (right.kind !== 'text' || !right.glue?.before) continue;
+    left.text = weld(left.text, right.text);
+    left.glue = { before: left.glue.before, after: right.glue.after };
+    children.splice(index + 1, 1);
+    index -= 1;
+  }
+
+  // What is left reached across a choice or a gather, where the two halves
+  // live in different branches and no paragraph can hold both.
+  for (const child of children) {
+    if (child.kind === 'text' && (child.glue?.after || child.glue?.before)) {
+      notes.add(child.line, 'glue reaches across a branch, the sentence breaks here');
+    }
+  }
+}
+
+/**
+ * The arms of a block that only prints, each with what it also assigns.
+ * @returns {Array<{condition: string, text: string, rest: object[]}>|null}
+ */
+function inlineArms(branch) {
+  const arms = branch.arms ?? [];
+  if (!arms.length || arms.length > 2) return null;
+  const printed = [];
+  for (const arm of arms) {
+    const items = arm.tree?.children ?? [];
+    const texts = items.filter((item) => item.kind === 'text');
+    const rest = items.filter((item) => item.kind !== 'text');
+    if (texts.length !== 1 || !texts[0].glue?.before) return null;
+    if (rest.some((item) => item.kind !== 'logic')) return null;
+    printed.push({ condition: arm.condition, text: texts[0].text, rest });
+  }
+  return printed;
+}
+
+/** Joins two glued halves without inventing a space before punctuation. */
+function weld(left, right) {
+  if (!left) return right;
+  if (!right) return left;
+  return /^[.,;:!?'"\u2019\u201d)]/.test(right) ? `${left}${right}` : `${left} ${right}`;
 }
 
 /**
@@ -341,7 +424,10 @@ function resolveTunnels(knots, notes) {
 
 /** One source line as a weave item: choice, gather, divert, logic or text. */
 function readItem(line, notes) {
-  const text = line.text;
+  // Glue is read off the raw line and then taken out of it, so nothing
+  // further down has to know it was ever there.
+  const glue = { before: /^\s*<>/.test(line.text), after: /<>\s*$/.test(line.text) };
+  const text = line.text.replace(/<>/g, '');
   if (!text.trim()) return null;
 
   if (RE.thread.test(text)) {
@@ -393,11 +479,12 @@ function readItem(line, notes) {
     return {
       kind: 'text',
       text: trailing[1].trim(),
+      glue,
       then: { kind: 'divert', target: trailing[2], line: line.line },
       line: line.line,
     };
   }
-  return { kind: 'text', text: text.trim(), line: line.line };
+  return { kind: 'text', text: text.trim(), glue, line: line.line };
 }
 
 /** A choice line: label, condition, the bracket split, and a trailing divert. */

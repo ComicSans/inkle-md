@@ -184,3 +184,43 @@ The second room.
 `);
   assert.match(markdown, /-> start_second/);
 });
+
+test('glue across a conditional block folds into one line', () => {
+  const { markdown } = build(`
+VAR teacup = false
+VAR drugged = false
+=== start ===
+"Awkward," I reply
+{ teacup:
+	~ drugged = true
+	<>, sipping at my tea as though we were old friends
+}
+<>.
+-> END
+`);
+  assert.match(markdown, /\{teacup: , sipping at my tea as though we were old friends\|\}\./);
+  assert.doesNotMatch(markdown, /^\.$/m);
+  // What the arm assigns keeps its condition and runs before the line.
+  assert.match(markdown, /\{ teacup \}\n {2}~ drugged = 1/);
+});
+
+test('an em dash becomes a hyphen', () => {
+  const { markdown } = build(`
+=== start ===
+I am a problem—solver.
+-> END
+`);
+  assert.match(markdown, /problem-solver/);
+  assert.doesNotMatch(markdown, /—/);
+});
+
+test('glue that reaches across a branch is reported', () => {
+  const { notes } = build(`
+=== start ===
+* [Take it]
+  I take the mug. It is <>
+- far too hot.
+  -> END
+`);
+  assert.ok(notes.some((n) => /glue reaches across a branch/.test(n.message)));
+});
