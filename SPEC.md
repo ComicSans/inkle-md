@@ -1716,6 +1716,17 @@ each of them stands.
    whether a path may leave the export's own directory, what a translated
    catalogue does with an alt text, and what 12.3 promises a screen reader.
    Nothing of it is built, so no book has images yet.
+6. **A sentence that runs across a choice.** ink glues its output with `<>`,
+   so a line can begin before a choice and end after the gather that follows
+   it. Importing The Intercept found 26 such sentences, and here each one
+   breaks into two paragraphs, because a paragraph is the lines between two
+   blank ones and those lie in different branches. This stays out, and not
+   only because of principle 2, where an invisible mark that reaches across a
+   branch is exactly the density this language dropped. It is 3.4 that settles
+   it: a translation replaces paragraphs in source order, and a sentence split
+   over a choice cannot be replaced that way at all, because another language
+   puts its verb somewhere else and the pieces no longer add up. An author who
+   wants the unbroken sentence writes it whole in each branch.
 
 ## 23. Next steps
 
