@@ -179,13 +179,6 @@ function weldGlue(children, notes) {
     index -= 1;
   }
 
-  // What is left reached across a choice or a gather, where the two halves
-  // live in different branches and no paragraph can hold both.
-  for (const child of children) {
-    if (child.kind === 'text' && (child.glue?.after || child.glue?.before)) {
-      notes.add(child.line, 'glue reaches across a branch, the sentence breaks here');
-    }
-  }
 }
 
 /**
@@ -1141,11 +1134,12 @@ function emitChildren(children, level, out, ctx) {
 }
 
 /** One run of prose, spread over a branch when it nests alternatives. */
-function emitProse(source, pad, level, out, ctx) {
+function emitProse(source, pad, level, out, ctx, glue) {
+  const mark = (text) => `${glue?.before ? '<>' : ''}${text}${glue?.after ? '<>' : ''}`;
   const nested = splitNested(source);
   if (!nested) {
     const text = inlineText(source, ctx);
-    if (text) out.push(`${pad}${text}`);
+    if (text) out.push(`${pad}${mark(text)}`);
     return;
   }
   for (const arm of nested) {
@@ -1171,7 +1165,7 @@ function emitNode(node, level, out, ctx) {
   }
 
   if (node.kind === 'text') {
-    emitProse(node.text, pad, level, out, ctx);
+    emitProse(node.text, pad, level, out, ctx, node.glue);
     return;
   }
 
@@ -1226,7 +1220,8 @@ function emitNode(node, level, out, ctx) {
     const condition = node.condition ? `{${expression(node.condition, ctx)}} ` : '';
     const target = node.divert ? `#${divertTarget(node.divert, ctx, node.line)}` : '';
     const button = inlineText(node.button, ctx) || '…';
-    const follow = inlineText(node.follow, ctx);
+    const glued = node.glue?.after ? '<>' : '';
+    const follow = inlineText(node.follow, ctx) + glued;
     const same = follow && follow === button && !node.children.length && !node.divert;
     out.push(`${indent}${marker} ${condition}[${button}](${target})${same ? '' : (follow ? ` ${follow}` : '')}`);
 

@@ -60,6 +60,7 @@ function emitOp(op) {
       if (parts.length === 0) return null;
       const out = { op: 'text', parts };
       if (op.class) out.class = op.class;
+      if (op.glue) out.glue = op.glue;
       return out;
     }
 

@@ -288,6 +288,14 @@ function parseDirective(lines, i, depth, state) {
  * text, plus a trailing {.class}.
  */
 export function parseInline(text, at, state) {
+  // Glue (SPEC 4.5): the line joins the one printed before it, or the one
+  // after it, instead of standing as a paragraph of its own.
+  const glue = {};
+  let source = text;
+  if (/^\s*<>/.test(source)) { glue.before = true; source = source.replace(/^\s*<>/, ''); }
+  if (/<>\s*$/.test(source)) { glue.after = true; source = source.replace(/<>\s*$/, ''); }
+  text = source;
+
   const parts = [];
   let cssClass = null;
   let literal = '';
@@ -317,7 +325,12 @@ export function parseInline(text, at, state) {
   }
   flush();
 
-  return { op: 'text', parts, ...(cssClass ? { class: cssClass } : {}) };
+  return {
+    op: 'text',
+    parts,
+    ...(cssClass ? { class: cssClass } : {}),
+    ...(glue.before || glue.after ? { glue } : {}),
+  };
 }
 
 function inlinePart(inner, at, state) {

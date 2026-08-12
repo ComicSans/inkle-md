@@ -223,6 +223,9 @@ Without the key the gate stays what it is.
 * Back to the light
 ```
 
+A translation sets its own glue (4.5) or leaves it out; it is part of the
+text, and no language has to break its sentences where another one did.
+
 Paragraphs replace paragraphs and list items replace button labels, each in
 source order, counted as two separate streams so that nesting never has to be
 mirrored. Conditional arms, gather text and combat exit text are paragraphs
@@ -369,6 +372,30 @@ A paragraph runs to the next blank line, exactly as in Markdown. The line
 breaks an author uses to keep the source readable are not breaks in the text,
 so you can wrap a paragraph at any width and it still arrives as one
 paragraph. A translation counts paragraphs the same way (3.4).
+
+**Glue.** Sometimes a sentence has to survive a choice: it begins before the
+reader decides and ends after, whichever way they went. `<>` at the end of a
+line, or at the start of the next one, says that the two join instead of
+standing as two paragraphs:
+
+```markdown
+* [Deny]() "Nothing," I say<>
+* [Boast]() "A cryptographer," I say<>
+---
+<>, and the room goes quiet.
+```
+
+Either mark is enough; both may appear. The halves are printed in the same
+turn even though a choice stands between them in the source, so what the
+reader sees is one paragraph, and a screen reader hears one.
+
+Glue is text, not logic, which is what lets 3.4 keep working: a translation
+sets its own glue where its own grammar wants it, or sets none and keeps the
+two paragraphs. The number of paragraphs in the source does not change either
+way, so the catalogue still lines up. That freedom is also the warning. A
+sentence assembled from pieces in different branches is the hardest thing in a
+book to translate, and an author writing for more than one language is usually
+better off writing it whole in each branch.
 
 ### 4.6 Varying text
 
@@ -1716,24 +1743,6 @@ each of them stands.
    whether a path may leave the export's own directory, what a translated
    catalogue does with an alt text, and what 12.3 promises a screen reader.
    Nothing of it is built, so no book has images yet.
-6. **A sentence that runs across a choice.** ink glues its output with `<>`,
-   so a line can begin before a choice and end after the gather that follows
-   it. Importing The Intercept found 26 such sentences, and here each one
-   breaks into two paragraphs, because a paragraph is the lines between two
-   blank ones and those lie in different branches. Section 2 is no argument
-   against it: what makes ink dense there is a mark that means six things, not
-   a mark that is small, and glue means one thing and says it plainly. Nor
-   does 3.4 rule it out, as long as glue counts as text rather than as logic:
-   a translation would set its own, where its own grammar wants it, or set
-   none at all and keep the two paragraphs. The number of source paragraphs
-   does not change either way, so the catalogue still lines up. What is open
-   is everything below that decision: how it is written, given that `<>` reads
-   as a tag to a Markdown renderer; whether the runtime joins across a choice
-   at all, since the two halves are printed turns apart; and what 12.3 owes a
-   screen reader when one sentence arrives in two pieces. Until that is
-   settled, an author who wants the sentence unbroken writes it whole in each
-   branch, and `import` reports every place where ink had glued one.
-
 ## 23. Next steps
 
 Of the open points in section 22, three have a natural order, and here it is.

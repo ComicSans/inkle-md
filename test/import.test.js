@@ -214,13 +214,15 @@ I am a problem—solver.
   assert.doesNotMatch(markdown, /—/);
 });
 
-test('glue that reaches across a branch is reported', () => {
-  const { notes } = build(`
+test('glue that reaches across a choice is carried over, not dropped', () => {
+  const { markdown } = build(`
 === start ===
 * [Take it]
   I take the mug. It is <>
 - far too hot.
   -> END
 `);
-  assert.ok(notes.some((n) => /glue reaches across a branch/.test(n.message)));
+  // One mark is enough; the gather text needs none of its own.
+  assert.match(markdown, /I take the mug\. It is<>/);
+  assert.match(markdown, /---\nfar too hot\./);
 });

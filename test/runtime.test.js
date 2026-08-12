@@ -488,3 +488,38 @@ test('a gather closes its level and the scene goes on above it', () => {
   assert.deepEqual(s.current.choices.map((c) => c.label), ['Leave']);
   assert.equal(s.state.vars.gold, 2);
 });
+
+test('glue carries a sentence across a choice', () => {
+  const { story } = compile(`
+# A {#a}
+
+He asks what I am.
+
+* [Deny]() "Nothing," I say<>
+* [Boast]() "A cryptographer," I say<>
+
+---
+<>, and the room goes quiet.
+
+-> END
+`);
+  const s = new Story(story, { seed: 1 });
+  s.begin();
+  s.choose(0);
+  assert.deepEqual(s.current.text.map((t) => t.text), ['"Nothing," I say, and the room goes quiet.']);
+});
+
+test('glue across paragraphs does not invent a space before punctuation', () => {
+  const { story } = compile(`
+# A {#a}
+
+He says nothing<>
+
+<>.
+
+-> END
+`);
+  const s = new Story(story, { seed: 1 });
+  s.begin();
+  assert.deepEqual(s.current.text.map((t) => t.text), ['He says nothing.']);
+});

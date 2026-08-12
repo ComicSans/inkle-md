@@ -579,7 +579,7 @@ export class Story {
   #replayText(nodeId, ops = this.nodes[nodeId]?.body) {
     for (const op of ops ?? []) {
       if (op.op === 'text') {
-        this.text.push({ text: this.#render(op.parts), class: op.class ?? null });
+        this.#print({ text: this.#render(op.parts), class: op.class ?? null }, op.glue);
       } else if (op.op === 'branch') {
         const index = op.branches.findIndex((b) => Boolean(this.#evaluate(b.when)));
         this.#replayText(nodeId, index >= 0 ? op.branches[index].body : op.else);
@@ -598,6 +598,18 @@ export class Story {
    * leave the nested choices standing, and the reader would be offered the
    * same level again with no way back out to the one that holds it.
    */
+  #print(paragraph, glue) {
+    const last = this.text[this.text.length - 1];
+    if (last && (glue?.before || last.glue?.after)) {
+      const right = paragraph.text;
+      const space = !right || last.text.endsWith(' ') || /^[.,;:!?'"\u2019\u201d)]/.test(right) ? '' : ' ';
+      last.text += space + right;
+      last.glue = { ...last.glue, after: glue?.after ?? false };
+      return;
+    }
+    this.text.push(glue ? { ...paragraph, glue } : paragraph);
+  }
+
   #resumeAfter(path) {
     let at = path;
     let from = at[at.length - 1] + 1;
@@ -646,7 +658,7 @@ export class Story {
       switch (op.op) {
         case 'text':
           this.state.screen.push({ node: this.state.node, at: [...path, i], class: op.class ?? null });
-          this.text.push({ text: this.#render(op.parts, true), class: op.class ?? null });
+          this.#print({ text: this.#render(op.parts, true), class: op.class ?? null }, op.glue);
           break;
 
         case 'assign':

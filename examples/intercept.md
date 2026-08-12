@@ -308,13 +308,13 @@ His eyes bear down like carbonised drill-bits.
 Harris is not letting me off any more.
 "You seriously entertained that possibility?"
 * [Yes]()
-  "Yes, I considered it.
+  "Yes, I considered it.<>
 * [No]()
   "No. Not for more than a moment, of course. Everyone here is marked out by how little we would be willing to say about it."
   "Only you told this young man more than a little, didn't you?"
-  I nod. "
+  I nod. "<>
 * [Lie]()
-  "I was quite certain, after a while. After we'd been talking.
+  "I was quite certain, after a while. After we'd been talking.<>
 
 ---
 He seemed to know all about me. He... he was quite enchanted by my achievements."
@@ -471,7 +471,7 @@ The Captain, looking puzzled, steps out. The door is closed. Hooper stares at me
 
 ## Back of hut 2 {#inside_hoopers_hut_back_of_hut_2}
 
-All you have to do is go to the back of Hut 2. There's a breeze-block with a cavity. That's where I've put it. I'll be locked up overnight. But you can pick it up and pass it to my contact. He'll be at the south fence around two AM."
+<>All you have to do is go to the back of Hut 2. There's a breeze-block with a cavity. That's where I've put it. I'll be locked up overnight. But you can pick it up and pass it to my contact. He'll be at the south fence around two AM."
 ~ hooperClueType = 1
 -> inside_hoopers_hut_no_chance
 
@@ -492,7 +492,7 @@ Harris hustles me over to the barracks. "I hope that's the end of it," he mutter
 
 Then they slam the door shut, and it locks.
 { hooperClueType == 0 }
-  How am I supposed to manage anything from in here?
+  <>How am I supposed to manage anything from in here?
 * [Try the door](#slam_door_shut_and_gone_try_the_door)
 * [Try the windows](#slam_door_shut_and_gone_try_the_windows)
 { else }
@@ -537,7 +537,7 @@ I'm ready to escape. The only trouble is - when they look in on me in the mornin
 * [Take a longer route]()
   In case I'm being followed, I divert around the perimeter of the compound. It's a much longer path, and it takes me across some terrain that's difficult to negotiate in the dark - muddy, and thick with thistles and nestles.
   ~ muddyshoes = 1
-  Still, I can be confident no-one is behind me. I crouch down behind the rear wall of Hut 2.
+  Still, I can be confident no-one is behind me. I crouch down behind the rear wall of Hut 2.<>
 
 ---
 The component is still there, wrapped in a tea-towel and shoved into a cavity in a breeze-block at the base of the Hut wall.
@@ -649,7 +649,7 @@ He takes one look around, and sighs, a deep, wistful sigh.
 "Things just get worse and worse for you, Manning," he remarks. "You are your own worst enemy."
 * [Agree]()
   "I've thought so before." {admitblackmail: Certainly in the matter of getting blackmailed.}
-  "Let me tell you what happened this morning.
+  "Let me tell you what happened this morning.<>
 * [Disagree]()
   "Right now, I think you take that role, Harris," I reply coolly.
   -> night_passes_droll
@@ -687,7 +687,7 @@ The night moves at its own pace. I suppose by morning I will know my fate.
   Without knocking, Harris comes inside. "You're up," he remarks, and then, "You smell like an animal."
   * [Be friendly]()
     "I suppose I do rather." I laugh, but Harris does not.
-    "This damn business gets worse and worse," he says, talking as he goes over to unlock and throw open the window.
+    "This damn business gets worse and worse," he says, talking as he goes over to unlock and throw open the window.<>
   * [Be cold]()
     "So would you," I reply tartly. Harris shrugs.
     "I've been through worse than this," he replies matter-of-factly. "It's hardly my fault if you sleep in your clothes."
@@ -697,10 +697,10 @@ The night moves at its own pace. I suppose by morning I will know my fate.
   "Hooper's confessed, you know."
   * [Be eager]()
     "He has? I knew he would. The worm."
-    "Steady now. Matters aren't over yet.
+    "Steady now. Matters aren't over yet.<>
   * [Be cautious]()
     "Oh, yes?"
-    "Yes. For what that's worth.
+    "Yes. For what that's worth.<>
 
   --- {#night_falls_hooper_didnt_give_himself_up}
   There's still the issue of the component. It hasn't turned up. He didn't lead us to it. I guess he figured you must have had something on him. I don't know."
@@ -823,7 +823,7 @@ On my way across the paddocks, between the huts and the House, I catch sight of 
 ---
 I turn the corner of Hut 3 and walk down the short gravel path to Hut 2. It was a good spot to choose - Hut 2 is where the electricians work, and they're generally focussed on what they're doing. They don't often come outside to smoke a cigarette so it's easy to slip past the doorway unnoticed.
 * [Check inside]()
-  I hop up the steps and put my head inside all the same. Nobody about. Still too early in the AM for sparks, I suppose.
+  I hop up the steps and put my head inside all the same. Nobody about. Still too early in the AM for sparks, I suppose.<>
 * [Go around the back]()
 
 ---
@@ -885,7 +885,7 @@ I head on around the back of the hut. The breeze-block with the cavity is on the
 
 # Reveal location of component {#reveal_location_of_component}
 
-The missing component of the Bombe computer is hidden in a small cavity in a breeze-block supporting the left rear post of Hut 2. I put in there anticipating a search. I intended to {revealedhooperasculprit: pass it to Hooper|dispose of it} once the fuss had died down. I suppose I was foolish to think that it might."
+<>The missing component of the Bombe computer is hidden in a small cavity in a breeze-block supporting the left rear post of Hut 2. I put in there anticipating a search. I intended to {revealedhooperasculprit: pass it to Hooper|dispose of it} once the fuss had died down. I suppose I was foolish to think that it might."
 ~ piecereturned = 1
 -> reveal_location_of_component_harris_believes
 
@@ -981,7 +981,7 @@ Well, then. Not a bad existence, in prison. Removed from temptation.
 Half an hour goes by before Commander Harris returns. He closes the door behind him quickly, as though afraid a loose word might slip inside.
 "Well, then," he begins, awkwardly. This is an unseemly situation.
 * ["Commander."]() "Commander."
-  He nods.
+  He nods.<>
 * {not seen_start_delay} ["Tell me what this is about."]() "Tell me what this is about."
   ~ seen_tellme = 1
   He shakes his head.
@@ -998,7 +998,7 @@ He has brought two cups of tea in metal mugs: he sets them down on the tabletop 
 * [Take one]()
   ~ seen_took = 1
   ~ teacup = 1
-  I take a mug and warm my hands. It's
+  I take a mug and warm my hands. It's<>
 * {not seen_tellme} ["What's going on?"]() "What's going on?"
   "You know already."
   -> start_pushes_cup
@@ -1137,9 +1137,9 @@ With that he opens the door to the Hut and goes back inside. The Commander uses 
   "Let's hope things work out," Harris agrees darkly.
 * [Evade]()
   "We're still in ear-shot if they let Hooper go. Best get us inside and then we can talk, if we must."
-  "I've had enough of your voice for one day," Harris replies grimly.
+  "I've had enough of your voice for one day," Harris replies grimly.<>
 * [Say nothing]()
-  I let him have his rant.
+  I let him have his rant.<>
 
 ---
 He hustles me up the steps of the barracks, keeping me firmly gripped as if I had any chance of giving him, a trained military man, the slip. It's all I can do not to fall into the room.
@@ -1194,7 +1194,7 @@ I go over to the window and try to jimmy it open. Not much luck, but in my strug
 
 The window is my only way out of here. I just need a way to smash it.
 * [Punch it]()
-  I suppose my fist would do a good enough job. But I'd cut myself to ribbons, most likely.
+  I suppose my fist would do a good enough job. But I'd cut myself to ribbons, most likely.<>
 * [Find something]()
   -> slam_door_shut_and_gone_use_bucket
 * [Use something you've got]()
@@ -1202,7 +1202,7 @@ The window is my only way out of here. I just need a way to smash it.
   * [Something you're wearing?]()
     Ah, but of course! I slip off one shoe and heft it by the toe. The heel will make a decent enough hammer, if I give it enough wallop.
     ~ smashingWindowItem = 1
-    But I'll cut my hand to ribbons doing it.
+    But I'll cut my hand to ribbons doing it.<>
   * [Look around](#slam_door_shut_and_gone_use_bucket)
 
   ---
@@ -1252,7 +1252,7 @@ Our men watching Hooper's tent saw Hooper wake up, get dressed, clamber out of h
   -> night_passes_not_that
 * [Say nothing]()
   I say quiet, listening, not sure how this will go.
-  "In case I'm not making myself clear," Harris continues, "
+  "In case I'm not making myself clear," Harris continues, "<>
 
 ---
 -> night_passes_join2
@@ -1370,7 +1370,7 @@ He looks me in the eye.
   "Of course. And one of your computing things, if I get my way. And when we're old, and smoking pipes together in The Rag like heroes, I'll explain to you the way that decent men have affairs.
 { else }
   "I'll give you a stone to chisel notches in the wall. And that's all the calculations you'll be doing. And as you sit there, pissing into a bucket and growing a beard down to your toes, you have a think about how a <i>smart</i> man would conduct his illicit affairs. With a bit of due decorum you could have learnt off any squaddie.
-You scientists."
+<>You scientists."
 He drags me up to my feet.
 "You think you have to re-invent everything."
 With that, he hustles me out of the door and I can't help thinking that, with a little more strategy, I could still have won the day. But too late now, of course.
@@ -1576,7 +1576,7 @@ Harris shakes his head.
 
 ## Shake head {#claim_hooper_took_component_shake_head}
 
-I shake my head. "You're right. I don't see how I can help you. So there's only one conclusion."
+<>I shake my head. "You're right. I don't see how I can help you. So there's only one conclusion."
 "Oh, yes? And what's that?"
 -> claim_hooper_took_component_its_your_problem
 
@@ -1679,7 +1679,7 @@ I'm hustled into one of the huts. Nowhere to sleep, but they're not interested i
 # Slam door shut and gone use bucket {#slam_door_shut_and_gone_use_bucket}
 
 ~ smashingWindowItem = 2
-I cast around the small room. There's a bucket in one corner for emergencies - I suppose I could use that. I pick it up but it's not very easy to heft.
+I cast around the small room. There's a bucket in one corner for emergencies - I suppose I could use that. I pick it up but it's not very easy to heft.<>
 -> slam_door_shut_and_gone_join
 
 
@@ -1720,10 +1720,10 @@ I shrug, eloquently.
   -> night_falls_pessimism
 * {framedhooper} [Be optimistic]()
   "I'm looking forward to having a bath."
-  "Well, you should enjoy it.
+  "Well, you should enjoy it.<>
 * {framedhooper} [Be pessimistic]()
   "I imagine I'll smell worse after another couple of days of this."
-  "That won't be necessary.
+  "That won't be necessary.<>
 
 ---
 -> night_passes_found_missing_component
@@ -1743,7 +1743,7 @@ Harris rolls his eyes, but he might almost be smiling. "You'd better get along, 
 * [Thank him]()
   "I'll enjoy it. Thank you for helping me clear this up."
   "Don't thank me yet. There's still a war to fight. Now get a move on."
-  I nod, and hurry out of the door. The air outside has never tasted fresher and more invigorating.
+  I nod, and hurry out of the door. The air outside has never tasted fresher and more invigorating.<>
 * [Argue with him]()
   "I'll work as hard as I work."
   "Get out," Harris growls. "Before I decide to arrest you as an accessory."
