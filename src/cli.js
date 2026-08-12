@@ -12,15 +12,17 @@
  * inkle-md export   <entry> [--out file.html] [--strict] [--minify]
  * inkle-md play     <entry> [--seed N] [--lang xx] [--script 1,2,a,a] [--host k=v] [--json]
  * inkle-md simulate <entry> [--runs N] [--host k=v] [--json]
+ * inkle-md import   <file.ink> [--out FILE] [--title T] [--author A] [--notice FILE]
  * inkle-md mcp
  *
  * `entry` is a .md file or a book.yaml.
  */
 
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 
 import { compileFile } from './compile.js';
+import { importInk } from './import.js';
 import { exportHtml } from './export.js';
 import { play, simulate } from './play.js';
 import { serveMcp } from './mcp.js';
@@ -50,6 +52,28 @@ function main(argv) {
   const flags = new Set(rest.filter((a) => a.startsWith('--')));
   const value = (name) => { const i = rest.indexOf(name); return i >= 0 ? rest[i + 1] : null; };
   const out = value('--out');
+
+  // The importer reads ink, not inkle-md, so it runs before the compiler.
+  if (command === 'import') {
+    const notice = value('--notice') ? readFileSync(value('--notice'), 'utf8').trimEnd() : null;
+    const result = importInk(readFileSync(entry, 'utf8'), {
+      title: value('--title'),
+      author: value('--author'),
+      notice,
+    });
+    for (const note of result.notes) {
+      process.stderr.write(`${entry}:${note.line}: ${note.message}\n`);
+    }
+    if (out) {
+      mkdirSync(dirname(out), { recursive: true });
+      writeFileSync(out, result.markdown);
+      process.stderr.write(`wrote ${out} (${result.notes.length} note(s))\n`);
+    } else {
+      process.stdout.write(result.markdown);
+    }
+    return 0;
+  }
+
   const host = parseHost(value('--host'));
   const strict = flags.has('--strict');
   const json = flags.has('--json');
