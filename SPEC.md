@@ -17,7 +17,7 @@ time as an ordinary variable rather than a feature; relative durations rather
 than an epoch; no calendar and no ephemeris.
 
 Every section stands on its own: what a rule is, this document says, and it
-says it where the rule lives. Section 22 is the one place that looks backwards,
+says it where the rule lives. Section 24 is the one place that looks backwards,
 and it is there for a reader coming from an older draft, not for a reader
 learning the language.
 
@@ -368,7 +368,7 @@ The letter is written in a shaky hand. {.letter}
 `{.name}` at the end of a paragraph says what kind of text this is, not what
 it should look like. The view layer decides whether a letter is indented,
 boxed or italic. There is no other formatting control. Images are a decided
-but unbuilt part of the language; 23.5 says what is still open about them.
+but unbuilt part of the language; 22.5 says what is still open about them.
 
 ### 4.10 Functions
 
@@ -941,7 +941,7 @@ access at runtime.
 A book that links images is that file plus those images, resolved relative to
 it, per principle 6. Nothing else ever lands beside the export. How a book
 writes an image, and what the export does with a path that leaves its own
-directory, is open point 23.5; until it is settled, no book has images and the
+directory, is open point 22.5; until it is settled, no book has images and the
 export is one file.
 
 ### 12.1 Runtime API
@@ -1531,27 +1531,7 @@ raises an error naming the node it started from. Without that bound the loop
 L028 describes ends as a stack overflow, and a stack trace tells an author
 nothing about which node to fix.
 
-## 22. Change notes
-
-The only section that speaks of an older draft. Everything else in this
-document is written to be read without one.
-
-### 0.6 to 0.7
-
-| Section | Change                                                                 |
-| ------- | ---------------------------------------------------------------------- |
-| 1       | Principles 7 to 9 added, and section 14 with the test behind them.     |
-| 5       | `place(id)` added to the built-in functions.                           |
-| 6       | `facts:`, `events:` and `places:` added to the book-wide declarations, and therefore to what E012 rejects in a chapter file. |
-| 8       | `host`, `facts` and `events` added to the save; 8.1 states that a checkpoint omits `facts`. |
-| 9.1     | `config` gains `facts`, `events` and `places`.                         |
-| 10.1    | Fact and event expressions are parsed in step 2, with the other frontmatter expressions. |
-| 10.3    | E160 to E171 added to the error table.                                 |
-| 11      | L021 to L028 added; the reachability walk is repeated with host facts at their fallbacks, and L025 reads the difference. |
-| 12.1    | `advance` and `facts` added to the runtime API.                        |
-| 12.4    | `play` gains `--host` to supply host values per boundary; `simulate` takes the same flag as its policy for how counters and `elapsed` advance per turn, without which no scheduled content is ever tested. |
-
-## 23. Open points
+## 22. Open points
 
 1. **Calendar and ephemeris.** Two further sources, `clock` and
    `ephemeris`, turning an absolute instant and a place into a date or a
@@ -1574,15 +1554,15 @@ document is written to be read without one.
    translated catalogue does with an alt text, and what 12.3 promises a
    screen reader. Nothing of it is built, so no book has images yet.
 
-## 24. Next steps
+## 23. Next steps
 
-1. Images per 23.5: a line kind of their own, alt text as an error when it is
+1. Images per 22.5: a line kind of their own, alt text as an error when it is
    missing, and an export that refuses a path pointing outside its directory.
    It is the only open point that changes what a book looks like, so it comes
    first.
-2. The second `max_catchup:` mode of 23.4, decided against a book that is put
+2. The second `max_catchup:` mode of 22.4, decided against a book that is put
    down for a week rather than against a table of turns.
-3. Calendar and ephemeris (23.1, 23.2) last, and only once a book asks for
+3. Calendar and ephemeris (22.1, 22.2) last, and only once a book asks for
    them: they are the one open point that costs the language an epoch.
 
 What these steps stand on is built: grammar, parser and story JSON per
@@ -1592,3 +1572,23 @@ places and L026; `play` and `simulate`, without which a book with scheduled
 content cannot be tested at all; and three examples, one of which puts facts,
 events, places and a clock through the acceptance test rather than leaving
 them to the unit tests. Every example in this document is a test case.
+
+## 24. Change notes
+
+The only section that speaks of an older draft. Everything else in this
+document is written to be read without one.
+
+### 0.6 to 0.7
+
+| Section | Change                                                                 |
+| ------- | ---------------------------------------------------------------------- |
+| 1       | Principles 7 to 9 added, and section 14 with the test behind them.     |
+| 5       | `place(id)` added to the built-in functions.                           |
+| 6       | `facts:`, `events:` and `places:` added to the book-wide declarations, and therefore to what E012 rejects in a chapter file. |
+| 8       | `host`, `facts` and `events` added to the save; 8.1 states that a checkpoint omits `facts`. |
+| 9.1     | `config` gains `facts`, `events` and `places`.                         |
+| 10.1    | Fact and event expressions are parsed in step 2, with the other frontmatter expressions. |
+| 10.3    | E160 to E171 added to the error table.                                 |
+| 11      | L021 to L028 added; the reachability walk is repeated with host facts at their fallbacks, and L025 reads the difference. |
+| 12.1    | `advance` and `facts` added to the runtime API.                        |
+| 12.4    | `play` gains `--host` to supply host values per boundary; `simulate` takes the same flag as its policy for how counters and `elapsed` advance per turn, without which no scheduled content is ever tested. |

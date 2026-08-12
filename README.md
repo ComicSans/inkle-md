@@ -90,7 +90,7 @@ linter says so (L019). See `examples/thornwood-book/en/crypt.md`.
   variables or a prose model. Everything else in SPEC 11 runs, including
   L021 to L028.
 - **A calendar and an ephemeris.** The `clock` and `ephemeris` fact sources of
-  SPEC 25 need an epoch, and this draft has no absolute time in it.
+  SPEC 22.1 need an epoch, and the language has no absolute time in it.
 
 ## Conventions
 
