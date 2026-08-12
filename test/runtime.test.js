@@ -343,21 +343,31 @@ const nachtseite = () => compileFile(join(here, '..', 'examples', 'nachtseite', 
 
 test('the nightside runs its clock down over three hundred playthroughs', () => {
   const story = nachtseite();
-  const ends = new Set();
 
-  for (let seed = 1; seed <= 300; seed++) {
-    const s = new Story(story, { seed });
-    s.begin([[s.setup[0].from[seed % 3].remember]]);
+  // Both languages, because `en` overrides the nodes entirely (L019): its
+  // choices, targets and conditions are the ones that run, and a translation
+  // that dropped a guard would play a different book.
+  for (const lang of ['de', 'en']) {
+    const ends = new Set();
 
-    const run = walk(s, { seed, maxSteps: 200 });
-    assert.ok(!run.deadEnd, `dead end at ${s.current.node} (seed ${seed})`);
-    assert.ok(run.ended, `seed ${seed} never finished`);
-    ends.add(s.current.node);
+    for (let seed = 1; seed <= 300; seed++) {
+      const s = new Story(story, { seed, lang });
+      s.begin([[s.setup[0].from[seed % 3].remember]]);
+
+      const run = walk(s, { seed, maxSteps: 200 });
+      assert.ok(!run.deadEnd, `dead end at ${s.current.node} (seed ${seed}, ${lang})`);
+      assert.ok(run.ended, `seed ${seed} never finished (${lang})`);
+      ends.add(s.current.node);
+    }
+
+    // `ende.bleiben` is missing on purpose: the curious reader of walk() takes
+    // every visible option once, and on this graph that order never puts the
+    // filter in their hands before they leave the basin. A reader who wants to
+    // stay finds it; a walker who tries everything in turn does not.
+    assert.deepEqual([...ends].sort(),
+      ['ende.abschalten', 'ende.dunkel', 'ende.erstickt', 'ende.rettung'],
+      `endings reached in ${lang}`);
   }
-
-  // The oxygen clock has to be able to kill, and the way out has to exist.
-  assert.ok(ends.has('ende.erstickt'), 'nobody ever ran out of air');
-  assert.ok(ends.has('ende.rettung'), 'nobody ever got off the planet');
 });
 
 test('the nightside advances its own clock, and events read it', () => {

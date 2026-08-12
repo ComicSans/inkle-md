@@ -10,6 +10,8 @@ zu ändern oder der Code, aber nie stillschweigend nur eines von beidem.
 ```bash
 node --test 'test/*.test.js'
 node src/cli.js lint examples/thornwood.md --strict
+node src/cli.js lint examples/house/book.yaml --strict
+node src/cli.js lint examples/nachtseite/book.yaml --strict
 node src/cli.js export examples/thornwood-book/book.yaml --out build/play.html
 ```
 
