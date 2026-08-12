@@ -444,3 +444,34 @@ test('the nightside advances its own clock, and events read it', () => {
   s.advance({});
   assert.equal(s.facts.elapsed, 0, 'a host value is consumed by its boundary');
 });
+
+test('a gather closes its level and the scene goes on above it', () => {
+  const { story } = compile(`
+# A {#a}
+
+* [Ask]()
+  He wipes out a mug.
+  * [The road]()
+    ~ gold = gold + 1
+  * [The tower]()
+    ~ gold = gold + 2
+  ---
+  You put a coin on the counter.
+* [Leave](#b)
+
+---
+-> b
+
+# B {#b}
+
+-> END
+`);
+  const s = new Story(story, { seed: 1 });
+  s.begin();
+  s.choose(0);
+  s.choose(0);
+  // The gather joins the inner threads, so what stands now is the outer
+  // level, not the sibling that was never taken.
+  assert.deepEqual(s.current.choices.map((c) => c.label), ['Leave']);
+  assert.equal(s.state.vars.gold, 2);
+});

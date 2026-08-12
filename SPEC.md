@@ -353,6 +353,12 @@ You write it as a line of `---` at the indentation of the choices it gathers.
 Rendered it is a horizontal rule; read aloud it is "the threads join again
 here". An id is optional: `--- {#after-inn}`.
 
+A gather closes the level it gathers. Once the text after it has run, that
+level is done: what stands next is the level above, offered again without
+whatever the reader has already taken from it, and at the outermost level the
+node ends. Without this rule a nested set of choices would keep offering
+itself and the reader could never get back out to the scene that holds it.
+
 A gather must follow a choice or a choice's indented block, never a paragraph:
 `---` under a paragraph turns that paragraph into a heading in every Markdown
 renderer. The compiler rejects it (E120).

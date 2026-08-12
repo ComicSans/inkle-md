@@ -585,10 +585,28 @@ export class Story {
     }
   }
 
-  /** Continues in the container that holds `path`, just after it. */
+  /**
+   * Continues in the container that holds `path`, just after it, and keeps
+   * going outwards when that container runs out.
+   *
+   * A gather joins the threads of its own level and the scene goes on above
+   * it (SPEC 4.4). Stopping at the end of the enclosing body instead would
+   * leave the nested choices standing, and the reader would be offered the
+   * same level again with no way back out to the one that holds it.
+   */
   #resumeAfter(path) {
-    const ops = this.#opsAt(path.slice(0, -1));
-    this.#runOps(ops, path.slice(0, -1), path[path.length - 1] + 1);
+    let at = path;
+    let from = at[at.length - 1] + 1;
+    for (;;) {
+      const container = at.slice(0, -1);
+      const stopped = this.#runOps(this.#opsAt(container), container, from);
+      if (stopped || this.dead) return;
+      // The body that held this level has run out. What stands now is the
+      // level above, offered again without whatever has been taken from it.
+      at = container.slice(0, -1);
+      if (at.length === 0) return;
+      from = at[at.length - 1];
+    }
   }
 
   #node() {
