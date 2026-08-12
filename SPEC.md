@@ -1722,13 +1722,17 @@ each of them stands.
    breaks into two paragraphs, because a paragraph is the lines between two
    blank ones and those lie in different branches. Section 2 is no argument
    against it: what makes ink dense there is a mark that means six things, not
-   a mark that is small, and glue means one thing and says it plainly. What
-   keeps it out is 3.4. A translation replaces paragraphs in source order, and
-   a sentence split over a choice cannot be replaced that way at all, because
-   another language puts its verb somewhere else and the pieces no longer add
-   up. A single-language book would lose nothing by having glue; every
-   translated one would lose the sentence. An author who wants it unbroken
-   writes it whole in each branch.
+   a mark that is small, and glue means one thing and says it plainly. Nor
+   does 3.4 rule it out, as long as glue counts as text rather than as logic:
+   a translation would set its own, where its own grammar wants it, or set
+   none at all and keep the two paragraphs. The number of source paragraphs
+   does not change either way, so the catalogue still lines up. What is open
+   is everything below that decision: how it is written, given that `<>` reads
+   as a tag to a Markdown renderer; whether the runtime joins across a choice
+   at all, since the two halves are printed turns apart; and what 12.3 owes a
+   screen reader when one sentence arrives in two pieces. Until that is
+   settled, an author who wants the sentence unbroken writes it whole in each
+   branch, and `import` reports every place where ink had glued one.
 
 ## 23. Next steps
 
