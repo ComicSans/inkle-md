@@ -1720,13 +1720,15 @@ each of them stands.
    so a line can begin before a choice and end after the gather that follows
    it. Importing The Intercept found 26 such sentences, and here each one
    breaks into two paragraphs, because a paragraph is the lines between two
-   blank ones and those lie in different branches. This stays out, and not
-   only because of principle 2, where an invisible mark that reaches across a
-   branch is exactly the density this language dropped. It is 3.4 that settles
-   it: a translation replaces paragraphs in source order, and a sentence split
-   over a choice cannot be replaced that way at all, because another language
-   puts its verb somewhere else and the pieces no longer add up. An author who
-   wants the unbroken sentence writes it whole in each branch.
+   blank ones and those lie in different branches. Section 2 is no argument
+   against it: what makes ink dense there is a mark that means six things, not
+   a mark that is small, and glue means one thing and says it plainly. What
+   keeps it out is 3.4. A translation replaces paragraphs in source order, and
+   a sentence split over a choice cannot be replaced that way at all, because
+   another language puts its verb somewhere else and the pieces no longer add
+   up. A single-language book would lose nothing by having glue; every
+   translated one would lose the sentence. An author who wants it unbroken
+   writes it whole in each branch.
 
 ## 23. Next steps
 
