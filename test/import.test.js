@@ -250,3 +250,16 @@ test('emphasis at the start of a line is not read as a choice', () => {
   assert.doesNotMatch(markdown, /^\* /m);
   assert.ok(story);
 });
+
+test('every ink line keeps its own paragraph', () => {
+  const { markdown } = build(`
+=== start ===
+He drags me up to my feet.
+"You think you have to re-invent everything."
+With that, he hustles me out of the door.
+-> END
+`);
+  // Without the blank lines SPEC 4.5 would read all three as one paragraph.
+  assert.match(markdown, /feet\.\n\n"You think/);
+  assert.match(markdown, /everything\."\n\nWith that/);
+});

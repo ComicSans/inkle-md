@@ -1156,7 +1156,7 @@ function emitBook(nodes, ctx) {
 function emitKnot(node, ctx) {
   const out = [`# ${titleOf(node.name)} {#${node.name}}`, ''];
   emitChildren(node.tree.children, 0, out, { ...ctx, knot: node.origin ?? node.name });
-  return `${out.join('\n').replace(/\n{3,}/g, '\n\n').trimEnd()}\n\n`;
+  return `${tidy(out).join('\n').replace(/\n{3,}/g, '\n\n').trimEnd()}\n\n`;
 }
 
 function titleOf(name) {
@@ -1167,13 +1167,22 @@ function emitChildren(children, level, out, ctx) {
   for (const child of children) emitNode(child, level, out, ctx);
 }
 
+/** Drops the placeholders emitProse leaves where no blank line is wanted. */
+function tidy(lines) {
+  return lines.filter((line) => line !== null);
+}
+
 /** One run of prose, spread over a branch when it nests alternatives. */
 function emitProse(source, pad, level, out, ctx, glue) {
   const mark = (text) => `${glue?.before ? '<>' : ''}${text}${glue?.after ? '<>' : ''}`;
   const nested = splitNested(source);
   if (!nested) {
     const text = inlineText(source, ctx);
-    if (text) out.push(`${pad}${mark(text)}`);
+    // In ink every line is a paragraph of its own; here two lines with no
+    // blank one between them are a single paragraph (SPEC 4.5), so the blank
+    // line is what keeps the original's shape. Glue is the exception: there
+    // the two halves are meant to join.
+    if (text) out.push(`${pad}${mark(text)}`, glue?.after ? null : '');
     return;
   }
   for (const arm of nested) {
@@ -1182,6 +1191,7 @@ function emitProse(source, pad, level, out, ctx, glue) {
     if (!text) continue;
     out.push(`${pad}{ ${head} }`, `${'  '.repeat(level + 1)}${text}`);
   }
+  out.push('');
 }
 
 function emitNode(node, level, out, ctx) {
