@@ -9,9 +9,9 @@ will be able to write anything a Fighting Fantasy or Lone Wolf volume needed.
 Here is a quick tour of what the language gives you. Keywords are English.
 Combat is built in, so a fight needs no custom code. A book can span several
 files, and one file points into another with a dotted reference. The export is
-a single file, plus any images the book links to, and an image is always a
-relative path next to the export, never a URL. Translations carry text but not
-logic, and a book holds no presentation, only story. On top of the story sits
+a single file, and it stays one file: how a book carries images is still open,
+so no book has them yet. Translations carry text but not logic, and a book
+holds no presentation, only story. On top of the story sits
 a layer of facts, values the book can read but never write. Events change
 values and never move the story somewhere else. Places live in a table and are
 addressed by index. Game time is an ordinary variable the book advances
@@ -25,10 +25,11 @@ laid out. Sections 4 to 9 are the language itself: the narrative text, the
 built-in functions, the character sheet, combat, and how the runtime saves and
 restores a game. Sections 10 to 12 describe the tools that keep a book
 honest: the parser, the linter, and the web export. Section 13 is a complete
-small book you can read in one sitting. Sections 14 to 21 add the reality
+small book you can read in one sitting. Sections 14 to 20 add the reality
 layer: facts, boundaries, events, state and undo, places, and the runtime
-calls behind them. Sections 22 to 24 close the document with open points, next
-steps, and the change notes.
+calls behind them. Section 21 says why the parser and the linter check what
+they check. Sections 22 to 24 close the document with open points, next steps,
+and the change notes.
 
 ## 1. Principles
 
@@ -631,6 +632,11 @@ spell list of Sorcery!. Without `setup:` the story starts immediately.
 turn to 400" by hand. `death.when` is evaluated after every assignment and
 every combat round; when it becomes true the runtime diverts to `death.goto`.
 
+`combat:` and `enemies:` are the house rules for a fight, and section 7 walks
+through them one by one. The example above leaves out `combat.flee_cost`,
+which is what running away takes off your stamina, because leaving it out is
+how you get the Fighting Fantasy value of two.
+
 Books travel, so translation is built in. Any field a reader can see may be a
 language table instead of a scalar, in `title:`, item `name:`, setup titles
 and labels, enemy `name:` and every entry of `strings:`:
@@ -651,7 +657,7 @@ book written in another language should override all of them, which is what
 L017 checks.
 
 `facts:`, `events:` and `places:` belong in the frontmatter too, and have
-sections of their own: 17, 19 and 21.
+sections of their own: 15, 17 and 19.
 
 ### 6.1 Items
 
@@ -707,8 +713,23 @@ entirely. Both formulas are evaluated for the enemy too, where the equipment
 variables read zero, so `armour_defence` only ever protects the player.
 With `luck_in_combat`, the player may test luck after each hit, with the usual
 consequences (more damage dealt on a lucky hit, less taken on a lucky escape).
-`flee` appears as an exit once `flee_after` rounds have passed and costs two
-stamina, the Fighting Fantasy rule.
+`flee` appears as an exit once `flee_after` rounds have passed. Getting away
+costs something, and what it costs is yours to decide. `combat.flee_cost` is
+an expression like the other two, evaluated at the moment the player flees;
+its result is taken off stamina, never below zero:
+
+```yaml
+combat:
+  attack: "skill + roll(2,6) + weapon_attack"
+  damage: "max(weapon_damage, 2) - armour_defence"
+  flee_cost: "2"
+```
+
+Leave `flee_cost` out and it is `2`, the Fighting Fantasy rule, so a book that
+wants that rule writes nothing. Write `0` and running away is free. Write
+`roll(1,6)` and it is a gamble. Write `max(4 - armour_defence, 0)` and heavy
+armour buys you a cheaper retreat. The expression sees the same variables the
+other combat formulas see, and a malformed one is E130 like any other.
 
 When several enemies come at once, list them in sequence:
 `!combat goblin, goblin, cave-troll`.
@@ -1009,9 +1030,20 @@ Two of the warnings above lean on that same walk, and it helps to see how. The r
 Once your book lints clean, you will want to hand it to readers. That is what
 the export is for. `inkle-md build book.yaml --out play.html` produces a
 single HTML file: the story JSON embedded as a
-`<script type="application/json">`, the runtime below it, target under 30 kB
-compressed. No framework, no external resources, no network access at runtime.
-You can put that one file on any web space, or send it in a mail, and it plays.
+`<script type="application/json">`, the runtime below it. No framework, no
+external resources, no network access at runtime. You can put that one file on
+any web space, or send it in a mail, and it plays.
+
+By default the export stays readable. The runtime keeps its names, its line
+breaks and its comments, and the embedded JSON keeps its indentation, so you
+can open the file and follow what it does. Add `--minify` and the exporter
+shrinks both before writing them: comments and needless whitespace go, and the
+JSON is written on one line. Nothing is renamed, because a rename needs a
+JavaScript parser and the gain does not pay for one. Nothing about the story changes, and the same book plays the same
+way either way. The target size, under 30 kB compressed, is the size of the
+minified file, so keep the flag off while you are still working and turn it on
+for the copy you hand out. The minifier is part of the exporter, written here
+rather than installed, like everything else in this project.
 
 One case adds to the single file. A book that links images is that file plus
 those images, resolved relative to it, per principle 6. Nothing else ever
