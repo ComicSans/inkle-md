@@ -24,7 +24,7 @@ Von unten sieht die Wand machbar aus. Von unten sieht jede Wand machbar aus. Vie
 
 # Der Aufstieg {#climb}
 
-Vierzig Meter, und der Fels bricht in Platten. Du kletterst mit Handschuhen, die für Schalttafeln gemacht sind, und einem Anzug, der bei jedem Hochziehen an den Schultern gegenhält. Nach zehn Metern hörst du nur noch deinen eigenen Atem im Helm; er klingt wie jemand, der nicht gefragt wurde.
+Vierzig Meter, und der Fels bricht in Platten. Du kletterst mit Handschuhen, die für Schalttafeln gemacht sind, und einem Anzug, der bei jedem Hochziehen an den Schultern gegenhält. Nach zehn Metern hörst du nur noch deinen eigenen Atem im Helm; er klingt, als hätte ihn niemand gefragt.
 
 ~ time = time + 20
 
@@ -82,7 +82,7 @@ Der Funk von Vasquez kommt von hier oben, sagt ARIS. Vasquez vermisst den Grat, 
 
 Du stellst die Bake auf den höchsten Punkt und richtest sie auf das Orbitfenster aus. Sie ist das einzige Gerät aus der Kestrel, das für genau diese Lage gebaut wurde, und sie wirkt beinahe erleichtert, endlich drin zu sein.
 
-{knows("TECHNIK"): Die Ausrichtung ist Handarbeit, und du hast sie hundertmal gemacht. Drei Schrauben, zwei Winkel, ein Testimpuls. Die Bake bestätigt mit einem grünen Licht, das hier draußen fast unanständig zuversichtlich aussieht.|Die Ausrichtung ist Handarbeit, und du hast sie noch nie gemacht. Die Anleitung auf der Innenklappe geht von jemandem aus, der weiß, was ein Elevationswinkel ist, und von Tageslicht.}
+{knows("TECHNIK"): Die Ausrichtung ist Handarbeit, und du hast sie hundertmal gemacht. Drei Schrauben, zwei Winkel, ein Testimpuls. Die Bake bestätigt mit einem grünen Licht, das hier draußen fast unanständig zuversichtlich aussieht.|Die Ausrichtung ist Handarbeit, und du hast sie noch nie gemacht. Die Anleitung auf der Innenklappe geht von Leuten aus, die wissen, was ein Elevationswinkel ist, und von Tageslicht.}
 
 ~ remember("BAKE")
 

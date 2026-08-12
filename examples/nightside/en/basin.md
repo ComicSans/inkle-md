@@ -69,7 +69,7 @@ You take it off a dead one. The catch is made for fingers that count differently
 
 # The Stranger {#body}
 
-You look at what he died of. He did not suffocate; the supply in his system would have lasted, by every calculation you know. He stopped breathing while there was enough. The posture says there was no panic and no struggle — a decision, or whatever his kind has in that place.
+You look at what it died of. It did not suffocate; the supply in its system would have lasted, by every calculation you know. It stopped breathing while there was enough. The posture says there was no panic and no struggle — a decision, or whatever its kind has in that place.
 
 ~ remember("AUFGEHOERT")
 ~ time = time + 15

@@ -16,7 +16,7 @@ In der Mitte liegt eine Öffnung, die jemand gebaut hat: kein Loch, eine Tür. K
   ~ time = time + 15
 + [Mit den Händen versuchen]()
   { test("skill") }
-    Sie geht auf, langsam und ohne Geräusch. Kein Widerstand, kein Knirschen; sie hat nur auf jemanden gewartet, der drückt, wo zu drücken ist.
+    Sie geht auf, langsam und ohne Geräusch. Kein Widerstand, kein Knirschen; sie hat nur darauf gewartet, dass jemand drückt, wo zu drücken ist.
     -> hall
   { else }
     Sie geht nicht auf, und deine Finger sagen dir, dass sie es auch nicht vorhaben. Du lehnst dich gegen das Material und wartest, bis die Hände wieder gehorchen.
@@ -59,7 +59,7 @@ Sie sind gestrandet wie du. Sie haben aufgehört, und sie haben es ordentlich ge
 
 # Der Filter {#filter}
 
-Du nimmst ihn einem Toten ab. Der Verschluss ist für Finger gemacht, die anders zählen als deine, aber er gibt nach, und der Filter läuft weiter, als sei nichts gewesen. An deinem Anzug passt er nicht, und er passt trotzdem; der Rest ist Klebeband und Sturheit. Die Anzeige hört auf zu fallen, zum ersten Mal seit dem Absturz.
+Du nimmst ihn einem der toten Anzüge ab. Der Verschluss ist für Finger gemacht, die anders zählen als deine, aber er gibt nach, und der Filter läuft weiter, als sei nichts gewesen. An deinem Anzug passt er nicht, und er passt trotzdem; der Rest ist Klebeband und Sturheit. Die Anzeige hört auf zu fallen, zum ersten Mal seit dem Absturz.
 
 ~ take("filter")
 ~ remember("FILTER")
@@ -67,9 +67,9 @@ Du nimmst ihn einem Toten ab. Der Verschluss ist für Finger gemacht, die anders
 
 * [Zurück](#hall)
 
-# Der Fremde {#body}
+# Die fremde Gestalt {#body}
 
-Du siehst dir an, woran er gestorben ist. Er ist nicht erstickt; der Vorrat in seinem System hätte gereicht, nach jeder Rechnung, die du kennst. Er hat aufgehört zu atmen, während genug da war. Die Haltung sagt, dass es keine Panik gab und keinen Kampf — eine Entscheidung, oder das, was bei seiner Art an dieser Stelle steht.
+Du siehst dir an, woran sie gestorben ist. Sie ist nicht erstickt; der Vorrat in ihrem System hätte gereicht, nach jeder Rechnung, die du kennst. Sie hat aufgehört zu atmen, während genug da war. Die Haltung sagt, dass es keine Panik gab und keinen Kampf — eine Entscheidung, oder das, was bei ihrer Art an dieser Stelle steht.
 
 ~ remember("AUFGEHOERT")
 ~ time = time + 15

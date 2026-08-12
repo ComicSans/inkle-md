@@ -26,7 +26,7 @@ Situation der letzten Stunde nachzudenken. Du bist mit der Lage nicht zufrieden.
 
 # An der Mauer {#wall}
 
-Mannshoch, Risse in Mörtel, eine Bruchstelle vom letzten Frost. Abweisend.
+Gut zwei Meter, Risse im Mörtel, eine Bruchstelle vom letzten Frost. Abweisend.
 Der Hausherr hält offenbar wenig von unangemeldeten Gästen, was ihn dir
 beinahe sympathisch macht.
 
@@ -71,7 +71,7 @@ Die Kette, stellst du beim Näherkommen fest, hängt an nichts.
 
 !combat hound
   win  -> door
-  flee [Rennen](#door) Du erreichst die Tür mit dem Atem eines Ertrinkenden und der Würde von jemandem, der eben um sein Leben gerannt ist.
+  flee [Rennen](#door) Du erreichst die Tür atemlos wie beim Ertrinken und mit der Würde, die ein Lauf ums nackte Leben übrig lässt.
 
 # Vor der Tür {#door}
 

@@ -339,10 +339,10 @@ test('when every choice is filtered out, the container runs on', () => {
   assert.equal(s.current.ended, true);
 });
 
-const nachtseite = () => compileFile(join(here, '..', 'examples', 'nachtseite', 'book.yaml')).story;
+const nightside = () => compileFile(join(here, '..', 'examples', 'nightside', 'book.yaml')).story;
 
 test('the nightside runs its clock down over three hundred playthroughs', () => {
-  const story = nachtseite();
+  const story = nightside();
 
   // Both languages, because `en` overrides the nodes entirely (L019): its
   // choices, targets and conditions are the ones that run, and a translation
@@ -369,7 +369,7 @@ test('the nightside runs its clock down over three hundred playthroughs', () => 
 });
 
 test('the nightside advances its own clock, and events read it', () => {
-  const story = nachtseite();
+  const story = nightside();
   const s = new Story(story, { seed: 1 });
   s.begin([['TECHNIK']]);
 

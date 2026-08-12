@@ -15,7 +15,7 @@ Perhaps it counts something other than hours.
 # The Grandfather Clock {#clock}
 
 The pendulum swings, but wrongly: at the top left it hesitates every time,
-like a man drawing breath in the middle of a lie. A draught comes from
+like someone drawing breath in the middle of a lie. A draught comes from
 behind the clock case.
 
 {knows("MECHANIKER"): It does not take you two seconds: this pendulum drives no clockwork. It is being driven. The only question is what use a clock is that measures something other than time.}

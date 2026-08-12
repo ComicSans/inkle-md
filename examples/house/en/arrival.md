@@ -32,7 +32,7 @@ situation of the last hour. You are not happy with it.
 
 # At the Wall {#wall}
 
-Man-high, cracks in the mortar, one gap left by last winter's frost.
+Head-high, cracks in the mortar, one gap left by last winter's frost.
 Forbidding. The master of the house evidently thinks little of
 unannounced guests, which almost endears him to you.
 

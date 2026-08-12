@@ -92,9 +92,9 @@ In the mirror the room stands as it is. The crucifix in your pocket grows
 unpleasantly warm, which for now you ignore.
 
 In the mirror the room stands as it is, except for the tub. In it sits
-someone, regarding you amiably. Then, very slowly, he lifts a hand out of
+a figure, regarding you amiably. Then, very slowly, it lifts a hand out of
 the water and waves. You spin round: the tub behind you is empty. In the
-mirror he is still waving. Your FEAR rises.
+mirror it is still waving. Your FEAR rises.
 
 You close the door behind you with more care than doors usually deserve.
 

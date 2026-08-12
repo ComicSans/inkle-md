@@ -119,7 +119,7 @@ man Briefe öffnet.
 
 {visits(rite) == 1: Vorne steht der Hausherr, als Einziger ohne Kutte. Vermutlich, denkst du, muss man sich nichts überziehen, wenn man selbst das ist, was gerufen wird. Es ist ein alberner Gedanke. Er wird gleich sehr viel weniger albern sein.}
 
-{visits(rite) == 1 and knows("MEIN-NAME"): Jetzt sprechen sie deinen Namen deutlicher aus, und einer korrigiert die Aussprache.}
+{visits(rite) == 1 and knows("MEIN-NAME"): Jetzt sprechen sie deinen Namen deutlicher aus, und eine der Gestalten korrigiert die Aussprache.}
 
 {visits(rite) == 1 and knows("NIEMAND-WARTET"): Beim Abendessen hattest du erwähnt, dass dich niemand erwartet. Der Hausherr hat es sich offenbar notiert.}
 

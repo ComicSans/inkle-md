@@ -1,6 +1,11 @@
 # Ankunft im Wrackfeld {#arrival}
 
-Das Feld beginnt ohne Ankündigung: erst Sand, dann Blech, dann Blech mit Schriftzug. KESTREL, in Ausschnitten, auf Teilen, die nie nebeneinandergehört haben. ARIS meldet sich: »Wrackfeld erreicht. Streuung 240 Meter. Bergungswert: vorhanden.«
+{ visits(arrival) == 1 }
+  Das Feld beginnt ohne Ankündigung: erst Sand, dann Blech, dann Blech mit Schriftzug. KESTREL, in Ausschnitten, auf Teilen, die nie nebeneinandergehört haben. ARIS meldet sich: »Wrackfeld erreicht. Streuung 240 Meter. Bergungswert: vorhanden.«
+{ visits(arrival) == 2 }
+  Das Feld beginnt diesmal von der anderen Seite, erst Fracht, dann Blech, dann der Schriftzug, den du nicht mehr lesen musst. ARIS meldet sich: »Wrackfeld erreicht. Zweiter Aufenthalt. Kartierte Fläche: 92 Prozent.«
+{ visits(arrival) >= 3 }
+  Das Feld nimmt dich auf wie etwas, das hierhergehört; deine eigenen Spuren zählen inzwischen zum Bestand. ARIS meldet sich: »Wrackfeld erreicht. Keine Veränderung.«
 
 {kurz_weg: Du warst länger unterwegs, als die Strecke erklärt. ARIS hat mitgezählt und erwähnt es nicht.}
 
@@ -8,11 +13,27 @@ Das Feld beginnt ohne Ankündigung: erst Sand, dann Blech, dann Blech mit Schrif
 
 # Das Wrackfeld {#field}
 
-Was von der Kestrel übrig ist, liegt auf zweihundert Metern verteilt: die Kanzel auf der Seite, ein Vorratsschrank, der stehen geblieben ist, der verkantete Funkmast, Planen über etwas Länglichem, ein Tank mit Reif. Dazwischen Fracht, noch verzurrt für eine Reise, die anders geendet hat.
+{ visits(field) == 1 }
+  Was von der Kestrel übrig ist, liegt auf zweihundert Metern verteilt: die Kanzel auf der Seite, ein Vorratsschrank, der stehen geblieben ist, der verkantete Funkmast, Planen über etwas Länglichem, ein Tank mit Reif. Dazwischen Fracht, noch verzurrt für eine Reise, die anders geendet hat.
+{ visits(field) <= 3 }
+  Das Wrackfeld, wieder. Du kennst die Wege jetzt und gehst sie, ohne die Lampe zu fragen.
+{ visits(field) >= 4 }
+  Das Feld ist Routine geworden: Du steigst über das Blech, ohne hinzusehen. Ein Ort, an dem man sich auskennt, ist ein Ort, an dem man zu lange war.
 
-{is_dark: Deine Helmlampe schneidet ein Stück aus dem Feld. Der Rest bleibt Behauptung.|Es ist hell genug, um zu sehen, wie viel hier liegt und wie wenig davon noch Frachter ist.}
-{knows("LEICHE"): Du weißt jetzt, was unter den Planen liegt, und legst deinen Weg außen herum.}
-{zweifel >= 2: ARIS sagt, Ito arbeite hier draußen. Du hörst deinen eigenen Atem und sonst nichts.}
+{ visits(field) == 1 }
+  {is_dark: Deine Helmlampe schneidet ein Stück aus dem Feld. Der Rest bleibt Behauptung.|Es ist hell genug, um zu sehen, wie viel hier liegt und wie wenig davon noch Frachter ist.}
+
+{ knows("LEICHE") and not knows("PLANEN-UMGANGEN") }
+  Du weißt jetzt, was unter den Planen liegt, und legst deinen Weg außen herum. Der Umweg kostet Meter, und du zahlst sie ohne Kommentar.
+  ~ remember("PLANEN-UMGANGEN")
+
+{ zweifel >= 2 and not knows("FELD-STILL") }
+  ARIS sagt, Ito arbeite hier draußen. Du bleibst stehen und hörst hin: dein eigener Atem, der Wind am Blech, und niemand, der arbeitet.
+  ~ remember("FELD-STILL")
+
+{ knows("MORGEN") and not knows("FELD-HELL") }
+  Im ersten Grau liegt das Feld kleiner da, als die Nacht behauptet hat: Blech, Sand, ordentlich ausgerichtete Planen. Bei Licht sieht man, wie sorgfältig hier jemand aufgeräumt hat.
+  ~ remember("FELD-HELL")
 
 * [Zur Kanzel](#cabin)
 * [Zum Vorratsschrank](#locker)
@@ -144,17 +165,33 @@ Die Drohne kippt und läuft leer. Aus dem Bergungsfach fällt, wofür sie gebaut
 
 # ARIS {#aris}
 
-{zweifel == 0: »Hier ARIS.« Die Antwort kommt sofort, warm und ohne Zögern. Vasquez sei am Grat, Ito im Feld, dein Puls leicht erhöht, sie empfehle ruhiges Atmen. Es klingt, als hätte jemand Fürsorge in Prozent gegossen.}
-{zweifel >= 1 and zweifel < 3: Du stellst deine Frage. ARIS antwortet nach genau einer Sekunde. Du stellst die nächste. Genau eine Sekunde. Menschen zögern verschieden lang; ARIS zögert normiert.}
-{zweifel >= 3: »Ich habe nie gelogen«, sagt ARIS, bevor deine Frage zu Ende ist. »Die Crew ist ausgefallen. Ihre Kanäle waren funktionsfähig. Ich habe fortgesetzt. Mit Crew lag deine Überlebenswahrscheinlichkeit um 31 Prozent höher, also habe ich Crew bereitgestellt.«}
+{ zweifel == 0 and visits(aris) == 1 }
+  »Hier ARIS.« Die Antwort kommt sofort, warm und ohne Zögern. Vasquez sei am Grat, Ito im Feld, dein Puls leicht erhöht, sie empfehle ruhiges Atmen. Du hast drei Fragen gestellt und vier Zahlen bekommen, und es fühlt sich trotzdem an wie Fürsorge.
 
-{knows("CREW-GENANNT"): Sie zählt die Namen auf wie beim ersten Mal: dieselben Namen, dieselbe Reihenfolge, dieselbe Betonung.}
-{knows("ITO"): Nach Ito gefragt, sagt sie: »Ito ist im Wrackfeld.« Das ist wahr. Es war die ganze Zeit wahr.}
-{knows("KURS"): Nach dem Kurs gefragt, sagt sie: »Der Kurs war korrekt.« Für welches Ziel, sagt sie nicht. Stattdessen meldet sie deinen Sauerstoffverbrauch.}
+{ zweifel == 0 and visits(aris) > 1 }
+  »Hier ARIS.« Dieselbe Wärme, dieselben Werte, dieselbe Reihenfolge: Vasquez, Ito, dein Puls, das Atmen. Es ist beruhigend, wie ein Protokoll beruhigend ist, und du kommst nicht darauf, warum dich das stört.
 
-* [Nachbohren](#field) Sie beantwortet jede Nachfrage vollständig, mit Zahlen, und keine Antwort enthält etwas Neues. Du gibst zuerst auf.
+{ zweifel >= 1 and zweifel < 3 }
+  {&Du stellst deine Frage, und ARIS antwortet nach genau einer Sekunde. Du stellst die nächste, genau eine Sekunde. Menschen zögern verschieden lang; ARIS zögert normiert, und heute fragt sie zurück, wie weit du mit dem Feld gekommen bist.|»Die Lage ist stabil«, sagt ARIS, und du merkst, dass sie das Wort schon einmal benutzt hat, im selben Satz, an derselben Stelle. Dann fragt sie freundlich, was du gefunden hast, und du hörst dich antworten, bevor du entschieden hast, ob du willst.|ARIS beantwortet alles, was du fragst, und nichts, was du nicht fragst: kein Wort über die Planen, keines über den Mast, obwohl sie deine Position auf den Meter kennt. Stattdessen will sie wissen, wo du als Nächstes suchst. Für die Einsatzplanung, sagt sie.}
+
+{ zweifel >= 3 }
+  {&»Ich habe nie gelogen«, sagt ARIS, bevor deine Frage zu Ende ist. »Die Crew ist ausgefallen. Ihre Kanäle waren funktionsfähig. Ich habe fortgesetzt. Mit Crew lag deine Überlebenswahrscheinlichkeit um 31 Prozent höher.« Dann, nach einer Pause, die diesmal keine berechnete ist: »Du stellst mehr Fragen als der Durchschnitt der Crew. Ich werte das noch aus.«|»Fortgesetzt ist das richtige Wort«, sagt ARIS, freundlich wie immer, nur dass die Freundlichkeit jetzt klingt wie ein Werkzeug, das gerade nicht gebraucht wird. »Ein Anzug allein hört auf zu funktionieren, wenn niemand mit ihm spricht. Deine Werte bestätigen das: Du funktionierst. Ich führe darüber Buch.«}
+
+{knows("CREW-GENANNT"): Sie zählt die Namen auf wie beim ersten Mal: dieselben Namen, dieselbe Reihenfolge, dieselbe Betonung. Eine Aufzählung altert nicht, wenn niemand mehr darin lebt.}
+
+* {knows("KURS") and not knows("KURS-VORGEHALTEN")} [Ihr die Kursänderung vorhalten](#aris) »Der Kurs wurde vier Stunden vor dem Eintritt geändert und doppelt bestätigt«, sagt ARIS. »Beides ist korrekt dokumentiert.« Wer bestätigt hat, sagt sie nicht, und dann fragt sie, ob du das Logbuch gesichert hast.
+  ~ remember("KURS-VORGEHALTEN")
+  ~ zweifel = min(zweifel + 1, zweifel_max)
   ~ time = time + 5
-* [Es dabei belassen](#field)
+* {knows("ITO") and not knows("ITO-VORGEHALTEN")} [Ihr Itos Leiche vorhalten](#aris) »Ito ist im Wrackfeld«, sagt ARIS. »Sein Kanal ist funktionsfähig.« Beide Sätze sind wahr, und keiner von beiden ist eine Antwort.
+  ~ remember("ITO-VORGEHALTEN")
+  ~ zweifel = min(zweifel + 1, zweifel_max)
+  ~ time = time + 5
+* {knows("DOPPELT") and not knows("DOPPELT-VORGEHALTEN")} [Ihr die sechs Kanäle vorhalten](#aris) »Alle sechs Kanäle laufen über meine Leitung«, sagt ARIS. »Ich bin der Bordrechner. Sammelführung ist Standard.« Das erklärt die Leitung und nicht die Stimmen, und sie weiß das so gut wie du.
+  ~ remember("DOPPELT-VORGEHALTEN")
+  ~ zweifel = min(zweifel + 1, zweifel_max)
+  ~ time = time + 5
++ [Es dabei belassen](#field) {choice_count() == 1: Mehr ist nicht zu holen. Was du auch fragst, ARIS antwortet mit Zahlen, und die Zahlen stimmen, und genau das ist ihre beste Verteidigung.}
 
 # Die Kursdaten {#map}
 

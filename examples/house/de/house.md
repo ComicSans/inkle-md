@@ -65,7 +65,7 @@ du die Titel liest, desto panischer wirst du: Bücher über Beschwörungen. Übe
 Die Macht der wahren Namen. Bücher darüber, wie man etwas ruft - und drei
 deutlich dünnere darüber, wie man es wieder loswird.
 
-{!Du schlägst eines auf und liest eine halbe Seite über das, was ein Gerufener als Lohn verlangt, und in welcher Reihenfolge er es sich nimmt. Du stellst das Buch zurück und wischst dir die Hand am Mantel ab.|Die Bücher sind noch da. Du bist noch da. Nur eines von beidem beruhigt dich.}
+{!Du schlägst eines auf und liest eine halbe Seite über das, was etwas Gerufenes als Lohn verlangt, und in welcher Reihenfolge es sich nimmt. Du stellst das Buch zurück und wischst dir die Hand am Mantel ab.|Die Bücher sind noch da. Du bist noch da. Nur eines von beidem beruhigt dich.}
 
 { visits(library) == 1 }
   ~ fear = fear + 1
@@ -105,9 +105,9 @@ Niemand da. Die Seife ist benutzt.
     ~ remember("DER-SPIEGEL")
   { else }
     Im Spiegel steht der Raum, wie er ist, bis auf die Wanne. In der sitzt
-    jemand und sieht dich freundlich an. Dann hebt er, sehr langsam, eine
+    eine Gestalt und sieht dich freundlich an. Dann hebt sie, sehr langsam, eine
     Hand aus dem Wasser und winkt. Du fährst herum: Die Wanne hinter dir ist
-    leer. Im Spiegel winkt er immer noch. Deine ANGST steigt.
+    leer. Im Spiegel winkt sie immer noch. Deine ANGST steigt.
     ~ fear = fear + 2
 ---
 Du schließt die Tür hinter dir mit mehr Sorgfalt, als Türen sonst verdienen.
@@ -163,7 +163,7 @@ Wohin solltest du schon gehen. Deine ANGST steigt.
 + [Dich verabschieden]()
 ---
 Als du dich an der Tür noch einmal umdrehst, steht sie am Fenster und sieht
-hinaus wie jemand, der den Ausblick auswendig kennt und trotzdem prüft.
+hinaus als kenne sie den Ausblick auswendig und prüfe ihn trotzdem.
 
 -> tower-out
 
@@ -173,7 +173,7 @@ hinaus wie jemand, der den Ausblick auswendig kennt und trotzdem prüft.
 
 {choice_count() == 1: Es gibt nur einen Weg, und er führt hinunter.}
 
-* {knows("BETAEUBT") and knows("MECHANIKER")} [Die Scharniere mit dem Taschenmesser aushängen]() Riegel sind Überzeugungssache, Scharniere sind Physik. Die Tür lehnt sich dir in die Arme wie ein müder Kollege.
+* {knows("BETAEUBT") and knows("MECHANIKER")} [Die Scharniere mit dem Taschenmesser aushängen]() Riegel sind Überzeugungssache, Scharniere sind Physik. Die Tür lehnt sich dir in die Arme müde wie nach einer Doppelschicht.
 * {knows("BETAEUBT")} [Die Schulter benutzen]()
   { test("skill") }
     Der Riegel hält. Der Rahmen nicht.

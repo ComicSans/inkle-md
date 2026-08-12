@@ -18,7 +18,7 @@ zählt sie etwas anderes als Stunden.
 # Die Standuhr {#clock}
 
 Das Pendel schwingt, aber falsch: links oben zögert es jedes Mal einen
-Moment, wie ein Mann, der beim Lügen Luft holt. Hinter dem Uhrenkasten zieht
+Moment, wie ein Atemzug vor einer Lüge. Hinter dem Uhrenkasten zieht
 es.
 
 {knows("MECHANIKER"): Du brauchst keine zwei Sekunden: Dieses Pendel treibt kein Uhrwerk. Es wird getrieben. Die Frage ist nur, wozu eine Uhr gut sein soll, die etwas anderes misst als Zeit.}

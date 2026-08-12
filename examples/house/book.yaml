@@ -52,9 +52,9 @@ setup:
   - title: { de: Was steht in deinen Papieren?, en: What do your papers say? }
     pick: 1
     from:
-      - { label: { de: Handlungsreisender für Kurzwaren, en: Travelling salesman in haberdashery }, remember: VERTRETER }
-      - { label: { de: Automechaniker, en: Motor mechanic }, remember: MECHANIKER }
-      - { label: { de: Journalist, en: Journalist }, remember: JOURNALIST }
+      - { label: { de: Reist in Kurzwaren, en: Travels in haberdashery }, remember: VERTRETER }
+      - { label: { de: Repariert Automobile, en: Motor mechanic }, remember: MECHANIKER }
+      - { label: { de: Schreibt für den Lokalteil, en: Journalist }, remember: JOURNALIST }
 
 combat:
   attack: "skill + roll(2,6) + weapon_attack"
