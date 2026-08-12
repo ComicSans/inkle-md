@@ -1028,19 +1028,22 @@ Two of the warnings above lean on that same walk, and it helps to see how. The r
 ## 12. Web export
 
 Once your book lints clean, you will want to hand it to readers. That is what
-the export is for. `inkle-md build book.yaml --out play.html` produces a
+the export is for. `inkle-md export book.yaml --out play.html` produces a
 single HTML file: the story JSON embedded as a
 `<script type="application/json">`, the runtime below it. No framework, no
 external resources, no network access at runtime. You can put that one file on
 any web space, or send it in a mail, and it plays.
 
-By default the export stays readable. The runtime keeps its names, its line
-breaks and its comments, and the embedded JSON keeps its indentation, so you
-can open the file and follow what it does. Add `--minify` and the exporter
-shrinks both before writing them: comments and needless whitespace go, and the
-JSON is written on one line. Nothing is renamed, because a rename needs a
-JavaScript parser and the gain does not pay for one. Nothing about the story changes, and the same book plays the same
-way either way. The target size, under 30 kB compressed, is the size of the
+By default the runtime travels as it is written, with its comments and its
+indentation, so you can open the file and follow what it does. Add `--minify`
+and the exporter drops the comment lines, the blank lines and the indentation
+from the runtime, the view and the stylesheet before writing them. Line breaks
+stay where they are, so no semicolon has to be guessed, and nothing is
+renamed: a rename needs a JavaScript parser, and the kilobytes it would save
+do not pay for one. The licence notice stays either way, and so does the
+embedded JSON, which is compact in both cases because nobody reads a story
+tree by hand. Nothing about the story changes, and the same book plays the
+same way. The target size, under 30 kB compressed, is the size of the
 minified file, so keep the flag off while you are still working and turn it on
 for the copy you hand out. The minifier is part of the exporter, written here
 rather than installed, like everything else in this project.

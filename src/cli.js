@@ -9,7 +9,7 @@
 /**
  * inkle-md build    <entry> [--out file.json] [--strict] [--quiet]
  * inkle-md lint     <entry> [--strict] [--json]
- * inkle-md export   <entry> [--out file.html] [--strict]
+ * inkle-md export   <entry> [--out file.html] [--strict] [--minify]
  * inkle-md play     <entry> [--seed N] [--lang xx] [--script 1,2,a,a] [--host k=v] [--json]
  * inkle-md simulate <entry> [--runs N] [--host k=v] [--json]
  * inkle-md mcp
@@ -38,7 +38,7 @@ function main(argv) {
       'usage:',
       '  inkle-md build    <entry> [--out FILE] [--strict] [--quiet]',
       '  inkle-md lint     <entry> [--strict] [--json]',
-      '  inkle-md export   <entry> [--out FILE] [--strict]',
+      '  inkle-md export   <entry> [--out FILE] [--strict] [--minify]',
       '  inkle-md play     <entry> [--seed N] [--lang xx] [--script 1,2,a] [--host k=v] [--json]',
       '  inkle-md simulate <entry> [--runs N] [--host k=v] [--json]',
       '  inkle-md mcp',
@@ -126,7 +126,9 @@ function main(argv) {
     return 1;
   }
 
-  const output = command === 'export' ? exportHtml(story) : `${JSON.stringify(story, null, 2)}\n`;
+  const output = command === 'export'
+    ? exportHtml(story, { minify: flags.has('--minify') })
+    : `${JSON.stringify(story, null, 2)}\n`;
   if (out) {
     mkdirSync(dirname(out), { recursive: true });
     writeFileSync(out, output);

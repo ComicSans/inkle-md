@@ -348,7 +348,12 @@ export class Story {
     this.#diverts = 0;
     const fight = this.combat;
     if (!fight?.canFlee) return false;
-    this.state.vars.stamina -= 2;
+    // What running away costs is the book's to set (SPEC 7); a story JSON
+    // from before that was so falls back to the Fighting Fantasy two.
+    const cost = this.config.combat.flee_cost
+      ? Math.max(0, this.#evaluate(this.config.combat.flee_cost))
+      : 2;
+    this.state.vars.stamina -= cost;
     const exit = fight.exits.flee;
     this.combat = null;
     this.state.fight = null;

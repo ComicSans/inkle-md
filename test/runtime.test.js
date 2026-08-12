@@ -107,6 +107,61 @@ test('combat runs round by round and ends in an exit', () => {
   assert.ok(['chamber', 'death'].includes(s.current.node));
 });
 
+/** A fight you can run from at once, so the price of fleeing is all it tests. */
+function fleeBook(combat = '') {
+  return compile(`# A {#a}
+
+!combat rat
+  win  -> END
+  flee [Run](#b) You go.
+
+# B {#b}
+
+-> END
+`, {
+    frontmatter: `---
+title: Flight
+start: a
+stats:
+  stamina: { start: 20 }
+combat:
+  attack: "roll(1,6)"
+  damage: "1"
+${combat}enemies:
+  rat: { name: Rat, skill: 1, stamina: 99, flee_after: 0 }
+---
+`,
+  }).story;
+}
+
+test('fleeing costs two stamina where the book says nothing', () => {
+  const s = play(fleeBook());
+  assert.ok(s.combat, 'a fight started');
+  assert.equal(s.flee(), true);
+  assert.equal(s.state.vars.stamina, 18);
+  assert.equal(s.current.node, 'b');
+});
+
+test('a book sets its own price for running away', () => {
+  const dear = play(fleeBook('  flee_cost: "5"\n'));
+  dear.flee();
+  assert.equal(dear.state.vars.stamina, 15);
+
+  const free = play(fleeBook('  flee_cost: "0"\n'));
+  free.flee();
+  assert.equal(free.state.vars.stamina, 20, 'nothing was taken');
+
+  const scaled = play(fleeBook('  flee_cost: "stamina / 4"\n'));
+  scaled.flee();
+  assert.equal(scaled.state.vars.stamina, 15, 'the expression saw the stats');
+});
+
+test('a negative flee cost is no free healing', () => {
+  const s = play(fleeBook('  flee_cost: "0 - 6"\n'));
+  s.flee();
+  assert.equal(s.state.vars.stamina, 20);
+});
+
 test('death diverts where the frontmatter says', () => {
   const s = play(example());
   s.state.vars.stamina = 1;

@@ -95,11 +95,15 @@ button:disabled { opacity: .5; cursor: default; }
 
 /**
  * @param {object} story story JSON per SPEC 9.1
+ * @param {{minify?: boolean}} options `minify` drops comments and indentation
+ *        from the runtime, the view and the stylesheet (SPEC 12)
  * @returns {string} a complete HTML document
  */
-export function exportHtml(story) {
-  const runtime = read('runtime.js').replace(/^export /gm, '');
-  const view = read('view.js').replace(/^export /gm, '');
+export function exportHtml(story, options = {}) {
+  const shrink = options.minify ? strip : (s) => s;
+  const runtime = shrink(read('runtime.js').replace(/^export /gm, ''));
+  const view = shrink(read('view.js').replace(/^export /gm, ''));
+  const css = shrink(CSS);
   const title = pick(story.meta.title) ?? 'inkle-md';
 
   return `<!doctype html>
@@ -108,7 +112,7 @@ export function exportHtml(story) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(title)}</title>
-<style>${CSS}</style>
+<style>${css}</style>
 </head>
 <body>
 <div id="app"></div>
@@ -128,6 +132,40 @@ mount(JSON.parse(document.getElementById('story').textContent), document.getElem
 
 function read(name) {
   return readFileSync(join(here, name), 'utf8');
+}
+
+/**
+ * The whole minifier of SPEC 12: comment lines, blank lines and indentation
+ * go, everything else stays where it is. Line breaks survive, so no semicolon
+ * has to be guessed and no name is rewritten; that would need a JavaScript
+ * parser, and the kilobytes it would save do not pay for one. The same pass
+ * serves CSS, whose comments are the block form as well.
+ */
+function strip(source) {
+  const out = [];
+  let inBlock = false;
+
+  for (const raw of source.split('\n')) {
+    let line = raw.trim();
+
+    if (inBlock) {
+      const end = line.indexOf('*/');
+      if (end < 0) continue;
+      inBlock = false;
+      line = line.slice(end + 2).trim();
+    }
+
+    while (line.startsWith('/*')) {
+      const end = line.indexOf('*/', 2);
+      if (end < 0) { inBlock = true; line = ''; break; }
+      line = line.slice(end + 2).trim();
+    }
+
+    if (line === '' || line.startsWith('//')) continue;
+    out.push(line);
+  }
+
+  return out.join('\n');
 }
 
 function pick(value) {

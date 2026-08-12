@@ -353,6 +353,9 @@ export function validateFrontmatter(data, ctx) {
     config.combat = {
       attack: asExpression(data.combat.attack, 'combat.attack', at),
       damage: asExpression(data.combat.damage ?? 2, 'combat.damage', at),
+      // Two stamina is the Fighting Fantasy rule, and a default rather than a
+      // fixture: a book that wants another price writes one (SPEC 7).
+      flee_cost: asExpression(data.combat.flee_cost ?? 2, 'combat.flee_cost', at),
       rule: data.combat.rule ?? 'higher-wins',
       luck_in_combat: data.combat.luck_in_combat ?? false,
     };
