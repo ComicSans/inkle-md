@@ -3,6 +3,44 @@
     "inkle-md": {
       "command": "node",
       "args": ["src/cli.js", "mcp"]
+    },
+    "msc-agent-memory": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "/Users/tobias/GitHub/mcp-server/agent-memory/src/server.mjs"
+      ],
+      "env": {
+        "MSC_PROJECTS_ROOT": "/Users/tobias/GitHub:/Users/tobias/website"
+      }
+    },
+    "msc-simulator-broker": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "/Users/tobias/GitHub/mcp-server/simulator-broker/src/server.mjs"
+      ],
+      "env": {
+        "MSC_PROJECTS_ROOT": "/Users/tobias/GitHub:/Users/tobias/website"
+      }
+    },
+    "msc-sourcemap": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "/Users/tobias/GitHub/mcp-server/sourcemap/src/server.mjs"
+      ],
+      "env": {
+        "MSC_PROJECTS_ROOT": "/Users/tobias/GitHub:/Users/tobias/website"
+      }
+    },
+    "swift-contracts": {
+      "type": "stdio",
+      "command": "/Users/tobias/GitHub/swift-contracts/.build/release/swift-contracts-mcp",
+      "args": [],
+      "env": {
+        "SWIFT_CONTRACTS_HOME": "/Users/tobias/GitHub/swift-contracts"
+      }
     }
   }
 }
