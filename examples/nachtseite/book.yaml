@@ -1,0 +1,129 @@
+title: { de: Nachtseite, en: Nightside }
+author: inkle-md
+version: 0.1.0
+start: crash.wake
+
+languages:
+  default: de
+  available: [de, en]
+
+chapters:
+  - crash.md
+  - wreck.md
+  - ridge.md
+  - basin.md
+  - ende.md
+
+stats:
+  skill:    { name: { de: Geschick, en: Skill }, start: "roll(1,6) + 6", max: start }
+  stamina:  { name: { de: Verfassung, en: Condition }, start: "roll(2,6) + 12", max: start }
+  luck:     { name: { de: Glück, en: Luck }, start: "roll(1,6) + 6", max: start }
+  air:      { name: { de: Atemluft, en: Air }, start: 90, max: 120 }
+  time:     { name: { de: Zeit, en: Time }, start: 0 }
+  location: { name: { de: Ort, en: Place }, start: 0 }
+  zweifel:  { name: { de: Zweifel, en: Doubt }, start: 0, max: 4 }
+
+facts:
+  day_length: { source: fixed, value: 1200 }
+  elapsed:    { source: host, range: [0, 604800], fallback: 0,
+                name: { de: Verstrichen, en: Elapsed } }
+  tick:       { source: derived, value: 'min(elapsed, 3600)' }
+  kurz_weg:   { source: derived, value: 'tick > 120' }
+  lang_weg:   { source: derived, value: 'tick > 900' }
+  is_dark:    { source: derived, value: 'time % day_length < 600' }
+
+places:
+  variable: location
+  table:
+    - { id: crash, name: { de: Absturzstelle, en: Crash Site }, enter: crash.arrival }
+    - { id: wreck, name: { de: Wrackfeld, en: Wreck Field }, enter: wreck.arrival }
+    - { id: ridge, name: { de: Der Grat, en: The Ridge }, enter: ridge.arrival }
+    - { id: basin, name: { de: Die Senke, en: The Basin }, enter: basin.arrival }
+
+events:
+  # Jeder Zug kostet Zeit, sonst waere Herumlaufen zwischen den Hubs gratis
+  # und die Uhr wuerde nur bei teuren Handlungen druecken.
+  pace:
+    counter: 'turns()'
+    every: 1
+    max_catchup: 1
+    do: 'time = time + 3'
+
+  air_drain:
+    counter: 'time'
+    every: 8
+    max_catchup: 12
+    do: 'air -= 1'
+
+  wound_drag:
+    counter: 'time'
+    every: 10
+    max_catchup: 6
+    when: 'knows("WUNDE")'
+    do: 'air -= 1'
+
+  filter_feeds:
+    counter: 'time'
+    every: 8
+    max_catchup: 12
+    when: 'knows("FILTER") and location == place("basin")'
+    do: 'air = min(air + 2, air_max)'
+
+  aris_slip:
+    counter: 'time'
+    every: 60
+    max_catchup: 1
+    do: 'zweifel = min(zweifel + 1, zweifel_max)'
+
+  dawn:
+    once: true
+    when: 'time >= 600'
+    do: 'remember("MORGEN")'
+
+inventory:
+  slots: 8
+  start: [lampe]
+
+items:
+  lampe:       { name: { de: Helmlampe, en: Helmet Lamp }, kind: gear }
+  brechstange: { name: { de: Brechstange, en: Pry Bar }, kind: weapon }
+  seil:        { name: { de: Sicherungsseil, en: Safety Line }, kind: gear }
+  logbuch:     { name: { de: Logbuch der Kestrel, en: "Kestrel's Log" }, kind: gear }
+  filter:      { name: { de: Fremder Filter, en: Alien Filter }, kind: gear }
+  kartusche:   { name: { de: Sauerstoffkartusche, en: Oxygen Cartridge },
+                 kind: consumable, uses: 3,
+                 effect: "air = min(air + 25, air_max)",
+                 when: "not in_combat" }
+  medikit:     { name: { de: Notfallbeutel, en: Emergency Kit },
+                 kind: consumable, uses: 2,
+                 effect: "stamina = min(stamina + 4, stamina_max)",
+                 when: "not in_combat" }
+
+setup:
+  - title: { de: Was war deine Rolle an Bord?, en: What was your post aboard? }
+    pick: 1
+    from:
+      - { label: { de: Navigatorin, en: Navigator }, remember: NAVIGATION }
+      - { label: { de: Technikerin, en: Engineer }, remember: TECHNIK }
+      - { label: { de: Bordärztin, en: "Ship's Doctor" }, remember: MEDIZIN }
+
+combat:
+  attack: "skill + roll(2,6) + weapon_attack"
+  damage: "max(weapon_damage, 2) - armour_defence"
+  rule: higher-wins
+  luck_in_combat: true
+
+enemies:
+  drohne: { name: { de: Bergungsdrohne, en: Salvage Drone }, skill: 6, stamina: 8, flee_after: 2 }
+
+death:
+  when: "air <= 0 or stamina <= 0"
+  goto: ende.erstickt
+
+undo:
+  depth: 10
+
+strings:
+  combat.hit:   { de: "Du triffst die Drohne.", en: "You strike the drone." }
+  combat.taken: { de: "Die Drohne trifft dich.", en: "The drone strikes you." }
+  combat.tie:   { de: "Ihr weicht einander aus, und nichts geschieht.", en: "You dodge each other, and nothing comes of it." }

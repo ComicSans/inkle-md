@@ -338,3 +338,46 @@ test('when every choice is filtered out, the container runs on', () => {
   assert.match(s.current.text[0].text, /Nothing happened/);
   assert.equal(s.current.ended, true);
 });
+
+const nachtseite = () => compileFile(join(here, '..', 'examples', 'nachtseite', 'book.yaml')).story;
+
+test('the nightside runs its clock down over three hundred playthroughs', () => {
+  const story = nachtseite();
+  const ends = new Set();
+
+  for (let seed = 1; seed <= 300; seed++) {
+    const s = new Story(story, { seed });
+    s.begin([[s.setup[0].from[seed % 3].remember]]);
+
+    const run = walk(s, { seed, maxSteps: 200 });
+    assert.ok(!run.deadEnd, `dead end at ${s.current.node} (seed ${seed})`);
+    assert.ok(run.ended, `seed ${seed} never finished`);
+    ends.add(s.current.node);
+  }
+
+  // The oxygen clock has to be able to kill, and the way out has to exist.
+  assert.ok(ends.has('ende.erstickt'), 'nobody ever ran out of air');
+  assert.ok(ends.has('ende.rettung'), 'nobody ever got off the planet');
+});
+
+test('the nightside advances its own clock, and events read it', () => {
+  const story = nachtseite();
+  const s = new Story(story, { seed: 1 });
+  s.begin([['TECHNIK']]);
+
+  const air = s.state.vars.air;
+  const time = s.state.vars.time;
+  s.choose(s.current.choices[0].index);
+  assert.ok(s.state.vars.time > time, 'a turn costs story time');
+  assert.ok(s.state.vars.air <= air, 'story time costs air');
+
+  // `elapsed` is a host fact: without a host it stays at its fallback, and the
+  // book still plays (SPEC 15.4).
+  assert.equal(s.facts.elapsed, 0);
+  s.advance({ elapsed: 1800 });
+  assert.equal(s.facts.elapsed, 1800);
+  assert.equal(s.facts.tick, 1800, 'tick caps at an hour');
+  assert.equal(s.facts.lang_weg, 1, 'half an hour away is a long time away');
+  s.advance({});
+  assert.equal(s.facts.elapsed, 0, 'a host value is consumed by its boundary');
+});

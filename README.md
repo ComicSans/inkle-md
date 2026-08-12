@@ -62,6 +62,7 @@ names the chapter files and every node carries its `file` and `line`.
 | `examples/thornwood.md` | One file, one language: creation, combat, two endings |
 | `examples/thornwood-book/` | The same book as a project: two chapters, German and English |
 | `examples/house/` | A full-length book: 46 nodes, a fear stat that kills, secrets, three endings |
+| `examples/nachtseite/` | The 0.7 layer at work: facts, events, places, an oxygen clock, five endings |
 
 ## Three rules worth knowing before writing a book
 
