@@ -14,9 +14,12 @@ logic, and no presentation anywhere in a book.
 Decided on 2026-08-12: a third layer named `facts`, read-only to the book;
 events that assign and never divert; a place table addressed by index; game
 time as an ordinary variable rather than a feature; relative durations rather
-than an epoch; no calendar and no ephemeris in this draft. Sections 14 to 24
-carry that part; sections 1 to 13 are amended in place, and section 22 lists
-where.
+than an epoch; no calendar and no ephemeris.
+
+Every section stands on its own: what a rule is, this document says, and it
+says it where the rule lives. Section 22 is the one place that looks backwards,
+and it is there for a reader coming from an older draft, not for a reader
+learning the language.
 
 ## 1. Principles
 
@@ -364,8 +367,8 @@ The letter is written in a shaky hand. {.letter}
 
 `{.name}` at the end of a paragraph says what kind of text this is, not what
 it should look like. The view layer decides whether a letter is indented,
-boxed or italic. There is no other formatting control and no image support in
-this draft.
+boxed or italic. There is no other formatting control. Images are a decided
+but unbuilt part of the language; 23.5 says what is still open about them.
 
 ### 4.10 Functions
 
@@ -1133,12 +1136,12 @@ Your adventure ends here.
 -> END
 ```
 
-## 14. Principles, continued
+## 14. What is a fact, and what is a variable
 
-The three principles of 0.6 hold. Three more join them, written out in
-section 1, and they are the whole of this draft in one place: the book holds
-no time, a fact is a pure function of its state, and facts are read-only to
-the book.
+Principles 7 to 9 carry everything from here to section 20: the book holds no
+time, a fact is a pure function of its state, and facts are read-only to the
+book. A book that keeps those three can be replayed from a seed and a save,
+which is what the rest of this document spends its rules on.
 
 The test that separates a fact from a variable, and the one to apply when a
 case is unclear: does the reader change the world, or only which slice of it
@@ -1232,7 +1235,7 @@ out numbers; twilight is a definition, and the book writes its own:
 
 ### 15.4 Host facts
 
-A host fact is the one thing this draft cannot compute. The host supplies
+A host fact is the one thing the language cannot compute for itself. The host supplies
 it at a boundary (16.1); the runtime clamps it into `range:` and never
 reads anything on its own, which is what keeps principle 8 true.
 
@@ -1240,8 +1243,8 @@ Without a host, or when a host supplies nothing, `fallback:` applies. A
 book therefore always plays: the single-file export of section 12 stays a
 complete game, and no book may require a network, per principle 6.
 
-This draft defines exactly one host fact by convention, because a book
-that wants elapsed real time should not invent its own name:
+Exactly one host fact is defined by convention, because a book that wants
+elapsed real time should not invent its own name:
 
 | Name      | Unit    | Meaning                                          |
 | --------- | ------- | ------------------------------------------------ |
@@ -1472,7 +1475,10 @@ assignment whose value came from `place()`, which reads the common spelling
 and misses a book that computes its index. That is why L026 is a warning in
 both cases: it is exact about what it saw, never about what the author meant.
 
-## 20. Runtime API, continued
+## 20. Runtime API: boundaries and facts
+
+The calls of 12.1 stay as they are; these three are what a host needs to bring
+time in and to read the snapshot back out.
 
 ```
 story.advance(host);        // a boundary: take host values, compute, run events
@@ -1490,39 +1496,14 @@ same seconds to both.
 Nothing in the runtime reads a clock. A host that wants real time measures
 it and passes it in, which is what makes a scripted replay reproducible.
 
-## 21. New codes
+## 21. Why these checks exist
 
-Errors, listed here and in the table of 10.3:
+The codes themselves live where every other code lives: errors in the table of
+10.3, warnings in the table of section 11. What belongs here is the reasoning
+behind the ones a reader would otherwise take for arbitrary.
 
-| Code | Error                                                            |
-| ---- | ---------------------------------------------------------------- |
-| E160 | Unknown fact `source:`                                           |
-| E161 | Fact missing a field its source requires                         |
-| E162 | `fixed` value or `fallback` outside the declared `range:`        |
-| E163 | Fact reading a later-declared fact, or a cycle among facts       |
-| E164 | Assignment to a fact                                             |
-| E165 | `place()` with an unknown id                                     |
-| E166 | Place `enter:` naming an unknown node                            |
-| E167 | Event without `do:`                                              |
-| E168 | Event with both `once:` and `every:`                             |
-| E169 | Fact expression that is not pure: dice, or a call that changes state |
-| E170 | Fact name colliding with a stat or variable                      |
-
-E169 is not in the 0.7 draft as it was written. It is here because principle
-8 is otherwise unenforced, and an unenforced principle is a comment.
-
-Warnings, listed here and in the table of section 11:
-
-| Code | Rule                                                             | Level   |
-| ---- | ---------------------------------------------------------------- | ------- |
-| L021 | Event that can never fire: its threshold exceeds the longest path | warning |
-| L022 | Event whose assignment is never read                             | warning |
-| L023 | Fact never read anywhere                                         | info    |
-| L024 | Fact depending on a variable that is never written               | warning |
-| L025 | Content unreachable when every host fact takes its fallback      | warning |
-| L026 | Divert into a place's `enter:` node without setting the index     | warning |
-| L027 | Recurring event without `max_catchup:`                           | info    |
-| L028 | Gather diverting back into its own node while every choice can run out | warning |
+E169 rejects a fact expression that draws dice or changes state. Without it
+principle 8 is unenforced, and an unenforced principle is a comment.
 
 L021 needs nothing new: the reachability report of section 11 already
 computes the longest path. It answers the question a branching book
@@ -1550,11 +1531,16 @@ raises an error naming the node it started from. Without that bound the loop
 L028 describes ends as a stack overflow, and a stack trace tells an author
 nothing about which node to fix.
 
-## 22. Amendments to draft 0.6
+## 22. Change notes
+
+The only section that speaks of an older draft. Everything else in this
+document is written to be read without one.
+
+### 0.6 to 0.7
 
 | Section | Change                                                                 |
 | ------- | ---------------------------------------------------------------------- |
-| 1       | Principles 7 to 9 added, per section 14.                               |
+| 1       | Principles 7 to 9 added, and section 14 with the test behind them.     |
 | 5       | `place(id)` added to the built-in functions.                           |
 | 6       | `facts:`, `events:` and `places:` added to the book-wide declarations, and therefore to what E012 rejects in a chapter file. |
 | 8       | `host`, `facts` and `events` added to the save; 8.1 states that a checkpoint omits `facts`. |
@@ -1594,17 +1580,15 @@ nothing about which node to fix.
    missing, and an export that refuses a path pointing outside its directory.
    It is the only open point that changes what a book looks like, so it comes
    first.
-2. A third example that uses facts, events and places. The two that exist
-   predate 0.7 and pass `--strict` without ever touching the layer, which
-   means the acceptance test does not cover it and only the unit tests do.
-3. The second `max_catchup:` mode of 23.4, decided against a book that is put
+2. The second `max_catchup:` mode of 23.4, decided against a book that is put
    down for a week rather than against a table of turns.
-4. Calendar and ephemeris (23.1, 23.2) last, and only once a book asks for
+3. Calendar and ephemeris (23.1, 23.2) last, and only once a book asks for
    them: they are the one open point that costs the language an epoch.
 
-The steps of 0.6 and 0.7 came before these and are the ground they stand on:
-grammar, parser and story JSON per sections 10 and 9.1; the linter of section
-11 with its reachability report; facts and the two-pass boundary; the
-scheduler with its catch-up anchor; places and L026; and `play` and
-`simulate`, without which a book with scheduled content cannot be tested at
-all. All of it is built, and every example in this document is a test case.
+What these steps stand on is built: grammar, parser and story JSON per
+sections 10 and 9.1; the linter of section 11 with its reachability report;
+facts and the two-pass boundary; the scheduler with its catch-up anchor;
+places and L026; `play` and `simulate`, without which a book with scheduled
+content cannot be tested at all; and three examples, one of which puts facts,
+events, places and a clock through the acceptance test rather than leaving
+them to the unit tests. Every example in this document is a test case.
