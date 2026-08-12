@@ -907,9 +907,12 @@ nodes, endings found, longest and shortest path from start to an ending,
 counted over choices without evaluating conditions. That report is the closest
 thing to proofreading a branching book.
 
-The report is computed twice: once as above, and once with every host fact at
-its `fallback:`, which is the run L025 reads. A book whose good ending needs a
-host is a book that quietly loses content when it is played as one file.
+The reachability walk behind the report is run a second time with every host
+fact at its `fallback:`, and L025 reads the difference. The report itself
+carries the numbers of the first run: a reader with no host gets a smaller
+book, and saying so is the warning's job, not the report's. A book whose good
+ending needs a host is a book that quietly loses content when it is played as
+one file.
 L021 needs nothing new beyond the first run: the longest path answers the
 question a branching book cannot be proofread for, whether the relief that was
 scheduled for turn three hundred can arrive at all.
@@ -1275,10 +1278,17 @@ promise L020 makes about dice.
 
 **One boundary per completed transition.** A choice that runs a body and then
 diverts is one boundary, not two, and a chain of diverts arriving at the page
-the reader ends up on is still one. Concretely: `begin`, `choose` and
-`advance` each publish exactly one snapshot. Without that rule an event with a
-`when:` and no counter would fire once or twice per click depending on whether
-the author happened to write a divert, which is a difference a reader can see.
+the reader ends up on is still one. Concretely: `begin`, `choose`, `advance`
+and leaving a fight through one of its exits each publish exactly one
+snapshot. Without that rule an event with a `when:` and no counter would fire
+once or twice per click depending on whether the author happened to write a
+divert, which is a difference a reader can see.
+
+Two moments deliberately have none. A **combat round** is not a boundary: the
+fight is one page, and an event firing between two swings would be a page
+contradicting itself mid-round. The **death page an event sent the reader to**
+is not one either, because the event that killed them would otherwise run
+again on the page it chose.
 
 The boundary falls after the choice's own effects and before the page that
 follows them is built. `~ time += 5` in a choice is the departure; the
@@ -1523,7 +1533,7 @@ that quietly loses content when it is played as one file.
 | 9.1     | `config` gains `facts`, `events` and `places`.                         |
 | 10.1    | Fact and event expressions are parsed in step 2, with the other frontmatter expressions. |
 | 10.3    | E160 to E170 added to the error table.                                 |
-| 11      | L021 to L027 added; the reachability report is run twice, once with host facts at their fallbacks. |
+| 11      | L021 to L027 added; the reachability walk is repeated with host facts at their fallbacks, and L025 reads the difference. |
 | 12.1    | `advance` and `facts` added to the runtime API.                        |
 | 12.4    | `play` gains `--host` to supply host values per boundary; `simulate` takes the same flag as its policy for how counters and `elapsed` advance per turn, without which no scheduled content is ever tested. |
 

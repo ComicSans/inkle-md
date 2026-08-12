@@ -17,11 +17,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import { compile, expectError, nodesOf } from './helpers.js';
+import { compileSources } from '../src/compile.js';
 import { Story } from '../src/runtime.js';
 
 /** A book whose frontmatter is written per test, with a two-node story. */
-function book(declarations, body = null) {
-  const frontmatter = `---\ntitle: Test\nstats:\n  time: { name: Time, start: 12 }\n  stamina: { start: 10 }\n${declarations}---\n`;
+function book(declarations, body = null, extraStats = '') {
+  const frontmatter = `---\ntitle: Test\nstats:\n  time: { name: Time, start: 12 }\n  stamina: { start: 10 }\n${extraStats}${declarations}---\n`;
   const story = body ?? `
 # Start {#start}
 
@@ -38,8 +39,8 @@ The gallery.
   return compile(story, { frontmatter });
 }
 
-function play(declarations, body) {
-  const { story } = book(declarations, body);
+function play(declarations, body, extraStats) {
+  const { story } = book(declarations, body, extraStats);
   return new Story(story, { seed: 7 });
 }
 
@@ -585,4 +586,67 @@ Here.
 -> END
 `).warnings.messages.map((m) => m.code);
   assert.equal(paired.includes('L026'), false);
+});
+
+// --- what only a fight and a translation reach ------------------------------
+
+test('leaving a fight is a boundary, so the page after it is a fresh one', () => {
+  const s = play(`combat:
+  attack: "skill + roll(2,6)"
+  damage: 1
+enemies:
+  rat: { name: Rat, skill: 1, stamina: 1 }
+events:
+  tick: { do: 'time += 1' }
+`, `
+# Start {#start}
+
+A rat.
+
+!combat rat
+  win -> second
+
+# Second {#second}
+
+-> END
+`, `  skill: { start: 12 }\n`);
+
+  const atStart = s.state.vars.time;
+  while (s.combat) s.attack();       // rounds themselves are not boundaries
+  assert.equal(s.current.node, 'second');
+  assert.equal(s.state.vars.time, atStart + 1, 'exactly one boundary on the way out');
+});
+
+test('a translated catalogue may print a fact of its own', () => {
+  const declarations = {
+    title: 'T',
+    start: 'start.begin',
+    languages: { default: 'de', available: ['de', 'en'] },
+    stats: { time: { start: 12 } },
+    facts: { is_night: { source: 'derived', value: 'time >= 20' } },
+  };
+  const { story } = compileSources([
+    {
+      lang: 'de',
+      files: [{
+        file: 'de/start.md',
+        namespace: 'start',
+        source: '# Anfang {#begin}\n\nEs ist Nacht: {is_night}.\n\n-> END\n',
+      }],
+    },
+    {
+      lang: 'en',
+      files: [{
+        file: 'en/start.md',
+        namespace: 'start',
+        source: '# Anfang {#begin}\n\nNight: {is_night}.\n\n-> END\n',
+      }],
+    },
+  ], { entry: 'book.yaml', book: declarations });
+
+  const english = new Story(story, { lang: 'en' });
+  assert.equal(english.current.text[0].text, 'Night: 0.');
+  english.state.vars.time = 30;
+  english.advance();
+  assert.equal(english.current.text[0].text, 'Night: 1.');
 });

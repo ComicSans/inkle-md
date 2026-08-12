@@ -143,7 +143,11 @@ export class Story {
     this.incoming = host;
     this.pending = true;
     if (this.#boundary()) return this.current;
-    this.#resume();
+    // A fight in progress is rebuilt by #resume, and that would throw away
+    // the round just fought and the luck test it offered. Bringing time in
+    // must not cost the reader the page they are on.
+    if (this.combat) this.#paint();
+    else this.#resume();
     return this.current;
   }
 
@@ -381,18 +385,29 @@ export class Story {
    */
   #boundary() {
     this.pending = false;
+    this.inBoundary = true;
     this.state.host = this.incoming ?? {};
     this.incoming = null;
 
     const before = this.state.node;
+    const wasEnded = this.phase === ENDED;
     this.#computeFacts();
     const died = this.#runEvents();
     this.#computeFacts();
-    return died || this.phase === ENDED || this.state.node !== before;
+    this.inBoundary = false;
+    // What matters is whether this boundary moved the reader, not whether the
+    // story was already over: the last page is text too, and repaints.
+    return died || (this.phase === ENDED && !wasEnded) || this.state.node !== before;
   }
 
-  /** A boundary, but only if this transition has not had one yet (18.1). */
+  /**
+   * A boundary, but only if this transition has not had one yet (18.1). A
+   * boundary that killed the reader lands on the death page from inside
+   * itself; that page does not get a boundary of its own, or an event that
+   * kills would run again on the page it sent the reader to.
+   */
   #boundaryIfPending() {
+    if (this.inBoundary) { this.pending = false; return false; }
     return this.pending ? this.#boundary() : false;
   }
 
@@ -706,6 +721,9 @@ export class Story {
   #exit(name, exit) {
     this.text = [];
     this.state.screen = [];
+    // Leaving a fight is a completed transition like any other, so the page
+    // it leads to is built from its own snapshot (18.1).
+    this.pending = true;
     if (exit.text) {
       this.state.screen.push({ node: this.state.node, at: [...this.state.at], exit: name, class: null });
       this.text.push({ text: this.#render(exit.text, true), class: null });
