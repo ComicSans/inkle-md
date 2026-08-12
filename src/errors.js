@@ -48,6 +48,7 @@ export const ERRORS = {
   E168: 'Event with both once: and every:',
   E169: 'Fact expression that is not pure',
   E170: 'Fact name colliding with a stat or variable',
+  E171: 'places.variable: naming something that is not a declared stat',
 };
 
 export class CompileError extends Error {

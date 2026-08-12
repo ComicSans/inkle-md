@@ -129,7 +129,7 @@ export function validateFrontmatter(data, ctx) {
       .map(([key, value]) => [key, i18n(value, lang, key, at)])),
     facts: {},
     events: {},
-    places: [],
+    places: { variable: null, table: [] },
   };
 
   // Facts keep their declaration order: 15.3 makes that order the whole
@@ -258,8 +258,21 @@ export function validateFrontmatter(data, ctx) {
     }
   }
 
+  // `places:` is a mapping, not a bare list: the table is one field of it and
+  // the name of the variable holding the index is the other (19.1).
+  const placeBlock = data.places ?? {};
+  if (typeof placeBlock !== 'object' || placeBlock === null || Array.isArray(placeBlock)) {
+    throw new CompileError('E011', 'places: must be a mapping with variable: and table:', at);
+  }
+  for (const key of Object.keys(placeBlock)) {
+    if (key !== 'variable' && key !== 'table') {
+      throw new CompileError('E011', `places: has unknown key "${key}"`, at);
+    }
+  }
+  config.places.variable = placeBlock.variable ? String(placeBlock.variable) : null;
+
   const placeIds = new Set();
-  for (const spec of data.places ?? []) {
+  for (const spec of placeBlock.table ?? []) {
     if (typeof spec !== 'object' || spec === null || !spec.id) {
       throw new CompileError('E011', 'a place needs an id:', at);
     }
@@ -273,7 +286,7 @@ export function validateFrontmatter(data, ctx) {
       throw new CompileError('E011', `place "${id}" is declared twice`, at);
     }
     placeIds.add(id);
-    config.places.push({
+    config.places.table.push({
       id,
       name: i18n(spec.name ?? id, lang, `place "${id}" name`, at),
       enter: spec.enter ? String(spec.enter) : null,

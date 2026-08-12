@@ -29,7 +29,10 @@ where.
 4. **State is a flat object.** No call stack in the save. A save is JSON you
    can read and, if it comes to it, repair by hand.
 5. **Randomness is reproducible.** Seed plus counter in the save.
-6. **The export is one file.** No framework, no network access at runtime.
+6. **The export is one file, plus the images a book links to.** No framework,
+   no network access at runtime: an image is a relative path next to the
+   export, never a URL. A book without images stays a single file, which is
+   the case the target size in section 12 is written for.
 7. **The book holds no time.** A clock is a variable a book declares and
    advances itself. The runtime never interprets its unit. Turn-based and
    real-time books are the same engine with a different thing feeding the
@@ -680,6 +683,11 @@ and principle 8 guarantees the same answer (18.2). Checkpoints ride along in
 the save under `"undo": [ ... ]`, which is why `depth` is capped rather than
 unlimited.
 
+The stack rides in the save and stays there when a save is handed on: a reader
+who carries a save to another device can take back the same choices they could
+have taken back where they left. Decided on 2026-08-12. A save is one thing in
+one format, and an export that quietly dropped a field would be a second one.
+
 `rolls` is restored with everything else. Repeating the same choice therefore
 reproduces the same dice, and undo cannot be used to re-roll a failed luck
 test; it only lets a reader take a different path. That is also why undo past
@@ -706,7 +714,8 @@ container bytecode.
             "files": ["de/start.md", "de/crypt.md"] },
   "config": { "stats": {}, "inventory": {}, "items": {}, "setup": [], "combat": {},
               "enemies": {}, "death": {}, "undo": {}, "strings": {},
-              "facts": {}, "events": {}, "places": [] },
+              "facts": {}, "events": {},
+              "places": { "variable": null, "table": [] } },
   "nodes": {
    "de": {
     "crypt.chamber": {
@@ -854,6 +863,7 @@ offending text.
 | E168 | Event with both `once:` and `every:` |
 | E169 | Fact expression that is not pure: dice, or a call that changes state |
 | E170 | Fact name colliding with a stat or variable |
+| E171 | `places.variable:` naming something that is not a declared stat |
 
 ### 10.4 Test suite
 
@@ -923,6 +933,12 @@ scheduled for turn three hundred can arrive at all.
 JSON embedded as a `<script type="application/json">`, runtime below it,
 target under 30 kB compressed. No framework, no external resources, no network
 access at runtime.
+
+A book that links images is that file plus those images, resolved relative to
+it, per principle 6. Nothing else ever lands beside the export. How a book
+writes an image, and what the export does with a path that leaves its own
+directory, is open point 23.5; until it is settled, no book has images and the
+export is one file.
 
 ### 12.1 Runtime API
 
@@ -1202,8 +1218,8 @@ reference to a later fact, or a cycle, is E163.
 A derived fact is a pure function of its state, per principle 8. Dice and
 anything that changes state are E169, so `{ source: derived, value:
 'roll(1,6)' }` does not compile. Without that check principle 8 would be a
-promise nothing keeps, and the test in 24.1 would pass on a book that breaks
-it every second boundary.
+promise nothing keeps, and the test that computes each fact twice from an
+identical state would pass on a book that breaks it every second boundary.
 
 This is where a book keeps interpretive control. The layer below hands
 out numbers; twilight is a definition, and the book writes its own:
@@ -1414,12 +1430,20 @@ harmless, and it is written here so that nobody reports it as a defect.
 
 ```yaml
 places:
-  - { id: base,  name: { de: Basis, en: Base },   enter: base.airlock }
-  - { id: ridge, name: { de: Grat,  en: Ridge },  enter: ridge.arrival }
+  variable: location
+  table:
+    - { id: base,  name: { de: Basis, en: Base },   enter: base.airlock }
+    - { id: ridge, name: { de: Grat,  en: Ridge },  enter: ridge.arrival }
 ```
 
 `enter:` is optional and names the node a journey to that place arrives
 at. An unknown node there is E166.
+
+`variable:` names the stat that holds the index, and is optional. It is what
+turns L026 from a guess into a check, which is the whole of its job: nothing
+else reads it, and the runtime never sees it. A book that declares it must
+declare the stat as well, or it is E171 — a fact will not do, because the book
+writes this one.
 
 ### 19.2 Using a place
 
@@ -1440,7 +1464,12 @@ principle 2 forbids a fourth for their combination. What only the story
 knows, how long a journey takes for a reader who is injured or who found
 a horse, is then an ordinary expression.
 
-The linter checks the pairing the author will get wrong (L026).
+The linter checks the pairing the author will get wrong (L026). With
+`places.variable:` declared, a travel is any assignment to that variable,
+however the index was arrived at. Without it, the linter looks for an
+assignment whose value came from `place()`, which reads the common spelling
+and misses a book that computes its index. That is why L026 is a warning in
+both cases: it is exact about what it saw, never about what the author meant.
 
 ## 20. Runtime API, continued
 
@@ -1514,7 +1543,7 @@ that quietly loses content when it is played as one file.
 | 8       | `host`, `facts` and `events` added to the save; 8.1 states that a checkpoint omits `facts`. |
 | 9.1     | `config` gains `facts`, `events` and `places`.                         |
 | 10.1    | Fact and event expressions are parsed in step 2, with the other frontmatter expressions. |
-| 10.3    | E160 to E170 added to the error table.                                 |
+| 10.3    | E160 to E171 added to the error table.                                 |
 | 11      | L021 to L027 added; the reachability walk is repeated with host facts at their fallbacks, and L025 reads the difference. |
 | 12.1    | `advance` and `facts` added to the runtime API.                        |
 | 12.4    | `play` gains `--host` to supply host values per boundary; `simulate` takes the same flag as its policy for how counters and `elapsed` advance per turn, without which no scheduled content is ever tested. |
@@ -1535,31 +1564,30 @@ that quietly loses content when it is played as one file.
    own.
 4. **A second `max_catchup:` mode** that coalesces into a single firing
    with the number of missed steps in a variable, rather than repeating.
-5. **The place variable has no declared name.** L026 finds it by looking for
-   an assignment whose value came from `place()`, which works and is why the
-   rule stays a warning. A `places.variable:` field would make it exact.
-6. **Images.** Out of scope for this draft. When they return, the syntax is
-   Markdown's own `![alt](file)`, with alt text required, and the export gains
-   a decision about embedding versus files alongside.
-7. **Undo across a save boundary.** The stack rides in the save, so a reader
-   who exports a save can undo on another device as well. Whether that is
-   wanted, or whether the stack should be dropped on export, is open.
+5. **Images.** Decided on 2026-08-12: Markdown links them, `![alt](file)`
+   with alt text required, and they are files next to the export rather than
+   data embedded in it, per principle 6. Open is everything below that
+   decision: whether a path may leave the export's own directory, what a
+   translated catalogue does with an alt text, and what 12.3 promises a
+   screen reader. Nothing of it is built, so no book has images yet.
 
 ## 24. Next steps
 
-1. Facts and the two-pass boundary, with every example above as a test
-   case, and a test that computes each fact twice from an identical state
-   and compares, which is how principle 8 is enforced rather than assumed.
-2. The scheduler, with the catch-up anchor as its own table-driven test.
-3. Places, then L026.
-4. L021 and L025 on top of the existing reachability report.
-5. `play` and `simulate` last, since they are what makes a book with
-   scheduled content testable at all.
+1. Images per 23.5: a line kind of their own, alt text as an error when it is
+   missing, and an export that refuses a path pointing outside its directory.
+   It is the only open point that changes what a book looks like, so it comes
+   first.
+2. A third example that uses facts, events and places. The two that exist
+   predate 0.7 and pass `--strict` without ever touching the layer, which
+   means the acceptance test does not cover it and only the unit tests do.
+3. The second `max_catchup:` mode of 23.4, decided against a book that is put
+   down for a week rather than against a table of turns.
+4. Calendar and ephemeris (23.1, 23.2) last, and only once a book asks for
+   them: they are the one open point that costs the language an epoch.
 
-The steps of 0.6 came before these and are the ground they stand on: grammar
-and parser per section 10, with every example in this file as the test suite
-and the three collision rules table-driven; story JSON (9.1) frozen before the
-runtime and the compiler; the linter of section 11, with the reachability
-report as its visible output; and one complete small book with combat,
-character creation and two endings as the acceptance criterion, not one test
-case per feature.
+The steps of 0.6 and 0.7 came before these and are the ground they stand on:
+grammar, parser and story JSON per sections 10 and 9.1; the linter of section
+11 with its reachability report; facts and the two-pass boundary; the
+scheduler with its catch-up anchor; places and L026; and `play` and
+`simulate`, without which a book with scheduled content cannot be tested at
+all. All of it is built, and every example in this document is a test case.

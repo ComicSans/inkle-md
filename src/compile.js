@@ -427,7 +427,7 @@ export function checkAndResolve(nodes, table, { config, multi, bag }) {
 function checkDeclarations(table, config, { multi, bag, at }) {
   const facts = config.facts ?? {};
   const events = config.events ?? {};
-  const places = config.places ?? [];
+  const places = config.places?.table ?? [];
 
   for (const place of places) {
     if (!place.enter) continue;
@@ -444,6 +444,13 @@ function checkDeclarations(table, config, { multi, bag, at }) {
     ...Object.keys(facts),
     ...BUILTIN_VARS,
   ]);
+
+  // The place variable is written by the book, so a fact will not do (19.1).
+  const placeVar = config.places?.variable;
+  if (placeVar && !Object.hasOwn(config.stats, placeVar)) {
+    bag.add('E171', `places.variable: names "${placeVar}", which is not a declared stat`, at);
+  }
+
   const functions = new Map();
   for (const node of table.values()) {
     if (node.kind === 'function') functions.set(node.qualified, node);
@@ -591,7 +598,7 @@ function checkExpression(expr, scope, node, at, bag, resolve, functions, config 
     // writes as a number (19.2); nothing of it survives into the runtime.
     if (e.call === 'place') {
       const id = e.args?.[0]?.lit;
-      const index = (config?.places ?? []).findIndex((p) => p.id === String(id));
+      const index = (config?.places?.table ?? []).findIndex((p) => p.id === String(id));
       if (index < 0) {
         bag.add('E165', `no place called "${id}"`, at);
         return;

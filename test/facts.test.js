@@ -9,7 +9,7 @@
  * Facts, boundaries, events and places: SPEC.md sections 14 to 21.
  *
  * Every example in those sections appears here, plus the two checks section
- * 26 asks for by name: a fact computed twice from an identical state, and the
+ * 24 asks for by name: a fact computed twice from an identical state, and the
  * catch-up anchor as a table.
  */
 
@@ -164,8 +164,18 @@ test('an event may not assign to a fact either', () => {
 // --- 21, places -------------------------------------------------------------
 
 const PLACES = `places:
-  - { id: base,  name: Base,  enter: start }
-  - { id: ridge, name: Ridge, enter: second }
+  table:
+    - { id: base,  name: Base,  enter: start }
+    - { id: ridge, name: Ridge, enter: second }
+`;
+
+// The same table, but with the variable holding the index declared, which is
+// what makes L026 exact instead of a guess (19.1).
+const PLACES_NAMED = `places:
+  variable: time
+  table:
+    - { id: base,  name: Base,  enter: start }
+    - { id: ridge, name: Ridge, enter: second }
 `;
 
 test('place() folds to an index at compile time', () => {
@@ -188,9 +198,9 @@ Here.
 
 test('E165 and E166: an unknown place, and a place entering nowhere', () => {
   expectError('# A {#a}\n\n~ time = place("nowhere")\n-> END\n', 'E165',
-    { frontmatter: bare('places:\n  - { id: base, enter: a }\n') });
+    { frontmatter: bare('places:\n  table:\n    - { id: base, enter: a }\n') });
   expectError('# A {#a}\n\n-> END\n', 'E166',
-    { frontmatter: bare('places:\n  - { id: base, enter: missing }\n') });
+    { frontmatter: bare('places:\n  table:\n    - { id: base, enter: missing }\n') });
 });
 
 // --- 18, boundaries ---------------------------------------------------------
@@ -586,6 +596,34 @@ Here.
 -> END
 `).warnings.messages.map((m) => m.code);
   assert.equal(paired.includes('L026'), false);
+});
+
+test('with places.variable: declared, L026 stops guessing at place()', () => {
+  // An index the book computed itself: the guess misses this, the field sees
+  // it, and both agree that the journey is paired.
+  const body = `
+# Start {#start}
+
+Here.
+
+* [Set out for the ridge](#second)
+  ~ time = 1 + 0
+
+# Second {#second}
+
+-> END
+`;
+  const guessed = book(PLACES, body).warnings.messages.map((m) => m.code);
+  assert.ok(guessed.includes('L026'));
+
+  const named = book(PLACES_NAMED, body).warnings.messages.map((m) => m.code);
+  assert.equal(named.includes('L026'), false);
+});
+
+test('places.variable: must name a declared stat', () => {
+  expectError('# A {#a}\n\n-> END\n', 'E171', {
+    frontmatter: bare('places:\n  variable: whereabouts\n  table:\n    - { id: base, name: Base }\n'),
+  });
 });
 
 // --- what only a fight and a translation reach ------------------------------

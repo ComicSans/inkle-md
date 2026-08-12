@@ -208,10 +208,11 @@ export function lint(story, { table, config, lang }) {
     }
   }
 
-  for (const place of config.places ?? []) {
+  const placeVar = config.places?.variable ?? null;
+  for (const place of config.places?.table ?? []) {
     if (!place.enter) continue;
     for (const [id, node] of Object.entries(nodes)) {
-      const nodeSetsPlace = setsPlace(node.body);
+      const nodeSetsPlace = setsPlace(node.body, placeVar);
       walkOps(node.body, (op) => {
         if (op.op === 'divert' && op.target?.ref === place.enter && !nodeSetsPlace) {
           add('L026',
@@ -220,7 +221,7 @@ export function lint(story, { table, config, lang }) {
         if (op.op !== 'choices') return;
         for (const item of op.items) {
           if (item.target?.ref !== place.enter) continue;
-          if (setsPlace(item.body) || nodeSetsPlace) continue;
+          if (setsPlace(item.body, placeVar) || nodeSetsPlace) continue;
           add('L026',
             `a choice in "${id}" travels to "${place.enter}" without setting the place index`,
             item.source);
@@ -402,10 +403,18 @@ function firstFiring(event) {
   return when.op === '>' ? right.lit + 1 : right.lit;
 }
 
-/** True when a container assigns something that came from place() (19.2). */
-function setsPlace(ops) {
+/**
+ * True when a container sets the place. With `places.variable:` declared that
+ * is an assignment to exactly that variable, however the index was arrived at.
+ * Without it the rule falls back to guessing: an assignment whose value came
+ * from `place()`, which is why L026 stays a warning either way (19.2).
+ */
+function setsPlace(ops, variable) {
   let found = false;
-  walkOps(ops ?? [], (op) => { if (op.op === 'assign' && op.place) found = true; });
+  walkOps(ops ?? [], (op) => {
+    if (op.op !== 'assign') return;
+    if (variable ? op.target === variable : op.place) found = true;
+  });
   return found;
 }
 
