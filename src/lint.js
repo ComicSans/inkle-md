@@ -9,7 +9,7 @@
  * Linter per SPEC.md section 11, plus the reachability report.
  *
  * Implemented: L001, L002, L005, L006, L007, L008, L009, L010, L012, L013,
- * L016, L017, L018, L020, L021 to L027.
+ * L016, L017, L018, L020, L021 to L028.
  * Not yet implemented: L003, L004, L011, L014, L015 - they need either
  * constant folding over variables or a prose model, and are tracked in the
  * README.
@@ -25,7 +25,7 @@ const LEVELS = {
   L012: 'warning', L013: 'info', L016: 'warning', L017: 'warning', L018: 'warning',
   L020: 'warning',
   L021: 'warning', L022: 'warning', L023: 'info', L024: 'warning',
-  L025: 'warning', L026: 'warning', L027: 'info',
+  L025: 'warning', L026: 'warning', L027: 'info', L028: 'warning',
 };
 
 /** Anything that consumes the dice stream. */
@@ -205,6 +205,19 @@ export function lint(story, { table, config, lang }) {
       add('L021',
         `event "${name}" first fires at turn ${threshold}, and the longest path through the `
         + `book is ${summary.longestPath}`, {});
+    }
+  }
+
+  // L028: a gather that sends the reader back into its own node is a loop, and
+  // it is only a survivable one while some choice is certain to be there on the
+  // next pass. Once every choice is once-only or conditional, the node runs out
+  // of them, falls through to the gather and arrives at itself with nothing
+  // left to offer, which the runtime can only answer by diverting again.
+  for (const [id, node] of Object.entries(nodes)) {
+    if (loopsOnItself(node.body, id)) {
+      add('L028',
+        `every choice in "${id}" can run out, and its gather diverts back into "${id}"`,
+        node.source);
     }
   }
 
@@ -409,6 +422,30 @@ function firstFiring(event) {
  * Without it the rule falls back to guessing: an assignment whose value came
  * from `place()`, which is why L026 stays a warning either way (19.2).
  */
+/**
+ * Whether a container offers only choices that can run out and then falls
+ * through to a divert back into `id`. The runtime answers that by entering the
+ * node again, finding nothing to offer again, and diverting again (L028).
+ */
+function loopsOnItself(ops, id) {
+  for (let i = 0; i < (ops ?? []).length; i++) {
+    const op = ops[i];
+    if (op.op === 'choices') {
+      const certain = op.items.some((item) => item.sticky && item.when === null);
+      const back = ops.slice(i + 1).some((o) => o.op === 'divert' && o.target?.ref === id);
+      if (!certain && back) return true;
+      for (const item of op.items) {
+        if (loopsOnItself(item.body, id)) return true;
+      }
+    }
+    if (op.op === 'branch') {
+      for (const branch of op.branches) if (loopsOnItself(branch.body, id)) return true;
+      if (loopsOnItself(op.else, id)) return true;
+    }
+  }
+  return false;
+}
+
 function setsPlace(ops, variable) {
   let found = false;
   walkOps(ops ?? [], (op) => {

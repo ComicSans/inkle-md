@@ -354,18 +354,16 @@ test('the nightside runs its clock down over three hundred playthroughs', () => 
       const s = new Story(story, { seed, lang });
       s.begin([[s.setup[0].from[seed % 3].remember]]);
 
-      const run = walk(s, { seed, maxSteps: 200 });
+      // More steps than the house needs: the filter in the basin holds the
+      // clock up, so a reader who keeps wandering takes longer to run out.
+      const run = walk(s, { seed, maxSteps: 400 });
       assert.ok(!run.deadEnd, `dead end at ${s.current.node} (seed ${seed}, ${lang})`);
       assert.ok(run.ended, `seed ${seed} never finished (${lang})`);
       ends.add(s.current.node);
     }
 
-    // `ende.bleiben` is missing on purpose: the curious reader of walk() takes
-    // every visible option once, and on this graph that order never puts the
-    // filter in their hands before they leave the basin. A reader who wants to
-    // stay finds it; a walker who tries everything in turn does not.
     assert.deepEqual([...ends].sort(),
-      ['ende.abschalten', 'ende.dunkel', 'ende.erstickt', 'ende.rettung'],
+      ['ende.abschalten', 'ende.bleiben', 'ende.dunkel', 'ende.erstickt', 'ende.rettung'],
       `endings reached in ${lang}`);
   }
 });

@@ -37,6 +37,7 @@ Inside, it is quiet in a way that does not occur outside. Outside, the sound is 
 {zweifel >= 4: ARIS has been silent since the entrance. It is the first time she has had nothing to say.}
 
 * [Look at the suits](#suits)
+* [Step to the wall and take the filter off one of them](#filter)
 * [Further in](#deep)
 * [Follow the sound](#signal)
 * [Call ARIS](#aris_admits)

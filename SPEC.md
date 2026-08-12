@@ -907,6 +907,7 @@ uses `--strict`.
 | L025 | Content unreachable when every host fact takes its fallback | warning |
 | L026 | Divert into a place's `enter:` node without setting the index | warning |
 | L027 | Recurring event without `max_catchup:` | info |
+| L028 | Gather diverting back into its own node while every choice can run out | warning |
 
 L008 and L009 are the ones that actually catch bugs in a gamebook: a key that
 is never granted, a code word that is never set. They need the whole book, so
@@ -1521,6 +1522,7 @@ Warnings, listed here and in the table of section 11:
 | L025 | Content unreachable when every host fact takes its fallback      | warning |
 | L026 | Divert into a place's `enter:` node without setting the index     | warning |
 | L027 | Recurring event without `max_catchup:`                           | info    |
+| L028 | Gather diverting back into its own node while every choice can run out | warning |
 
 L021 needs nothing new: the reachability report of section 11 already
 computes the longest path. It answers the question a branching book
@@ -1533,6 +1535,21 @@ be compared against.
 L025 protects the export. A book whose good ending needs a host is a book
 that quietly loses content when it is played as one file.
 
+L028 is the one shape a hub room gets wrong. A gather that sends the reader
+back into its own node is a loop, and it is a survivable one only while some
+choice is certain to be there on the next pass. Once every choice is once-only
+or conditional, the node runs out of them, falls through to the gather and
+arrives at itself with nothing left to offer. A sticky choice with no condition
+is what makes the difference, which is why the warning asks for exactly that
+and not for fewer once-only choices.
+
+A divert chain is finite, and a runtime says so. One transition may pass
+through a handful of nodes on its way to the page the reader ends up on (16.1);
+a book that has not settled after a hundred of them is looping, and the runtime
+raises an error naming the node it started from. Without that bound the loop
+L028 describes ends as a stack overflow, and a stack trace tells an author
+nothing about which node to fix.
+
 ## 22. Amendments to draft 0.6
 
 | Section | Change                                                                 |
@@ -1544,7 +1561,7 @@ that quietly loses content when it is played as one file.
 | 9.1     | `config` gains `facts`, `events` and `places`.                         |
 | 10.1    | Fact and event expressions are parsed in step 2, with the other frontmatter expressions. |
 | 10.3    | E160 to E171 added to the error table.                                 |
-| 11      | L021 to L027 added; the reachability walk is repeated with host facts at their fallbacks, and L025 reads the difference. |
+| 11      | L021 to L028 added; the reachability walk is repeated with host facts at their fallbacks, and L025 reads the difference. |
 | 12.1    | `advance` and `facts` added to the runtime API.                        |
 | 12.4    | `play` gains `--host` to supply host values per boundary; `simulate` takes the same flag as its policy for how counters and `elapsed` advance per turn, without which no scheduled content is ever tested. |
 

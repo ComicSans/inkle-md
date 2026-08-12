@@ -37,6 +37,7 @@ Innen ist es still auf eine Art, die draußen nicht vorkommt. Draußen fehlt der
 {zweifel >= 4: ARIS ist seit dem Eingang still. Es ist das erste Mal, dass sie nichts zu sagen hat.}
 
 * [Die Anzüge ansehen](#suits)
+* [An die Wand treten und einem von ihnen den Filter abnehmen](#filter)
 * [Weiter nach innen](#deep)
 * [Dem Ton nachgehen](#signal)
 * [ARIS rufen](#aris_admits)

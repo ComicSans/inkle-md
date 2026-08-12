@@ -62,12 +62,14 @@ events:
     when: 'knows("WUNDE")'
     do: 'air -= 1'
 
+  # Der fremde Filter passt nicht ganz: er haelt die Uhr auf, er dreht sie
+  # nicht zurueck. Wer in der Senke bleibt, gewinnt Zeit und keine Ewigkeit.
   filter_feeds:
     counter: 'time'
-    every: 8
-    max_catchup: 12
+    every: 16
+    max_catchup: 6
     when: 'knows("FILTER") and location == place("basin")'
-    do: 'air = min(air + 2, air_max)'
+    do: 'air = min(air + 1, air_max)'
 
   aris_slip:
     counter: 'time'

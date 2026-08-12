@@ -688,3 +688,43 @@ test('a translated catalogue may print a fact of its own', () => {
   english.advance();
   assert.equal(english.current.text[0].text, 'Night: 1.');
 });
+
+test('L028: a gather that sends the reader back into a node with nothing left', () => {
+  const looping = `
+# Stuck {#start}
+
+A door that sticks.
+
+* [Pull]() It does not give.
+* [Turn back](#second)
+---
+You are standing in front of it again.
+
+-> start
+
+# Second {#second}
+
+-> END
+`;
+  assert.ok(lintOf('', looping).includes('L028'));
+
+  // One sticky choice with no condition is always there, so the gather never
+  // arrives at an empty node.
+  assert.equal(lintOf('', looping.replace('* [Pull]()', '+ [Pull]()')).includes('L028'), false);
+});
+
+test('a divert chain that does not settle is an error, not a stack overflow', () => {
+  // The shape L028 warns about, played: both choices run out, the gather
+  // diverts back, and the node has nothing left to offer.
+  const { story } = book('', `
+# Stuck {#start}
+
+A door that sticks.
+
+* [Pull]() It does not give.
+---
+-> start
+`);
+  const s = new Story(story, { seed: 1 });
+  assert.throws(() => s.choose(0), /does not settle/);
+});

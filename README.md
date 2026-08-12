@@ -88,7 +88,7 @@ linter says so (L019). See `examples/thornwood-book/en/crypt.md`.
 
 - **Lint rules L003, L004, L011, L014, L015.** They need constant folding over
   variables or a prose model. Everything else in SPEC 11 runs, including
-  L021 to L027.
+  L021 to L028.
 - **A calendar and an ephemeris.** The `clock` and `ephemeris` fact sources of
   SPEC 25 need an epoch, and this draft has no absolute time in it.
 

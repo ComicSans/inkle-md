@@ -17,6 +17,10 @@
  * principle 4 is about. `[2, 0, 1]` reads "op 2, its item 0, op 1 inside it".
  */
 
+// A divert chain that has not settled after this many hops is a loop, not a
+// story: one transition can pass through a few nodes, never through hundreds.
+const MAX_DIVERTS = 100;
+
 const SETUP = 'setup';
 const PLAYING = 'playing';
 const ENDED = 'ended';
@@ -99,6 +103,7 @@ export class Story {
    *        setup block; omit when the book has no setup
    */
   begin(picks = []) {
+    this.#diverts = 0;
     this.config.setup.forEach((block, i) => {
       const chosen = picks[i] ?? [];
       if (chosen.length !== block.pick) {
@@ -133,6 +138,7 @@ export class Story {
    * @param {object} host values for the declared host facts
    */
   advance(host = {}) {
+    this.#diverts = 0;
     // Before begin() there is no playthrough for an event to act on; the
     // first boundary is begin()'s own (15.4).
     if (this.phase === SETUP) {
@@ -201,6 +207,7 @@ export class Story {
   // --- playing -----------------------------------------------------------
 
   choose(index) {
+    this.#diverts = 0;
     const choice = this.choices[index];
     if (!choice) throw new Error(`no choice ${index}`);
 
@@ -229,6 +236,7 @@ export class Story {
 
   /** Jumps to a node. For tools and chapter pickers, not for storytelling. */
   go(nodeId) {
+    this.#diverts = 0;
     if (!this.nodes[nodeId]) throw new Error(`no node "${nodeId}"`);
     this.#setPhase(PLAYING);
     this.text = [];
@@ -277,6 +285,7 @@ export class Story {
 
   /** One round: both sides roll, the higher total wounds the loser. */
   attack() {
+    this.#diverts = 0;
     const fight = this.combat;
     if (!fight) return null;
 
@@ -336,6 +345,7 @@ export class Story {
   }
 
   flee() {
+    this.#diverts = 0;
     const fight = this.combat;
     if (!fight?.canFlee) return false;
     this.state.vars.stamina -= 2;
@@ -473,8 +483,20 @@ export class Story {
 
   // --- flow --------------------------------------------------------------
 
+  /** Hops in the current transition, reset wherever a new one starts. */
+  #diverts = 0;
+
   #go(target) {
     if (target === 'END') { this.#setPhase(ENDED); this.choices = []; this.combat = null; return; }
+    // A chain of diverts is one transition (16.1), so it has to be finite. A
+    // node whose choices have run out and whose gather points back at itself
+    // would otherwise recurse until the stack gives out, and a stack trace is
+    // no way to tell an author which node it was. L028 catches the shape the
+    // linter can see; this catches every other way a book gets here.
+    if (++this.#diverts > MAX_DIVERTS) {
+      this.#diverts = 0;
+      throw new Error(`divert chain from "${this.state.node}" to "${target}" does not settle`);
+    }
     this.#enter(target);
   }
 
