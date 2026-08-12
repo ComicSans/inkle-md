@@ -43,7 +43,7 @@ Vierzig Meter, und der Fels bricht in Platten. Du kletterst mit Handschuhen, die
   Du kommst sauber hoch. Nicht elegant, aber sauber: drei Punkte am Fels, Gewicht auf den Beinen, keine Griffe, denen du nicht vorher zugesehen hast. Als du dich über die Kante rollst, gönnt der Atem im Helm sich eine Pause, und du dir auch.
   -> top
 { else }
-  Auf halber Höhe löst sich eine Platte. Nicht die, an der du ziehst — die, auf der du stehst. Du hörst sie unten aufschlagen, während du noch in der Luft bist.
+  Auf halber Höhe löst sich eine Platte. Nicht die, an der du ziehst - die, auf der du stehst. Du hörst sie unten aufschlagen, während du noch in der Luft bist.
   -> fall
 
 # Der Sturz {#fall}
@@ -88,7 +88,7 @@ Du liegst kurz und stehst dann wieder auf. Der Fels hat gewonnen, aber er trägt
 
 # Vasquez {#vasquez}
 
-Der Funk von Vasquez kommt von hier oben, sagt ARIS. Vasquez vermisst den Grat, sagt ARIS, Kanal zwei, gute Werte. Was hier oben liegt, ist ein Helm mit einem Riss über der Sichtscheibe und ohne alles Übrige: kein Anzug, keine Spuren, keine Vasquez. Der Riss geht von außen nach innen, und der Helm ist innen sauber, als hätte ihn nie jemand getragen — oder als hätte jemand sehr viel Zeit gehabt.
+Der Funk von Vasquez kommt von hier oben, sagt ARIS. Vasquez vermisst den Grat, sagt ARIS, Kanal zwei, gute Werte. Was hier oben liegt, ist ein Helm mit einem Riss über der Sichtscheibe und ohne alles Übrige: kein Anzug, keine Spuren, keine Vasquez. Der Riss geht von außen nach innen, und der Helm ist innen sauber, als hätte ihn nie jemand getragen - oder als hätte jemand sehr viel Zeit gehabt.
 
 ~ remember("HELM")
 ~ time = time + 10

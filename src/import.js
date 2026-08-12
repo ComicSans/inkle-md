@@ -58,7 +58,14 @@ class Notes {
  */
 export function importInk(source, options = {}) {
   const notes = new Notes();
-  const lines = stripComments(source.replace(/\r\n?/g, '\n').split('\n'), notes);
+  // Ein ink-Text bringt Gedankenstriche in allen Breiten mit, oft mitten im
+  // Wort ("gun-metal"), weil das Original sie als Bindestrich gesetzt hat.
+  // Diese Beispiele kennen nur den einfachen Bindestrich, und der Quelltext
+  // steht hier neben dem Spiel: was gelesen wird, soll auch dastehen.
+  const plain = source.replace(/\r\n?/g, '\n').replace(/[‐-―−]/g, '-');
+  const dashes = (source.match(/[‐-―−]/g) ?? []).length;
+  if (dashes) notes.add(0, `${dashes} dash(es) narrowed to "-"`);
+  const lines = stripComments(plain.split('\n'), notes);
   const { declarations, constants, refFunctions, body } = readDeclarations(lines, notes);
   const knots = readKnots(body, notes);
 

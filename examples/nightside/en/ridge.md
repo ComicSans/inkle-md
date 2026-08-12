@@ -43,7 +43,7 @@ Forty metres, and the rock breaks in plates. You climb in gloves made for switch
   You get up clean. Not elegant, but clean: three points on the rock, weight on your legs, no holds you have not watched first. As you roll over the edge, the breath in your helmet allows itself a pause, and you allow yourself one too.
   -> top
 { else }
-  Halfway up, a plate comes loose. Not the one you are pulling on — the one you are standing on. You hear it hit the ground below while you are still in the air.
+  Halfway up, a plate comes loose. Not the one you are pulling on - the one you are standing on. You hear it hit the ground below while you are still in the air.
   -> fall
 
 # The Fall {#fall}
@@ -88,7 +88,7 @@ You lie there briefly and then get up again. The rock has won, but it does not h
 
 # Vasquez {#vasquez}
 
-Vasquez's signal comes from up here, says ARIS. Vasquez is surveying the ridge, says ARIS, channel two, good readings. What lies up here is a helmet with a crack across the visor and without everything else: no suit, no tracks, no Vasquez. The crack runs from the outside in, and the helmet is clean inside, as if no one had ever worn it — or as if someone had had a great deal of time.
+Vasquez's signal comes from up here, says ARIS. Vasquez is surveying the ridge, says ARIS, channel two, good readings. What lies up here is a helmet with a crack across the visor and without everything else: no suit, no tracks, no Vasquez. The crack runs from the outside in, and the helmet is clean inside, as if no one had ever worn it - or as if someone had had a great deal of time.
 
 ~ remember("HELM")
 ~ time = time + 10

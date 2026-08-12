@@ -17,7 +17,7 @@ In der Mitte liegt eine Öffnung, die jemand gebaut hat: kein Loch, eine Tür. K
 
 * {has("brechstange")} [Aufhebeln](#hall) Die Brechstange findet einen Spalt, den deine Augen nicht gefunden haben. Die Tür gibt nach, ohne beleidigt zu sein.
   ~ time = time + 10
-* {knows("TECHNIK")} [Den Mechanismus lesen](#hall) Er ist einfach, wenn man aufhört, ihn für eine Tür zu halten. Zwei Kontakte, ein Gegengewicht, keine Verriegelung — wer das gebaut hat, hat mit niemandem gerechnet, der draußen bleiben soll.
+* {knows("TECHNIK")} [Den Mechanismus lesen](#hall) Er ist einfach, wenn man aufhört, ihn für eine Tür zu halten. Zwei Kontakte, ein Gegengewicht, keine Verriegelung - wer das gebaut hat, hat mit niemandem gerechnet, der draußen bleiben soll.
   ~ time = time + 15
 + [Mit den Händen versuchen]()
   { test("skill") }
@@ -43,7 +43,7 @@ Du stehst vor einer Tür, die für jemand anderen gebaut wurde, und die einzige 
   Die Stille empfängt dich wie etwas Gewohntes, und die Anzüge stehen, wie sie immer stehen. Du gewöhnst dich an diesen Ort, und das ist das Schlimmste, was er dir bisher angetan hat.
 
 { knows("ANZUG-GEPRUEFT") and not knows("KAMMER-MESSUNG") }
-  Dein Anzug meldet, was er immer meldet — Druck, Temperatur, Rest — und es passt hier zum ersten Mal zu nichts.
+  Dein Anzug meldet, was er immer meldet - Druck, Temperatur, Rest - und es passt hier zum ersten Mal zu nichts.
   ~ remember("KAMMER-MESSUNG")
 
 { knows("FILTER") and not knows("KAMMER-FILTERTON") }
@@ -87,7 +87,7 @@ Du nimmst ihn einem der toten Anzüge ab. Der Verschluss ist für Finger gemacht
 
 # Die fremde Gestalt {#body}
 
-Du siehst dir an, woran sie gestorben ist. Sie ist nicht erstickt; der Vorrat in ihrem System hätte gereicht, nach jeder Rechnung, die du kennst. Sie hat aufgehört zu atmen, während genug da war. Die Haltung sagt, dass es keine Panik gab und keinen Kampf — eine Entscheidung, oder das, was bei ihrer Art an dieser Stelle steht.
+Du siehst dir an, woran sie gestorben ist. Sie ist nicht erstickt; der Vorrat in ihrem System hätte gereicht, nach jeder Rechnung, die du kennst. Sie hat aufgehört zu atmen, während genug da war. Die Haltung sagt, dass es keine Panik gab und keinen Kampf - eine Entscheidung, oder das, was bei ihrer Art an dieser Stelle steht.
 
 ~ remember("AUFGEHOERT")
 ~ time = time + 15

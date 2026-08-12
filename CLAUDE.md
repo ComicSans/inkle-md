@@ -45,6 +45,12 @@ Wahltexte, die im Original so stehen. Geprüft wird es mit `lint` ohne `--strict
 und mit `simulate`. Wer es ändern will, ändert den Importer und importiert neu.
 Entschieden mit Tobias am 12.08.2026.
 
+Eine Abweichung vom Original gibt es: Gedankenstriche jeder Breite werden beim
+Import zum einfachen Bindestrich. Das Original setzt sie auch mitten im Wort
+("gun-metal"), und die Beispiele hier kennen nur den Bindestrich. Der Importer
+macht das selbst und meldet die Anzahl, damit ein Neuimport dieselbe Datei
+ergibt.
+
 **Kein SwiftLint, keine swift-contracts.** Kein Swift im Projekt.
 
 `tokensave` ist eingerichtet und indiziert nach jedem Commit über den globalen

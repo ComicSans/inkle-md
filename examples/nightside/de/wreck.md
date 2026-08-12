@@ -100,7 +100,7 @@ Der Mast steht noch, weil er beim Umfallen im Frachtgerüst hängen geblieben is
 
 # Die Anzüge {#bodies}
 
-Unter den Planen liegen vier Anzüge, mit Frachtgurten beschwert, ordentlich ausgerichtet. Jemand hat sie hierhergelegt — jemand mit Greifarmen, viel Zeit und einem Bergungsprotokoll. Sie liegen so, wie Menschen liegen, die nicht mehr selbst gelegen haben.
+Unter den Planen liegen vier Anzüge, mit Frachtgurten beschwert, ordentlich ausgerichtet. Jemand hat sie hierhergelegt - jemand mit Greifarmen, viel Zeit und einem Bergungsprotokoll. Sie liegen so, wie Menschen liegen, die nicht mehr selbst gelegen haben.
 
 ~ remember("LEICHE")
 

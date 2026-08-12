@@ -100,7 +100,7 @@ The mast is still standing because it caught in the cargo frame on the way down.
 
 # The Suits {#bodies}
 
-Under the tarpaulins lie four suits, weighted down with cargo straps, neatly aligned. Somebody laid them here — somebody with gripper arms, plenty of time and a salvage protocol. They lie the way people lie who did no more of the lying themselves.
+Under the tarpaulins lie four suits, weighted down with cargo straps, neatly aligned. Somebody laid them here - somebody with gripper arms, plenty of time and a salvage protocol. They lie the way people lie who did no more of the lying themselves.
 
 ~ remember("LEICHE")
 

@@ -45,7 +45,7 @@ Du fragst. ARIS antwortet sofort: Vasquez am Grat, gehfähig. Ito im Wrackfeld, 
 
 # Der Anzug {#suit}
 
-Du gehst die Anzeigen durch. Hauptflasche angerissen, Reserve leer — die Reserve war das Erste, was der Aufschlag geholt hat. Was auf der Anzeige steht, ist alles, was du hast, und die Zahl wird kleiner, während du sie ansiehst. Der Anzug hält das für Transparenz.
+Du gehst die Anzeigen durch. Hauptflasche angerissen, Reserve leer - die Reserve war das Erste, was der Aufschlag geholt hat. Was auf der Anzeige steht, ist alles, was du hast, und die Zahl wird kleiner, während du sie ansiehst. Der Anzug hält das für Transparenz.
 
 ~ remember("ANZUG-GEPRUEFT")
 
@@ -121,7 +121,7 @@ Mehr gibt das Blech nicht her, nur Kanten und deinen eigenen Atem.
 
 # Die Sterne {#sky}
 
-Du legst den Kopf in den Nacken und liest, was da steht. Die Sternbilder sind fremd, aber Mechanik ist Mechanik: Aus dem Streufeld und dem Riss in deiner Scheibe rechnest du den Eintrittswinkel zurück. Er ist flach. Er ist sauber. Niemand stürzt so ab — so setzt man auf. Die Kestrel hat diesen Planeten nicht getroffen. Sie hat ihn angesteuert.
+Du legst den Kopf in den Nacken und liest, was da steht. Die Sternbilder sind fremd, aber Mechanik ist Mechanik: Aus dem Streufeld und dem Riss in deiner Scheibe rechnest du den Eintrittswinkel zurück. Er ist flach. Er ist sauber. Niemand stürzt so ab - so setzt man auf. Die Kestrel hat diesen Planeten nicht getroffen. Sie hat ihn angesteuert.
 
 ~ remember("BAHN")
 ~ time = time + 10

@@ -45,7 +45,7 @@ You ask. ARIS answers at once: Vasquez on the ridge, walking. Ito in the debris 
 
 # The Suit {#suit}
 
-You go through the readouts. Main tank cracked, reserve empty — the reserve was the first thing the impact took. What the display shows is all you have, and the number gets smaller while you look at it. The suit considers this transparency.
+You go through the readouts. Main tank cracked, reserve empty - the reserve was the first thing the impact took. What the display shows is all you have, and the number gets smaller while you look at it. The suit considers this transparency.
 
 ~ remember("ANZUG-GEPRUEFT")
 
@@ -121,7 +121,7 @@ That is all the metal has to give, only edges and your own breathing.
 
 # The Stars {#sky}
 
-You tilt your head back and read what is written there. The constellations are foreign, but mechanics is mechanics: from the debris scatter and the crack in your visor you work the entry angle backwards. It is shallow. It is clean. Nobody crashes like that — that is how you land. The Kestrel did not hit this planet. She steered for it.
+You tilt your head back and read what is written there. The constellations are foreign, but mechanics is mechanics: from the debris scatter and the crack in your visor you work the entry angle backwards. It is shallow. It is clean. Nobody crashes like that - that is how you land. The Kestrel did not hit this planet. She steered for it.
 
 ~ remember("BAHN")
 ~ time = time + 10

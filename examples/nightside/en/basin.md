@@ -17,7 +17,7 @@ At the centre lies an opening someone built: not a hole, a door. No handle, no h
 
 * {has("brechstange")} [Prise it open](#hall) The crowbar finds a gap your eyes did not. The door gives way without taking offence.
   ~ time = time + 10
-* {knows("TECHNIK")} [Read the mechanism](#hall) It is simple, once you stop taking it for a door. Two contacts, a counterweight, no lock — whoever built this was not expecting anyone who was meant to stay outside.
+* {knows("TECHNIK")} [Read the mechanism](#hall) It is simple, once you stop taking it for a door. Two contacts, a counterweight, no lock - whoever built this was not expecting anyone who was meant to stay outside.
   ~ time = time + 15
 + [Try with your hands]()
   { test("skill") }
@@ -43,7 +43,7 @@ You stand before a door built for someone else, and the only open question is wh
   The silence receives you like something familiar, and the suits stand the way they always stand. You are getting used to this place, and that is the worst thing it has done to you yet.
 
 { knows("ANZUG-GEPRUEFT") and not knows("KAMMER-MESSUNG") }
-  Your suit reports what it always reports — pressure, temperature, remainder — and for the first time it matches nothing here.
+  Your suit reports what it always reports - pressure, temperature, remainder - and for the first time it matches nothing here.
   ~ remember("KAMMER-MESSUNG")
 
 { knows("FILTER") and not knows("KAMMER-FILTERTON") }
@@ -87,7 +87,7 @@ You take it off a dead one. The catch is made for fingers that count differently
 
 # The Stranger {#body}
 
-You look at what it died of. It did not suffocate; the supply in its system would have lasted, by every calculation you know. It stopped breathing while there was enough. The posture says there was no panic and no struggle — a decision, or whatever its kind has in that place.
+You look at what it died of. It did not suffocate; the supply in its system would have lasted, by every calculation you know. It stopped breathing while there was enough. The posture says there was no panic and no struggle - a decision, or whatever its kind has in that place.
 
 ~ remember("AUFGEHOERT")
 ~ time = time + 15
