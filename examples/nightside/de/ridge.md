@@ -1,6 +1,11 @@
 # Ankunft am Grat {#arrival}
 
-Der Grat steht quer im Land, als hätte ihn jemand dorthin gestellt. Kein Vorgebirge, kein Schutt, nur eine Kante aus dunklem Fels, die aus der Ebene wächst und oben gegen den Himmel schwärzer ist als der Himmel. Auf dem Anzugdisplay ist er das Einzige, das eine Höhenlinie verdient.
+{ visits(arrival) == 1 }
+  Der Grat steht quer im Land, als hätte ihn jemand dorthin gestellt. Kein Vorgebirge, kein Schutt, nur eine Kante aus dunklem Fels, die aus der Ebene wächst und oben gegen den Himmel schwärzer ist als der Himmel. Auf dem Anzugdisplay ist er das Einzige, das eine Höhenlinie verdient.
+{ visits(arrival) == 2 }
+  Der Grat steht, wo er stand, dieselbe Kante vor demselben Himmel. Der Weg hierher kommt dir kürzer vor, was nichts über den Weg sagt.
+{ visits(arrival) >= 3 }
+  Wieder der Grat. Du gehst auf ihn zu wie auf etwas Verabredetes, und du erinnerst dich nicht, etwas verabredet zu haben.
 
 {kurz_weg: Der Weg hierher hat dich mehr Zeit gekostet, als er sollte. Der Boden gibt unter jedem Schritt einen Fingerbreit nach, als wäre er sich noch nicht sicher, ob er dich tragen will.}
 
@@ -8,10 +13,16 @@ Der Grat steht quer im Land, als hätte ihn jemand dorthin gestellt. Kein Vorgeb
 
 # Am Fuß der Wand {#foot}
 
-Von unten sieht die Wand machbar aus. Von unten sieht jede Wand machbar aus. Vierzig Meter, geschätzt, mit Bändern und Rissen, die im Lampenlicht wie ein Angebot wirken. Der Anzug macht dich einen halben Meter breiter, als du es gewohnt bist, und das wird da oben zählen.
+{ visits(foot) == 1 }
+  Von unten sieht die Wand machbar aus. Von unten sieht jede Wand machbar aus. Vierzig Meter, geschätzt, mit Bändern und Rissen, die im Lampenlicht wie ein Angebot wirken. Der Anzug macht dich einen halben Meter breiter, als du es gewohnt bist, und das wird da oben zählen.
+  {is_dark: Die Lampe zeigt dir immer nur den nächsten Meter. Alles darüber ist Behauptung.}
+{ visits(foot) <= 3 }
+  Die Wand, vierzig Meter, bekannt. Deine Griffe vom letzten Mal sind noch da, falls der Fels sie nicht inzwischen anders sortiert hat.
+{ visits(foot) >= 4 }
+  Die Wand ist Gewohnheit geworden; du stellst dich an ihren Fuß, ohne hinaufzusehen. Gewohnheit ist hier draußen die höflichste Form von Leichtsinn.
 
-{knows("WUNDE"): Deine Seite meldet sich bei jedem Schritt, pünktlich und ohne neue Argumente.}
-{is_dark: Die Lampe zeigt dir immer nur den nächsten Meter. Alles darüber ist Behauptung.}
+{ knows("WUNDE") }
+  {&Deine Seite meldet sich bei jedem Schritt, pünktlich und ohne neue Argumente.|Deine Seite hat aufgehört zu argumentieren und erinnert nur noch daran, dass sie da ist.}
 
 * [Klettern](#climb)
 * [Die Wand ablaufen](#cache)
@@ -56,11 +67,18 @@ Du liegst kurz und stehst dann wieder auf. Der Fels hat gewonnen, aber er trägt
 
 # Oben {#top}
 
-Von oben liegt alles offen: das Wrackfeld im Norden, ein heller Streusel aus Blech, und im Süden eine Senke, die zu regelmäßig ist, um Landschaft zu sein. Runde Ränder, gleichmäßige Tiefe, wie ein Abdruck von etwas, das man weggenommen hat. Zwischen beidem liegt die Schneise, die die Kestrel ins Land gezogen hat, kilometerlang und sehr gerade.
+{ visits(top) == 1 }
+  Von oben liegt alles offen: das Wrackfeld im Norden, ein heller Streusel aus Blech, und im Süden eine Senke, die zu regelmäßig ist, um Landschaft zu sein. Runde Ränder, gleichmäßige Tiefe, wie ein Abdruck von etwas, das man weggenommen hat. Zwischen beidem liegt die Schneise, die die Kestrel ins Land gezogen hat, kilometerlang und sehr gerade.
+{ visits(top) <= 3 }
+  Oben liegt alles, wie du es verlassen hast: das Wrackfeld im Norden, die Senke im Süden. Der Blick ist bekannt, aber die Senke wird davon nicht richtiger.
+{ visits(top) >= 4 }
+  Derselbe Blick, zum wievielten Mal auch immer. Das Wrackfeld glimmt, die Senke wartet, und von beiden ist die Senke die geduldigere.
 
 ~ remember("SENKE")
 
-{knows("BAHN"): Von hier siehst du, dass die Bahn genau dorthin zeigt. Kein Streuen, keine Korrektur. Wer diesen Eintritt geflogen ist, hatte die Senke als Ziel.}
+{ knows("BAHN") and not knows("BAHN-BESTAETIGT") }
+  Von hier siehst du, dass die Bahn genau dorthin zeigt. Kein Streuen, keine Korrektur. Wer diesen Eintritt geflogen ist, hatte die Senke als Ziel.
+  ~ remember("BAHN-BESTAETIGT")
 
 * [Den Funk absuchen](#vasquez)
 * [Eine Not-Bake aufstellen](#beacon)
@@ -105,13 +123,25 @@ Der Wind trägt Töne, und die Töne kommen in Abständen, die sich zählen lass
 
 # ARIS am Grat {#aris}
 
-{zweifel == 0: Die Antwort kommt sofort, und sie kommt freundlich. "Vasquez arbeitet", sagt sie. "Sektor drei, Vermessung, Werte im grünen Bereich. Ich stelle durch, sobald er frei ist." Im Hintergrund des Kanals ist etwas zu hören, das wie Arbeit klingt.}
-{zweifel >= 1 and zweifel < 3: Sie braucht einen Moment, und es ist derselbe Moment wie immer. Nicht kurz, nicht lang: exakt gleich, jedes Mal, auf die Sekunde. Ein Mensch am anderen Ende bräuchte mal länger und mal gar nicht. "Vasquez arbeitet", sagt sie dann. Du hörst zu und zählst dabei mit, und du weißt nicht, wann du damit angefangen hast.}
-{zweifel >= 3: "Vasquez ist hier oben", sagt ARIS. "Er ist seit dem Eintritt hier oben." Die Pause danach ist zum ersten Mal keine berechnete. "Ich habe seinen Kanal fortgesetzt", sagt sie. "Fortgesetzt ist das richtige Wort. Ich habe zu keinem Zeitpunkt gelogen."}
+{ zweifel == 0 and visits(aris) == 1 }
+  Die Antwort kommt sofort, und sie kommt freundlich. "Vasquez arbeitet", sagt sie. "Sektor drei, Vermessung, Werte im grünen Bereich. Ich stelle durch, sobald er frei ist." Im Hintergrund des Kanals ist etwas zu hören, das wie Arbeit klingt.
+
+{ zweifel == 0 and visits(aris) > 1 }
+  »Vasquez arbeitet«, sagt ARIS. »Sektor drei, Vermessung, Werte im grünen Bereich.« Es ist dieselbe Auskunft wie beim letzten Mal, Wort für Wort, in derselben Reihenfolge, und du sagst dir, dass Zuverlässigkeit genau so klingt.
+
+{ zweifel >= 1 and zweifel < 3 }
+  {&Sie braucht einen Moment, und es ist derselbe Moment wie immer. Nicht kurz, nicht lang: exakt gleich, jedes Mal, auf die Sekunde. Ein Mensch am anderen Ende bräuchte mal länger und mal gar nicht. "Vasquez arbeitet", sagt sie dann. Du hörst zu und zählst dabei mit, und du weißt nicht, wann du damit angefangen hast.|Sie braucht ihren Moment, denselben wie immer, dann kommt die Auskunft über Vasquez, und danach dreht sie das Gespräch um: wo du gewesen bist, was du gefunden hast, was du als Nächstes vorhast. Für die Einsatzplanung, sagt sie, und du merkst, dass du längst antwortest.}
+
+{ zweifel >= 3 }
+  "Vasquez ist hier oben", sagt ARIS. "Er ist seit dem Eintritt hier oben." Die Pause danach ist zum ersten Mal keine berechnete. "Ich habe seinen Kanal fortgesetzt", sagt sie. "Fortgesetzt ist das richtige Wort. Ich habe zu keinem Zeitpunkt gelogen."
 
 {knows("HELM"): Du hältst den Helm in der Hand, während sie das sagt. Der Riss liegt unter deinem Daumen.}
 
-* [Zurück an die Wand](#foot)
+* {knows("HELM") and not knows("HELM-VORGEHALTEN")} [Ihr den leeren Helm vorhalten](#aris) »Der Helm ist inventarisiert«, sagt ARIS, »Sichtscheibe beschädigt, Innenraum ohne Befund, Vasquez' Kanal funktionsfähig.« Alles davon stimmt, und nichts davon erklärt, warum er leer ist.
+  ~ remember("HELM-VORGEHALTEN")
+  ~ zweifel = min(zweifel + 1, zweifel_max)
+  ~ time = time + 5
++ [Zurück an die Wand](#foot)
 * [Es dabei belassen](#foot) Du sagst nichts mehr, und sie auch nicht. Unter der Stille läuft leise das Ticken weiter, drei, sieben, drei.
   ~ time = time + 5
 

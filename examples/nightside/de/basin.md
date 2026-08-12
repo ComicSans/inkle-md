@@ -1,6 +1,11 @@
 # Ankunft in der Senke {#arrival}
 
-Die Senke ist zu rund und zu flach. Landschaft macht so etwas nicht: Der Rand läuft in einem Bogen, der nirgends ausfranst, und der Boden fällt gleichmäßig zur Mitte hin ab, als hätte jemand nachgemessen. Du gehst ein Stück am Rand entlang und suchst die Stelle, an der die Regelmäßigkeit aufhört. Es gibt keine.
+{ visits(arrival) == 1 }
+  Die Senke ist zu rund und zu flach. Landschaft macht so etwas nicht: Der Rand läuft in einem Bogen, der nirgends ausfranst, und der Boden fällt gleichmäßig zur Mitte hin ab, als hätte jemand nachgemessen. Du gehst ein Stück am Rand entlang und suchst die Stelle, an der die Regelmäßigkeit aufhört. Es gibt keine.
+{ visits(arrival) == 2 }
+  Die Senke, wieder. Der Rand läuft in demselben Bogen wie beim letzten Mal, und du suchst nicht mehr nach der Stelle, an der er ausfranst.
+{ visits(arrival) >= 3 }
+  Du steigst in die Senke hinab wie in etwas Eigenes, und der Gedanke gefällt dir nicht. Die Regelmäßigkeit stört dich nicht mehr, und das sollte sie.
 
 {lang_weg: Du bist lange unterwegs gewesen, und die Anzeige sagt es dir noch einmal, in Zahlen, die unterwegs kleiner geworden sind.}
 
@@ -30,11 +35,24 @@ Du stehst vor einer Tür, die für jemand anderen gebaut wurde, und die einzige 
 
 # Die Kammer {#hall}
 
-Innen ist es still auf eine Art, die draußen nicht vorkommt. Draußen fehlt der Ton nur; hier ist er weggenommen worden. An den Wänden stehen Anzüge, in gleichmäßigen Abständen, alle nach innen gerichtet, auf eine Mitte, in der nichts steht. Dein Licht ist das erste seit langer Zeit, und es kommt dir laut vor.
+{ visits(hall) == 1 }
+  Innen ist es still auf eine Art, die draußen nicht vorkommt. Draußen fehlt der Ton nur; hier ist er weggenommen worden. An den Wänden stehen Anzüge, in gleichmäßigen Abständen, alle nach innen gerichtet, auf eine Mitte, in der nichts steht. Dein Licht ist das erste seit langer Zeit, und es kommt dir laut vor.
+{ visits(hall) <= 3 }
+  Die Kammer, dieselbe Stille, aus der der Ton weggenommen ist. Die Anzüge stehen, wo sie standen, in denselben Abständen, nach innen gerichtet, und keiner hat sich zu dir umgedreht.
+{ visits(hall) >= 4 }
+  Die Stille empfängt dich wie etwas Gewohntes, und die Anzüge stehen, wie sie immer stehen. Du gewöhnst dich an diesen Ort, und das ist das Schlimmste, was er dir bisher angetan hat.
 
-{knows("ANZUG-GEPRUEFT"): Dein Anzug meldet, was er immer meldet — Druck, Temperatur, Rest — und es passt hier zum ersten Mal zu nichts.}
-{knows("FILTER"): Der Filter an deinem Anzug arbeitet und macht dabei ein Geräusch, das nicht von dir stammt und hierher gehört.}
-{zweifel >= 4: ARIS ist seit dem Eingang still. Es ist das erste Mal, dass sie nichts zu sagen hat.}
+{ knows("ANZUG-GEPRUEFT") and not knows("KAMMER-MESSUNG") }
+  Dein Anzug meldet, was er immer meldet — Druck, Temperatur, Rest — und es passt hier zum ersten Mal zu nichts.
+  ~ remember("KAMMER-MESSUNG")
+
+{ knows("FILTER") and not knows("KAMMER-FILTERTON") }
+  Der Filter an deinem Anzug arbeitet und macht dabei ein Geräusch, das nicht von dir stammt und hierher gehört.
+  ~ remember("KAMMER-FILTERTON")
+
+{ zweifel >= 4 and not knows("KAMMER-STILL") }
+  ARIS ist seit dem Eingang still. Es ist das erste Mal, dass sie nichts zu sagen hat.
+  ~ remember("KAMMER-STILL")
 
 * [Die Anzüge ansehen](#suits)
 * [An die Wand treten und einem von ihnen den Filter abnehmen](#filter)

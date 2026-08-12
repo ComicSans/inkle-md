@@ -70,7 +70,12 @@ Du fragst weiter, und während ARIS aufzählt, hörst du es: unter ihrer Stimme 
 
 # Zurück an der Absturzstelle {#arrival}
 
-Die Stelle, an der du aufgewacht bist. Der Abdruck deines Anzugs liegt noch im Geröll, ordentlich wie ein Beweisfoto. Es ist seltsam, den eigenen Umriss zu besuchen.
+{ visits(arrival) == 1 }
+  Die Stelle, an der du aufgewacht bist. Der Abdruck deines Anzugs liegt noch im Geröll, ordentlich wie ein Beweisfoto. Es ist seltsam, den eigenen Umriss zu besuchen.
+{ visits(arrival) == 2 }
+  Die Stelle, an der du aufgewacht bist, hat sich nicht verändert. Dein Abdruck liegt noch im Geröll, und er sieht geduldiger aus als du.
+{ visits(arrival) >= 3 }
+  Wieder die Absturzstelle. Der Abdruck im Geröll wartet noch, und langsam fragst du dich, worauf.
 
 {kurz_weg: Du warst eine Weile fort, und der Ort hat es nicht bemerkt.}
 
@@ -78,9 +83,17 @@ Die Stelle, an der du aufgewacht bist. Der Abdruck deines Anzugs liegt noch im G
 
 # Die Absturzstelle {#site}
 
-Die Nachtseite. Kein Horizont, an dem Licht steht, nur Grade von Schwarz. Nach einer Seite fällt das Gelände zum Wrackfeld ab, wo etwas in Abständen aufglimmt, das nicht brennen sollte. Nach der anderen steigt der Grat auf, eine Kante vor dem Sternenfeld. Dazwischen: du, ein Anzug und eine Stimme im Funk.
+{ visits(site) == 1 }
+  Die Nachtseite. Kein Horizont, an dem Licht steht, nur Grade von Schwarz. Nach einer Seite fällt das Gelände zum Wrackfeld ab, wo etwas in Abständen aufglimmt, das nicht brennen sollte. Nach der anderen steigt der Grat auf, eine Kante vor dem Sternenfeld. Dazwischen: du, ein Anzug und eine Stimme im Funk.
+  {is_dark: Es ist dunkel, und laut ARIS bleibt es das noch eine Weile. Sie nennt eine Zahl, die du gleich wieder vergisst.|Am Rand der Ebene steht ein Streifen Grau. ARIS nennt es Morgen. Du würdest es Zumutung nennen, aber es ist immerhin eine Richtung.}
+{ visits(site) <= 3 }
+  Die Ebene, das Wrackfeld unten, der Grat oben. Du kennst die Anordnung jetzt, und sie ist nicht besser geworden.
+{ visits(site) >= 4 }
+  Die Ebene, wie gehabt. Du sparst dir das Umsehen.
 
-{is_dark: Es ist dunkel, und laut ARIS bleibt es das noch eine Weile. Sie nennt eine Zahl, die du gleich wieder vergisst.|Am Rand der Ebene steht ein Streifen Grau. ARIS nennt es Morgen. Du würdest es Zumutung nennen, aber es ist immerhin eine Richtung.}
+{ knows("MORGEN") and not knows("EBENE-HELL") }
+  Im ersten Licht ist die Ebene grau statt schwarz, und du siehst zum ersten Mal, wie weit sie geht. Es hilft nicht.
+  ~ remember("EBENE-HELL")
 {kurz_weg: Du hast eine Weile stillgestanden. Der Anzug hat mitgezählt.}
 {lang_weg: Du hast sehr lange stillgestanden. Der Planet hat sich in der Zeit nicht bewegt, jedenfalls nicht sichtbar, und das beunruhigt dich mehr, als es sollte.}
 

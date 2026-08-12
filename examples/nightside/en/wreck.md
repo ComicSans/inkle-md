@@ -41,7 +41,7 @@
 * [Over to where the tarpaulins lie](#bodies)
 * [To the ruptured tank](#tank)
 * {knows("KURS") or knows("BAHN")} [Put the course data together](#map)
-* [Confront ARIS](#aris)
++ [Confront ARIS](#aris)
 * [Rest](#rest)
 + [Move on](#depart)
 * {knows("MORGEN")} [Wait for daylight](#ende.dunkel)

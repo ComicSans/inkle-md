@@ -1,6 +1,11 @@
 # Arrival in the Basin {#arrival}
 
-The basin is too round and too flat. Landscape does not do this: the rim runs in an arc that frays nowhere, and the floor slopes evenly towards the centre, as if someone had measured. You walk a stretch along the rim, looking for the place where the regularity stops. There is none.
+{ visits(arrival) == 1 }
+  The basin is too round and too flat. Landscape does not do this: the rim runs in an arc that frays nowhere, and the floor slopes evenly towards the centre, as if someone had measured. You walk a stretch along the rim, looking for the place where the regularity stops. There is none.
+{ visits(arrival) == 2 }
+  The basin, again. The rim runs in the same arc as last time, and you no longer look for the place where it frays.
+{ visits(arrival) >= 3 }
+  You descend into the basin as into something of your own, and you do not like the thought. The regularity no longer bothers you, and it should.
 
 {lang_weg: You have been walking a long time, and the display tells you so once more, in numbers that have grown smaller on the way.}
 
@@ -30,11 +35,24 @@ You stand before a door built for someone else, and the only open question is wh
 
 # The Chamber {#hall}
 
-Inside, it is quiet in a way that does not occur outside. Outside, the sound is merely missing; here it has been removed. Along the walls stand suits, at even intervals, all facing inward, towards a centre where nothing stands. Your light is the first in a long time, and it seems loud to you.
+{ visits(hall) == 1 }
+  Inside, it is quiet in a way that does not occur outside. Outside, the sound is merely missing; here it has been removed. Along the walls stand suits, at even intervals, all facing inward, towards a centre where nothing stands. Your light is the first in a long time, and it seems loud to you.
+{ visits(hall) <= 3 }
+  The chamber, the same silence with the sound removed from it. The suits stand where they stood, at the same intervals, facing inward, and none has turned towards you.
+{ visits(hall) >= 4 }
+  The silence receives you like something familiar, and the suits stand the way they always stand. You are getting used to this place, and that is the worst thing it has done to you yet.
 
-{knows("ANZUG-GEPRUEFT"): Your suit reports what it always reports — pressure, temperature, remainder — and for the first time it matches nothing here.}
-{knows("FILTER"): The filter on your suit is working, and makes a sound that is not yours and belongs here.}
-{zweifel >= 4: ARIS has been silent since the entrance. It is the first time she has had nothing to say.}
+{ knows("ANZUG-GEPRUEFT") and not knows("KAMMER-MESSUNG") }
+  Your suit reports what it always reports — pressure, temperature, remainder — and for the first time it matches nothing here.
+  ~ remember("KAMMER-MESSUNG")
+
+{ knows("FILTER") and not knows("KAMMER-FILTERTON") }
+  The filter on your suit is working, and makes a sound that is not yours and belongs here.
+  ~ remember("KAMMER-FILTERTON")
+
+{ zweifel >= 4 and not knows("KAMMER-STILL") }
+  ARIS has been silent since the entrance. It is the first time she has had nothing to say.
+  ~ remember("KAMMER-STILL")
 
 * [Look at the suits](#suits)
 * [Step to the wall and take the filter off one of them](#filter)

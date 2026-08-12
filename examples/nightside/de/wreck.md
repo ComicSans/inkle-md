@@ -41,7 +41,7 @@
 * [Dorthin, wo die Planen liegen](#bodies)
 * [Zum aufgerissenen Tank](#tank)
 * {knows("KURS") or knows("BAHN")} [Die Kursdaten zusammenlegen](#map)
-* [ARIS zur Rede stellen](#aris)
++ [ARIS zur Rede stellen](#aris)
 * [Rasten](#rest)
 + [Aufbrechen](#depart)
 * {knows("MORGEN")} [Warten, bis es hell wird](#ende.dunkel)

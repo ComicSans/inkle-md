@@ -70,7 +70,12 @@ You keep asking, and while ARIS runs through her list, you hear it: under her vo
 
 # Back at the Crash Site {#arrival}
 
-The spot where you woke up. The imprint of your suit still lies in the scree, neat as an evidence photo. It is a strange thing, visiting your own outline.
+{ visits(arrival) == 1 }
+  The spot where you woke up. The imprint of your suit still lies in the scree, neat as an evidence photo. It is a strange thing, visiting your own outline.
+{ visits(arrival) == 2 }
+  The spot where you woke has not changed. Your imprint still lies in the scree, and it looks more patient than you.
+{ visits(arrival) >= 3 }
+  The crash site again. The imprint in the scree is still waiting, and slowly you begin to wonder what for.
 
 {kurz_weg: You were gone for a while, and the place did not notice.}
 
@@ -78,9 +83,17 @@ The spot where you woke up. The imprint of your suit still lies in the scree, ne
 
 # The Crash Site {#site}
 
-The nightside. No horizon with light standing on it, only grades of black. On one side the ground falls away to the debris field, where something glows at intervals that should not be burning. On the other the ridge climbs, an edge against the starfield. In between: you, a suit, and a voice on the radio.
+{ visits(site) == 1 }
+  The nightside. No horizon with light standing on it, only grades of black. On one side the ground falls away to the debris field, where something glows at intervals that should not be burning. On the other the ridge climbs, an edge against the starfield. In between: you, a suit, and a voice on the radio.
+  {is_dark: It is dark, and according to ARIS it will stay that way for a while. She names a number you forget at once.|At the edge of the plain stands a strip of grey. ARIS calls it morning. You would call it an imposition, but at least it is a direction.}
+{ visits(site) <= 3 }
+  The plain, the wreck field below, the ridge above. You know the arrangement now, and it has not improved.
+{ visits(site) >= 4 }
+  The plain, as before. You spare yourself the looking around.
 
-{is_dark: It is dark, and according to ARIS it will stay that way for a while. She names a number you forget at once.|At the edge of the plain stands a strip of grey. ARIS calls it morning. You would call it an imposition, but at least it is a direction.}
+{ knows("MORGEN") and not knows("EBENE-HELL") }
+  In the first light the plain is grey instead of black, and for the first time you see how far it goes. It does not help.
+  ~ remember("EBENE-HELL")
 {kurz_weg: You have been standing still for a while. The suit kept count.}
 {lang_weg: You have been standing still for a very long time. The planet has not moved in that time, not visibly anyway, and that worries you more than it should.}
 
