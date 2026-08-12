@@ -226,3 +226,27 @@ test('glue that reaches across a choice is carried over, not dropped', () => {
   assert.match(markdown, /I take the mug\. It is<>/);
   assert.match(markdown, /---\nfar too hot\./);
 });
+
+test('ink markup becomes Markdown, and unknown tags are reported', () => {
+  const { markdown, notes } = build(`
+=== start ===
+<i>Somehow</i>, I think.
+He was <b>certain</b>.
+A <span class="x">stray</span> tag.
+-> END
+`);
+  assert.match(markdown, /\*Somehow\*, I think\./);
+  assert.match(markdown, /He was \*\*certain\*\*\./);
+  assert.match(markdown, /A stray tag\./);
+  assert.ok(notes.some((n) => /<span> has no equivalent/.test(n.message)));
+});
+
+test('emphasis at the start of a line is not read as a choice', () => {
+  const { markdown, story } = build(`
+=== start ===
+<i>Somehow</i>, I think.
+-> END
+`);
+  assert.doesNotMatch(markdown, /^\* /m);
+  assert.ok(story);
+});

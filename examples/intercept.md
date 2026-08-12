@@ -242,7 +242,7 @@ In a sudden moment I understand that his reply is a threat.
 * {evasive > 0} [Evade]() "Only that you're being unreasonable, and behaving like a swine."
   "You imbecile," Harris replies, with sudden force. He is half out of his chair. "You know the situation as well as I do. Why the fencing? The Hun are poised like rats, ready to run all over this country. They'll destroy everything. You understand that, don't you? You're not so locked up inside your crossword puzzles that you don't see that, are you? This machine we have here - you men - you are the best and only hope this country has. God help her."
   ~ losttemper = 1
-  I sit back, startled by the force of his outburst. His carefully sculpted expression has curled to angry disgust. <i>He really does hate me</i>, I think. <i>He'll have my blood for the taste of it.</i>
+  I sit back, startled by the force of his outburst. His carefully sculpted expression has curled to angry disgust. *He really does hate me*, I think. *He'll have my blood for the taste of it.*
   * [Placate]()
     "Now steady on," I reply, gesturing for him to be calm.
   * [Mock]()
@@ -351,7 +351,7 @@ The way Harris is staring I expect him to strike me, but he does not. He replies
 { else }
   "I see." He is starting to lose his patience. I have seen Harris angry a few times, with lackeys and secretaries. But never with us. With the 'brains' he has always been cautious, treating us like children.
   And now I see that, like a father, he wants to smack us when we disobey him.
-"Just get to the truth, man. Every <i>minute</i> matters."
+"Just get to the truth, man. Every *minute* matters."
 * {admitblackmail} [Persist with this]()
   "I know what you're thinking. If I've transgressed once then I must be guilty of everything else... But I'm not. We were close to cracking the 13th's intercept. We were getting correlations in the data. Then Hooper disappeared for a moment, and next minute the machine was down."
 * [Tell the truth]()
@@ -399,7 +399,7 @@ Then, he smiles, with all his teeth, like a wolf.
   "Hooper's in Hut 3 being debriefed by the Captain. Let's see if we can't get his attention somehow."
 He raps on the door for the guard and gives the man a quick instruction. He returns a moment later with a cool pair of iron cuffs.
 "Put 'em up," Harris instructs, and I do so. The metal closes around my wrists like a trap. I stand and follow Harris willingly out through the door.
-But whatever I'm doing with my body, my mind is scheming. <i>Somehow,</i> I'm thinking, <i>I have to get away from these men long enough to get that component behind Hut 2 and put it somewhere Hooper will go. Or, otherwise, somehow get Hooper to go there himself...</i>
+But whatever I'm doing with my body, my mind is scheming. *Somehow,* I'm thinking, *I have to get away from these men long enough to get that component behind Hut 2 and put it somewhere Hooper will go. Or, otherwise, somehow get Hooper to go there himself...*
 Harris marches me over to Hut 3, and gestures for the guard to stand aside. Pushing me forward, he opens the door nice and wide.
 "Captain. Manning talked. If you'd step out for a moment?"
 * [Play the part, head down]()
@@ -455,9 +455,9 @@ The Captain, looking puzzled, steps out. The door is closed. Hooper stares at me
   -> inside_hoopers_hut_join
 * [Plead]()
   "Please, Hooper. You don't understand. They have information on me. I don't need to tell you what I've done, you know. Have a soul. And the component - it's nothing. It's not the secret of the Bombe. It's just a part. The German's think it's a weapon - a missile component. Let them have it. Please, man. Just help me."
-  "Help you?" Hooper stares. "Help you? You're a traitor. A snake in the grass. And you're <i>queer</i>."
+  "Help you?" Hooper stares. "Help you? You're a traitor. A snake in the grass. And you're *queer*."
   * [Deny]()
-    "I'm no traitor. You <i>know</i> I'm not. How much work have I done here against the Germans? I've given my all. And you know as well as I do, if the Reich were to invade, I would be a dead man. Please, Hooper. I'm not doing any of this lightly."
+    "I'm no traitor. You *know* I'm not. How much work have I done here against the Germans? I've given my all. And you know as well as I do, if the Reich were to invade, I would be a dead man. Please, Hooper. I'm not doing any of this lightly."
   * [Accept]()
     "I am what I am," I reply. "I'm the way I was made. But they'll hang me unless you help, Hooper. Don't let them hang me."
   * [Evade]()
@@ -716,7 +716,7 @@ The night moves at its own pace. I suppose by morning I will know my fate.
   * [Go]()
   * [Wait]()
     I hang back a moment. Something does not seem quite right. After all, Hooper did not steal the component. He has no reason to confess to anything. Perhaps this is another trap?
-    "Well?" Harris asks. "What are you waiting for? Please don't tell me <i>you</i> want to confess now as well, I don't think my head could stand it."
+    "Well?" Harris asks. "What are you waiting for? Please don't tell me *you* want to confess now as well, I don't think my head could stand it."
     * [Confess]()
       After a chance like this? A chance - however real - to save my neck? To hand it over - what, to save Hooper's worthless skin?
       -> night_falls_deep1
@@ -850,7 +850,7 @@ I head on around the back of the hut. The breeze-block with the cavity is on the
 * [Protest]()
   "You can't do this!" I cry. "It's murder! I demand a trial, a lawyer; for God's sake, man, you can't just throw me overboard, we're not barbarians...!"
 
-  "You leave me no choice," Harris snaps back, eyes cold as gun-metal. "You and your damn cyphers. Your damn clever problems. If men like you didn't exist, if we could just all be <i>straight</i> with one another." He gets to his feet and heads for the door. "I fear for the future of this world, with men like you in. Reich or no Reich, Mr Manning, people like you simply <i>complicate</i> matters."
+  "You leave me no choice," Harris snaps back, eyes cold as gun-metal. "You and your damn cyphers. Your damn clever problems. If men like you didn't exist, if we could just all be *straight* with one another." He gets to his feet and heads for the door. "I fear for the future of this world, with men like you in. Reich or no Reich, Mr Manning, people like you simply *complicate* matters."
   -> left_alone
 * {not gotcomponent and not throwncomponentaway} [Confess]()
   I nod. "I don't need twelve minutes.
@@ -876,7 +876,7 @@ I head on around the back of the hut. The breeze-block with the cavity is on the
   ~ piecereturned = 1
   -> reveal_location_of_component_harris_believes
 * {throwncomponentaway} [Frame Hooper]()
-  "Look, I know where it is. The missing piece of the Bombe is in the long grasses behind Hooper's tent. I saw him throw it there right after we finished work. He knew you'd scour the camp but I suppose he thought you'd more obvious places first. I suppose he was right about that. Look there. That <i>proves</i> his guilt."
+  "Look, I know where it is. The missing piece of the Bombe is in the long grasses behind Hooper's tent. I saw him throw it there right after we finished work. He knew you'd scour the camp but I suppose he thought you'd more obvious places first. I suppose he was right about that. Look there. That *proves* his guilt."
   ~ longgrasshooperframe = 1
   ~ piecereturned = 1
   "That doesn't prove anything," Harris returns sharply. "But we'll check what you say, all the same." He gets to his feet and heads out of the door.
@@ -1122,7 +1122,7 @@ With that he opens the door to the Hut and goes back inside. The Commander uses 
 { seen_shouted }
   "And what was all that shouting about?" he hisses in my ear as we move towards the barracks. "Are you trying to pull something? Or just make me look incompetent?"
 { else }
-  "This scheme of yours had better come off," he hisses in my ear. "Otherwise the Captain is going to start having men tailing <i>me</i> to see where I go on Saturdays."
+  "This scheme of yours had better come off," he hisses in my ear. "Otherwise the Captain is going to start having men tailing *me* to see where I go on Saturdays."
 * [Reassure]()
   { not seen_shouted }
     "It will. Hooper's running scared," I reply, hoping I sound more confident than I feel.
@@ -1332,7 +1332,7 @@ It's time I tackled a problem I can solve.
 
 # Go to where component is hidden check {#go_to_where_component_is_hidden_check}
 
-No time to waste. I drop to my knees and check the breeze-block. Sure enough, there's nothing there. <i>Hooper took the bait.</i>
+No time to waste. I drop to my knees and check the breeze-block. Sure enough, there's nothing there. *Hooper took the bait.*
 Suddenly, there's a movement behind me. I look up to see, first a snub pistol, and then, Harris.
 -> go_to_where_component_is_hidden_join
 
@@ -1369,7 +1369,7 @@ He looks me in the eye.
 { not losttemper }
   "Of course. And one of your computing things, if I get my way. And when we're old, and smoking pipes together in The Rag like heroes, I'll explain to you the way that decent men have affairs.
 { else }
-  "I'll give you a stone to chisel notches in the wall. And that's all the calculations you'll be doing. And as you sit there, pissing into a bucket and growing a beard down to your toes, you have a think about how a <i>smart</i> man would conduct his illicit affairs. With a bit of due decorum you could have learnt off any squaddie.
+  "I'll give you a stone to chisel notches in the wall. And that's all the calculations you'll be doing. And as you sit there, pissing into a bucket and growing a beard down to your toes, you have a think about how a *smart* man would conduct his illicit affairs. With a bit of due decorum you could have learnt off any squaddie.
 <>You scientists."
 He drags me up to my feet.
 "You think you have to re-invent everything."
@@ -1404,7 +1404,7 @@ It's difficult not to shake the sense that he's {evasive > 1: mocking|simply hum
   -> here_at_bletchley_diversion_suggest_its_a_lie
 * ["Of my standing."]() "Of my standing. My reputation." {forceful > 0: I'm aware of how arrogant I must sound but I plough on all the same.|I don't like to talk of myself like this, but I carry on all the same.} "Hooper simply can't bear knowing that, once all this is over, I'll be the one receiving the knighthood and he..."
   "No-one will be getting a knighthood if the Germans make landfall," Harris answers sharply. He casts a quick eye to the door of the Hut to check the latch is still down, then continues in more of a murmur: "Not you and not Hooper. Now answer me."
-  For the first time since the door closed, I wonder what the threat might be if I do <i>not</i>.
+  For the first time since the door closed, I wonder what the threat might be if I do *not*.
 * [Evade]()
   ~ teacup = 0
   ~ forceful = forceful + 1
@@ -1530,7 +1530,7 @@ We're not in the business of guessing here at Bletchley. We are military intelli
   * ["Put me in with Hooper."]() "Put me in with Hooper."
     -> claim_hooper_took_component_putmein
   * ["Tell Hooper I've confessed."]() "Tell Hooper I've confessed. Better yet. Let him see you marching me off in handcuffs. Then let him go, and see what he does. Ten to one he'll go straight to wherever he's hidden that component and his game will be up."
-    Harris nods slowly, chewing over the idea. It isn't a bad plan even - except, of course, Hooper has <i>not</i> hidden the component, and won't lead them anywhere. But that's a problem I might be able to solve once I'm out of this place; and once they're too busy dogging Hooper's steps from hut to hut.
+    Harris nods slowly, chewing over the idea. It isn't a bad plan even - except, of course, Hooper has *not* hidden the component, and won't lead them anywhere. But that's a problem I might be able to solve once I'm out of this place; and once they're too busy dogging Hooper's steps from hut to hut.
     "Interesting," the Commander muses. "But I'm not so sure he'd be that stupid. And if he's already passed the part on, the whole thing will only be a waste of time."
     * ["Trust me. He hasn't."]() "Trust me. He hasn't. If I know that man, and I do, he'll be wanting to keep his options open as long as possible. If the component's gone then he's in it up to his neck. He'll take a week at least to make sure he's escaped suspicion. Then he'll pass it on."
       "And if we keep applying pressure to him, you think the component will eventually just turn up?"
@@ -1649,7 +1649,7 @@ He stops. Looks for a moment. {smashingWindowItem ==2: Sees the bucket in my han
 { seen_pause }
   I'll never know if I hadn't have waited that extra moment - maybe I still could have got away. But, how far?
 I'm hustled into one of the huts. Nowhere to sleep, but they're not interested in my comfort any longer. Harris comes in with the Captain.
-"So," Harris remarks. "Looks like your little trap worked. Only it worked to show <i>you</i> out for what you are."
+"So," Harris remarks. "Looks like your little trap worked. Only it worked to show *you* out for what you are."
 * [Tell the truth]()
   { visits("i_met_a_young_man") }
     "Please, Harris. You can't understand the pressure they put me under. You can't understand what it's like, to be in love but be able to do nothing about it..."
@@ -1662,15 +1662,15 @@ I'm hustled into one of the huts. Nowhere to sleep, but they're not interested i
 
 ---
 "Be quiet, man. We know all about your and your sordid affairs." The Captain curls his lip. "Don't you know there's a war on? Do you know the kind of place they would have sent you if it haven't had been for that brain of yours? Don't you think you owe it to your country to use it a little more?"
-<i>Do I</i>, I wonder? <i>Do I owe this country anything, this country that has spurned who and what am I since the day I became a man?</i>
+*Do I*, I wonder? *Do I owe this country anything, this country that has spurned who and what am I since the day I became a man?*
 * [Yes]()
   My anger deflates like a collapsing equation, all arguments cancelling each other out. The world, of course, owes me nothing; and I owe it everything.
 * [No]()
   -> slam_door_shut_and_gone_alone
 * [Lie](#slam_door_shut_and_gone_alone)
 * [Evade]()
-  <i>But what is a country, after all? A country is not a concept, not an ideal. Every country falls, its borders shift and move, its language disappears to be replaced by another. Neither the Reich nor the British Empire will survive forever, so what use is my loyalty to either? </i>
-  <i>I may as well, therefore, look after myself. Something I have attempted, but failed miserably, to do.</i>
+  *But what is a country, after all? A country is not a concept, not an ideal. Every country falls, its borders shift and move, its language disappears to be replaced by another. Neither the Reich nor the British Empire will survive forever, so what use is my loyalty to either?*
+  *I may as well, therefore, look after myself. Something I have attempted, but failed miserably, to do.*
 
 ---
 -> slam_door_shut_and_gone_join2
@@ -1893,7 +1893,7 @@ Let me see. There's the bunk, {not smashingWindowItem == 2: a bucket,} nothing e
 
 # Slam door shut and gone alone {#slam_door_shut_and_gone_alone}
 
-<i>Of course not. I am alone; that is what they wanted me to be, because of who and what I love. So I have no nation, no country.</i>
+*Of course not. I am alone; that is what they wanted me to be, because of who and what I love. So I have no nation, no country.*
 -> slam_door_shut_and_gone_join2
 
 
@@ -2120,7 +2120,7 @@ Then he gets to his feet, and opens the door, and marches me out across the yard
 ---
 I don't mind telling you, this is a disaster, this whole thing. What I want is to find that little bit of mechanical trickery. I don't care where. In your luncheon box or under Hooper's pillow. Just somewhere, and within the grounds of this place."
 * ["Then let him he think he's off the hook."]() "Then let him he think he's off the hook. Make a show of me. And then you'll get your man."
-  <i>Somehow</i>, I think. But that's the part I need to work.
+  *Somehow*, I think. But that's the part I need to work.
   -> harris_takes_you_to_hooper
 * ["Then you'd better get searching."](#claim_hooper_took_component_its_your_problem) "Then you'd better get searching," I reply, tiring of his complaining. A war is a war, you have to expect an enemy.
 

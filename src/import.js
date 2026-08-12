@@ -207,6 +207,34 @@ function weld(left, right) {
   return /^[.,;:!?'"\u2019\u201d)]/.test(right) ? `${left}${right}` : `${left} ${right}`;
 }
 
+/** What ink's HTML means in Markdown. SPEC 4.9 has no other formatting. */
+const MARKUP = new Map([
+  ['i', '*'],
+  ['em', '*'],
+  ['b', '**'],
+  ['strong', '**'],
+]);
+
+/**
+ * Turns the HTML an ink file carries into Markdown. A pair this language has
+ * a mark for becomes that mark; anything else is dropped, with a note, rather
+ * than written into a book that has no place for it. `*emphasis*` at the
+ * start of a line stays emphasis: a choice marker needs a space after it
+ * (SPEC 4.3).
+ */
+function markup(text, line, notes) {
+  let out = text;
+  for (const [tag, mark] of MARKUP) {
+    out = out.replace(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`, 'gi'), (whole, inner) => (
+      inner.trim() ? `${mark}${inner.trim()}${mark}` : inner
+    ));
+  }
+  return out.replace(/<\/?([a-zA-Z][\w-]*)[^>]*>/g, (whole, tag) => {
+    notes.add(line, `<${tag}> has no equivalent, tag dropped`);
+    return '';
+  });
+}
+
 /**
  * Reads everything before the first knot: variables, constants, and the
  * ref-parameter helpers that get inlined at their call sites.
@@ -452,7 +480,7 @@ function readItem(line, notes) {
         line: line.line,
       };
     }
-    return { kind: 'gather', depth, label: label ? label[1] : null, text: trailing, line: line.line };
+    return { kind: 'gather', depth, label: label ? label[1] : null, text: markup(trailing, line.line, notes), line: line.line };
   }
 
   const divert = text.match(RE.divert);
@@ -471,13 +499,13 @@ function readItem(line, notes) {
   if (trailing && trailing[1].trim() && !RE.tunnel.test(text)) {
     return {
       kind: 'text',
-      text: trailing[1].trim(),
+      text: markup(trailing[1].trim(), line.line, notes),
       glue,
       then: { kind: 'divert', target: trailing[2], line: line.line },
       line: line.line,
     };
   }
-  return { kind: 'text', text: text.trim(), glue, line: line.line };
+  return { kind: 'text', text: markup(text.trim(), line.line, notes), glue, line: line.line };
 }
 
 /** A choice line: label, condition, the bracket split, and a trailing divert. */
@@ -525,7 +553,13 @@ function readChoiceBody(rest, line, notes) {
   }
 
   if (RE.tunnel.test(rest)) notes.add(line.line, 'tunnel on a choice, return not carried');
-  return { label: label ? label[1] : null, condition, button, follow, divert };
+  return {
+    label: label ? label[1] : null,
+    condition,
+    button: markup(button, line.line, notes),
+    follow: markup(follow, line.line, notes),
+    divert,
+  };
 }
 
 /** Joins two halves of a split choice without doubling the space. */
