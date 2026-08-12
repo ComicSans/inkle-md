@@ -1022,10 +1022,11 @@ function emitBook(nodes, ctx) {
     '',
     'stats:',
     ...stats,
-    '---',
-    '',
   ];
-  if (notice) head.push('<!--', notice, '-->', '');
+  // The notice belongs to the file, and the only place a book may carry
+  // prose that is not story is the frontmatter, as a comment.
+  if (notice) head.push('', ...notice.split('\n').map((line) => (line ? `# ${line}` : '#')));
+  head.push('---', '');
 
   const body = nodes.map((node) => emitKnot(node, ctx)).join('\n');
   return `${head.join('\n')}${body}`;

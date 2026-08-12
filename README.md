@@ -24,8 +24,10 @@ in the house example was found to punish every second visit to the same room.
 `mcp` serves lint, play and simulate as MCP tools over stdio, so an agent can
 playtest a book against the real runtime; `.mcp.json` registers it.
 
-The export is one HTML file with no external requests: 53 kB, 15 kB gzipped,
-which is inside the 30 kB budget of SPEC 12.
+The export is one HTML file with no external requests. How large it gets is
+mostly the book: thornwood comes to 63 kB, the nightside to 203 kB, The
+Intercept to 223 kB. The fixed part is the runtime and the view layer, and that
+is what the budget in SPEC 12 is about.
 
 A page can host the game instead of exporting it. Concatenate `runtime.js` and
 `view.js` with `export ` stripped - that is all `export.js` does - and mount it
@@ -58,11 +60,56 @@ names the chapter files and every node carries its `file` and `line`.
 | `src/export.js` | One self-contained HTML file, SPEC 12 |
 | `src/play.js` | Playing from the terminal, scripted replays, simulation |
 | `src/mcp.js` | lint, play and simulate as MCP tools over stdio |
-| `src/cli.js` | `build`, `lint`, `export`, `play`, `simulate`, `mcp` |
+| `src/import.js` | Reads ink and writes inkle-md, reporting what has no equivalent |
+| `src/cli.js` | `build`, `lint`, `export`, `play`, `simulate`, `import`, `mcp` |
 | `examples/thornwood.md` | One file, one language: creation, combat, two endings |
 | `examples/thornwood-book/` | The same book as a project: two chapters, German and English |
 | `examples/house/` | A full-length book: 46 nodes, a fear stat that kills, secrets, three endings |
 | `examples/nightside/` | The 0.7 layer at work: facts, events, places, an oxygen clock, five endings |
+| `examples/intercept.md` | ink's own demo game, imported: 132 nodes, no RPG layer at all |
+
+## The examples
+
+Each one is there to fail differently.
+
+**`thornwood.md`** is the smallest complete book: one file, one language,
+character creation, a fight, two endings. Read this one first, and read
+[the full example in SPEC 13](SPEC.md#13-full-example) beside it.
+
+**`thornwood-book/`** is the same story as a project, to show what changes when
+a book grows a `book.yaml`, a second chapter and a second language.
+
+**`house/`** is full-length: 46 nodes, secrets, and a fear stat that kills, so
+the numbers get exercised over a long game rather than a demo.
+
+**`nightside/`** carries the 0.7 layer - facts, events, places, host time - and
+an oxygen clock that runs down whether or not the reader is doing anything.
+
+**`intercept.md`** is not written in this language at all. It is inkle's own
+ink demo, *The Intercept*, put through `import`, and it earns its place by
+having no character sheet, no dice and no combat: it exercises the narrative
+half of the language on someone else's writing, where nothing could be quietly
+bent to fit. It carries inkle's MIT notice, not this project's MPL header, and
+it is the one example that is not `--strict` clean - it repeats choice labels
+because the original does (L012).
+
+## Importing ink
+
+```bash
+node src/cli.js import TheIntercept.ink --out examples/intercept.md
+```
+
+The importer carries over what this language has a word for: knots, stitches,
+weaves, the bracket split in choices, conditions, variables and the inline
+forms of varying text. What ink says differently is rewritten rather than
+guessed - a tunnel becomes a divert to where its callers return, a label used
+as a jump target becomes a node, a visit count on a choice becomes a variable,
+and a weave past the three levels of SPEC 4.3 moves into a node that goes on
+where the weave would have gone on. What has no equivalent at all - threads,
+lists, external functions - is reported with the ink line number and left out.
+
+Those notes carry no error code on purpose: SPEC 10.3 and 11 describe an
+inkle-md document, and the importer's input is not one.
 
 ## Three rules worth knowing before writing a book
 
@@ -83,24 +130,6 @@ structure; every other language is a catalogue of paragraphs and button
 labels, matched in source order. Where a language genuinely needs different
 logic - a plural only it branches on - it may override a whole node, and the
 linter says so (L019). See `examples/thornwood-book/en/crypt.md`.
-
-## What is not here yet
-
-- **Lint rules L003, L004, L011, L014, L015.** They need constant folding over
-  variables or a prose model. Everything else in SPEC 11 runs, including
-  L021 to L028.
-- **A calendar and an ephemeris.** The `clock` and `ephemeris` fact sources of
-  SPEC 22.1 need an epoch, and the language has no absolute time in it.
-
-## Conventions
-
-Errors carry a code from SPEC 10.3 and always name file, line and the
-offending text. Warnings carry a code from SPEC 11; `--strict` turns them into
-errors and is what CI uses.
-
-Every example in SPEC.md is a test case, and the three collision rules are
-table-driven in `test/lexer.test.js` - that is where a Markdown dialect breaks
-first.
 
 ## Licence
 

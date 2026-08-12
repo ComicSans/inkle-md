@@ -20,7 +20,8 @@ node src/cli.js export examples/thornwood-book/book.yaml --out build/play.html
 - Jede Quelldatei trägt den MPL-2.0-Header. Neue Datei, neuer Header.
 - Fehler tragen einen Code aus SPEC 10.3, Warnungen einen aus SPEC 11. Ein
   neuer Prüffall braucht einen Code, einen Eintrag in der Spec und einen Test.
-- Alle drei Beispiele müssen `--strict` sauber bleiben; sie sind der Abnahmetest.
+- Die drei geschriebenen Beispiele müssen `--strict` sauber bleiben; sie sind
+  der Abnahmetest.
   `thornwood` und `house` decken die Grundschicht ab, `nightside` die 0.7-Schicht
   aus Fakten, Ereignissen, Orten und Host-Zeit.
 - Deutsche Texte mit echten Umlauten, auch in Beispielen und Commit-Nachrichten.
@@ -34,6 +35,15 @@ nichts auszuführen, und ein Hook, der nichts prüft, ist schlechter als keiner,
 weil er Grün meldet. Das Äquivalent ist `node --test 'test/*.test.js'` plus
 `--strict`-Lint auf allen drei Beispielen; solange das nicht als Hook läuft, wird
 es vor jedem Commit von Hand ausgeführt. Entschieden mit Tobias am 11.08.2026.
+
+**`examples/intercept.md` ist importiert, nicht geschrieben.** Es entsteht aus
+`inkle-md import` über inkles ink-Quelle von *The Intercept* und trägt deren
+MIT-Vermerk im Frontmatter statt des MPL-Headers - fremder Text bleibt unter
+fremder Lizenz. Es bleibt englisch, weil Übersetzen den Nachweis entwertet, und
+es ist als einziges Beispiel nicht `--strict` sauber: L012 meldet wiederholte
+Wahltexte, die im Original so stehen. Geprüft wird es mit `lint` ohne `--strict`
+und mit `simulate`. Wer es ändern will, ändert den Importer und importiert neu.
+Entschieden mit Tobias am 12.08.2026.
 
 **Kein SwiftLint, keine swift-contracts.** Kein Swift im Projekt.
 
