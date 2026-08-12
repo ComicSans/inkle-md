@@ -307,8 +307,12 @@ export function validateFrontmatter(data, ctx) {
     }
     config.stats[name] = {
       // The name a reader sees is the author's, and translatable; the key
-      // stays the identifier the story does arithmetic on.
-      name: i18n(spec.name ?? name, lang, `stat "${name}" name`, at),
+      // stays the identifier the story does arithmetic on. A stat without one
+      // is internal and carries no name at all: it drives the story, but no
+      // sheet lists it (SPEC 6). An imported book is full of those.
+      ...(spec.name === undefined
+        ? {}
+        : { name: i18n(spec.name, lang, `stat "${name}" name`, at) }),
       start: asExpression(spec.start, `stats.${name}.start`, at),
       max: spec.max === 'start' ? 'start' : (spec.max === undefined ? null : asExpression(spec.max, `stats.${name}.max`, at)),
     };

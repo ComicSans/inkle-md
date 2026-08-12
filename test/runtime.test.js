@@ -39,6 +39,19 @@ test('a story starts, prints text and offers choices', () => {
   assert.deepEqual(s.stats.map((x) => x.name), ['skill', 'stamina', 'luck', 'gold']);
 });
 
+test('a stat without a name stays internal', () => {
+  // An imported book arrives full of these: ink only ever tested the
+  // variable, so there is no name to import.
+  const s = play(compile('# A {#a}\n\n-> END\n', {
+    frontmatter: '---\ntitle: Quiet\nstart: a\nstats:\n'
+      + '  stamina: { name: Stamina, start: 20 }\n  seen_hut: { start: 0 }\n---\n',
+  }).story);
+  assert.deepEqual(s.stats.map((x) => [x.name, x.label, x.named]), [
+    ['stamina', 'Stamina', true],
+    ['seen_hut', 'seen_hut', false],
+  ]);
+});
+
 test('setup grants what was picked, and stats are rolled once', () => {
   const s = play(example());
   assert.ok(s.inventory.some((i) => i.id === 'sword'));

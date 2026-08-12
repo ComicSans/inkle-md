@@ -178,6 +178,10 @@ export class Story {
     return Object.entries(this.config.stats).map(([name, stat]) => ({
       name,
       label: flat(stat.name, this.lang) ?? name,
+      // Ohne `name:` im Frontmatter ist der Wert intern (SPEC 6): er treibt
+      // die Geschichte, aber niemand liest ihn. Der Wert steht trotzdem hier,
+      // damit ein Werkzeug ihn sehen kann - nur die Anzeige lässt ihn weg.
+      named: stat.name !== undefined,
       value: this.state.vars[name],
       max: this.state.vars[`${name}_max`] ?? null,
     }));

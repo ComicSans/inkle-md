@@ -91,7 +91,10 @@ function mount(json, root, options = {}) {
 
   function characterPanel() {
     const stats = el('dl', { class: 'stats' });
-    for (const stat of story.stats) {
+    // Namenlose Werte sind intern (SPEC 6). Ein importiertes Buch bringt
+    // Dutzende davon mit, und die gehören nicht neben die Prosa.
+    const named = story.stats.filter((stat) => stat.named);
+    for (const stat of named) {
       stats.append(el('dt', { text: stat.label }));
       const value = stat.max ? `${stat.value} / ${stat.max}` : String(stat.value);
       const dd = el('dd', { class: 'stat' });
@@ -128,8 +131,12 @@ function mount(json, root, options = {}) {
     const memory = el('ul', { class: 'items memory' },
       words.map((word) => el('li', { text: word.toUpperCase() })));
 
+    // Ein Buch ohne Regelschicht hat weder sichtbare Werte noch Gepäck noch
+    // Stichworte. Dann steht hier kein leerer Kasten, sondern nichts.
+    if (named.length === 0 && story.inventory.length === 0 && words.length === 0) return null;
+
     return el('aside', { class: 'sheet', 'aria-label': ui.character }, [
-      stats,
+      named.length > 0 ? stats : null,
       story.inventory.length > 0 ? fold('items', ui.belongings, items) : null,
       words.length > 0 ? fold('memory', ui.memory, memory) : null,
     ]);
@@ -280,7 +287,8 @@ function mount(json, root, options = {}) {
       page.append(choices);
     }
 
-    root.append(page, characterPanel());
+    const sheet = characterPanel();
+    root.append(...(sheet ? [page, sheet] : [page]));
     prose.focus();
     options.onRender?.({ node: story.current.node, lang: story.lang });
   }

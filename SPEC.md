@@ -616,8 +616,13 @@ Start with `stats:`. Every stat becomes a global variable, so once you declare
 start` means "the opening roll is also the ceiling", the Fighting Fantasy
 rule, and exposes `<key>_max` as a read-only variable. The key is the
 identifier the story does arithmetic on; `name:` is what a reader sees and
-takes a language table like any other reader-visible field. Without a `name:`
-the key is shown as it stands.
+takes a language table like any other reader-visible field. A stat without a
+`name:` is internal: it still drives the story, but no reader ever sees it,
+and section 12 leaves it off the character sheet. Imported books arrive full
+of those - `import` cannot invent a name for a variable that ink only ever
+tested - and a wall of `seen_tellme: 0` next to the prose is not a character
+sheet. A host that wants every value regardless still gets it from the
+runtime, marked as unnamed.
 
 One thing you will not find in the frontmatter: nothing here describes
 presentation. How a stat is drawn, what the inventory panel is called, what
