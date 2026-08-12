@@ -48,6 +48,10 @@ const TOOLS = [
         seed: { type: 'number' },
         script: { type: 'array', items: { type: 'string' }, description: 'Zugfolge, z. B. ["1","1","a"]' },
         picks: { type: 'array', items: { type: 'string' }, description: 'Eine Auswahl je setup-Block, z. B. ["dagger"]' },
+        host: {
+          type: 'object',
+          description: 'Werte für die host-Fakten, die an jeder Grenze ankommen, z. B. {"elapsed": 60}',
+        },
         lang: { type: 'string' },
       },
       required: ['entry'],
@@ -63,6 +67,10 @@ const TOOLS = [
       properties: {
         entry: { type: 'string', description: 'Pfad zu book.yaml oder einer .md-Datei' },
         runs: { type: 'number' },
+        host: {
+          type: 'object',
+          description: 'Wie Zähler und elapsed je Zug vorrücken, z. B. {"elapsed": 60}',
+        },
       },
       required: ['entry'],
     },
@@ -94,12 +102,13 @@ async function callTool(name, args = {}) {
       lang: args.lang,
       picks: args.picks,
       script: args.script ?? [],
+      host: args.host ?? null,
       quiet: true,
     });
   }
   if (name === 'simulate') {
     const { story } = compileOrThrow(args.entry);
-    return simulate(story, { runs: args.runs ?? 300 });
+    return simulate(story, { runs: args.runs ?? 300, host: args.host ?? null });
   }
   throw new Error(`unbekanntes Werkzeug "${name}"`);
 }

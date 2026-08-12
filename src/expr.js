@@ -40,10 +40,21 @@ export const BUILTINS = {
   turns: [0, 0, []],
   turns_since: [1, 1, [0]],
   choice_count: [0, 0, []],
+  // Folded to the place's index at compile time, so the runtime never sees it.
+  place: [1, 1, []],
   min: [2, 2, []],
   max: [2, 2, []],
   abs: [1, 1, []],
 };
+
+/**
+ * What a fact may not do, per principle 8: draw a die, or change anything.
+ * Everything else in BUILTINS reads state and reads it the same way twice.
+ */
+export const IMPURE_CALLS = new Set([
+  'roll', 'random', 'test', 'test_luck',
+  'take', 'drop', 'use', 'equip', 'remember', 'forget',
+]);
 
 export const BUILTIN_VARS = new Set([
   'in_combat', 'weapon_attack', 'weapon_damage', 'armour_defence',

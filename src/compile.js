@@ -17,7 +17,7 @@ import { CompileError, ErrorBag } from './errors.js';
 import { splitFrontmatter, parseYaml } from './yaml.js';
 import { validateFrontmatter, languagesOf, DEFAULT_LANGUAGE } from './frontmatter.js';
 import { parseStory } from './parser.js';
-import { BUILTINS, BUILTIN_VARS, walkExpression } from './expr.js';
+import { BUILTINS, BUILTIN_VARS, IMPURE_CALLS, walkExpression } from './expr.js';
 import { lint } from './lint.js';
 import { parseCatalog, applyCatalog } from './catalog.js';
 import { emitStory } from './emit.js';
@@ -137,6 +137,13 @@ export function compileSources(input, ctx = {}) {
       undo: config.undo,
       checks: config.checks,
       strings: config.strings,
+      facts: config.facts,
+      // `declaredCatchup` is the linter's bookkeeping for L027 and has no
+      // business in a file that ships to every reader.
+      events: Object.fromEntries(Object.entries(config.events).map(
+        ([name, { declaredCatchup, ...rest }]) => [name, rest],
+      )),
+      places: config.places,
     },
     built,
   });
@@ -193,6 +200,7 @@ function checkTranslatedText(nodes, table, { config, multi, bag }) {
   const scope = new Set([
     ...Object.keys(config.stats),
     ...Object.keys(config.stats).map((s) => `${s}_max`),
+    ...Object.keys(config.facts ?? {}),
     ...BUILTIN_VARS,
   ]);
   const functions = new Map();
@@ -213,7 +221,7 @@ function checkTranslatedText(nodes, table, { config, multi, bag }) {
 
   for (const node of nodes) {
     walkTextExpressions(node.body, (expr) => {
-      checkExpression(expr, scope, node, node.source, bag, resolve, functions);
+      checkExpression(expr, scope, node, node.source, bag, resolve, functions, config);
     });
   }
 }
@@ -284,6 +292,7 @@ function buildVariant(variant, bookConfig, ctx, bag) {
   }
 
   checkAndResolve([...table.values()], table, { config, multi, bag });
+  checkDeclarations(table, config, { multi, bag, at: { file: ctx.entry, line: 1 } });
 
   // Items named anywhere must exist once `items:` declares anything at all.
   const declaredItems = new Set(Object.keys(config.items));
@@ -344,6 +353,7 @@ export function checkAndResolve(nodes, table, { config, multi, bag }) {
   const knownVars = new Set([
     ...Object.keys(config.stats),
     ...Object.keys(config.stats).map((s) => `${s}_max`),
+    ...Object.keys(config.facts ?? {}),
     ...BUILTIN_VARS,
   ]);
 
@@ -386,10 +396,19 @@ export function checkAndResolve(nodes, table, { config, multi, bag }) {
         }
         return;
       }
-      if (op.op === 'assign' && !scope.has(op.target)) {
-        bag.add('E131', `"${op.target}" is not a declared stat`, op.source ?? node.source);
+      if (op.op === 'assign') {
+        // Travel is an assignment whose value came from place() (21.2), and
+        // L026 has no other way to recognise it once the call is folded away.
+        if (namesPlace(op.value)) op.place = true;
+        // A fact name is in scope, so this has to come before the E131 below
+        // or the reader would be told a fact is not a stat (17.2).
+        if (config.facts?.[op.target]) {
+          bag.add('E164', `"${op.target}" is a fact; a book only reads it`, op.source ?? node.source);
+        } else if (!scope.has(op.target)) {
+          bag.add('E131', `"${op.target}" is not a declared stat`, op.source ?? node.source);
+        }
       }
-    }, (expr, at) => checkExpression(expr, scope, node, at ?? node.source, bag, resolve, functions));
+    }, (expr, at) => checkExpression(expr, scope, node, at ?? node.source, bag, resolve, functions, config));
 
     if (node.kind === 'function') {
       if (!hasReturn(node.body)) bag.add('E140', `function "${node.id}" never returns`, node.source);
@@ -397,6 +416,107 @@ export function checkAndResolve(nodes, table, { config, multi, bag }) {
       bag.add('E110', `node "${node.qualified}" has no divert, choice or combat at its end`, node.source);
     }
   }
+}
+
+/**
+ * The book-wide declarations of 0.7: facts, events and places. They resolve
+ * against the same node table the story does, and their expressions go
+ * through the same checks, because a `visits()` in an event is the same
+ * `visits()` a node writes.
+ */
+function checkDeclarations(table, config, { multi, bag, at }) {
+  const facts = config.facts ?? {};
+  const events = config.events ?? {};
+  const places = config.places ?? [];
+
+  for (const place of places) {
+    if (!place.enter) continue;
+    if (multi && !place.enter.includes('.')) {
+      bag.add('E040', `place "${place.id}" enters "${place.enter}", which needs a namespace`, at);
+    } else if (!table.has(place.enter)) {
+      bag.add('E166', `place "${place.id}" enters "${place.enter}", which does not exist`, at);
+    }
+  }
+
+  const scope = new Set([
+    ...Object.keys(config.stats),
+    ...Object.keys(config.stats).map((s) => `${s}_max`),
+    ...Object.keys(facts),
+    ...BUILTIN_VARS,
+  ]);
+  const functions = new Map();
+  for (const node of table.values()) {
+    if (node.kind === 'function') functions.set(node.qualified, node);
+  }
+  const resolve = (ref) => {
+    const name = String(ref).trim();
+    if (!table.has(name)) bag.add('E041', `nothing named "${name}"`, at);
+    return name;
+  };
+  const outside = { namespace: null };
+  const check = (expr) => {
+    if (expr) checkExpression(expr, scope, outside, at, bag, resolve, functions, config);
+  };
+
+  for (const fact of Object.values(facts)) {
+    if (fact.source === 'derived') check(fact.value);
+  }
+  // A story function can hide an assignment, so principle 8 has to look
+  // through the call rather than only at the name in front of it.
+  for (const [name, fact] of Object.entries(facts)) {
+    if (fact.source !== 'derived') continue;
+    walkExpression(fact.value, (e) => {
+      if (e.call === undefined || BUILTINS[e.call]) return;
+      const fn = functions.get(e.call);
+      if (fn && !isPureFunction(fn, functions, new Set())) {
+        bag.add('E169',
+          `fact "${name}" calls ${e.call}(), which changes state`, at);
+      }
+    });
+  }
+
+  for (const [name, event] of Object.entries(events)) {
+    check(event.counter);
+    check(event.when);
+    if (event.do.op === 'assign') {
+      check(event.do.value);
+      if (facts[event.do.target]) {
+        bag.add('E164', `event "${name}" assigns to the fact "${event.do.target}"`, at);
+      } else if (!scope.has(event.do.target)) {
+        bag.add('E131', `event "${name}" assigns to "${event.do.target}", which is not a declared stat`, at);
+      }
+    } else if (event.do.op === 'call') {
+      check({ call: event.do.fn, args: event.do.args });
+    } else {
+      bag.add('E167', `event "${name}" returns instead of doing something`, at);
+    }
+  }
+}
+
+/** True when a story function neither assigns nor calls anything impure. */
+function isPureFunction(fn, functions, seen) {
+  if (seen.has(fn.qualified)) return true;
+  seen.add(fn.qualified);
+  let pure = true;
+  walkOps(fn.body, (op) => {
+    if (op.op === 'assign') pure = false;
+    if (op.op === 'call' && IMPURE_CALLS.has(op.fn)) pure = false;
+  }, (expr) => {
+    walkExpression(expr, (e) => {
+      if (e.call === undefined) return;
+      if (IMPURE_CALLS.has(e.call)) pure = false;
+      const called = functions.get(e.call);
+      if (called && !isPureFunction(called, functions, seen)) pure = false;
+    });
+  });
+  return pure;
+}
+
+/** True when an expression reaches for place(), before folding removes it. */
+function namesPlace(expr) {
+  let found = false;
+  walkExpression(expr, (e) => { if (e.call === 'place') found = true; });
+  return found;
 }
 
 /** Walks every op, and every expression inside it. */
@@ -459,13 +579,27 @@ function walkParts(parts, onExpr, at) {
   }
 }
 
-function checkExpression(expr, scope, node, at, bag, resolve, functions) {
+function checkExpression(expr, scope, node, at, bag, resolve, functions, config = null) {
   walkExpression(expr, (e) => {
     if (e.var !== undefined && !scope.has(e.var)) {
       bag.add('E131', `"${e.var}" is not a declared stat`, at);
     }
     if (e.ref !== undefined) {
       e.ref = resolve(e.ref, node.namespace, at);
+    }
+    // place("ridge") is an index the linter can check and the author never
+    // writes as a number (21.2); nothing of it survives into the runtime.
+    if (e.call === 'place') {
+      const id = e.args?.[0]?.lit;
+      const index = (config?.places ?? []).findIndex((p) => p.id === String(id));
+      if (index < 0) {
+        bag.add('E165', `no place called "${id}"`, at);
+        return;
+      }
+      delete e.call;
+      delete e.args;
+      e.lit = index;
+      return;
     }
     if (e.call === undefined || BUILTINS[e.call]) return;
 

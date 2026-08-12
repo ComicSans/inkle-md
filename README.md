@@ -63,7 +63,13 @@ names the chapter files and every node carries its `file` and `line`.
 | `examples/thornwood-book/` | The same book as a project: two chapters, German and English |
 | `examples/house/` | A full-length book: 46 nodes, a fear stat that kills, secrets, three endings |
 
-## Two rules worth knowing before writing a book
+## Three rules worth knowing before writing a book
+
+**The book holds no time.** A clock is a stat the book declares and advances
+itself; the runtime never learns what its unit means. What comes from outside
+is a `host` fact, and it arrives only when a host hands it in. Facts are
+read-only: a book reads them, a reader changes variables (SPEC 16 to 18).
+
 
 **The book holds no presentation.** No fonts, no colours, no button labels, no
 hint about how a stat should be drawn. That is the view layer's business
@@ -79,8 +85,11 @@ linter says so (L019). See `examples/thornwood-book/en/crypt.md`.
 
 ## What is not here yet
 
-- **Lint rules L003, L004, L011, L014, L015.** They need constant folding or a
-  prose model. Everything else in SPEC 11 runs.
+- **Lint rules L003, L004, L011, L014, L015.** They need constant folding over
+  variables or a prose model. Everything else in SPEC 11 runs, including
+  L021 to L027.
+- **A calendar and an ephemeris.** The `clock` and `ephemeris` fact sources of
+  SPEC 25 need an epoch, and this draft has no absolute time in it.
 
 ## Conventions
 

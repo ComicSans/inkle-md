@@ -10,8 +10,8 @@
  * inkle-md build    <entry> [--out file.json] [--strict] [--quiet]
  * inkle-md lint     <entry> [--strict] [--json]
  * inkle-md export   <entry> [--out file.html] [--strict]
- * inkle-md play     <entry> [--seed N] [--lang xx] [--script 1,2,a,a] [--json]
- * inkle-md simulate <entry> [--runs N] [--json]
+ * inkle-md play     <entry> [--seed N] [--lang xx] [--script 1,2,a,a] [--host k=v] [--json]
+ * inkle-md simulate <entry> [--runs N] [--host k=v] [--json]
  * inkle-md mcp
  *
  * `entry` is a .md file or a book.yaml.
@@ -39,8 +39,8 @@ function main(argv) {
       '  inkle-md build    <entry> [--out FILE] [--strict] [--quiet]',
       '  inkle-md lint     <entry> [--strict] [--json]',
       '  inkle-md export   <entry> [--out FILE] [--strict]',
-      '  inkle-md play     <entry> [--seed N] [--lang xx] [--script 1,2,a] [--json]',
-      '  inkle-md simulate <entry> [--runs N] [--json]',
+      '  inkle-md play     <entry> [--seed N] [--lang xx] [--script 1,2,a] [--host k=v] [--json]',
+      '  inkle-md simulate <entry> [--runs N] [--host k=v] [--json]',
       '  inkle-md mcp',
       '',
     ].join('\n'));
@@ -50,6 +50,7 @@ function main(argv) {
   const flags = new Set(rest.filter((a) => a.startsWith('--')));
   const value = (name) => { const i = rest.indexOf(name); return i >= 0 ? rest[i + 1] : null; };
   const out = value('--out');
+  const host = parseHost(value('--host'));
   const strict = flags.has('--strict');
   const json = flags.has('--json');
   const quiet = flags.has('--quiet') || json || command === 'play' || command === 'simulate';
@@ -98,12 +99,16 @@ function main(argv) {
       lang: value('--lang') ?? undefined,
       picks: value('--picks') ? value('--picks').split(';') : undefined,
       script: script ? script.split(',').map((m) => m.trim()) : null,
+      host,
       json,
     }).then(() => 0);
   }
 
   if (command === 'simulate') {
-    const report = simulate(story, { runs: value('--runs') ? Number(value('--runs')) : 300 });
+    const report = simulate(story, {
+      runs: value('--runs') ? Number(value('--runs')) : 300,
+      host,
+    });
     if (json) process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
     else {
       process.stdout.write(`${report.runs} Partien, im Schnitt ${report.averageSteps} Schritte\n`);
@@ -133,6 +138,18 @@ function main(argv) {
     process.stdout.write(output);
   }
   return 0;
+}
+
+/** `--host elapsed=60,fuel=3` into the bag a boundary takes in (17.4). */
+function parseHost(text) {
+  if (!text) return null;
+  const bag = {};
+  for (const pair of text.split(',')) {
+    const [name, raw] = pair.split('=');
+    if (!name || raw === undefined) continue;
+    bag[name.trim()] = Number(raw);
+  }
+  return Object.keys(bag).length > 0 ? bag : null;
 }
 
 const code = main(process.argv.slice(2));

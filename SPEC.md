@@ -1,4 +1,4 @@
-# inkle-md, draft 0.6
+# inkle-md, draft 0.7
 
 A gamebook language written in Markdown: ink semantics, Markdown syntax, plus a
 fixed RPG layer modelled on the 1980s gamebooks. The goal is that an author can
@@ -10,6 +10,13 @@ Decided on 2026-08-11: Markdown dialect rather than an ink subset, English
 keywords, built-in combat, multi-file projects with dotted cross-file
 references, no image support for now, translations that carry text but not
 logic, and no presentation anywhere in a book.
+
+Decided on 2026-08-12: a third layer named `facts`, read-only to the book;
+events that assign and never divert; a place table addressed by index; game
+time as an ordinary variable rather than a feature; relative durations rather
+than an epoch; no calendar and no ephemeris in this draft. Sections 16 to 26
+carry that part; sections 1 to 15 are amended in place, and section 24 lists
+where.
 
 ## 1. Principles
 
@@ -23,6 +30,20 @@ logic, and no presentation anywhere in a book.
    can read and, if it comes to it, repair by hand.
 5. **Randomness is reproducible.** Seed plus counter in the save.
 6. **The export is one file.** No framework, no network access at runtime.
+7. **The book holds no time.** A clock is a variable a book declares and
+   advances itself. The runtime never interprets its unit. Turn-based and
+   real-time books are the same engine with a different thing feeding the
+   clock.
+8. **A fact is a pure function of its state.** Same state, same value, today
+   and in a year. A fact never reads a clock, never draws a random number,
+   never remembers anything between calls, and never reaches outside the
+   state it is given.
+9. **Facts are read-only to the book.** The story chooses where and when to
+   look; reality supplies the value. What the reader changes is a variable,
+   not a fact.
+
+Principles 7 to 9 are section 16, where the test that separates a fact from a
+variable is written out.
 
 The price of choosing Markdown: the official `inklecate` compiler cannot check
 these files, and the ink documentation applies only by analogy. Our compiler is
@@ -86,7 +107,9 @@ owns the file list; `namespace:` in a chapter file is E011. Declarations that
 affect the whole book (stats, inventory, items, combat, enemies, setup,
 death, undo, strings)
 belong in `book.yaml` and are an error anywhere else (E012). The reason is
-principle 3: one place to look.
+principle 3: one place to look. `facts:`, `events:` and `places:` (17, 19, 21)
+are book-wide in exactly the same way, and E012 rejects them in a chapter file
+like the rest.
 
 `start:` is optional and defaults to the first node of the first chapter.
 
@@ -372,6 +395,7 @@ error (E042).
 | `visits(node)` | How often the node has been entered |
 | `turns()` / `turns_since(node)` | Turns total, turns since that node |
 | `choice_count()` | Number of choices currently visible |
+| `place(id)` | The index of a declared place, resolved at compile time (21.2) |
 | `min(a,b)` / `max(a,b)` / `abs(a)` | Arithmetic |
 
 **A check** rolls `checks.dice` and compares it to the value. With
@@ -508,6 +532,9 @@ English defaults and a book overrides what it needs; the list above is
 complete. `{enemy}` is the only placeholder. A book written in another
 language should override all of them, which is what L017 checks.
 
+`facts:`, `events:` and `places:` belong here too, and have sections of their
+own: 17, 19 and 21.
+
 ### 6.1 Items
 
 `items:` is optional. An item that is never declared is just its own name, a
@@ -594,6 +621,10 @@ directive.
   "visible": [0, 1],
   "screen": [{ "node": "crypt.chamber", "at": [0], "class": null }],
   "fight": null,
+  "host":   { "elapsed": 700 },
+  "facts":  { "day_length": 24, "elapsed": 700, "is_night": 1 },
+  "events": { "fired": { "relief_arrives": true },
+              "last":  { "wound_worsens": 120 } },
   "turn": 37,
   "seen": ["start.begin", "forest.clearing", "crypt.crypt"],
   "undo": []
@@ -622,6 +653,9 @@ choices were offered, and `fight` the enemies still standing. A condition may
 roll dice, so re-deciding any of this on a repaint would move the stream and
 change the page under the reader.
 
+`host`, `facts` and `events` are section 20, which also says why `facts` is in
+a save and not in a checkpoint.
+
 `rolls` is the counter of the random stream: roll n follows deterministically
 from `seed` and n. Any playthrough can be replayed exactly, and reloading a
 save produces the same roll as before rather than a fresh one.
@@ -640,7 +674,9 @@ undo:
 
 The runtime writes a checkpoint immediately before executing a level-zero
 choice. A checkpoint is the complete flat state of section 8 minus the undo
-stack itself, so the stack cannot grow into itself. Checkpoints ride along in
+stack itself, so the stack cannot grow into itself, and minus `facts`, which
+are recomputed on restore because a checkpoint is always taken at a boundary
+and principle 8 guarantees the same answer (20.2). Checkpoints ride along in
 the save under `"undo": [ ... ]`, which is why `depth` is capped rather than
 unlimited.
 
@@ -669,7 +705,8 @@ container bytecode.
             "languages": ["de", "en"], "default": "de",
             "files": ["de/start.md", "de/crypt.md"] },
   "config": { "stats": {}, "inventory": {}, "items": {}, "setup": [], "combat": {},
-              "enemies": {}, "death": {}, "undo": {}, "strings": {} },
+              "enemies": {}, "death": {}, "undo": {}, "strings": {},
+              "facts": {}, "events": {}, "places": [] },
   "nodes": {
    "de": {
     "crypt.chamber": {
@@ -736,11 +773,12 @@ characters, with exactly three ambiguous cases, all resolved above.
 
 1. **Read** files listed in `book.yaml`, or the single file. Assign namespaces.
 2. **Frontmatter** parsed as YAML, validated against the schema of section 6.
-   Expression strings (`start:`, `when:`, `attack:`, `damage:`, `death.when`)
-   go through the expression parser at this point, not at runtime. `effect:`
-   is parsed as an assignment, the same production as a `~` line without the
-   `~`, and is the only YAML field that is a statement rather than an
-   expression.
+   Expression strings (`start:`, `when:`, `attack:`, `damage:`, `death.when`,
+   a derived fact's `value:`, an event's `when:` and `counter:`) go through
+   the expression parser at this point, not at runtime. `effect:` and an
+   event's `do:` are parsed as assignments, the same production as a `~` line
+   without the `~`, and are the only YAML fields that are statements rather
+   than expressions.
 3. **Line scan** per file: classify every line, build the indentation tree.
    Tabs, odd indentation and indentation jumps of more than one level are
    errors here.
@@ -805,6 +843,17 @@ offending text.
 | E150 | `flee` exit for an enemy without `flee_after` |
 | E151 | `!combat` with an unknown enemy or without a `win` exit |
 | E152 | Malformed line in a directive block |
+| E160 | Unknown fact `source:` |
+| E161 | Fact missing a field its source requires |
+| E162 | `fixed` value or `fallback` outside the declared `range:` |
+| E163 | Fact reading a later-declared fact, or a cycle among facts |
+| E164 | Assignment to a fact |
+| E165 | `place()` with an unknown id |
+| E166 | Place `enter:` naming an unknown node |
+| E167 | Event without `do:` |
+| E168 | Event with both `once:` and `every:` |
+| E169 | Fact expression that is not pure: dice, or a call that changes state |
+| E170 | Fact name colliding with a stat or variable |
 
 ### 10.4 Test suite
 
@@ -841,6 +890,13 @@ uses `--strict`.
 | L013 | Node with more than seven choices | info |
 | L014 | `death.goto` unreachable by any other route (dead-end check) | info |
 | L015 | Prose in a node that only diverts (unreachable text) | warning |
+| L021 | Event that can never fire: its threshold exceeds the longest path | warning |
+| L022 | Event whose assignment is never read | warning |
+| L023 | Fact never read anywhere | info |
+| L024 | Fact depending on a variable that is never written | warning |
+| L025 | Content unreachable when every host fact takes its fallback | warning |
+| L026 | Divert into a place's `enter:` node without setting the index | warning |
+| L027 | Recurring event without `max_catchup:` | info |
 
 L008 and L009 are the ones that actually catch bugs in a gamebook: a key that
 is never granted, a code word that is never set. They need the whole book, so
@@ -850,6 +906,13 @@ The linter also emits a **reachability report**: node count, unreachable
 nodes, endings found, longest and shortest path from start to an ending,
 counted over choices without evaluating conditions. That report is the closest
 thing to proofreading a branching book.
+
+The report is computed twice: once as above, and once with every host fact at
+its `fallback:`, which is the run L025 reads. A book whose good ending needs a
+host is a book that quietly loses content when it is played as one file.
+L021 needs nothing new beyond the first run: the longest path answers the
+question a branching book cannot be proofread for, whether the relief that was
+scheduled for turn three hundred can arrive at all.
 
 ## 12. Web export
 
@@ -867,7 +930,9 @@ const story = new Story(json, { lang: 'de' });
 story.setup;                          // creation blocks, or null
 story.begin(picks);                   // answers the setup, rolls the stats
 story.choose(index);                  // take a choice
-story.current;                        // { text: [...], choices: [...], stats }
+story.advance(host);                  // a boundary: take host values, compute, run events
+story.facts;                          // the published snapshot, read-only
+story.current;                        // { text: [...], choices: [...], stats, facts }
 story.combat;                         // active combat, or null
 story.inventory;                      // [{ id, name, kind, uses, equipped, usable }]
 story.memory;                         // code words in the order they were noted
@@ -948,10 +1013,13 @@ than a toy:
   seed, that route is exactly reproducible, which is what turns "it broke
   somewhere in the crypt" into a bug report.
 - `--json` returns the same as data: node, text, choices, stats, inventory,
-  code words, the dice counter, and a log of which move led where. `lint`
-  takes the flag too.
+  code words, facts, the dice counter, and a log of which move led where.
+  `lint` takes the flag too.
+- `--host elapsed=60` supplies host values, arriving at every boundary the
+  walk performs. Without it a host fact stays at its `fallback:`, which is
+  the same book a reader gets offline.
 
-`inkle-md simulate <entry> --runs 300` plays many games with pseudo-random
+`inkle-md simulate <entry> --runs 300 --host elapsed=60` plays many games with pseudo-random
 choices and reports the endings, the dead ends and the average length. A
 balance problem shows up there long before it shows up in a playthrough: the
 fear stat of the house example punished every second visit to the same room,
@@ -964,6 +1032,11 @@ never leaves a hub room with a sticky "go back" choice, and no human reads a
 gamebook that way. `endings` counts only runs that actually reached an
 ending; a run that hits the step limit is reported as unfinished, not as an
 ending at whatever node it happened to stand in.
+
+`--host` is the policy for how the counters and `elapsed` advance per turn.
+Without it nothing scheduled is ever tested: a book whose relief arrives at
+turn three hundred needs a walk that reaches turn three hundred, and a book
+that measures seconds needs someone to hand it seconds.
 
 `inkle-md mcp` serves the same three checks - lint, play, simulate - as MCP
 tools over stdio, so an agent can playtest a book against the real runtime
@@ -1057,3 +1130,430 @@ Your adventure ends here.
 3. Linter per section 11, with the reachability report as its visible output.
 4. Acceptance criterion is one complete small book with combat, character
    creation and two endings, not one test case per feature.
+
+## 16. Principles, continued
+
+The three principles of 0.6 hold. Three more join them, written out in
+section 1, and they are the whole of this draft in one place: the book holds
+no time, a fact is a pure function of its state, and facts are read-only to
+the book.
+
+The test that separates a fact from a variable, and the one to apply when a
+case is unclear: does the reader change the world, or only which slice of it
+we are looking at? The sun's height over a place is true whether or not
+anyone stands there. Air in a suit is not.
+
+## 17. Facts
+
+### 17.1 Declaration
+
+`facts:` is a book-wide declaration and belongs in `book.yaml` or the
+single file's frontmatter, per 3.2. Every fact carries a `source:`, the
+way every declared item carries a `kind:`.
+
+```yaml
+stats:
+  time:     { name: Time, start: 0 }      # the clock is the book's own
+
+facts:
+  day_length: { source: fixed, value: 24 }
+  elapsed:    { source: host,  range: [0, 604800], fallback: 0,
+                name: { de: Verstrichen, en: Elapsed } }
+  is_night:   { source: derived,
+                value: 'time % day_length >= 20 or time % day_length < 6' }
+```
+
+`time` above is a stat, not a fact, and that is principle 7: the clock is
+something the book declares and advances, and the runtime never learns what
+its unit means.
+
+Fields common to all sources:
+
+| Field      | Meaning                                                        |
+| ---------- | -------------------------------------------------------------- |
+| `source:`  | `fixed`, `host` or `derived`. Required.                        |
+| `name:`    | Reader-visible name, a language table like any other. Optional. |
+
+Per source:
+
+| Source    | Required            | Notes                                     |
+| --------- | ------------------- | ----------------------------------------- |
+| `fixed`   | `value:`            | An integer literal, not an expression.    |
+| `host`    | `range:`, `fallback:` | Supplied from outside at a boundary.    |
+| `derived` | `value:`            | An expression, parsed at compile time.    |
+
+A fact name shares the namespace of variables and stats: a collision is
+E170. Facts are global to the book, like variables (3.5). An unknown
+`source:` is E160, a missing required field E161, and a `fixed` value or a
+`fallback` outside its own `range:` is E162.
+
+Values are integers, per 4.8. A fact that wants a fraction states its
+unit smaller: minutes rather than hours, thousandths of a degree rather
+than degrees. A condition stores as `1` or `0`, which is what the save in
+20.1 shows.
+
+### 17.2 Reading a fact
+
+A fact is read wherever a variable is read: in text, in a choice
+condition, in a branch, in an event. There is no new spelling.
+
+```
+{is_night: The gallery lies in the dark.|Daylight falls through the hatch.}
+
+* {is_night} [Turn in for the night](#camp.sleep)
+```
+
+Assigning to a fact is E164, and E164 comes before E131: a fact name is in
+scope, so without that order the error would never be the right one. A book
+that wants to change something declares a variable.
+
+### 17.3 Derived facts
+
+A derived fact may read variables, stats, counters and facts declared
+**before** it. That gives a total order without a dependency solver, the
+same answer 4.7 gives to ambiguity: declaration order decides. A
+reference to a later fact, or a cycle, is E163.
+
+A derived fact is a pure function of its state, per principle 8. Dice and
+anything that changes state are E169, so `{ source: derived, value:
+'roll(1,6)' }` does not compile. Without that check principle 8 would be a
+promise nothing keeps, and the test in 26.1 would pass on a book that breaks
+it every second boundary.
+
+This is where a book keeps interpretive control. The layer below hands
+out numbers; twilight is a definition, and the book writes its own:
+
+```yaml
+  dusk:      { source: derived, value: 'sun_elevation < 0 and sun_elevation > -6' }
+  long_gone: { source: derived, value: 'elapsed > 259200' }
+```
+
+### 17.4 Host facts
+
+A host fact is the one thing this draft cannot compute. The host supplies
+it at a boundary (18.1); the runtime clamps it into `range:` and never
+reads anything on its own, which is what keeps principle 8 true.
+
+Without a host, or when a host supplies nothing, `fallback:` applies. A
+book therefore always plays: the single-file export of section 12 stays a
+complete game, and no book may require a network, per principle 6.
+
+This draft defines exactly one host fact by convention, because a book
+that wants elapsed real time should not invent its own name:
+
+| Name      | Unit    | Meaning                                          |
+| --------- | ------- | ------------------------------------------------ |
+| `elapsed` | seconds | Time passed since the previous boundary          |
+
+`elapsed` is never negative and is `0` at the first boundary. A clock
+that has moved backwards, a changed time zone and a resynchronised device
+all arrive as `0` rather than as a negative number, because a story clock
+that runs backwards produces states no book can be written against.
+
+The value is not capped by the runtime. A reader who returns after a
+month gets the month. Capping is a book's decision and is written as a
+derived fact, where it is visible:
+
+```yaml
+  tick: { source: derived, value: 'min(elapsed, 3600)' }
+```
+
+Keeping the raw value alongside is what lets a book say "you were away
+for three days" while advancing its world by an hour.
+
+## 18. Boundaries
+
+### 18.1 What a boundary is
+
+A boundary is the moment a node is entered and the moment a choice has
+been taken. Nothing else. Host values arrive there, facts are computed
+there, events run there.
+
+Between two boundaries the fact snapshot does not change. A page that
+offers an option cannot lose it while it is being read, which is the same
+promise L020 makes about dice.
+
+**One boundary per completed transition.** A choice that runs a body and then
+diverts is one boundary, not two, and a chain of diverts arriving at the page
+the reader ends up on is still one. Concretely: `begin`, `choose` and
+`advance` each publish exactly one snapshot. Without that rule an event with a
+`when:` and no counter would fire once or twice per click depending on whether
+the author happened to write a divert, which is a difference a reader can see.
+
+The boundary falls after the choice's own effects and before the page that
+follows them is built. `~ time += 5` in a choice is the departure; the
+arrival reads the clock it left behind. Follow-on text written on the choice
+itself belongs to the departure and renders before the boundary, which is the
+one place where text sees the older snapshot, and the reason 21.2 spells
+travel as an assignment on the choice rather than as something on the node it
+arrives at.
+
+### 18.2 Order within a boundary
+
+1. Host values are taken in and clamped.
+2. Facts are computed in declaration order.
+3. Events run in declaration order (19).
+4. Facts are computed once more.
+
+The second pass is what events see reflected. It is a single pass, not a
+fixed point: two events at one boundary cannot chain through a derived
+fact, because nothing is recomputed between them. They can chain through
+a variable, because assignments take effect in order (4.8).
+
+**Variables chain, facts do not.** An author will meet this rule once;
+it belongs in the error message, not only here.
+
+A host value is **consumed** by the boundary that takes it in: afterwards the
+fact falls back to its `fallback:` until the next `advance`. `elapsed` is a
+duration since the previous boundary, so a `choose` that followed an
+`advance` without this rule would spend the same seconds a second time.
+
+### 18.3 The published snapshot
+
+The snapshot the view and every condition see is the one from step 4. A
+page that contradicted the events that had just run would be a bug the
+author could not fix.
+
+### 18.4 Place changes
+
+A change to the place index takes effect at the next boundary, not inside
+the node that made it. One page shows one sky.
+
+## 19. Events
+
+### 19.1 Declaration
+
+`events:` is book-wide, like `facts:`. An event has a condition and an
+assignment. It has no text and no divert.
+
+```yaml
+events:
+  relief_arrives:
+    once: true
+    when: 'turns() >= 300'
+    do:   'remember("RELIEF")'
+
+  wound_worsens:
+    counter: 'turns()'
+    every:   10
+    max_catchup: 1
+    when: 'has("wound")'
+    do:   'stamina -= 1'
+```
+
+| Field          | Meaning                                                     |
+| -------------- | ----------------------------------------------------------- |
+| `once:`        | Fires at most once in a playthrough.                        |
+| `counter:`     | An integer expression the event is scheduled against.       |
+| `every:`       | Fires each time the counter has advanced by this much.      |
+| `max_catchup:` | Most firings at one boundary. Default 1.                    |
+| `when:`        | Condition. Optional; absent means always.                   |
+| `do:`          | One assignment or call, the same production as a `~` line.  |
+
+`once:` and `every:` together are E168. An event without `do:` is E167.
+
+The point of an event is one declaration instead of the same condition in
+forty nodes. What it cannot do is speak or move the reader: it sets
+state, a node reads it and narrates. That keeps the translation rule of
+3.4 intact, because all text stays in nodes.
+
+### 19.2 Catching up
+
+A recurring event whose counter jumped forward would otherwise fire once
+per step. `max_catchup:` bounds that, and the anchor advances by the
+number of steps the counter actually took, so a bounded catch-up is not
+replayed at the next boundary: the missed firings are dropped, not queued.
+An event with `max_catchup: 1` whose counter jumped by fifty fires once and
+starts counting again from where the counter now stands.
+
+Without a bound a book that was closed for a month wakes up dead. With
+one the author decides whether time away is dangerous or merely long.
+
+A `when:` that is false costs the firings of that boundary but not the
+anchor: time passed whether or not the wound was there to worsen, so the
+event does not owe the reader fifty rounds of damage the moment they are
+finally wounded.
+
+### 19.3 Death
+
+`death.when` is evaluated after every assignment (6), and an event
+assigns. An event can therefore kill without the reader having done
+anything. That is intended, and a book that does not want it writes its
+condition so that it cannot.
+
+## 20. State, save and undo
+
+### 20.1 New fields
+
+```json
+"host":   { "elapsed": 700 },
+"facts":  { "day_length": 24, "elapsed": 700, "is_night": 1 },
+"events": { "fired": { "relief_arrives": true },
+            "last":  { "wound_worsens": 120 } }
+```
+
+A clock and a place index are ordinary variables and live in `vars`.
+Nothing else is added.
+
+`facts` is a cache. It is in the save because a save may be written in the
+middle of a node, where variables have moved on since the last boundary;
+recomputing at load would then show the reader different numbers than the
+page they left. It is not in a checkpoint, because a checkpoint is always
+taken at a boundary (8.1) and principle 8 guarantees the same result.
+
+### 20.2 Undo
+
+A checkpoint carries `host` and `events` and omits `facts`, which are
+recomputed on restore.
+
+Undo therefore takes back a firing. The counter returns to what it was,
+the condition is false again, and going forward again reaches the same
+event. That is section 8.1's rule unchanged: undo opens a different path,
+it does not undo a consequence.
+
+One consequence is worth stating plainly. Story time is restored by undo,
+real time is not. A book that feeds its clock from `elapsed` lets a reader
+spend the same real seconds twice. In a single-player book this is
+harmless, and it is written here so that nobody reports it as a defect.
+
+## 21. Places
+
+### 21.1 The table
+
+```yaml
+places:
+  - { id: base,  name: { de: Basis, en: Base },   enter: base.airlock }
+  - { id: ridge, name: { de: Grat,  en: Ridge },  enter: ridge.arrival }
+```
+
+`enter:` is optional and names the node a journey to that place arrives
+at. An unknown node there is E166.
+
+### 21.2 Using a place
+
+The place a book is at is an ordinary variable holding an index.
+`place("ridge")` resolves to that index at compile time, so a book never
+writes a bare number and the linter can check the name. An unknown id is
+E165.
+
+```
+* [Set out for the ridge](#ridge.arrival)
+  ~ location = place("ridge")
+  ~ time += 5
+```
+
+Travel is an assignment, a clock advance and a divert. It is deliberately
+not a directive: three spellings already exist for these three things, and
+principle 2 forbids a fourth for their combination. What only the story
+knows, how long a journey takes for a reader who is injured or who found
+a horse, is then an ordinary expression.
+
+The linter checks the pairing the author will get wrong (L026).
+
+## 22. Runtime API, continued
+
+```
+story.advance(host);        // a boundary: take host values, compute, run events
+story.facts;                // the published snapshot, read-only
+story.current;              // { text, choices, stats, facts }
+```
+
+`advance` is the only way host values enter. `begin` and `choose` perform
+a boundary themselves; `advance` exists for a host that wants to bring
+time in without the reader having chosen. Because a host value is consumed
+by the boundary that takes it (18.2), a host feeding real time calls
+`advance` and then lets the reader choose, rather than trying to hand the
+same seconds to both.
+
+Nothing in the runtime reads a clock. A host that wants real time measures
+it and passes it in, which is what makes a scripted replay reproducible.
+
+## 23. New codes
+
+Errors, listed here and in the table of 10.3:
+
+| Code | Error                                                            |
+| ---- | ---------------------------------------------------------------- |
+| E160 | Unknown fact `source:`                                           |
+| E161 | Fact missing a field its source requires                         |
+| E162 | `fixed` value or `fallback` outside the declared `range:`        |
+| E163 | Fact reading a later-declared fact, or a cycle among facts       |
+| E164 | Assignment to a fact                                             |
+| E165 | `place()` with an unknown id                                     |
+| E166 | Place `enter:` naming an unknown node                            |
+| E167 | Event without `do:`                                              |
+| E168 | Event with both `once:` and `every:`                             |
+| E169 | Fact expression that is not pure: dice, or a call that changes state |
+| E170 | Fact name colliding with a stat or variable                      |
+
+E169 is not in the 0.7 draft as it was written. It is here because principle
+8 is otherwise unenforced, and an unenforced principle is a comment.
+
+Warnings, listed here and in the table of section 11:
+
+| Code | Rule                                                             | Level   |
+| ---- | ---------------------------------------------------------------- | ------- |
+| L021 | Event that can never fire: its threshold exceeds the longest path | warning |
+| L022 | Event whose assignment is never read                             | warning |
+| L023 | Fact never read anywhere                                         | info    |
+| L024 | Fact depending on a variable that is never written               | warning |
+| L025 | Content unreachable when every host fact takes its fallback      | warning |
+| L026 | Divert into a place's `enter:` node without setting the index     | warning |
+| L027 | Recurring event without `max_catchup:`                           | info    |
+
+L021 needs nothing new: the reachability report of section 11 already
+computes the longest path. It answers the question a branching book
+cannot be proofread for, whether the relief that was scheduled for turn
+three hundred can arrive at all. It stays deliberately narrow: only an event
+counted against `turns()` with a literal threshold is checked, because a
+threshold that depends on the reader is not a thing a static longest path can
+be compared against.
+
+L025 protects the export. A book whose good ending needs a host is a book
+that quietly loses content when it is played as one file.
+
+## 24. Amendments to draft 0.6
+
+| Section | Change                                                                 |
+| ------- | ---------------------------------------------------------------------- |
+| 1       | Principles 7 to 9 added, per section 16.                               |
+| 5       | `place(id)` added to the built-in functions.                           |
+| 6       | `facts:`, `events:` and `places:` added to the book-wide declarations, and therefore to what E012 rejects in a chapter file. |
+| 8       | `host`, `facts` and `events` added to the save; 8.1 states that a checkpoint omits `facts`. |
+| 9.1     | `config` gains `facts`, `events` and `places`.                         |
+| 10.1    | Fact and event expressions are parsed in step 2, with the other frontmatter expressions. |
+| 10.3    | E160 to E170 added to the error table.                                 |
+| 11      | L021 to L027 added; the reachability report is run twice, once with host facts at their fallbacks. |
+| 12.1    | `advance` and `facts` added to the runtime API.                        |
+| 12.4    | `play` gains `--host` to supply host values per boundary; `simulate` takes the same flag as its policy for how counters and `elapsed` advance per turn, without which no scheduled content is ever tested. |
+
+## 25. Open points
+
+1. **Calendar and ephemeris.** Two further sources, `clock` and
+   `ephemeris`, turning an absolute instant and a place into a date or a
+   sky. Both need an epoch, which a book must then declare, and which is
+   an error to omit only once such a source is used. Out of scope here.
+2. **Travel between places as an ephemeris input.** Once a sky depends on
+   where the reader went, a fact is sampled at a story-chosen place. The
+   test in section 16 already allows it; what it costs the linter is
+   untried.
+3. **Events with a payload**, so that a caller can hand a duration to an
+   event rather than assigning first. Rejected here for keeping events
+   free of arguments; worth revisiting if travel grows a spelling of its
+   own.
+4. **A second `max_catchup:` mode** that coalesces into a single firing
+   with the number of missed steps in a variable, rather than repeating.
+5. **The place variable has no declared name.** L026 finds it by looking for
+   an assignment whose value came from `place()`, which works and is why the
+   rule stays a warning. A `places.variable:` field would make it exact.
+
+## 26. Next steps
+
+1. Facts and the two-pass boundary, with every example above as a test
+   case, and a test that computes each fact twice from an identical state
+   and compares, which is how principle 8 is enforced rather than assumed.
+2. The scheduler, with the catch-up anchor as its own table-driven test.
+3. Places, then L026.
+4. L021 and L025 on top of the existing reachability report.
+5. `play` and `simulate` last, since they are what makes a book with
+   scheduled content testable at all.

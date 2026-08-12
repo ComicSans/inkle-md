@@ -33,9 +33,10 @@ const HELP = `
 export async function play(story, options = {}) {
   const s = new Story(story, { seed: options.seed, lang: options.lang });
   if (s.setup) s.begin(pickSetup(s, options.picks));
-
+  // The host brings time in at every boundary after the first; `elapsed` is
+  // 0 at the first one, and without a host it stays at its fallback (17.4).
   if (options.script) return runScript(s, options);
-  return interactive(s);
+  return interactive(s, options);
 }
 
 /** The opening choices, by id or by position, so a script can name them. */
@@ -52,6 +53,7 @@ function runScript(s, options) {
   const log = [];
   for (const move of options.script) {
     if (s.current.ended) break;
+    if (options.host) s.advance(options.host);
     const before = s.current.node;
     const done = apply(s, move);
     log.push({ move, from: before, to: s.current.node, ok: done });
@@ -67,6 +69,7 @@ function runScript(s, options) {
     stats: Object.fromEntries(s.stats.map((x) => [x.name, x.max ? `${x.value}/${x.max}` : x.value])),
     inventory: s.inventory.map((i) => i.id),
     memory: s.memory,
+    facts: s.facts,
     seed: s.state.seed,
     rolls: s.state.rolls,
     log,
@@ -95,11 +98,14 @@ function apply(s, move) {
   return false;
 }
 
-async function interactive(s) {
+async function interactive(s, options = {}) {
   const rl = createInterface({ input: stdin, output: stdout });
   stdout.write(`${HELP}\n`);
 
+  let first = true;
   for (;;) {
+    if (options.host && !first && !s.current.ended) s.advance(options.host);
+    first = false;
     stdout.write(`\n${render(s)}\n`);
     if (s.current.ended) break;
 
@@ -168,7 +174,7 @@ function wrap(text, width = 76) {
  * Plays many games with pseudo-random choices and reports where they end.
  * A balance problem shows up here long before it shows up in a playthrough.
  */
-export function simulate(story, { runs = 300, maxSteps = 200 } = {}) {
+export function simulate(story, { runs = 300, maxSteps = 200, host = null } = {}) {
   const endings = {};
   const deadEnds = [];
   let steps = 0;
@@ -181,7 +187,7 @@ export function simulate(story, { runs = 300, maxSteps = 200 } = {}) {
       .slice(0, block.pick)
       .map((o) => o.item ?? o.remember)));
 
-    const run = walk(s, { seed, maxSteps });
+    const run = walk(s, { seed, maxSteps, host });
     steps += run.steps;
     if (run.deadEnd) deadEnds.push({ seed, node: s.current.node });
     if (run.ended) endings[s.current.node] = (endings[s.current.node] ?? 0) + 1;
@@ -204,11 +210,14 @@ export function simulate(story, { runs = 300, maxSteps = 200 } = {}) {
  * back" choices would trap a purely cyclic walker forever, and no human
  * reads a gamebook that way.
  */
-export function walk(s, { seed = 1, maxSteps = 200 } = {}) {
+export function walk(s, { seed = 1, maxSteps = 200, host = null } = {}) {
   const taken = new Set();
   let steps = 0;
   while (!s.current.ended && steps < maxSteps) {
     steps++;
+    // The policy for how the counters and `elapsed` advance per turn (12.4):
+    // without it a book's scheduled content is never reached at all.
+    if (host) { s.advance(host); if (s.current.ended) break; }
     if (s.combat) { s.attack(); continue; }
     const choices = s.current.choices;
     if (choices.length === 0) return { ended: false, deadEnd: true, steps };

@@ -9,9 +9,10 @@
  * Linter per SPEC.md section 11, plus the reachability report.
  *
  * Implemented: L001, L002, L005, L006, L007, L008, L009, L010, L012, L013,
- * L016, L017, L018.
+ * L016, L017, L018, L020, L021 to L027.
  * Not yet implemented: L003, L004, L011, L014, L015 - they need either
- * constant folding or a prose model, and are tracked in the README.
+ * constant folding over variables or a prose model, and are tracked in the
+ * README.
  */
 
 import { walkOps } from './compile.js';
@@ -23,6 +24,8 @@ const LEVELS = {
   L007: 'info', L008: 'warning', L009: 'warning', L010: 'info',
   L012: 'warning', L013: 'info', L016: 'warning', L017: 'warning', L018: 'warning',
   L020: 'warning',
+  L021: 'warning', L022: 'warning', L023: 'info', L024: 'warning',
+  L025: 'warning', L026: 'warning', L027: 'info',
 };
 
 /** Anything that consumes the dice stream. */
@@ -113,6 +116,21 @@ export function lint(story, { table, config, lang }) {
   for (const item of Object.values(config.items)) {
     if (item.effect?.op === 'assign') written.add(item.effect.target);
   }
+  // An event assigns, so its target counts as written, or L006 would call
+  // every stat an event drives "written but never read" the wrong way round.
+  for (const event of Object.values(config.events ?? {})) {
+    if (event.do?.op === 'assign') written.add(event.do.target);
+    if (event.do?.op === 'call') {
+      for (const arg of event.do.args ?? []) {
+        walkExpression(arg, (e) => { if (e.var !== undefined) read.add(e.var); });
+      }
+      const word = event.do.args?.[0]?.lit;
+      if (typeof word === 'string') {
+        if (event.do.fn === 'remember') remembered.add(word);
+        if (event.do.fn === 'take' || event.do.fn === 'equip') granted.add(word);
+      }
+    }
+  }
 
   for (const item of config.inventory.start ?? []) granted.add(item);
   for (const block of config.setup) {
@@ -158,6 +176,73 @@ export function lint(story, { table, config, lang }) {
     }
   }
 
+  // --- facts, events and places (0.7) -------------------------------------
+
+  const summary = report(story, nodes, graph, reachable, endings);
+
+  for (const [name, fact] of Object.entries(config.facts ?? {})) {
+    if (!read.has(name)) add('L023', `fact "${name}" is never read`, {});
+    if (fact.source !== 'derived') continue;
+    walkExpression(fact.value, (e) => {
+      if (e.var === undefined) return;
+      if (!(e.var in config.stats) || written.has(e.var)) return;
+      add('L024',
+        `fact "${name}" reads "${e.var}", which nothing ever writes, so it never moves`, {});
+    });
+  }
+
+  for (const [name, event] of Object.entries(config.events ?? {})) {
+    if (event.every !== null && !event.declaredCatchup) {
+      add('L027',
+        `event "${name}" recurs without max_catchup:, so a book left closed for a month `
+        + 'catches up all at once', {});
+    }
+    if (event.do?.op === 'assign' && !read.has(event.do.target)) {
+      add('L022', `event "${name}" writes "${event.do.target}", which nothing reads`, {});
+    }
+    const threshold = firstFiring(event);
+    if (threshold !== null && threshold > summary.longestPath) {
+      add('L021',
+        `event "${name}" first fires at turn ${threshold}, and the longest path through the `
+        + `book is ${summary.longestPath}`, {});
+    }
+  }
+
+  for (const place of config.places ?? []) {
+    if (!place.enter) continue;
+    for (const [id, node] of Object.entries(nodes)) {
+      const nodeSetsPlace = setsPlace(node.body);
+      walkOps(node.body, (op) => {
+        if (op.op === 'divert' && op.target?.ref === place.enter && !nodeSetsPlace) {
+          add('L026',
+            `"${id}" diverts into "${place.enter}" without setting the place index`, node.source);
+        }
+        if (op.op !== 'choices') return;
+        for (const item of op.items) {
+          if (item.target?.ref !== place.enter) continue;
+          if (setsPlace(item.body) || nodeSetsPlace) continue;
+          add('L026',
+            `a choice in "${id}" travels to "${place.enter}" without setting the place index`,
+            item.source);
+        }
+      });
+    }
+  }
+
+  // L025: the same walk again, with every host fact at its fallback, which is
+  // the book a reader gets with no host at all (11, 17.4).
+  if (Object.values(config.facts ?? {}).some((f) => f.source === 'host')) {
+    const constants = factConstants(config);
+    const offline = buildGraph(nodes, (when) => fold(when, constants) === 0);
+    const withoutHost = walkGraph(entries, offline);
+    for (const id of reachable) {
+      if (!withoutHost.has(id)) {
+        add('L025', `"${id}" cannot be reached when every host fact takes its fallback`,
+          nodes[id]?.source);
+      }
+    }
+  }
+
   const overridden = config.overriddenStrings ?? [];
   if (overridden.length > 0) {
     for (const key of Object.keys(STRING_KEYS)) {
@@ -167,7 +252,7 @@ export function lint(story, { table, config, lang }) {
     }
   }
 
-  return { messages: out, report: report(story, nodes, graph, reachable, endings) };
+  return { messages: out, report: summary };
 }
 
 /** Every expression the frontmatter declares. */
@@ -180,6 +265,13 @@ function configExpressions(config) {
   if (config.combat) out.push(config.combat.attack, config.combat.damage);
   if (config.death) out.push(config.death.when);
   if (config.checks) out.push(config.checks.dice);
+  for (const fact of Object.values(config.facts ?? {})) {
+    if (fact.source === 'derived') out.push(fact.value);
+  }
+  for (const event of Object.values(config.events ?? {})) {
+    out.push(event.counter, event.when);
+    if (event.do?.op === 'assign') out.push(event.do.value);
+  }
   for (const item of Object.values(config.items)) {
     if (item.when) out.push(item.when);
     if (item.effect?.value) out.push(item.effect.value);
@@ -188,7 +280,13 @@ function configExpressions(config) {
   return out.filter(Boolean);
 }
 
-function buildGraph(nodes) {
+/**
+ * @param {object} nodes the compiler's tree
+ * @param {(when: object) => boolean} [prune] drops a choice whose condition
+ *        is known to be false, which is how L025 walks the book a reader gets
+ *        with no host at all
+ */
+function buildGraph(nodes, prune = () => false) {
   const graph = new Map();
   for (const [id, node] of Object.entries(nodes)) {
     const entry = { to: new Set(), end: false };
@@ -198,6 +296,7 @@ function buildGraph(nodes) {
       }
       if (op.op === 'choices') {
         for (const item of op.items) {
+          if (item.when && prune(item.when)) continue;
           if (item.target?.end) entry.end = true;
           else if (item.target) entry.to.add(item.target.ref);
         }
@@ -286,6 +385,80 @@ function rolls(expr) {
   let found = false;
   walkExpression(expr, (e) => { if (e.call && RANDOM_CALLS.has(e.call)) found = true; });
   return found;
+}
+
+/**
+ * The turn an event first fires, when that can be read off the declaration.
+ * Deliberately narrow (23): only a counter of `turns()` against a literal, or
+ * a `when:` of the shape `turns() >= 300`. A threshold that depends on the
+ * reader is not a thing a static longest path can be compared against.
+ */
+function firstFiring(event) {
+  if (event.counter?.call === 'turns' && event.every !== null) return event.every;
+  const when = event.when;
+  if (!when || !['>=', '>'].includes(when.op)) return null;
+  const [left, right] = when.args ?? [];
+  if (left?.call !== 'turns' || typeof right?.lit !== 'number') return null;
+  return when.op === '>' ? right.lit + 1 : right.lit;
+}
+
+/** True when a container assigns something that came from place() (21.2). */
+function setsPlace(ops) {
+  let found = false;
+  walkOps(ops ?? [], (op) => { if (op.op === 'assign' && op.place) found = true; });
+  return found;
+}
+
+/** Every fact that is the same on a machine with no host attached. */
+function factConstants(config) {
+  const known = new Map();
+  for (const [name, fact] of Object.entries(config.facts ?? {})) {
+    if (fact.source === 'fixed') known.set(name, fact.value);
+    else if (fact.source === 'host') known.set(name, fact.fallback);
+    else {
+      const value = fold(fact.value, known);
+      if (value !== undefined) known.set(name, value);
+    }
+  }
+  return known;
+}
+
+/**
+ * Constant folding over the facts alone: anything touching a variable, a
+ * node or a die stays unknown, so a pruned edge is one that really cannot
+ * be taken.
+ * @returns {number|undefined}
+ */
+function fold(expr, known) {
+  if (!expr || typeof expr !== 'object') return undefined;
+  if ('lit' in expr) {
+    if (typeof expr.lit === 'boolean') return expr.lit ? 1 : 0;
+    return typeof expr.lit === 'number' ? expr.lit : undefined;
+  }
+  if ('var' in expr) return known.has(expr.var) ? known.get(expr.var) : undefined;
+  if ('call' in expr || 'ref' in expr) return undefined;
+
+  const [a, b] = expr.args ?? [];
+  const x = fold(a, known);
+  if (expr.op === 'not') return x === undefined ? undefined : (x ? 0 : 1);
+  const y = fold(b, known);
+  if (x === undefined || y === undefined) return undefined;
+  switch (expr.op) {
+    case 'and': return x && y ? 1 : 0;
+    case 'or': return x || y ? 1 : 0;
+    case '+': return x + y;
+    case '-': return x - y;
+    case '*': return x * y;
+    case '/': return y === 0 ? undefined : Math.trunc(x / y);
+    case '%': return y === 0 ? undefined : x % y;
+    case '==': return x === y ? 1 : 0;
+    case '!=': return x !== y ? 1 : 0;
+    case '>': return x > y ? 1 : 0;
+    case '<': return x < y ? 1 : 0;
+    case '>=': return x >= y ? 1 : 0;
+    case '<=': return x <= y ? 1 : 0;
+    default: return undefined;
+  }
 }
 
 function plain(parts) {

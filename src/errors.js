@@ -37,6 +37,17 @@ export const ERRORS = {
   E150: 'Flee exit for an enemy without flee_after',
   E151: 'Combat with an unknown enemy or without a win exit',
   E152: 'Malformed line in a directive block',
+  E160: 'Unknown fact source',
+  E161: 'Fact missing a field its source requires',
+  E162: 'Fixed value or fallback outside the declared range',
+  E163: 'Fact reading a later-declared fact, or a cycle among facts',
+  E164: 'Assignment to a fact',
+  E165: 'place() with an unknown id',
+  E166: 'Place enter: naming an unknown node',
+  E167: 'Event without do:',
+  E168: 'Event with both once: and every:',
+  E169: 'Fact expression that is not pure',
+  E170: 'Fact name colliding with a stat or variable',
 };
 
 export class CompileError extends Error {

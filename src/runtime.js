@@ -52,16 +52,24 @@ export class Story {
       picks: {},
       visible: [],
       fight: null,
+      host: {},
+      facts: {},
+      events: { fired: {}, last: {} },
       lang: this.lang,
       phase: null,
       undo: [],
     };
 
     this.scopes = [];
+    // Host values wait here for the boundary that takes them in (18.2); what
+    // lands in state.host is the record of what that boundary got.
+    this.incoming = null;
+    this.pending = false;
     this.#setPhase(this.config.setup.length > 0 ? SETUP : PLAYING);
     this.text = [];
     this.choices = [];
     this.combat = null;
+    this.#computeFacts();   // so a setup screen already has a snapshot to show
     if (this.phase === PLAYING) this.begin();
   }
 
@@ -115,8 +123,32 @@ export class Story {
     this.#setPhase(PLAYING);
     this.text = [];
     this.state.screen = [];
+    this.pending = true;
     this.#enter(this.json.meta.start);
   }
+
+  /**
+   * A boundary without a choice: the host brings time in and the page it was
+   * already showing is repainted from the new snapshot (18.3, 22).
+   * @param {object} host values for the declared host facts
+   */
+  advance(host = {}) {
+    // Before begin() there is no playthrough for an event to act on; the
+    // first boundary is begin()'s own (17.4).
+    if (this.phase === SETUP) {
+      this.state.host = host;
+      this.#computeFacts();
+      return this.current;
+    }
+    this.incoming = host;
+    this.pending = true;
+    if (this.#boundary()) return this.current;
+    this.#resume();
+    return this.current;
+  }
+
+  /** The published snapshot, read-only (17, 22). */
+  get facts() { return { ...this.state.facts }; }
 
   // --- what the view layer reads ----------------------------------------
 
@@ -127,6 +159,7 @@ export class Story {
       text: this.text,
       choices: this.choices.map((c, index) => ({ index, label: c.label })),
       stats: this.stats,
+      facts: this.facts,
       ended: this.phase === ENDED,
     };
   }
@@ -174,6 +207,9 @@ export class Story {
     this.state.turn += 1;
     this.text = [];
     this.state.screen = [];
+    // One boundary per completed transition (18.1): it falls after the
+    // choice's own effects and before the page that follows them.
+    this.pending = true;
 
     const item = choice.item;
     // The body may stop at a nested choice or a fight of its own; only when it
@@ -183,6 +219,7 @@ export class Story {
     if (item.target) { this.#go(item.target); return; }
 
     // No target: fall through to whatever follows the choices op, the gather.
+    if (this.#boundaryIfPending()) return;
     this.#resumeAfter(choice.path);
   }
 
@@ -201,9 +238,12 @@ export class Story {
     const previous = this.state.undo.pop();
     if (!previous) return false;
     const stack = this.state.undo;
-    this.state = { ...previous, undo: stack };
+    this.state = { ...previous, facts: {}, undo: stack };
     this.lang = this.state.lang;
     this.phase = this.state.phase ?? PLAYING;
+    this.pending = false;
+    this.incoming = null;
+    this.#computeFacts();
     this.#resume();
     return true;
   }
@@ -316,10 +356,105 @@ export class Story {
     this.lang = this.json.nodes[save.lang] ? save.lang : this.json.meta.default;
     this.state.lang = this.lang;
     this.phase = save.phase ?? PLAYING;
+    this.pending = false;
+    this.incoming = null;
+    this.state.host ??= {};
+    this.state.events ??= { fired: {}, last: {} };
+    // A save may have been written in the middle of a node, where variables
+    // have moved on since the last boundary; the cache is what the reader saw
+    // on the page they left, so it is taken as it stands (20.1).
+    if (!this.state.facts) this.#computeFacts();
     this.#resume();
   }
 
   seed(n) { this.state.seed = n; this.state.rolls = 0; }
+
+  // --- boundaries --------------------------------------------------------
+
+  /**
+   * One boundary, in the order of 18.2: host values in and clamped, facts,
+   * events, facts again. The second pass is what the events see reflected;
+   * it is a single pass, so variables chain and facts do not.
+   *
+   * @returns {boolean} true when an event killed the reader and the runtime
+   *          has already gone somewhere else, so the caller must stop.
+   */
+  #boundary() {
+    this.pending = false;
+    this.state.host = this.incoming ?? {};
+    this.incoming = null;
+
+    const before = this.state.node;
+    this.#computeFacts();
+    const died = this.#runEvents();
+    this.#computeFacts();
+    return died || this.phase === ENDED || this.state.node !== before;
+  }
+
+  /** A boundary, but only if this transition has not had one yet (18.1). */
+  #boundaryIfPending() {
+    return this.pending ? this.#boundary() : false;
+  }
+
+  /**
+   * Facts in declaration order, written as they go so that a derived fact
+   * finds the ones above it (17.3). A condition stores as 1 or 0, because a
+   * fact is an integer like everything else in 4.8.
+   */
+  #computeFacts() {
+    const facts = {};
+    this.state.facts = facts;
+    for (const [name, fact] of Object.entries(this.config.facts ?? {})) {
+      facts[name] = whole(this.#factValue(name, fact));
+    }
+  }
+
+  #factValue(name, fact) {
+    if (fact.source === 'fixed') return fact.value;
+    if (fact.source === 'derived') return this.#evaluate(fact.value);
+    const [min, max] = fact.range;
+    const supplied = this.state.host?.[name];
+    const value = typeof supplied === 'number' ? Math.trunc(supplied) : fact.fallback;
+    return Math.min(max, Math.max(min, value));
+  }
+
+  /**
+   * Events in declaration order (18.2). A recurring event's anchor advances
+   * by the steps the counter actually took, not by the firings it was allowed,
+   * so a bounded catch-up drops the rest instead of queueing it (19.2).
+   * @returns {boolean} true when a firing killed the reader
+   */
+  #runEvents() {
+    const store = this.state.events;
+    for (const [name, event] of Object.entries(this.config.events ?? {})) {
+      if (event.once && store.fired[name]) continue;
+
+      let firings = 1;
+      if (event.counter) {
+        const now = this.#evaluate(event.counter);
+        const anchor = store.last[name];
+        // The first boundary only sets the anchor: an event is scheduled
+        // against what the counter does next, not against where it started.
+        if (anchor === undefined) { store.last[name] = now; continue; }
+        const every = event.every ?? 1;
+        const steps = Math.floor((now - anchor) / every);
+        if (steps <= 0) continue;
+        store.last[name] = anchor + steps * every;
+        firings = Math.min(steps, event.max_catchup ?? 1);
+      }
+
+      // A false condition costs the firings, never the anchor: time passed
+      // whether or not the wound was there to worsen (19.2).
+      if (event.when && !this.#evaluate(event.when)) continue;
+
+      for (let i = 0; i < firings; i++) {
+        this.#statement(event.do);
+        if (this.#checkDeath()) return true;
+      }
+      if (event.once) store.fired[name] = true;
+    }
+    return false;
+  }
 
   // --- flow --------------------------------------------------------------
 
@@ -334,6 +469,9 @@ export class Story {
     this.state.visits[id] = (this.state.visits[id] ?? 0) + 1;
     if (!this.state.seen.includes(id)) this.state.seen.push(id);
     this.combat = null;
+    // The page the reader arrives at is built after the boundary, so it can
+    // never contradict the events that had just run (18.3).
+    if (this.#boundaryIfPending()) return;
     this.#runOps(this.#node().body, []);
   }
 
@@ -478,6 +616,9 @@ export class Story {
         }
 
         case 'choices': {
+          // Whether an option is offered is decided from the new snapshot,
+          // never from the one the departing page was written against.
+          if (this.#boundaryIfPending()) return true;
           const visible = op.items
             .map((item, index) => (this.#visible(item) ? index : -1))
             .filter((index) => index >= 0);
@@ -489,6 +630,7 @@ export class Story {
         }
 
         case 'combat':
+          if (this.#boundaryIfPending()) return true;
           this.state.at = [...path, i];
           this.#startCombat(op);
           return true;
@@ -671,6 +813,9 @@ export class Story {
     if (overrides && name in overrides) return overrides[name];
     const scope = this.scopes[this.scopes.length - 1];
     if (scope && name in scope) return scope[name];
+    // A fact is read wherever a variable is read; there is no new spelling
+    // (17.2), and E170 keeps the two namespaces from overlapping.
+    if (name in this.state.facts) return this.state.facts[name];
     switch (name) {
       case 'in_combat': return this.combat !== null;
       case 'weapon_attack': return this.#equipped('weapon')?.attack_bonus ?? 0;
@@ -828,8 +973,13 @@ export class Story {
 
   // --- undo --------------------------------------------------------------
 
+  /**
+   * A checkpoint carries `host` and `events` and omits `facts` (20.2): it is
+   * always taken at a boundary, and principle 8 guarantees that recomputing
+   * from the same state gives the same answer.
+   */
   #checkpoint() {
-    const { undo, ...rest } = this.state;
+    const { undo, facts, ...rest } = this.state;
     this.state.undo = [...undo, structuredClone(rest)].slice(-this.config.undo.depth);
   }
 
@@ -853,4 +1003,11 @@ function flat(value, lang) {
 
 function key(name) {
   return String(name).trim().toLowerCase();
+}
+
+/** Facts are integers (4.8), so a condition stores as 1 or 0. */
+function whole(value) {
+  if (typeof value === 'boolean') return value ? 1 : 0;
+  if (typeof value === 'number') return Math.trunc(value);
+  return 0;
 }
