@@ -182,7 +182,11 @@ function weldGlue(children, notes) {
 
     const left = children[index - 1];
     const glued = left && left.kind === 'text' && left.glue?.after;
-    const line = glued ? left : { kind: 'text', text: '', glue: { before: false, after: true }, children: [], line: branch.line };
+    // The folded line begins with what was glued to the paragraph before it,
+    // so it keeps that mark; losing it would break the sentence apart again.
+    const line = glued
+      ? left
+      : { kind: 'text', text: '', glue: { before: true, after: true }, children: [], line: branch.line };
 
     const [first, other] = printed;
     line.text = `${line.text}{${first.condition}: ${first.text}|${other ? other.text : ''}}`;

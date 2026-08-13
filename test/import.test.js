@@ -198,7 +198,8 @@ VAR drugged = false
 <>.
 -> END
 `);
-  assert.match(markdown, /\{teacup: , sipping at my tea as though we were old friends\|\}\./);
+  // The folded line keeps the glue that joined it to the paragraph before.
+  assert.match(markdown, /<>\{teacup: , sipping at my tea as though we were old friends\|\}\./);
   assert.doesNotMatch(markdown, /^\.$/m);
   // What the arm assigns keeps its condition and runs before the line.
   assert.match(markdown, /\{ teacup \}\n {2}~ drugged = 1/);

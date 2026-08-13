@@ -523,3 +523,20 @@ He says nothing<>
   s.begin();
   assert.deepEqual(s.current.text.map((t) => t.text), ['He says nothing.']);
 });
+
+test('a folded conditional still joins the line before it', () => {
+  const { story } = compile(`
+# A {#a}
+
+* [Agree]() "Awkward," I reply
+
+---
+<>{gold > 0: , sipping at my tea|}.
+
+-> END
+`);
+  const s = new Story(story, { seed: 1 });
+  s.begin();
+  s.choose(0);
+  assert.deepEqual(s.current.text.map((t) => t.text), ['"Awkward," I reply, sipping at my tea.']);
+});
