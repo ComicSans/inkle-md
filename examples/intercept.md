@@ -186,9 +186,9 @@ Any of us could have taken it; and no one else would have known its worth.
   -> harris_has_seen_it_before
 
 ---
-"It's simple enough," Harris says. -> harris_has_seen_it_before
+"It's simple enough," Harris says.
 
--> harris_presses_for_details_admit_open_to_pressure
+-> harris_has_seen_it_before
 
 ## Admit open to pressure {#harris_presses_for_details_admit_open_to_pressure}
 
@@ -540,8 +540,9 @@ The Captain, looking puzzled, steps out. The door is closed. Hooper stares at me
     "It doesn't matter. Just remember what I said. I've beaten you, Hooper. Remember that."
 
   ---
-  I get to my feet and open the door of the Hut. The Captain storms back inside and I'm quickly thrown out. -> hustled_out
+  I get to my feet and open the door of the Hut. The Captain storms back inside and I'm quickly thrown out.
 
+  -> inside_hoopers_hut_hustled_out
 * [Bargain]()
   "Hooper, I'll make a deal with you. We both know what happened in that hut this afternoon. I know because I did it, and you know because you know you didn't. But once this is done I'll be rich, and I'll split that with you. I'll let you have the results, too. Your name on the discovery of the Bombe. And it won't hurt the war effort - you know as well as me that the component on its own is worthless, it's the wiring of the Bombe, the usage, that's what's valuable. So how about it?"
 
@@ -765,8 +766,8 @@ It's a little harder getting back through - the window is higher off the ground 
 
 The rest of the night passes slowly. I sleep a little, dozing mostly. Then I'm woken by the rooster in the yard. The door opens, and Harris comes in. He takes one look at the broken window and frowns with puzzlement.
 
-{putcomponentintent: -> put_component_inside_tent}
-
+{ putcomponentintent }
+  -> night_passes_put_component_inside_tent
 "What happened there?"
 
 * [Confess]()
@@ -970,8 +971,7 @@ I bump into Russell in the dorm hut.
 
   "Well." Russell harrumphs.
 
-  "Quince was saying this morning, apparently his grandfather was German. So perhaps it's to be expected. See you there?"
-
+  -> head_for_my_dorm_free_quince
 * [No]()
   "Heard what?"
 
@@ -1599,9 +1599,9 @@ I wave to him and move away, my thoughts turning to the young man in the village
 -> END
 
 
-# Head for my dorm free hooper taken {#head_for_my_dorm_free_hooper_taken}
+# Head for my dorm free quince {#head_for_my_dorm_free_quince}
 
-"Hooper's been taken away. They caught him, uncovering that missing Bombe component from a hiding place somewhere, apparently about to take it to his contact." Russell harrumphs. -> quince
+"Quince was saying this morning, apparently his grandfather was German. So perhaps it's to be expected. See you there?"
 
 -> head_for_my_dorm_free_join
 
@@ -1786,6 +1786,13 @@ Making a wide circuit I creep around the tent. It has plenty of other flaps and 
 "So would you after the night I've had."
 
 -> night_falls_join
+
+
+# Head for my dorm free hooper taken {#head_for_my_dorm_free_hooper_taken}
+
+"Hooper's been taken away. They caught him, uncovering that missing Bombe component from a hiding place somewhere, apparently about to take it to his contact." Russell harrumphs.
+
+-> head_for_my_dorm_free_quince
 
 
 # Start join {#start_join}
