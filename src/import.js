@@ -65,7 +65,7 @@ export function importInk(source, options = {}) {
   const plain = source.replace(/\r\n?/g, '\n').replace(/[‐-―−]/g, '-');
   const dashes = (source.match(/[‐-―−]/g) ?? []).length;
   if (dashes) notes.add(0, `${dashes} dash(es) narrowed to "-"`);
-  const lines = stripComments(plain.split('\n'), notes);
+  const lines = spreadConditionalDiverts(stripComments(plain.split('\n'), notes));
   const { declarations, constants, refFunctions, body } = readDeclarations(lines, notes);
   const knots = readKnots(body, notes);
 
@@ -100,6 +100,33 @@ export function importInk(source, options = {}) {
 
   const markdown = emitBook(nodes, { ...options, ...ctx, declarations, flags, notes });
   return { markdown, notes: notes.sorted };
+}
+
+/**
+ * Spreads ink's one-line conditional divert over the block form.
+ *
+ * `{flag: -> other}` is a divert in ink. Written inline it is varying text to
+ * SPEC 4.7, so the arrow would be printed rather than followed - the reader
+ * sees "-> other" in the middle of the prose. The block form says the same
+ * thing in a way this language reads as a divert:
+ *
+ *     { flag }
+ *       -> other
+ *
+ * Only an arm that is nothing but a divert is spread; `{flag: he nods}` is
+ * varying text and stays one line.
+ */
+function spreadConditionalDiverts(lines) {
+  const out = [];
+  for (const line of lines) {
+    const match = line.text.match(/^(\s*)\{\s*([^:{}]+?)\s*:\s*(->\s*[\w.]+)\s*\}\s*$/);
+    if (!match) { out.push(line); continue; }
+    const [, indent, condition, divert] = match;
+    out.push({ line: line.line, text: `${indent}{ ${condition}:` });
+    out.push({ line: line.line, text: `${indent}  ${divert}` });
+    out.push({ line: line.line, text: `${indent}}` });
+  }
+  return out;
 }
 
 /** Strips `//` and `/* *\/` comments, and ink's `TODO:` lines. */
@@ -477,6 +504,20 @@ function readItem(line, notes) {
         label: label ? label[1] : null,
         text: '',
         then: readItem({ ...line, text: trailing }, notes),
+        line: line.line,
+      };
+    }
+    // A gather may carry text and then leave: `- He nods. -> elsewhere`. Kept
+    // on one line the arrow is printed instead of followed, so it becomes a
+    // divert of its own below the text, the same split a text line gets.
+    const split = trailing.match(/^(.*?\S)\s*->\s*([\w.]+)\s*$/);
+    if (split && !RE.tunnel.test(trailing)) {
+      return {
+        kind: 'gather',
+        depth,
+        label: label ? label[1] : null,
+        text: markup(split[1], line.line, notes),
+        then: { kind: 'divert', target: split[2], line: line.line },
         line: line.line,
       };
     }

@@ -263,3 +263,41 @@ With that, he hustles me out of the door.
   assert.match(markdown, /feet\.\n\n"You think/);
   assert.match(markdown, /everything\."\n\nWith that/);
 });
+
+test('a divert after text is followed, not printed', () => {
+  const { story } = build(`
+=== start ===
+He waits.
+* [Yes]
+    Fine.
+* [No]
+    Not fine.
+- "Simple enough," Harris says. -> seen
+
+=== seen ===
+Later.
+-> END
+`);
+  const printed = JSON.stringify(story.nodes.default.start);
+  assert.ok(!printed.includes('-> seen'), 'the arrow is not part of the prose');
+  assert.match(printed, /"op":"divert","target":"seen"/);
+});
+
+test('a conditional divert on one line is a divert, not varying text', () => {
+  const { story } = build(`
+VAR flag = 0
+
+=== start ===
+{flag: -> other}
+"What now?"
+-> END
+
+=== other ===
+Elsewhere.
+-> END
+`);
+  const printed = JSON.stringify(story.nodes.default.start);
+  assert.ok(!printed.includes('-> other'), 'the arrow is not part of the prose');
+  assert.match(printed, /"op":"branch"/);
+  assert.match(printed, /"target":"other"/);
+});
