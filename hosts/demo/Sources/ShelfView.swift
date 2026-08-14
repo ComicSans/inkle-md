@@ -17,6 +17,7 @@ struct ShelfView: View {
     @State private var open: Story?
     @State private var openName: String?
     @State private var failure: String?
+    @Environment(\.scenePhase) private var phase
 
     private let columns = [GridItem(.adaptive(minimum: 150), spacing: 20)]
 
@@ -30,6 +31,12 @@ struct ShelfView: View {
                 }
             }
             .navigationTitle(open == nil ? "Shelf" : (openName ?? ""))
+            // A reader who switches away or quits has not decided to lose the
+            // afternoon. The save is a file and writing it costs nothing, so
+            // it is written whenever the app stops being in front.
+            .onChange(of: phase) { newPhase in
+                if newPhase != .active, let story = open { keep(story) }
+            }
             .toolbar {
                 if let story = open {
                     ToolbarItem(placement: .primaryAction) {
@@ -87,12 +94,16 @@ struct ShelfView: View {
     }
 
     private func close(_ story: Story) {
-        if let name = Books.all.first(where: { Books.directory($0) == story.directory }),
-           let data = try? story.save() {
-            try? data.write(to: saveFile(name))
-        }
+        keep(story)
         open = nil
         openName = nil
+    }
+
+    /// Writes the save of the book being read, wherever it stands.
+    private func keep(_ story: Story) {
+        guard let name = Books.all.first(where: { Books.directory($0) == story.directory }),
+              let data = try? story.save() else { return }
+        try? data.write(to: saveFile(name))
     }
 
     private func hasSave(_ name: String) -> Bool {

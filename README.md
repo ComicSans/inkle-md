@@ -1,123 +1,150 @@
 # Story Weaver
 
-A gamebook language written in Markdown: ink semantics, Markdown syntax, and a
-fixed RPG layer modelled on the 1980s gamebooks. [SPEC.md](SPEC.md) is the
-language definition and the only authority; this repository implements it.
+Story Weaver is a language for writing gamebooks: branching stories in the
+tradition of the 1980s adventure books, where you read a passage, make a
+choice and turn to another passage, with a character sheet, dice and fights
+along the way. A book is a plain Markdown file, or a folder of them. A
+heading is a passage, a link is a jump, a list item is a choice, and the
+whole thing stays readable in any editor and on GitHub.
 
-Node 20 or newer.
+The story logic follows ink, the open scripting language inkle wrote for
+games such as 80 Days. What ink can say about branching, this language says
+in Markdown's spelling, with one spelling per concept; you do not need to
+know ink to write a book. The RPG layer - stats, items, dice, combat - is
+built into the language, so a fight needs no custom code.
+
+[SPEC.md](SPEC.md) is the language definition and the only authority; this
+repository implements it. There are no dependencies and no build step. Node
+20 or newer runs everything.
+
+## Trying it
 
 ```bash
-node src/cli.js build examples/thornwood.md --out build/thornwood.json
-node src/cli.js build examples/thornwood-book/book.yaml --out build/book.json
-node src/cli.js lint examples/thornwood.md --strict
-node src/cli.js export examples/thornwood-book/book.yaml --out build/play.html
-node src/cli.js bundle examples/thornwood-book/book.yaml --out build/native
-node src/cli.js play examples/house/book.yaml
-node --test 'test/*.test.js'
+node src/cli.js play examples/thornwood.md
 ```
 
-`play` walks a book in the terminal. With `--script 1,2,a,a` it walks a fixed
-route instead and prints where it ended up, which makes a bug reproducible;
-`--json` turns that into something a tool can read, as it does for `lint`.
-`simulate --runs 300` plays many games with a curious pseudo-random reader and
-reports the endings, dead ends and average length - that is how the fear stat
-in the house example was found to punish every second visit to the same room.
-`mcp` serves lint, play and simulate as MCP tools over stdio, so an agent can
-playtest a book against the real runtime; `.mcp.json` registers it.
+walks the smallest example book in the terminal: character creation, a
+fight, two endings. And
 
-The export is one HTML file with no external requests. How large it gets is
-mostly the book: thornwood comes to 63 kB, the nightside to 203 kB, The
-Intercept to 223 kB. The fixed part is the runtime and the view layer, and that
-is what the budget in SPEC 12 is about.
-
-A page can host the game instead of exporting it. Concatenate `runtime.js` and
-`view.js` with `export ` stripped - that is all `export.js` does - and mount it
-into an element of your own:
-
-```js
-mount(story, root, { setDocumentLang: false, onRender: ({ node }) => … });
+```bash
+node src/cli.js export examples/thornwood.md --out build/play.html
 ```
 
-`setDocumentLang: false` leaves `<html lang>` to the page, which owns it; the
-game marks its own region either way. `onRender` reports the node the reader is
-on after every redraw, so a host can follow along in the source: `meta.files`
-names the chapter files and every node carries its `file` and `line`.
+turns it into a single HTML file with no framework and no network access at
+runtime. Put that file on any web space, or send it in a mail, and it plays.
+Installed as an npm package, this tool is the `story-weaver` command; run
+from a checkout, `node src/cli.js` is the same command without installing
+anything.
 
-A host in another language cannot call any of that, so it gets a protocol
-instead. `bundle` writes `story.json` and `story-weaver.js` into a directory; the
-script defines two names, both taking and returning text, and a host on iOS or
-Android hands them to the JavaScript engine it already has:
+## The commands
 
-```js
-storyWeaver.start(storyJsonText, '{"seed":7}');        // -> the first view
-storyWeaver.send('{"cmd":"choose","index":1}');        // -> one answer
+```
+story-weaver build    <entry> [--out FILE]     compile to story JSON
+story-weaver lint     <entry> [--strict]       errors, warnings, a reachability report
+story-weaver export   <entry> --out FILE       one playable HTML file
+story-weaver bundle   <entry> --out DIR        story and engine for a native app
+story-weaver play     <entry>                  read in the terminal
+story-weaver simulate <entry> [--runs N]       let the machine play many games
+story-weaver import   <file.ink> [--out FILE]  translate an ink file
+story-weaver mcp                               lint, play and simulate for AI tools
 ```
 
-One command in, the whole view out, so a turn costs one crossing rather than a
-dozen. A book can be played two ways: read from its start, or entered as one
-episode inside an app that holds the map. The second needs nothing new -
-`load` the character, `go` to the passage, play it, `save` what changed - and
-that is deliberate: the book must not learn which of the two is happening.
-World data the book only reads arrives as host facts, declared `holds:` where
-it is a state rather than a duration. The runtime is embedded rather than translated because principle 5 wants
-the same die on every platform, and one implementation cannot disagree with
-itself. What the host draws, where it keeps the save and what feeds its clock
-are its own; SPEC 12.5 to 12.8 says what that means.
+`play` with `--script 1,2,a,a` walks a fixed route instead of asking, and
+with `--seed` the dice fall the same every time, which turns "it broke
+somewhere in the crypt" into a reproducible bug report; `--json` returns the
+same as data. `simulate` plays hundreds of games with a curious pseudo-random
+reader and reports the endings, the dead ends and the average length - a
+balance problem shows up there long before a human playtester finds it; that
+is how the fear stat in the house example was found to punish every second
+visit to the same room. `mcp` serves lint, play and simulate over stdio in
+the protocol AI coding tools speak, so an agent can playtest a book against
+the real runtime rather than parse terminal output.
 
-## What is here
-
-| Path | What it does |
-|---|---|
-| `src/lexer.js` | Line scanner, SPEC 10.2, including the three collision rules |
-| `src/expr.js` | Expressions and statements, SPEC 4.7 and 5 |
-| `src/yaml.js` | The YAML subset the frontmatter uses, SPEC 6 |
-| `src/frontmatter.js` | Frontmatter validation, character sheet, items, language tables |
-| `src/parser.js` | Lines to nodes and ops, SPEC 4 |
-| `src/catalog.js` | Translations as text catalogues and overrides, SPEC 3.4 |
-| `src/compile.js` | Pipeline, reference resolution, checks |
-| `src/emit.js` | Story JSON, with every default and repetition stripped, SPEC 9.1 |
-| `src/lint.js` | Linter and reachability report, SPEC 11 |
-| `src/runtime.js` | The player: text, choices, combat, save and undo, SPEC 8 |
-| `src/view.js` | The view layer: labels, presentation, accessibility, SPEC 12 |
-| `src/export.js` | One self-contained HTML file, SPEC 12 |
-| `src/host.js` | The host protocol: one command in, the whole view out, SPEC 12.7 |
-| `src/bundle.js` | Story and engine as files a native host embeds, SPEC 12.8 |
-| `src/play.js` | Playing from the terminal, scripted replays, simulation |
-| `src/mcp.js` | lint, play and simulate as MCP tools over stdio |
-| `src/import.js` | Reads ink and writes Story Weaver, reporting what has no equivalent |
-| `src/cli.js` | `build`, `lint`, `export`, `bundle`, `play`, `simulate`, `import`, `mcp` |
-| `examples/thornwood.md` | One file, one language: creation, combat, two endings |
-| `examples/thornwood-book/` | The same book as a project: two chapters, German and English |
-| `examples/house/` | A full-length book: 46 nodes, a fear stat that kills, secrets, three endings |
-| `examples/nightside/` | The 0.7 layer at work: facts, events, places, an oxygen clock, five endings |
-| `examples/leuchtturm/` | The 0.8 layer: a picture, a `holds:` fact, `due`, and a way in for an app |
-| `examples/intercept.md` | ink's own demo game, imported: 132 nodes, no RPG layer at all |
-| `hosts/ios/` | The same runtime in a JSContext, with a SwiftUI screen, SPEC 12.5 |
+How large an export gets is mostly the book. With `--minify`, the smallest
+example is a 47 kB file that compresses to 14 kB, inside the 30 kB budget
+the spec sets for a book without images; the largest, a full imported game,
+comes to 210 kB, nearly all of it story.
 
 ## The examples
 
-Each one is there to fail differently.
+`examples/` holds five books written for this project and one imported one.
+Each is there to fail differently.
 
 **`thornwood.md`** is the smallest complete book: one file, one language,
-character creation, a fight, two endings. Read this one first, and read
-[the full example in SPEC 13](SPEC.md#13-full-example) beside it. You can play it [here](https://www.tobiasreithmeier.de/en/crypt-under-the-thorn).
+character creation, a fight, two endings. Read this one first, beside the
+full example at the end of the spec. You can play it
+[here](https://www.tobiasreithmeier.de/en/crypt-under-the-thorn).
 
-**`thornwood-book/`** is the same story as a project, to show what changes when
-a book grows a `book.yaml`, a second chapter and a second language.
+**`thornwood-book/`** is the same story as a project, to show what changes
+when a book grows a `book.yaml`, a second chapter and a second language.
 
-**`house/`** is full-length: 46 nodes, secrets, and a fear stat that kills, so
-the numbers get exercised over a long game rather than a demo. You can play it [here](https://www.tobiasreithmeier.de/en/house-behind-the-moor).
+**`house/`** is full-length: 46 passages, secrets, and a fear stat that
+kills, so the numbers get exercised over a long game rather than a demo. You
+can play it [here](https://www.tobiasreithmeier.de/en/house-behind-the-moor).
 
-**`nightside/`** carries the 0.7 layer - facts, events, places, host time - and
-an oxygen clock that runs down whether or not the reader is doing anything. You can play it [here](https://www.tobiasreithmeier.de/en/nightside).
+**`nightside/`** uses the layer where the world outside the book takes part:
+values the book reads but never writes, events that come due on their own,
+places in a table - and an oxygen clock that runs down whether or not the
+reader is doing anything. You can play it
+[here](https://www.tobiasreithmeier.de/en/nightside).
+
+**`leuchtturm/`** is the smallest book of the newest layer: a picture, a
+value a surrounding app supplies, an event that comes due, and a way in for
+an app.
 
 **`intercept.md`** is not written in this language at all. It is inkle's own
 ink demo, *The Intercept*, put through `import`, and it earns its place by
 having no character sheet, no dice and no combat: it exercises the narrative
-half of the language on someone else's writing, where nothing could be quietly
-bent to fit. It carries inkle's MIT notice, not this project's MPL header, and
-it is the one example that is not `--strict` clean - it repeats choice labels
-because the original does (L012). You can play it [here](https://www.tobiasreithmeier.de/the-intercept).
+half of the language on someone else's writing, where nothing could be
+quietly bent to fit. It carries inkle's MIT notice, not this project's MPL
+header, and it is the one example that does not pass `--strict`: it repeats
+choice labels because the original does. You can play it
+[here](https://www.tobiasreithmeier.de/the-intercept).
+
+## A book inside another app
+
+A book is normally read from its first page to one of its endings. It can
+also be one scene inside a larger game: an app that keeps a world of its own -
+a map, a party, a clock - opens a book at one passage, lets the reader play
+it, and takes the character sheet back when they leave. The book is never
+told which of the two is happening, and the second way needs nothing the
+first does not have: load a save, jump to a passage, play, save. Three kinds
+of host can hold a book like this.
+
+**A web page.** Concatenate `src/runtime.js` and `src/view.js` with the
+`export` keywords stripped - that is all `src/export.js` does - and mount the
+game into an element of your own:
+
+```js
+mount(story, root, { onRender: ({ node }) => console.log(node) });
+```
+
+`onRender` reports the passage the reader is on after every redraw, so the
+page can follow along.
+
+**A native app.** A host written in Swift or Kotlin cannot call a JavaScript
+function directly, so it gets a protocol instead. `bundle` writes two files,
+the story as data and the engine as one script, and the script defines two
+functions that take and return text, which is what any JavaScript bridge
+carries well:
+
+```js
+storyWeaver.start(storyJsonText, '{"seed":7}');   // -> the first page
+storyWeaver.send('{"cmd":"choose","index":1}');   // -> the page after the choice
+```
+
+One command in, the whole page out, so a turn costs one language crossing
+rather than a dozen. The engine is embedded rather than translated into each
+language because the dice must fall the same everywhere: a save carried from
+a phone to a browser has to resume as the same story, and one implementation
+cannot disagree with itself.
+
+`hosts/` holds three such hosts, each with its own README:
+[`hosts/ios/`](hosts/ios/) is a Swift package with a ready-made SwiftUI
+reading view, [`hosts/demo/`](hosts/demo/) is an example app built on it,
+and [`hosts/android/`](hosts/android/) is a Kotlin host that is written but
+has never been compiled. What a host owns - drawing, saving, feeding the
+clock - and what it owes its readers is set out in SPEC 12.
 
 ## Importing ink
 
@@ -125,43 +152,56 @@ because the original does (L012). You can play it [here](https://www.tobiasreith
 node src/cli.js import TheIntercept.ink --out examples/intercept.md
 ```
 
-The importer carries over what this language has a word for: knots, stitches,
-weaves, the bracket split in choices, conditions, variables and the inline
-forms of varying text. What ink says differently is rewritten rather than
-guessed - a tunnel becomes a divert to where its callers return, a label used
-as a jump target becomes a node, a visit count on a choice becomes a variable,
-and a weave past the three levels of SPEC 4.3 moves into a node that goes on
-where the weave would have gone on. What has no equivalent at all - threads,
-lists, external functions - is reported with the ink line number and left out.
-
-Those notes carry no error code on purpose: SPEC 10.3 and 11 describe an
-Story Weaver document, and the importer's input is not one.
+The importer reads a file written in ink and writes the same story in this
+language. What has a direct equivalent is carried over: passages and their
+nesting, choices and their split button text, conditions, variables, and the
+inline forms of varying text. What ink says differently is rewritten rather
+than guessed - a label that is only jumped to becomes a passage of its own,
+for example. What has no equivalent at all - ink's threads, lists and
+external functions - is reported with the ink line number and left out, so
+you know what to rewrite by hand.
 
 ## Three rules worth knowing before writing a book
 
 **The book holds no time.** A clock is a stat the book declares and advances
-itself; the runtime never learns what its unit means. What comes from outside
-is a `host` fact, and it arrives only when a host hands it in. Facts are
-read-only: a book reads them, a reader changes variables (SPEC 16 to 18).
+itself; the runtime never learns what its unit means. What comes from
+outside - real seconds, a host app's weather - arrives as a fact: a value
+the book can read but never write. What the reader changes is a variable.
+The spec draws this line in sections 14 to 18.
 
-
-**The book holds no presentation.** No fonts, no colours, no button labels, no
-hint about how a stat should be drawn. That is the view layer's business
-(SPEC 12), and a book that carries its own layout stops being portable to the
-next one. `strings:` is the single exception and holds only lines the combat
-resolver narrates.
+**The book holds no presentation.** No fonts, no colours, no button labels,
+no hint about how a stat should be drawn. Looks belong to whatever plays the
+book, and a book that carries its own layout stops being portable to the
+next host. The single exception is `strings:`, which holds only the lines
+the combat resolver narrates.
 
 **Translations carry text, not logic.** The default language owns the
 structure; every other language is a catalogue of paragraphs and button
 labels, matched in source order. Where a language genuinely needs different
-logic - a plural only it branches on - it may override a whole node, and the
-linter says so (L019). See `examples/thornwood-book/en/crypt.md`.
+logic - a plural only it branches on - it may override a whole passage, and
+the linter points at every place that happens. See
+`examples/thornwood-book/en/crypt.md`.
+
+## What is in this repository
+
+`SPEC.md` is the language definition; it decides, and the code follows.
+`test/` is the test suite, run with `node --test 'test/*.test.js'`.
+`examples/` holds the books above, and `hosts/` the three native hosts.
+
+`src/` is the whole implementation, in plain Node with no dependencies: the
+compiler front (`lexer.js`, `expr.js`, `parser.js`, `frontmatter.js`, and
+`yaml.js`, a YAML subset written here rather than installed), the pipeline
+and its checks (`compile.js`, `lint.js`, `emit.js`), the player
+(`runtime.js`), the browser view and the export (`view.js`, `export.js`),
+the native side (`host.js`, `bundle.js`), the terminal player and the
+simulator (`play.js`), the ink importer (`import.js`), the MCP server
+(`mcp.js`) and the command line (`cli.js`).
 
 ## Licence
 
 Mozilla Public License 2.0, see [LICENSE](LICENSE).
 
-MPL is per file: change one of these files and your version of that file stays
-open, while a book, a game or a product built with them can be licensed however
-you like. The exported HTML carries the runtime, so it carries the notice too -
-the exporter writes it in for you.
+MPL is per file: change one of these files and your version of that file
+stays open, while a book, a game or a product built with them can be
+licensed however you like. The exported HTML carries the runtime, so it
+carries the notice too - the exporter writes it in for you.
