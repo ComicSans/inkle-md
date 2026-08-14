@@ -44,7 +44,10 @@ targets:
         SWIFT_VERSION: "5.9"
         ENABLE_USER_SCRIPT_SANDBOXING: NO
         CODE_SIGN_STYLE: Automatic
-        CODE_SIGNING_ALLOWED: NO
+        # A simulator needs no signature; a device does. Signing is on, and
+        # the team is the one this machine already has a certificate for.
+        DEVELOPMENT_TEAM: 9DNN6V58J9
+        CODE_SIGN_IDENTITY: Apple Development
     preBuildScripts:
       - name: Compile the books
         # The bundle is built from examples/ at build time, so there is one
