@@ -562,13 +562,13 @@ you wonder whether something is already built in.
 | `roll(n, sides)` | Sum of n dice with `sides` faces |
 | `random(min, max)` | Integer in range, both bounds inclusive |
 | `test_luck()` | A check against `luck`, then `luck` drops by one, never below zero |
-| `test(stat)` | A check against the stat, with nothing spent |
-| `has(item)` / `take(item)` / `drop(item)` | Inventory |
-| `take(item, n)` | Grants n uses of a consumable |
-| `uses(item)` | Uses left, 0 when the item is absent |
-| `use(item)` | Applies the item's effect, spends one use, returns true or false |
-| `equip(item)` / `equipped(item)` | Equip a weapon or armour, and test whether that item is the equipped one |
-| `remember(word)` / `knows(word)` / `forget(word)` | Code words, Lone Wolf style |
+| `test("stat")` | A check against the stat, with nothing spent |
+| `has("item")` / `take("item")` / `drop("item")` | Inventory |
+| `take("item", n)` | Grants n uses of a consumable |
+| `uses("item")` | Uses left, 0 when the item is absent |
+| `use("item")` | Applies the item's effect, spends one use, returns true or false |
+| `equip("item")` / `equipped("item")` | Equip a weapon or armour, and test whether that item is the equipped one |
+| `remember("word")` / `knows("word")` / `forget("word")` | Code words, Lone Wolf style |
 | `visits(node)` | How often the node has been entered |
 | `turns()` / `turns_since(node)` | Turns total, turns since that node |
 | `choice_count()` | Number of choices currently visible |
@@ -602,6 +602,16 @@ silently when the inventory is full; `has("...")` after it is the way to
 check. Item and code word names are plain strings, compared case-insensitively
 after trimming; they appear only as arguments, never as values, which is why
 the ban on string comparison in 4.8 costs nothing.
+
+The quotation marks above are part of the language, not typography. Every
+argument that names something - a stat, an item, a code word - is written as a
+literal, and there is no way to compute one: stats hold numbers, and 4.8 bans
+comparing strings. A bare name there reads the value instead of the name, so
+`test(skill)` arrives at 9 and then asks for a stat called `9`. That check
+fails every time it is made, and nothing about the page says why, which is why
+E133 rejects it rather than the runtime shrugging at it. E133 also catches the
+name that is quoted but names nothing: `test("gskill")` is a typo an author
+never sees, because a failed check looks exactly like bad luck.
 
 `has(x)` is exactly `uses(x) > 0`. A non-consumable counts as one use, and
 taking one that is already held changes nothing. Beyond the functions, five
@@ -1050,6 +1060,7 @@ Errors abort compilation. Every message carries file, line, column and the offen
 | E130 | Malformed expression |
 | E131 | Unknown function or variable |
 | E132 | Wrong argument count |
+| E133 | Name argument that is not a quoted name, or names nothing (5) |
 | E140 | Function node without `~ return` on some path |
 | E150 | `flee` exit for an enemy without `flee_after` |
 | E151 | `!combat` with an unknown enemy or without a `win` exit |

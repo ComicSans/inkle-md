@@ -17,7 +17,7 @@ import { CompileError, ErrorBag } from './errors.js';
 import { splitFrontmatter, parseYaml } from './yaml.js';
 import { validateFrontmatter, languagesOf, DEFAULT_LANGUAGE } from './frontmatter.js';
 import { parseStory } from './parser.js';
-import { BUILTINS, BUILTIN_VARS, IMPURE_CALLS, walkExpression } from './expr.js';
+import { BUILTINS, BUILTIN_VARS, IMPURE_CALLS, NAME_ARGS, walkExpression } from './expr.js';
 import { lint } from './lint.js';
 import { parseCatalog, applyCatalog } from './catalog.js';
 import { emitStory } from './emit.js';
@@ -647,6 +647,22 @@ function checkExpression(expr, scope, node, at, bag, resolve, functions, config 
       delete e.call;
       delete e.args;
       e.lit = index;
+      return;
+    }
+    // A name argument is a literal or it is nothing (see NAME_ARGS). Only the
+    // first argument is a name; take("rope", 3) counts uses in the second.
+    if (NAME_ARGS.has(e.call)) {
+      const arg = e.args?.[0];
+      if (arg?.lit === undefined) {
+        bag.add('E133', `${e.call}() wants a name in quotes, not a value`, at);
+        return;
+      }
+      // Which names exist is checked where the declaration lives: items by
+      // E060, places by E165. Stats had nobody, so test("gschick") failed
+      // silently for as long as the typo stood there.
+      if (e.call === 'test' && !scope.has(String(arg.lit))) {
+        bag.add('E133', `no stat called "${arg.lit}"`, at);
+      }
       return;
     }
     if (e.call === undefined || BUILTINS[e.call]) return;

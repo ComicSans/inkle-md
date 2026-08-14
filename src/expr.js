@@ -48,6 +48,23 @@ export const BUILTINS = {
 };
 
 /**
+ * Builtins whose first argument is a name, not a value: the id of an item, a
+ * code word, the name of a stat. They are written as literals and only as
+ * literals, because this language has no strings to compute one from - stats
+ * hold numbers.
+ *
+ * That makes a bare identifier there a quiet lie. `test(skill)` reads the
+ * stat, arrives at 9, and then asks for a stat called "9"; the check fails
+ * every time and nothing says so. `has(gold)` looks for an item called "12".
+ * Both compiled clean until E133, because the identifier is a declared stat
+ * and every other check was satisfied.
+ */
+export const NAME_ARGS = new Set([
+  'test', 'has', 'take', 'drop', 'uses', 'use', 'equip', 'equipped',
+  'remember', 'knows', 'forget',
+]);
+
+/**
  * What a fact may not do, per principle 8: draw a die, or change anything.
  * Everything else in BUILTINS reads state and reads it the same way twice.
  */
