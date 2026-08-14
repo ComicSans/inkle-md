@@ -50,7 +50,7 @@ stats:
   seen_night_falls_hooper_didnt_give_himself_up: { start: 0 }
   seen_harris_threatens_lynching_too_clever: { start: 0 }
 
-# The Intercept, by inkle Ltd, imported from ink into inkle-md.
+# The Intercept, by inkle Ltd, imported from ink into Story Weaver.
 #
 # Source: https://github.com/inkle/the-intercept
 # The Intercept and ink are released under the MIT license.
@@ -75,7 +75,7 @@ stats:
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-# This file was produced by `inkle-md import` and is not hand-written; it
+# This file was produced by `story-weaver import` and is not hand-written; it
 # carries inkle's notice rather than this project's MPL-2.0 header.
 ---
 # Start {#start}

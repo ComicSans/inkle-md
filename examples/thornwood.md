@@ -1,6 +1,6 @@
 ---
 title: Die Gruft unter dem Weißdorn
-author: inkle-md
+author: Story Weaver
 version: 0.1.0
 languages:
   default: de
