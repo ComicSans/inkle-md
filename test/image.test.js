@@ -19,6 +19,7 @@ import { compile, expectError, nodesOf } from './helpers.js';
 import { compileFile } from '../src/compile.js';
 import { imagePaths } from '../src/emit.js';
 import { Host } from '../src/host.js';
+import { play } from '../src/play.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const book = () => compileFile(join(here, '..', 'examples', 'thornwood-book', 'book.yaml')).story;
@@ -200,4 +201,18 @@ test('the image paths of a book are what travels with it', () => {
   assert.deepEqual(imagePaths(book()), ['gruft.png']);
   // Once, however many languages and nodes link it.
   assert.equal(new Set(imagePaths(book())).size, imagePaths(book()).length);
+});
+
+test('the terminal has no pictures, so it reads the alt text out', async () => {
+  // This was a crash, not a missing line: an image paragraph carries no
+  // `text` at all, and `play` called `.trim()` on it. Every book with a
+  // picture in it killed the terminal player on the page that showed it -
+  // including the one example that has an image, which is how it stayed
+  // hidden. 4.9 demands alt text on every image precisely so that a surface
+  // without pictures still has the sentence.
+  const { story } = compileFile(join(here, '..', 'examples', 'leuchtturm', 'book.yaml'));
+  const result = await play(story, { seed: 1, script: [] });
+  const bild = result.text.find((line) => line.startsWith('['));
+  assert.ok(bild, `no alt text among ${JSON.stringify(result.text)}`);
+  assert.match(bild, /Leuchtturm/);
 });

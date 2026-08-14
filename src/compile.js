@@ -532,6 +532,42 @@ function checkDeclarations(table, config, { multi, bag, at }) {
       bag.add('E167', `event "${name}" returns instead of doing something`, at);
     }
   }
+
+  checkFrontmatterNames(config, bag, at);
+}
+
+/**
+ * The name rule of SPEC 5, applied to the expressions the frontmatter carries
+ * outside facts and events: a stat's `start:`, an item's `effect:` and
+ * `when:`, the dice under `checks:`, the arithmetic of `combat:` and
+ * `death:`. None of them reach checkExpression, so `effect: "take(0)"` was as
+ * quiet there as `take(0)` ever was in the story.
+ *
+ * Only this one rule runs here. Whether those expressions name declared stats
+ * is a separate question, and answering it in this pass would fail books that
+ * have compiled since 0.1 for a reason this check is not about.
+ */
+function checkFrontmatterNames(config, bag, at) {
+  const names = (expr) => walkExpression(expr, (e) => {
+    if (e.call === 'place' || NAME_ARGS.has(e.call)) nameArgument(e, bag, at);
+  });
+  const statement = (op) => {
+    if (!op) return;
+    if (op.op === 'call') names({ call: op.fn, args: op.args });
+    else names(op.value);
+  };
+
+  names(config.checks?.dice);
+  for (const stat of Object.values(config.stats ?? {})) {
+    names(stat.start);
+    if (stat.max !== 'start') names(stat.max);
+  }
+  for (const item of Object.values(config.items ?? {})) {
+    statement(item.effect);
+    names(item.when);
+  }
+  for (const key of ['attack', 'damage', 'flee_cost']) names(config.combat?.[key]);
+  names(config.death?.when);
 }
 
 /** True when a story function neither assigns nor calls anything impure. */
@@ -620,6 +656,24 @@ function walkParts(parts, onExpr, at) {
   }
 }
 
+/**
+ * The rule of SPEC 5 for the first argument of the functions in NAME_ARGS and
+ * of place(): it is a name in quotes, and nothing else. Only the first one;
+ * take("rope", 3) counts uses in the second.
+ *
+ * A number passes for the same reason a bare identifier does - the runtime
+ * turns whatever it gets into a key. `has(0)` then looks for an item called
+ * "0", forever without finding one, so the test is on the type, not on
+ * whether a literal is there at all.
+ *
+ * @returns {boolean} true when the call may be checked further
+ */
+function nameArgument(e, bag, at) {
+  if (typeof e.args?.[0]?.lit === 'string') return true;
+  bag.add('E133', `${e.call}() wants a name in quotes, not a value`, at);
+  return false;
+}
+
 function checkExpression(expr, scope, node, at, bag, resolve, functions, config = null, firing = false) {
   walkExpression(expr, (e) => {
     // `due` counts firings owed to one scheduled event at one boundary
@@ -638,6 +692,7 @@ function checkExpression(expr, scope, node, at, bag, resolve, functions, config 
     // place("ridge") is an index the linter can check and the author never
     // writes as a number (19.2); nothing of it survives into the runtime.
     if (e.call === 'place') {
+      if (!nameArgument(e, bag, at)) return;
       const id = e.args?.[0]?.lit;
       const index = (config?.places?.table ?? []).findIndex((p) => p.id === String(id));
       if (index < 0) {
@@ -649,19 +704,13 @@ function checkExpression(expr, scope, node, at, bag, resolve, functions, config 
       e.lit = index;
       return;
     }
-    // A name argument is a literal or it is nothing (see NAME_ARGS). Only the
-    // first argument is a name; take("rope", 3) counts uses in the second.
     if (NAME_ARGS.has(e.call)) {
-      const arg = e.args?.[0];
-      if (arg?.lit === undefined) {
-        bag.add('E133', `${e.call}() wants a name in quotes, not a value`, at);
-        return;
-      }
+      if (!nameArgument(e, bag, at)) return;
       // Which names exist is checked where the declaration lives: items by
       // E060, places by E165. Stats had nobody, so test("gschick") failed
       // silently for as long as the typo stood there.
-      if (e.call === 'test' && !scope.has(String(arg.lit))) {
-        bag.add('E133', `no stat called "${arg.lit}"`, at);
+      if (e.call === 'test' && !scope.has(String(e.args[0].lit))) {
+        bag.add('E133', `no stat called "${e.args[0].lit}"`, at);
       }
       return;
     }

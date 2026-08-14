@@ -63,7 +63,7 @@ function runScript(s, options) {
   const result = {
     node: s.current.node,
     ended: s.current.ended,
-    text: s.current.text.map((t) => t.text),
+    text: s.current.text.map(line),
     choices: s.current.choices.map((c, i) => ({ key: i + 1, label: c.label })),
     combat: s.combat ? { enemy: s.combat.name, stamina: s.combat.enemy.stamina, round: s.combat.round } : null,
     stats: Object.fromEntries(s.stats.map((x) => [x.name, x.max ? `${x.value}/${x.max}` : x.value])),
@@ -120,10 +120,25 @@ async function interactive(s, options = {}) {
   return s;
 }
 
+/**
+ * One paragraph as one line of terminal text.
+ *
+ * An image paragraph carries no `text` at all (4.9), which is why this used to
+ * be a crash rather than a missing line: every book with a picture in it killed
+ * `play` on the page that showed it. A terminal has no place to put the image,
+ * but 4.9 requires alt text on every one of them precisely so that a surface
+ * without pictures still has the sentence. So it reads the alt text out.
+ */
+function line(paragraph) {
+  if (paragraph.image) return paragraph.alt ? `[ ${paragraph.alt} ]` : '';
+  return paragraph.text ?? '';
+}
+
 function render(s) {
   const out = [];
   for (const paragraph of s.current.text) {
-    if (paragraph.text.trim() !== '') out.push(wrap(paragraph.text));
+    const text = line(paragraph);
+    if (text.trim() !== '') out.push(wrap(text));
   }
 
   if (s.combat) {
