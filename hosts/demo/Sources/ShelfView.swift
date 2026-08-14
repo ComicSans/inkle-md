@@ -10,7 +10,7 @@ import StoryWeaver
 
 /// The first way to play: a book, read from its first page (SPEC 12.6).
 ///
-/// This is all it takes. Open the bundle, hand the story to `StoryScreen`, and
+/// This is all it takes. Open the bundle, hand the story to `ReadingView`, and
 /// the reader is in the book. The save goes to a file of the app's choosing,
 /// because where it is kept was never part of the format (12.5).
 struct ShelfView: View {
@@ -24,7 +24,7 @@ struct ShelfView: View {
         NavigationStack {
             Group {
                 if let story = open {
-                    ReadingView(story: story, labels: .forLanguage(story.view.lang))
+                    ReadingView(story: story)
                 } else {
                     shelf
                 }

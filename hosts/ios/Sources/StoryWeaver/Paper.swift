@@ -13,23 +13,23 @@ import SwiftUI
 /// this is the somewhere. The palette is the web export's, because a reader
 /// who moves between the two should recognise the thing they are reading: warm
 /// paper, dark ink, one accent, and a rule that is a rule and not a shadow.
-enum Paper {
-    static let background = Color.dynamic(light: Color(red: 0.965, green: 0.949, blue: 0.910),
+public enum Paper {
+    public static let background = Color.dynamic(light: Color(red: 0.965, green: 0.949, blue: 0.910),
                                           dark: Color(red: 0.090, green: 0.086, blue: 0.102))
-    static let ink = Color.dynamic(light: Color(red: 0.106, green: 0.102, blue: 0.090),
+    public static let ink = Color.dynamic(light: Color(red: 0.106, green: 0.102, blue: 0.090),
                                    dark: Color(red: 0.929, green: 0.906, blue: 0.859))
-    static let faded = Color.dynamic(light: Color(red: 0.451, green: 0.427, blue: 0.361),
+    public static let faded = Color.dynamic(light: Color(red: 0.451, green: 0.427, blue: 0.361),
                                       dark: Color(red: 0.569, green: 0.549, blue: 0.514))
-    static let rule = Color.dynamic(light: Color(red: 0.812, green: 0.776, blue: 0.690),
+    public static let rule = Color.dynamic(light: Color(red: 0.812, green: 0.776, blue: 0.690),
                                      dark: Color(red: 0.227, green: 0.216, blue: 0.259))
-    static let accent = Color.dynamic(light: Color(red: 0.478, green: 0.231, blue: 0.180),
+    public static let accent = Color.dynamic(light: Color(red: 0.478, green: 0.231, blue: 0.180),
                                        dark: Color(red: 0.851, green: 0.580, blue: 0.471))
 }
 
 /// A button that belongs on a page: no fill shouting for attention, a rule
 /// around it, and the accent only where the reader is meant to look.
-struct PageButton: ButtonStyle {
-    enum Kind {
+public struct PageButton: ButtonStyle {
+    public enum Kind {
         /// A choice in the story: full width, because it is a line of text.
         case plain
         /// A small control beside others: as wide as its own words.
@@ -38,11 +38,13 @@ struct PageButton: ButtonStyle {
         case chosen
     }
 
-    var kind: Kind = .plain
+    public var kind: Kind = .plain
+
+    public init(kind: Kind = .plain) { self.kind = kind }
 
     @Environment(\.isEnabled) private var isEnabled
 
-    func makeBody(configuration: Configuration) -> some View {
+    public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.custom("Georgia", size: kind == .plain ? 16 : 14))
             .foregroundStyle(foreground)
@@ -85,7 +87,7 @@ struct PageButton: ButtonStyle {
 extension Color {
     /// One colour with two values, so the page follows the reader's theme
     /// without a colour set in an asset catalogue this package does not have.
-    static func dynamic(light: Color, dark: Color) -> Color {
+    public static func dynamic(light: Color, dark: Color) -> Color {
         #if canImport(UIKit)
         return Color(UIColor { traits in
             traits.userInterfaceStyle == .dark ? UIColor(dark) : UIColor(light)

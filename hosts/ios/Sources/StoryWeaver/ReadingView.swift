@@ -6,7 +6,6 @@
  */
 
 import SwiftUI
-import StoryWeaver
 
 /// A book as one long text.
 ///
@@ -20,9 +19,18 @@ import StoryWeaver
 /// on the page now (12.7), and keeping the earlier pages is the host's own
 /// idea, like everything else about how a book looks (12.5).
 @MainActor
-struct ReadingView: View {
-    @ObservedObject var story: Story
-    var labels: Labels
+public struct ReadingView: View {
+    @ObservedObject private var story: Story
+    private let labels: Labels
+
+    /// - Parameters:
+    ///   - story: the book being read.
+    ///   - labels: the words this app puts on its own controls. Omit them and
+    ///     they follow the book's language.
+    public init(story: Story, labels: Labels? = nil) {
+        self.story = story
+        self.labels = labels ?? .forLanguage(story.view.lang)
+    }
 
     /// What has been read so far, oldest first.
     @State private var passages: [Passage] = []
@@ -41,7 +49,7 @@ struct ReadingView: View {
         let node: String?
     }
 
-    var body: some View {
+    public var body: some View {
         ScrollViewReader { scroller in
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
