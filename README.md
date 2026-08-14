@@ -4,7 +4,7 @@ A gamebook language written in Markdown: ink semantics, Markdown syntax, and a
 fixed RPG layer modelled on the 1980s gamebooks. [SPEC.md](SPEC.md) is the
 language definition and the only authority; this repository implements it.
 
-No dependencies, no build step. Node 20 or newer.
+Node 20 or newer.
 
 ```bash
 node src/cli.js build examples/thornwood.md --out build/thornwood.json
@@ -74,16 +74,16 @@ Each one is there to fail differently.
 
 **`thornwood.md`** is the smallest complete book: one file, one language,
 character creation, a fight, two endings. Read this one first, and read
-[the full example in SPEC 13](SPEC.md#13-full-example) beside it.
+[the full example in SPEC 13](SPEC.md#13-full-example) beside it. You can play it [here](https://www.tobiasreithmeier.de/en/crypt-under-the-thorn).
 
 **`thornwood-book/`** is the same story as a project, to show what changes when
 a book grows a `book.yaml`, a second chapter and a second language.
 
 **`house/`** is full-length: 46 nodes, secrets, and a fear stat that kills, so
-the numbers get exercised over a long game rather than a demo.
+the numbers get exercised over a long game rather than a demo. You can play it [here](https://www.tobiasreithmeier.de/en/house-behind-the-moor).
 
 **`nightside/`** carries the 0.7 layer - facts, events, places, host time - and
-an oxygen clock that runs down whether or not the reader is doing anything.
+an oxygen clock that runs down whether or not the reader is doing anything. You can play it [here](https://www.tobiasreithmeier.de/en/nightside).
 
 **`intercept.md`** is not written in this language at all. It is inkle's own
 ink demo, *The Intercept*, put through `import`, and it earns its place by
@@ -91,7 +91,7 @@ having no character sheet, no dice and no combat: it exercises the narrative
 half of the language on someone else's writing, where nothing could be quietly
 bent to fit. It carries inkle's MIT notice, not this project's MPL header, and
 it is the one example that is not `--strict` clean - it repeats choice labels
-because the original does (L012).
+because the original does (L012). You can play it [here](https://www.tobiasreithmeier.de/the-intercept).
 
 ## Importing ink
 
