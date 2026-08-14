@@ -12,6 +12,7 @@ node --test 'test/*.test.js'
 node src/cli.js lint examples/thornwood.md --strict
 node src/cli.js lint examples/house/book.yaml --strict
 node src/cli.js lint examples/nightside/book.yaml --strict
+node src/cli.js lint examples/leuchtturm/book.yaml --strict
 node src/cli.js export examples/thornwood-book/book.yaml --out build/play.html
 node src/cli.js bundle examples/thornwood-book/book.yaml --out build/native
 ```
@@ -21,10 +22,11 @@ node src/cli.js bundle examples/thornwood-book/book.yaml --out build/native
 - Jede Quelldatei trägt den MPL-2.0-Header. Neue Datei, neuer Header.
 - Fehler tragen einen Code aus SPEC 10.3, Warnungen einen aus SPEC 11. Ein
   neuer Prüffall braucht einen Code, einen Eintrag in der Spec und einen Test.
-- Die drei geschriebenen Beispiele müssen `--strict` sauber bleiben; sie sind
-  der Abnahmetest.
-  `thornwood` und `house` decken die Grundschicht ab, `nightside` die 0.7-Schicht
-  aus Fakten, Ereignissen, Orten und Host-Zeit.
+- Die vier geschriebenen Beispiele müssen `--strict` sauber bleiben; sie sind
+  der Abnahmetest. `thornwood` und `house` decken die Grundschicht ab,
+  `nightside` die 0.7-Schicht aus Fakten, Ereignissen, Orten und Host-Zeit,
+  `leuchtturm` die 0.8-Schicht: ein Bild, ein `holds:`-Fakt, `due` und ein
+  Einstieg für eine App, die das Buch als Episode spielt.
 - Deutsche Texte mit echten Umlauten, auch in Beispielen und Commit-Nachrichten.
 
 ## Abweichungen von den Workspace-Standards

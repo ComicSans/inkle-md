@@ -167,7 +167,7 @@ export function compileSources(input, ctx = {}) {
 }
 
 /**
- * The images a book links have to be there, per language (SPEC 4.9, 22.5).
+ * The images a book links have to be there, per language (SPEC 4.9, 22.4).
  *
  * This is the one check in the compiler that reads the disk. Everything else
  * answers from the sources it was handed; whether a file exists is a fact
@@ -494,8 +494,8 @@ function checkDeclarations(table, config, { multi, bag, at }) {
     return name;
   };
   const outside = { namespace: null };
-  const check = (expr) => {
-    if (expr) checkExpression(expr, scope, outside, at, bag, resolve, functions, config);
+  const check = (expr, { firing = false } = {}) => {
+    if (expr) checkExpression(expr, scope, outside, at, bag, resolve, functions, config, firing);
   };
 
   for (const fact of Object.values(facts)) {
@@ -519,14 +519,15 @@ function checkDeclarations(table, config, { multi, bag, at }) {
     check(event.counter);
     check(event.when);
     if (event.do.op === 'assign') {
-      check(event.do.value);
+      // The one place `due` is a number: this event, this boundary (17.2).
+      check(event.do.value, { firing: true });
       if (facts[event.do.target]) {
         bag.add('E164', `event "${name}" assigns to the fact "${event.do.target}"`, at);
       } else if (!scope.has(event.do.target)) {
         bag.add('E131', `event "${name}" assigns to "${event.do.target}", which is not a declared stat`, at);
       }
     } else if (event.do.op === 'call') {
-      check({ call: event.do.fn, args: event.do.args });
+      check({ call: event.do.fn, args: event.do.args }, { firing: true });
     } else {
       bag.add('E167', `event "${name}" returns instead of doing something`, at);
     }
@@ -619,8 +620,15 @@ function walkParts(parts, onExpr, at) {
   }
 }
 
-function checkExpression(expr, scope, node, at, bag, resolve, functions, config = null) {
+function checkExpression(expr, scope, node, at, bag, resolve, functions, config = null, firing = false) {
   walkExpression(expr, (e) => {
+    // `due` counts firings owed to one scheduled event at one boundary
+    // (17.2). Anywhere else there is no such number, and reading it as 1
+    // would be a silent wrong answer.
+    if (e.var === 'due' && !firing) {
+      bag.add('E173', 'due only means something inside an event\'s do:', at);
+      return;
+    }
     if (e.var !== undefined && !scope.has(e.var)) {
       bag.add('E131', `"${e.var}" is not a declared stat`, at);
     }

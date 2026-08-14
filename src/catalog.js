@@ -89,7 +89,7 @@ export function parseCatalog(body, ctx) {
       case 'image':
         // A third stream beside paragraphs and labels. Both halves of an image
         // are translated: the alt text always, and the file because a map with
-        // names written on it has to be redrawn, not relabelled (22.5).
+        // names written on it has to be redrawn, not relabelled (22.4).
         current.images.push(parseImage(line));
         break;
       default:

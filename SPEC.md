@@ -598,10 +598,11 @@ after trimming; they appear only as arguments, never as values, which is why
 the ban on string comparison in 4.8 costs nothing.
 
 `has(x)` is exactly `uses(x) > 0`. A non-consumable counts as one use, and
-taking one that is already held changes nothing. Beyond the functions, four
-read-only variables come built in: `in_combat`, `weapon_attack`,
-`weapon_damage` and `armour_defence`. You will meet them again in the combat
-chapter, section 7.
+taking one that is already held changes nothing. Beyond the functions, five
+read-only variables come built in. Four of them are about equipment:
+`in_combat`, `weapon_attack`, `weapon_damage` and `armour_defence`, and you
+will meet them again in the combat chapter, section 7. The fifth is `due`,
+which belongs to scheduled events and means nothing anywhere else (17.2).
 
 ## 6. Frontmatter: the character sheet
 
@@ -867,6 +868,8 @@ Let's walk through the parts that are not self-explanatory.
 
 `story` is the title and version of the book that wrote the save. Loading rejects a save whose `story` does not match the running book, and there is a good reason for that strictness: every other field is keyed against a specific book's nodes and choice ids, so a save from another version would resume as plausible-looking garbage. This also gives you a lever as an author: bumping `version:` in the frontmatter is the way to declare old saves invalid.
 
+A refusal says why in fields and not only in a sentence: `reason` is `story` or `version`, and for `story` it names both the book the save came from and the book that refused it. That is there because somebody has to act on it. A shop that ships a new edition meets this on every reader who was mid-playthrough, and the choice between offering the previous edition and carrying the character across is one an app makes in code, not one a reader should meet as an error message (12.6).
+
 `at` is the position inside the current node, written as an index path. `[2, 0, 1]` reads as "op 2, its item 0, op 1 inside it". It is worth saying what `at` is not: it is not a call stack. There are no return addresses and no frames of their own, which is exactly what principle 4 rules out.
 
 A cluster of fields exists purely so the page can be repainted without replaying anything: `screen` names the text ops that are visible, `picks` records what each alternative on them settled on, `visible` says which choices were offered, and `fight` lists the enemies still standing. Why store all this instead of re-deriving it? Because a condition may roll dice. Re-deciding any of it on a repaint would move the random stream and change the page under the reader. Reloading, undoing and switching language all repaint from these fields.
@@ -1058,6 +1061,7 @@ Errors abort compilation. Every message carries file, line, column and the offen
 | E170 | Fact name colliding with a stat or variable |
 | E171 | `places.variable:` naming something that is not a declared stat |
 | E172 | `holds:` on a fact that is not supplied from outside |
+| E173 | `due` outside the `do:` of a scheduled event |
 | E180 | An image line that is not `![alt](file)` |
 | E181 | An image inside a sentence rather than on a line of its own |
 | E182 | An image without alt text |
@@ -1385,6 +1389,16 @@ stops when it sees one of its own exits; `config.death.goto` in the story
 JSON names the one the book itself calls dying. Nothing needs to be declared
 for this, and nothing should be: which nodes are exits depends on the map,
 not on the book.
+
+**A new edition is another book.** Bumping `version:` changes what a save is
+keyed against, so the save a reader has stops loading, and that is the point
+of the strictness in 8. In a shop it is also a reader losing a playthrough to
+an update they did not ask for, so a host that ships editions decides between
+two things, and the refusal names which case it is (8): keep the previous
+story JSON in the app and let anyone mid-playthrough finish in it, or carry
+the character across as above and let the position go. There is no third
+answer where the old position survives, because the ids it points at are the
+old edition's.
 
 The other half of this is what the app knows and the book only reads, and
 that half is section 15's: a map's weather, a distance, a party's standing
@@ -1871,6 +1885,19 @@ Picture a reader who puts the book down for a month and comes back. Their counte
 
 Without a bound a book that was closed for a month wakes up dead. With one the author decides whether time away is dangerous or merely long.
 
+There is a second way to spend that time, and it needs no second field. `max_catchup:` bounds how often `do:` runs; **`due`** says how often it was owed. In an event's `do:` it is the number of firings the counter asked for at this boundary, before the bound was applied; everywhere else it is E173, because there is no such number there and reading it as 1 would be a quiet wrong answer.
+
+```yaml
+events:
+  air_leaks:
+    counter: 'time'
+    every:   10
+    max_catchup: 1
+    do: 'oxygen -= due'
+```
+
+That event fires once however long the book was closed, and takes what the whole absence cost. A month away is one loss of a month's air, not thirty losses of a day's, and not one loss of a day's with the rest quietly dropped. Which of the three a book wants is the author's to say, and now all three are sayable: repeat with a bound, drop past the bound, or fold what was missed into a single firing.
+
 The condition plays fair here too. A `when:` that is false costs the firings of that boundary but not the anchor: time passed whether or not the wound was there to worsen, so the event does not owe the reader fifty rounds of damage the moment they are finally wounded.
 
 ### 17.3 Death
@@ -2066,39 +2093,28 @@ each of them stands.
    event rather than assigning it first. The language keeps events free of
    arguments, so this was set aside. Worth revisiting if travel ever grows a
    spelling of its own.
-4. **A second `max_catchup:` mode** that coalesces the missed firings into a
-   single one, with the number of missed steps in a variable, rather than
-   repeating the event once per step.
-5. **What an alt text owes a map.** Images themselves are built and live in
+4. **What an alt text owes a map.** Images themselves are built and live in
    4.9. Alt text is required there, so there is no decorative image and
    nothing to hide from a screen reader. What stays open is the one case a
    rule cannot settle: a picture that carries information rather than
    atmosphere, such as a map of the marches with names on it. A sentence is
    the right answer for an archway and the wrong one for a map, and what
    12.3 should promise instead waits for a book that has one.
-6. **A save across a new edition.** Section 8 rejects a save whose `story`
-   does not match the running book, and on the web that is a reload. In a
-   shop that ships editions, it is a reader who loses a playthrough to an
-   update they did not ask for. The strictness is right and the answer is not
-   the runtime's: a host that ships editions has to decide between refusing
-   the update, keeping the previous story JSON beside the new one, and
-   migrating. Nothing here is decided until a book is actually shipped that
-   way.
 
 ## 23. Next steps
 
-Of the open points in section 22, three have a natural order, and here it is.
+Of the open points in section 22, one is next, and the rest wait for a book
+that needs them.
 
-1. The second `max_catchup:` mode of 22.4. The case to design it against is a
-   book that is put down for a week, not a table of turns.
-2. Calendar and ephemeris (22.1, 22.2) come last, and only once a book asks
-   for them. They are the one open point that costs the language an epoch, and
-   that price is worth paying only for a book that needs a date or a sky.
+1. Calendar and ephemeris (22.1, 22.2), and only once a book asks for them.
+   They are the one open point that costs the language an epoch, and that
+   price is worth paying only for a book that needs a date or a sky.
 
 Images led this list and are built (4.9), together with the hosts of 12.5 to
 12.9: the web export, a package for Apple platforms, and the two ways a book
-can be played. What images left behind is the one question in 22.5 that a book
-has to ask before a rule can answer it.
+can be played. So is the second catch-up mode, which turned out to need no
+second field at all, only `due` (17.2). What images left behind is the one
+question in 22.4 that a book has to ask before a rule can answer it.
 
 Everything these steps stand on is already built: grammar, parser and story
 JSON per sections 10 and 9.1; the linter of section 11 with its reachability
@@ -2108,12 +2124,13 @@ scheduled content cannot be tested at all; and three examples, one of which
 puts facts, events, places and a clock through the acceptance test rather than
 leaving them to the unit tests. Every example in this document is a test case.
 
-One thing 0.8 is missing, and it is worth naming rather than discovering: the
-layer it added has no written book behind it. Images have one, in the crypt of
-the two-chapter example, but `holds:` and the episode of 12.6 live in the unit
-tests alone. The three examples are the acceptance test for everything else in
-this document precisely because a written book finds what a unit test does not,
-and a book meant to be entered from a map is the one that is missing.
+The 0.8 layer has a written book behind it too, and it found things a unit test
+would not have. `examples/leuchtturm` is a lighthouse on a sandbank: the world
+outside supplies the weather as a `holds:` fact, an event lets the tide rise
+against the clock, and `due` is what turns a week of absence into one flooded
+cellar rather than a hundred reports of it filling. Played without a host every
+reader comes back in the morning; played with a storm, thirty-four in two
+hundred do not.
 
 ## 24. Change notes
 
@@ -2134,8 +2151,10 @@ edges.
 | 11, 21  | L025 is an `info` about a book and a `warning` on an output with no host, because a book does not know which output it becomes. |
 | 12      | Retitled: the web export is one host of several. 12.5 to 12.9 added, with the hosts beyond the browser, the two ways to play, the host protocol, the native bundle, and what a foreign game loop has to know. |
 | 15.1, 16.2 | `holds:` added to a host fact: a state stays across boundaries where a duration is consumed. E172 rejects it anywhere else. |
+| 5, 17.2 | `due` added: how many firings a scheduled event was owed at this boundary, so an absence can be folded into one firing instead of repeated or dropped. E173 rejects it anywhere else. |
+| 8, 12.6 | A refused save says why in fields, and 12.6 says what a host does about a new edition. |
 | 18.1    | A held host value rides in the save, so a reader comes back to the world they left. |
-| 22, 23  | Images and L025 leave the open points; what stays of 22.5 is what an alt text owes a map. |
+| 22, 23  | Images, L025, the catch-up mode and the new-edition question leave the open points; what stays of 22.4 is what an alt text owes a map. |
 
 ### 0.6 to 0.7
 

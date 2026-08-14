@@ -801,3 +801,98 @@ test('holds: on a fact nobody supplies is refused', () => {
   expectError('# A {#a}\n\n-> END\n', 'E161',
     { frontmatter: bare('facts:\n  x: { source: host, range: [0, 5], fallback: 0, holds: 1 }\n') });
 });
+
+// --- 17.2, the second way to catch up ---------------------------------------
+
+test('due is what the counter asked for, and max_catchup is what happens', () => {
+  const story = book(`events:
+  leak:
+    counter: 'time'
+    every: 10
+    max_catchup: 1
+    do: 'stamina -= due'
+`, `
+# Start {#start}
+
+The air thins.
+
++ [Wait](#start)
+  ~ time += 10
+`).story;
+  const s = new Story(story, { seed: 1 });
+  const stamina = () => s.state.vars.stamina;
+  const before = stamina();
+
+  s.choose(0);
+  assert.equal(stamina(), before - 1, 'one step owes one');
+
+  // The app was away: the counter jumps, and the whole absence is spent at
+  // once rather than repeated ten times or quietly dropped.
+  s.state.vars.time += 100;
+  s.advance({});
+  assert.equal(stamina(), before - 11, 'ten more steps, folded into one firing');
+});
+
+test('without due, max_catchup drops what it bounds, as it always did', () => {
+  const story = book(`events:
+  leak:
+    counter: 'time'
+    every: 10
+    max_catchup: 1
+    do: 'stamina -= 1'
+`, `
+# Start {#start}
+
+The air thins.
+
++ [Wait](#start)
+  ~ time += 10
+`).story;
+  const s = new Story(story, { seed: 1 });
+  const before = s.state.vars.stamina;
+  s.state.vars.time += 100;
+  s.advance({});
+  assert.equal(s.state.vars.stamina, before - 1, 'the bound holds and the rest is gone');
+});
+
+test('E173: due anywhere but a scheduled firing', () => {
+  // In a node, where nothing is due.
+  expectError('# A {#a}\n\n{due} of them.\n\n-> END\n', 'E173',
+    { frontmatter: bare('facts:\n  x: { source: fixed, value: 1 }\n') });
+  // In the condition that decides whether there is a firing at all.
+  expectError('# A {#a}\n\n-> END\n', 'E173',
+    { frontmatter: bare("events:\n  e: { counter: 'time', every: 5, when: 'due > 2', do: 'time += 1' }\n") });
+  // In an event that is not scheduled, so nothing is ever owed.
+  expectError('# A {#a}\n\n-> END\n', 'E173',
+    { frontmatter: bare("events:\n  e: { when: 'time > 1', do: 'time += due' }\n") });
+  // And the one place it belongs.
+  book("events:\n  e: { counter: 'time', every: 5, do: 'time += due' }\n");
+});
+
+// --- 8, a refused save says why ---------------------------------------------
+
+test('a refused save carries fields, not only a sentence', () => {
+  const { story } = book('');
+  const s = new Story(story, { seed: 1 });
+  const save = s.save();
+
+  const edition = JSON.parse(JSON.stringify(story));
+  edition.meta.version = '9.9.9';
+  try {
+    new Story(edition, { seed: 1 }).load(save);
+    assert.fail('a save from another edition is refused');
+  } catch (error) {
+    // A host acts on this rather than showing it: same book, other edition,
+    // so it can offer the previous one or carry the character across (12.6).
+    assert.equal(error.refused.reason, 'story');
+    assert.equal(error.refused.save, save.story);
+    assert.match(error.refused.book, /9\.9\.9$/);
+  }
+
+  try {
+    new Story(story, { seed: 1 }).load({ ...save, version: 99 });
+    assert.fail('a save from a newer runtime is refused');
+  } catch (error) {
+    assert.deepEqual(error.refused, { reason: 'version', save: 99, runtime: 1 });
+  }
+});

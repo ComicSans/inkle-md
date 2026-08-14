@@ -105,3 +105,34 @@ public extension Story {
         return carried.sorted()
     }
 }
+
+/// Why a save was refused, in fields rather than in a sentence.
+///
+/// A save belongs to one book and one runtime (SPEC 8). An app meets this on
+/// the day it ships a new edition: every reader who was mid-playthrough has a
+/// save the new book will not take. What to do about it is the app's call and
+/// nobody else's, and this is what it needs to make it.
+public struct Refusal: Sendable {
+    /// `"story"` when the save is from another book or another edition of it,
+    /// `"version"` when it was written by a newer runtime.
+    public let reason: String
+    /// The book the save names, for `reason == "story"`.
+    public let saved: String?
+    /// The book that refused it.
+    public let book: String?
+
+    init?(_ fields: [String: Any]?) {
+        guard let fields, let reason = fields["reason"] as? String else { return nil }
+        self.reason = reason
+        self.saved = fields["save"] as? String
+        self.book = fields["book"] as? String
+    }
+
+    /// True when the two names differ only in what follows the `@`, which is
+    /// the new-edition case: same book, bumped `version:`.
+    public var isNewEdition: Bool {
+        guard reason == "story", let saved, let book else { return false }
+        return saved.split(separator: "@").first == book.split(separator: "@").first
+            && saved != book
+    }
+}

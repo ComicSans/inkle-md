@@ -1,0 +1,56 @@
+title: Der Leuchtturm auf der Sandbank
+author: inkle-md
+version: 0.1.0
+start: turm.ankunft
+
+chapters:
+  - turm.md
+
+stats:
+  zeit:   { name: Uhrzeit, start: 0 }
+  oel:    { name: Öl, start: 2, max: 8 }
+  wasser: { name: Wasser im Keller, start: 0 }
+
+# Was die Welt draußen weiß und das Buch nur liest (15).
+facts:
+  # Eine Dauer: sie wird von der Grenze verbraucht, die sie nimmt (16.2).
+  elapsed: { source: host, range: [0, 604800], fallback: 0, name: Verstrichen }
+  # Ein Zustand: das Wetter hört nicht auf, das Wetter zu sein, weil jemand
+  # eine Wahl getroffen hat. Deshalb `holds:` (15.1).
+  wetter:  { source: host, range: [0, 3], fallback: 1, holds: true, name: Wetter }
+  sturm:   { source: derived, value: 'wetter >= 2' }
+  ruhig:   { source: derived, value: 'wetter == 0' }
+
+events:
+  # Prinzip 7: das Buch hält seine eigene Uhr, und die Welt draußen reicht nur
+  # Sekunden herein. Ein Ereignis ohne `counter:` läuft an jeder Grenze, also
+  # auch an der einen, die eine App nach einer Woche im Hintergrund auslöst.
+  echtzeit:
+    do: 'zeit += elapsed / 60'
+
+  # Die Flut steigt mit der Uhr. `due` sagt, wie viele Schritte fällig waren,
+  # und `max_catchup: 1` lässt das Ereignis genau einmal laufen: wer das Buch
+  # eine Woche weglegt, findet den Keller voll und nicht hundert Meldungen
+  # darüber, wie er voll wurde (17.2).
+  flut:
+    counter: 'zeit'
+    every: 10
+    max_catchup: 1
+    when: 'sturm'
+    # Ein Keller fasst nur so viel Wasser, wie er fasst. Wo diese Grenze
+    # liegt, weiß das Buch und nicht die Sprache.
+    do: 'wasser = min(wasser + due, 16)'
+
+  # Die Lampe zehrt, ob jemand hinsieht oder nicht.
+  lampe:
+    counter: 'zeit'
+    every: 15
+    max_catchup: 4
+    do: 'oel -= 1'
+
+death:
+  when: 'wasser >= 12'
+  goto: turm.abgesoffen
+
+undo:
+  depth: 5

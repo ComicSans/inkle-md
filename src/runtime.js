@@ -40,6 +40,13 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+/** An error a host can act on rather than only show (8, 12.7). */
+function refusal(message, refused) {
+  const error = new Error(message);
+  error.refused = refused;
+  return error;
+}
+
 const SETUP = 'setup';
 const PLAYING = 'playing';
 const ENDED = 'ended';
@@ -398,10 +405,24 @@ export class Story {
 
   save() { return clone(this.state); }
 
+  /**
+   * Takes a save back. A save belongs to one book and one runtime, and this
+   * refuses everything else.
+   *
+   * A refusal carries `refused` beside its message, because a host has to act
+   * on it rather than read it: a shop that ships a new edition meets this on
+   * every reader who was mid-playthrough, and "which book, which edition" is
+   * the difference between offering the old edition and carrying the
+   * character across (12.6).
+   */
   load(save) {
-    if (save.version > 1) throw new Error(`save version ${save.version} is newer than this runtime`);
+    if (save.version > 1) {
+      throw refusal(`save version ${save.version} is newer than this runtime`,
+        { reason: 'version', save: save.version, runtime: 1 });
+    }
     if (save.story !== this.state.story) {
-      throw new Error(`save is from "${save.story}", this book is "${this.state.story}"`);
+      throw refusal(`save is from "${save.story}", this book is "${this.state.story}"`,
+        { reason: 'story', save: save.story, book: this.state.story });
     }
     this.state = clone(save);
     this.lang = this.json.nodes[save.lang] ? save.lang : this.json.meta.default;
@@ -496,6 +517,7 @@ export class Story {
       if (event.once && store.fired[name]) continue;
 
       let firings = 1;
+      let due = 1;
       if (event.counter) {
         const now = this.#evaluate(event.counter);
         const anchor = store.last[name];
@@ -506,6 +528,7 @@ export class Story {
         const steps = Math.floor((now - anchor) / every);
         if (steps <= 0) continue;
         store.last[name] = anchor + steps * every;
+        due = steps;
         firings = Math.min(steps, event.max_catchup ?? 1);
       }
 
@@ -513,10 +536,16 @@ export class Story {
       // whether or not the wound was there to worsen (17.2).
       if (event.when && !this.#evaluate(event.when)) continue;
 
+      // `due` is how many firings the counter asked for, which is not always
+      // how many happen: `max_catchup:` bounds the second number and never
+      // the first. An author who wants the missed ones folded into one writes
+      // `max_catchup: 1` and reads `due` in the expression (17.2).
+      this.due = due;
       for (let i = 0; i < firings; i++) {
         this.#statement(event.do);
-        if (this.#checkDeath()) return true;
+        if (this.#checkDeath()) { this.due = null; return true; }
       }
+      this.due = null;
       if (event.once) store.fired[name] = true;
     }
     return false;
@@ -945,6 +974,8 @@ export class Story {
     // (15.2), and E170 keeps the two namespaces from overlapping.
     if (name in this.state.facts) return this.state.facts[name];
     switch (name) {
+      // Only an event's own `do:` ever sees this, and E173 keeps it that way.
+      case 'due': return this.due ?? 1;
       case 'in_combat': return this.combat !== null;
       case 'weapon_attack': return this.#equipped('weapon')?.attack_bonus ?? 0;
       case 'weapon_damage': return this.#equipped('weapon')?.damage_override ?? 0;

@@ -269,6 +269,28 @@ export function validateFrontmatter(data, ctx) {
     if (config.events[name].every !== null && config.events[name].every < 1) {
       throw new CompileError('E161', `event "${name}" has every: ${spec.every}`, at);
     }
+
+    // `due` belongs to the firing, so it means something in `do:` and nothing
+    // in the two expressions that decide whether there is a firing at all
+    // (17.2).
+    for (const [field, expression] of [['counter', config.events[name].counter],
+                                       ['when', config.events[name].when]]) {
+      if (!expression) continue;
+      walkExpression(expression, (e) => {
+        if (e.var === 'due') {
+          throw new CompileError('E173',
+            `event "${name}" reads due in its ${field}:, where nothing is due yet`, at);
+        }
+      });
+    }
+    if (config.events[name].counter === null) {
+      walkExpression(config.events[name].do.value ?? {}, (e) => {
+        if (e.var === 'due') {
+          throw new CompileError('E173',
+            `event "${name}" reads due but is not scheduled against a counter:`, at);
+        }
+      });
+    }
   }
 
   // `places:` is a mapping, not a bare list: the table is one field of it and

@@ -205,7 +205,7 @@ function main(argv) {
  *
  * A second resolution rides along when it is there: `wald@2x.png` beside
  * `wald.png` is the same picture at twice the size, which the export ignores
- * and a native host picks (22.5). Nothing checks a size, only a name, so a
+ * and a native host picks (22.4). Nothing checks a size, only a name, so a
  * book that ships base files alone is complete.
  *
  * @returns {number} how many files were copied

@@ -58,6 +58,9 @@ export const IMPURE_CALLS = new Set([
 
 export const BUILTIN_VARS = new Set([
   'in_combat', 'weapon_attack', 'weapon_damage', 'armour_defence',
+  // How many firings a scheduled event was owed at this boundary (17.2). It
+  // reads as 1 anywhere else, and E173 makes sure it is never written there.
+  'due',
 ]);
 
 const BINARY = {

@@ -54,7 +54,7 @@ final class StoryTests: XCTestCase {
         let before = story.view.node
 
         XCTAssertThrowsError(try story.choose(99)) { error in
-            guard case StoryError.refused(let reason) = error else {
+            guard case StoryError.refused(let reason, _) = error else {
                 return XCTFail("expected a refusal, got \(error)")
             }
             XCTAssertTrue(reason.contains("99"), reason)
@@ -291,6 +291,40 @@ final class EpisodeTests: XCTestCase {
             if outcome != .playing { break }
         }
         XCTAssertEqual(outcome, .exit("back to the map", node: "crypt.daylight"))
+    }
+
+    func testANewEditionRefusesTheOldSaveAndSaysSoInFields() throws {
+        let bundle = try StoryTests.buildBundle(example: "thornwood-book/book.yaml")
+        let story = try Story(bundle: bundle, seed: 11)
+        try story.begin([["sword"]])
+        let save = try story.save()
+
+        // A new edition is the same book with a bumped `version:`. Here that
+        // is faked by editing the story JSON, which is what an app would meet
+        // on the day it ships one.
+        let engine = try String(contentsOf: bundle.appendingPathComponent("inkle-md.js"), encoding: .utf8)
+        var json = try JSONSerialization.jsonObject(
+            with: try Data(contentsOf: bundle.appendingPathComponent("story.json"))) as! [String: Any]
+        var meta = json["meta"] as! [String: Any]
+        meta["version"] = "9.9.9"
+        json["meta"] = meta
+        let edition = try Story(engine: engine,
+                                story: String(decoding: try JSONSerialization.data(withJSONObject: json), as: UTF8.self),
+                                seed: 11)
+
+        XCTAssertThrowsError(try edition.load(save)) { error in
+            guard case StoryError.refused(_, let why) = error, let why else {
+                return XCTFail("a refused save carries its reason: \(error)")
+            }
+            XCTAssertEqual(why.reason, "story")
+            // This is the field an app acts on: same book, other edition, so
+            // it can offer the old one or carry the character across (12.6).
+            XCTAssertTrue(why.isNewEdition)
+        }
+
+        // And the way through is the one 12.6 already describes.
+        try edition.begin([["sword"]])
+        XCTAssertFalse(try edition.adopt(save).isEmpty)
     }
 
     func testACharacterCrossesFromOneBookToTheNext() throws {

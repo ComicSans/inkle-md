@@ -51,7 +51,12 @@ export class Host {
     try {
       did = this.#run(cmd, command);
     } catch (error) {
-      return { ok: false, error: String(error?.message ?? error) };
+      const answer = { ok: false, error: String(error?.message ?? error) };
+      // A refused save says why in fields rather than only in a sentence, so
+      // a host can offer the previous edition or carry the character across
+      // instead of parsing English (8, 12.6).
+      if (error?.refused) answer.refused = error.refused;
+      return answer;
     }
     if (did === undefined) return { ok: false, error: `unknown command "${cmd}"` };
 

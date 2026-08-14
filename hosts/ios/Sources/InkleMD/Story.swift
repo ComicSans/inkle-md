@@ -46,7 +46,7 @@ public final class Story: ObservableObject {
     /// The file for an image paragraph, at the best resolution that is there.
     ///
     /// `wald@2x.png` beside `wald.png` is the same picture at twice the size
-    /// (22.5). The suffix is Apple's spelling and the export ignores it; this
+    /// (22.4). The suffix is Apple's spelling and the export ignores it; this
     /// is the host that picks it up, matching the screen it draws on.
     public func url(for image: String, scale: CGFloat) -> URL? {
         guard let directory else { return nil }
@@ -210,7 +210,9 @@ public final class Story: ObservableObject {
             throw StoryError.malformedAnswer(text)
         }
         guard object["ok"] as? Bool == true else {
-            throw StoryError.refused(object["error"] as? String ?? "unknown")
+            let why = object["refused"] as? [String: Any]
+            throw StoryError.refused(object["error"] as? String ?? "unknown",
+                                     Refusal(why))
         }
         guard let viewObject = object["view"] else { throw StoryError.malformedAnswer(text) }
         let view = try decoder.decode(StoryView.self, from: JSONSerialization.data(withJSONObject: viewObject))
@@ -225,8 +227,9 @@ public enum StoryError: Error, CustomStringConvertible {
     case engineFailed(String)
     case noAnswer
     case malformedAnswer(String)
-    /// The engine refused the command and said why (12.7).
-    case refused(String)
+    /// The engine refused the command and said why (12.7). The second value
+    /// is set where the refusal is one a host has to act on rather than show.
+    case refused(String, Refusal?)
 
     public var description: String {
         switch self {
@@ -234,7 +237,7 @@ public enum StoryError: Error, CustomStringConvertible {
         case .engineFailed(let message): return "the engine did not load: \(message)"
         case .noAnswer: return "the engine answered nothing"
         case .malformedAnswer(let text): return "the engine answered something else: \(text.prefix(120))"
-        case .refused(let reason): return reason
+        case .refused(let reason, _): return reason
         }
     }
 }

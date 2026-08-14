@@ -50,6 +50,7 @@ export const ERRORS = {
   E170: 'Fact name colliding with a stat or variable',
   E171: 'places.variable: naming something that is not a declared stat',
   E172: 'holds: on a fact that is not supplied from outside',
+  E173: 'due outside an event\'s do:',
   E180: 'An image line that is not ![alt](file)',
   E181: 'An image inside a sentence rather than on a line of its own',
   E182: 'An image without alt text',
