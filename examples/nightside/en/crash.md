@@ -99,10 +99,10 @@ You keep asking, and while ARIS runs through her list, you hear it: under her vo
 
 * [Search the wreckage](#debris)
 * {knows("NAVIGATION")} [Read the stars](#sky)
-* [Set out](#depart)
++ [Set out](#depart)
 * {knows("MORGEN")} [Wait for the light](#ende.dunkel)
 * {knows("GESTAENDNIS")} [Shut ARIS down](#ende.abschalten)
-* [Rest](#rest)
++ [Rest](#rest)
 
 # The Wreckage {#debris}
 

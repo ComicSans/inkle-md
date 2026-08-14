@@ -576,6 +576,10 @@ export class Story {
     this.state.visits[id] = (this.state.visits[id] ?? 0) + 1;
     if (!this.state.seen.includes(id)) this.state.seen.push(id);
     this.combat = null;
+    // And the choices, for the same reason. A node whose choices have all run
+    // out shows none, and without this it showed the previous node's: its own
+    // text under somebody else's buttons, which is the worst of both.
+    this.choices = [];
     // The page the reader arrives at is built after the boundary, so it can
     // never contradict the events that had just run (16.3).
     if (this.#boundaryIfPending()) return;

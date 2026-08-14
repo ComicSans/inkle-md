@@ -73,7 +73,7 @@ Sie sind gestrandet wie du. Sie haben aufgehört, und sie haben es ordentlich ge
 
 * [Einen Filter ausbauen](#filter)
 * {knows("MEDIZIN")} [Einen von ihnen untersuchen](#body)
-* [Zurück](#hall)
++ [Zurück](#hall)
 
 # Der Filter {#filter}
 
@@ -83,7 +83,7 @@ Du nimmst ihn einem der toten Anzüge ab. Der Verschluss ist für Finger gemacht
 ~ remember("FILTER")
 ~ time = time + 20
 
-* [Zurück](#hall)
++ [Zurück](#hall)
 
 # Die fremde Gestalt {#body}
 
@@ -92,7 +92,7 @@ Du siehst dir an, woran sie gestorben ist. Sie ist nicht erstickt; der Vorrat in
 ~ remember("AUFGEHOERT")
 ~ time = time + 15
 
-* [Zurück](#hall)
++ [Zurück](#hall)
 
 # Der Empfänger {#signal}
 
@@ -105,7 +105,7 @@ In der Wand liegt etwas, das seit langer Zeit hört und antwortet. Kein Sender, 
 ~ time = time + 15
 
 * [ARIS rufen](#aris_admits)
-* [Zurück](#hall)
++ [Zurück](#hall)
 
 # Was ARIS sagt {#aris_admits}
 
@@ -132,7 +132,7 @@ Ganz hinten läuft noch etwas. Kein Licht, kein Ton, nur eine Anlage, die in lan
 ~ time = time + 20
 
 * [Weiter](#choice)
-* [Zurück](#hall)
++ [Zurück](#hall)
 
 # Was jetzt {#choice}
 

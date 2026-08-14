@@ -73,7 +73,7 @@ They are stranded like you. They stopped, and they did it tidily.
 
 * [Remove a filter](#filter)
 * {knows("MEDIZIN")} [Examine one of them](#body)
-* [Back](#hall)
++ [Back](#hall)
 
 # The Filter {#filter}
 
@@ -83,7 +83,7 @@ You take it off a dead one. The catch is made for fingers that count differently
 ~ remember("FILTER")
 ~ time = time + 20
 
-* [Back](#hall)
++ [Back](#hall)
 
 # The Stranger {#body}
 
@@ -92,7 +92,7 @@ You look at what it died of. It did not suffocate; the supply in its system woul
 ~ remember("AUFGEHOERT")
 ~ time = time + 15
 
-* [Back](#hall)
++ [Back](#hall)
 
 # The Receiver {#signal}
 
@@ -105,7 +105,7 @@ In the wall lies something that has been listening and answering for a long time
 ~ time = time + 15
 
 * [Call ARIS](#aris_admits)
-* [Back](#hall)
++ [Back](#hall)
 
 # What ARIS Says {#aris_admits}
 
@@ -132,7 +132,7 @@ At the very back, something is still running. No light, no sound, only an instal
 ~ time = time + 20
 
 * [On](#choice)
-* [Back](#hall)
++ [Back](#hall)
 
 # What Now {#choice}
 

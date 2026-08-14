@@ -99,10 +99,10 @@ Du fragst weiter, und während ARIS aufzählt, hörst du es: unter ihrer Stimme 
 
 * [Die Trümmer durchsuchen](#debris)
 * {knows("NAVIGATION")} [Die Sterne lesen](#sky)
-* [Aufbrechen](#depart)
++ [Aufbrechen](#depart)
 * {knows("MORGEN")} [Warten, bis es hell wird](#ende.dunkel)
 * {knows("GESTAENDNIS")} [ARIS abschalten](#ende.abschalten)
-* [Rasten](#rest)
++ [Rasten](#rest)
 
 # Die Trümmer {#debris}
 
