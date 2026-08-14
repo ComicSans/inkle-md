@@ -65,6 +65,76 @@ test('only the first argument of take() is a name', () => {
   assert.deepEqual(codes(book), [], 'the count stays an expression');
 });
 
+test('a number is not a name either', () => {
+  // The first form of the check asked whether a literal was there at all, and
+  // a number is one. The runtime makes a key out of whatever it gets, so
+  // has(0) looks for an item called "0" and never finds it - the same silent
+  // failure the bare name had, one type further along.
+  assert.deepEqual(codes(thornwood.replace(/has\("lantern"\)/g, 'has(0)')), ['E133']);
+  assert.deepEqual(codes(thornwood.replace(/take\("silver-key"\)/g, 'take(1)')), ['E133']);
+  assert.deepEqual(codes(thornwood.replace(/remember\("[^"]+"\)/g, 'remember(0)')), ['E133']);
+  assert.deepEqual(codes(thornwood.replace(/has\("lantern"\)/g, 'drop(true)')), ['E133']);
+  assert.deepEqual(codes(thornwood.replace(/test\("skill"\)/g, 'test(0)')), ['E133']);
+});
+
+test('E133 carries its rule, not a bare code', () => {
+  // Without an entry in the ERRORS map the message reads "E133 " and stops.
+  let message = '';
+  try {
+    compileSources([{ file: 'a.md', source: thornwood.replace(/test\("skill"\)/g, 'test(skill)'), namespace: null }],
+      { entry: 'a.md' });
+  } catch (error) {
+    message = error.message;
+  }
+  assert.match(message, /E133 Name argument/);
+});
+
+test('the frontmatter is checked too, not only the story', () => {
+  // items: effect: and when:, checks: dice: and the arithmetic of combat: and
+  // death: never went through the expression check at all, so a name argument
+  // could hide there in plain sight.
+  const withEffect = thornwood.replace('effect: "stamina = min(stamina + 4, stamina_max)"',
+    'effect: "take(0)"');
+  assert.notEqual(withEffect, thornwood, 'the fixture still matches the book');
+  assert.deepEqual(codes(withEffect), ['E133']);
+
+  const withDice = thornwood.replace('start: begin', 'checks:\n  dice: "roll(2,6) + uses(gold)"\n\nstart: begin');
+  assert.notEqual(withDice, thornwood);
+  assert.deepEqual(codes(withDice), ['E133']);
+
+  const withCombat = thornwood.replace('attack: "skill + roll(2,6) + weapon_attack"',
+    'attack: "skill + roll(2,6) + equipped(gold)"');
+  assert.notEqual(withCombat, thornwood);
+  assert.deepEqual(codes(withCombat), ['E133']);
+});
+
+test('place() names a place the same way', () => {
+  const book = `---
+title: Probe
+start: begin
+stats:
+  gold: { name: Gold, start: 12 }
+  location: { name: Ort, start: 0 }
+places:
+  variable: location
+  table:
+    - { id: ridge, name: Der Grat }
+---
+
+# Anfang {#begin}
+
+{ place("ridge") == 0 }
+  Auf dem Grat.
+
+-> END
+`;
+  assert.deepEqual(codes(book), [], 'a quoted place id is a name');
+  // It used to reach the place table with `undefined` and report E165, which
+  // named the wrong problem: the id is not missing, it was never written.
+  assert.deepEqual(codes(book.replace('place("ridge")', 'place(gold)')), ['E133']);
+  assert.deepEqual(codes(book.replace('place("ridge")', 'place("grat")')), ['E165']);
+});
+
 test('what E133 prevents: a check that could never succeed', () => {
   // The measurement the error exists for. Without it, both books lint clean
   // and one of them silently never lets the reader across the brook.

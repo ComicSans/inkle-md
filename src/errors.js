@@ -33,6 +33,7 @@ export const ERRORS = {
   E130: 'Malformed expression',
   E131: 'Unknown function or variable',
   E132: 'Wrong argument count',
+  E133: 'Name argument that is not a quoted name, or names nothing',
   E140: 'Function node without a return on some path',
   E150: 'Flee exit for an enemy without flee_after',
   E151: 'Combat with an unknown enemy or without a win exit',

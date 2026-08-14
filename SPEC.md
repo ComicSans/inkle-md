@@ -604,14 +604,20 @@ after trimming; they appear only as arguments, never as values, which is why
 the ban on string comparison in 4.8 costs nothing.
 
 The quotation marks above are part of the language, not typography. Every
-argument that names something - a stat, an item, a code word - is written as a
-literal, and there is no way to compute one: stats hold numbers, and 4.8 bans
-comparing strings. A bare name there reads the value instead of the name, so
-`test(skill)` arrives at 9 and then asks for a stat called `9`. That check
-fails every time it is made, and nothing about the page says why, which is why
-E133 rejects it rather than the runtime shrugging at it. E133 also catches the
-name that is quoted but names nothing: `test("gskill")` is a typo an author
-never sees, because a failed check looks exactly like bad luck.
+argument that names something - a stat, an item, a code word, the id in
+`place()` - is written in quotes, and there is no way to compute one: stats
+hold numbers, and 4.8 bans comparing strings. A bare name there reads the
+value instead of the name, so `test(skill)` arrives at 9 and then asks for a
+stat called `9`. That check fails every time it is made, and nothing about the
+page says why, which is why E133 rejects it rather than the runtime shrugging
+at it. A number is no better than a bare name: `has(0)` looks for an item
+called `0`, so E133 asks for a string and not merely for a literal. E133 also
+catches the name that is quoted but names nothing: `test("gskill")` is a typo
+an author never sees, because a failed check looks exactly like bad luck.
+
+The rule holds wherever an expression stands, the frontmatter included: a
+stat's `start:`, an item's `effect:` and `when:`, the dice under `checks:`,
+the arithmetic of `combat:` and `death:`, and the value of a fact or an event.
 
 `has(x)` is exactly `uses(x) > 0`. A non-consumable counts as one use, and
 taking one that is already held changes nothing. Beyond the functions, five
