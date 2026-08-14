@@ -1,19 +1,37 @@
 title: Der Leuchtturm auf der Sandbank
 author: inkle-md
-version: 0.1.0
+version: 0.2.0
 start: turm.ankunft
 
 chapters:
   - turm.md
 
 stats:
-  zeit:   { name: Uhrzeit, start: 0 }
-  oel:    { name: Öl, start: 2, max: 8 }
+  # Minuten seit dem Absetzen. Jede Wahl zahlt darauf ein; was die Welt
+  # draußen an Sekunden hereinreicht, rechnet das Ereignis `echtzeit` um.
+  zeit:   { name: Minuten, start: 0 }
   wasser: { name: Wasser im Keller, start: 0 }
   # Ob die Lampe brennt. Jeder Knoten liest das, statt vorauszusetzen, auf
   # welchem Weg jemand hergekommen ist: eine App darf mitten im Buch
   # einsteigen (12.6), und dann gab es diesen Weg nie.
   licht:  { start: 0 }
+  # Ob der Leser unten im Keller steht. Jeder Ortsknoten setzt es selbst,
+  # damit auch ein Quereinstieg stimmt; `death:` liest es, denn das Wasser
+  # holt nur, wen es erreicht.
+  im_keller: { start: 0 }
+
+# Zwei Hände, mehr nicht. Die großen Teile unten im Keller brauchen beide;
+# wer sie auf Verdacht holt, geht zweimal, und der zweite Gang kostet die
+# Zeit, die keiner hat.
+inventory:
+  slots: 2
+
+items:
+  docht: { name: Docht, kind: gear }
+  band:  { name: Dichtband, kind: gear }
+  rohr:  { name: Ersatzrohr, kind: gear }
+  fass:  { name: Ölfass, kind: gear }
+  feile: { name: Feile, kind: gear }
 
 # Was die Welt draußen weiß und das Buch nur liest (15).
 facts:
@@ -22,39 +40,46 @@ facts:
   # Ein Zustand: das Wetter hört nicht auf, das Wetter zu sein, weil jemand
   # eine Wahl getroffen hat. Deshalb `holds:` (15.1).
   wetter:  { source: host, range: [0, 3], fallback: 1, holds: true, name: Wetter }
-  sturm:   { source: derived, value: 'wetter >= 2' }
-  ruhig:   { source: derived, value: 'wetter == 0' }
+  # Ab Minute 720 ist die Nacht vorbei; Sturm und Dunkelheit enden mit ihr.
+  tag:     { source: derived, value: 'zeit >= 720' }
+  # Der Sturm kommt von draußen oder ab Minute 135 mit der Uhr, je nachdem,
+  # was zuerst da ist. Ohne Host bleibt das Buch vollständig spielbar (15.4).
+  sturm:   { source: derived, value: 'wetter >= 2 or (zeit >= 135 and not tag)' }
+  dunkel:  { source: derived, value: 'zeit >= 75 and not tag' }
 
 events:
-  # Prinzip 7: das Buch hält seine eigene Uhr, und die Welt draußen reicht nur
-  # Sekunden herein. Ein Ereignis ohne `counter:` läuft an jeder Grenze, also
-  # auch an der einen, die eine App nach einer Woche im Hintergrund auslöst.
+  # Prinzip 7: das Buch hält seine eigene Uhr, und die Welt draußen reicht
+  # nur Sekunden herein.
   echtzeit:
     do: 'zeit += elapsed / 60'
 
-  # Die Flut steigt mit der Uhr. `due` sagt, wie viele Schritte fällig waren,
-  # und `max_catchup: 1` lässt das Ereignis genau einmal laufen: wer das Buch
-  # eine Woche weglegt, findet den Keller voll und nicht hundert Meldungen
-  # darüber, wie er voll wurde (17.2).
+  # Die Flut steigt mit der Uhr. `due` sagt, wie viele Schritte fällig
+  # waren, und `max_catchup: 1` lässt das Ereignis genau einmal laufen: wer
+  # das Buch eine Woche weglegt, findet den Keller voll und nicht hundert
+  # Meldungen darüber, wie er voll wurde (17.2). Die Schwelle steht hier
+  # noch einmal ausgeschrieben, denn ein `when:` liest Fakten aus dem
+  # Schnappschuss vor den Ereignissen; `zeit` hat `echtzeit` aber eben erst
+  # bewegt, und Variablen ketten, Fakten nicht (16.2).
   flut:
     counter: 'zeit'
-    every: 10
+    every: 5
     max_catchup: 1
-    when: 'sturm'
-    # Ein Keller fasst nur so viel Wasser, wie er fasst. Wo diese Grenze
-    # liegt, weiß das Buch und nicht die Sprache.
-    do: 'wasser = min(wasser + due, 16)'
+    when: 'zeit >= 135 or wetter >= 2'
+    do: 'wasser = min(wasser + due, 12)'
 
-  # Die Lampe zehrt, ob jemand hinsieht oder nicht.
-  lampe:
-    counter: 'zeit'
-    every: 15
-    max_catchup: 4
-    do: 'oel -= 1'
+  # Ein dunkler Turm in der ersten Sturmstunde: das geschieht genau einmal,
+  # und es geschieht ohne den Leser. Die Knoten erzählen es später (17.1).
+  # Auch hier die Schwelle statt `sturm`, aus demselben Grund wie bei
+  # `flut` - und ohne Ende bei `tag`: dass die Nacht vorbei ist, macht das
+  # Versäumte nicht ungeschehen.
+  kutter:
+    once: true
+    when: 'licht == 0 and (zeit >= 135 or wetter >= 2)'
+    do: 'remember("KUTTER")'
 
 death:
-  when: 'wasser >= 12'
-  goto: turm.abgesoffen
+  when: 'wasser >= 6 and im_keller == 1'
+  goto: turm.ersoffen
 
 undo:
   depth: 5
