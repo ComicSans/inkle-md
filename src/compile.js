@@ -533,41 +533,50 @@ function checkDeclarations(table, config, { multi, bag, at }) {
     }
   }
 
-  checkFrontmatterNames(config, bag, at);
+  checkFrontmatterExpressions(config, { check, scope, facts, bag, at });
 }
 
 /**
- * The name rule of SPEC 5, applied to the expressions the frontmatter carries
- * outside facts and events: a stat's `start:`, an item's `effect:` and
- * `when:`, the dice under `checks:`, the arithmetic of `combat:` and
- * `death:`. None of them reach checkExpression, so `effect: "take(0)"` was as
- * quiet there as `take(0)` ever was in the story.
+ * The expressions the frontmatter carries outside facts and events: a stat's
+ * `start:` and `max:`, an item's `effect:` and `when:`, the dice under
+ * `checks:`, the arithmetic of `combat:` and `death:`.
  *
- * Only this one rule runs here. Whether those expressions name declared stats
- * is a separate question, and answering it in this pass would fail books that
- * have compiled since 0.1 for a reason this check is not about.
+ * They went through no check at all until 0.8. An item could add to a stat
+ * that was never declared, call a function nobody wrote, or read `due` where
+ * no event was firing, and the book compiled - the mistake surfaced as a
+ * potion that healed nothing. They are the same expressions the story writes,
+ * so they answer to the same rules and the same scope: stats, their `_max`,
+ * facts and the built-in variables.
+ *
+ * Running checkExpression here also folds a `place()` in an item's effect to
+ * its index, which is what the runtime expects; it has no `place` of its own
+ * and used to throw `no function "place"` in the middle of a game.
  */
-function checkFrontmatterNames(config, bag, at) {
-  const names = (expr) => walkExpression(expr, (e) => {
-    if (e.call === 'place' || NAME_ARGS.has(e.call)) nameArgument(e, bag, at);
-  });
-  const statement = (op) => {
-    if (!op) return;
-    if (op.op === 'call') names({ call: op.fn, args: op.args });
-    else names(op.value);
-  };
-
-  names(config.checks?.dice);
+function checkFrontmatterExpressions(config, { check, scope, facts, bag, at }) {
+  check(config.checks?.dice);
   for (const stat of Object.values(config.stats ?? {})) {
-    names(stat.start);
-    if (stat.max !== 'start') names(stat.max);
+    check(stat.start);
+    if (stat.max !== 'start') check(stat.max);
   }
-  for (const item of Object.values(config.items ?? {})) {
-    statement(item.effect);
-    names(item.when);
+  for (const [id, item] of Object.entries(config.items ?? {})) {
+    check(item.when);
+    const effect = item.effect;
+    if (!effect) continue;
+    if (effect.op === 'assign') {
+      check(effect.value);
+      if (facts[effect.target]) {
+        bag.add('E164', `item "${id}" assigns to the fact "${effect.target}"`, at);
+      } else if (!scope.has(effect.target)) {
+        bag.add('E131', `item "${id}" assigns to "${effect.target}", which is not a declared stat`, at);
+      }
+    } else if (effect.op === 'call') {
+      check({ call: effect.fn, args: effect.args });
+    } else {
+      check(effect.value);
+    }
   }
-  for (const key of ['attack', 'damage', 'flee_cost']) names(config.combat?.[key]);
-  names(config.death?.when);
+  for (const key of ['attack', 'damage', 'flee_cost']) check(config.combat?.[key]);
+  check(config.death?.when);
 }
 
 /** True when a story function neither assigns nor calls anything impure. */

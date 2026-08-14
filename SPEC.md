@@ -1018,6 +1018,8 @@ The compiler works in seven steps, each finishing before the next begins:
 
 A useful consequence of step 2: everything that can be malformed in your frontmatter fails at compile time, long before a reader ever sees the book.
 
+Being well formed is not the whole of it, though. Those expressions run through the same checks as the ones in the story, against the same scope: the declared stats, their `_max`, the facts and the built-in variables of section 5. An item that heals a stat nobody declared is E131 there exactly as it is in a node, a call to a function nobody wrote is E131, `due` outside an event's `do:` is E173, and a name argument that is not a name is E133. Until 0.8 none of it was looked at, and the mistake reached the reader as a potion that healed nothing.
+
 ### 10.2 Line kinds
 
 This table is the whole classifier. Given the first characters of a line, you can read off what the parser will make of it:

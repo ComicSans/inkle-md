@@ -97,6 +97,74 @@ test('the example book compiles without warnings', () => {
   assert.equal(story.config.strings['combat.tie'].de, 'Die Klingen kreuzen sich, ohne dass etwas daraus wird.');
 });
 
+/**
+ * The frontmatter carries expressions too, and until 0.8 nobody looked at
+ * them: an item could heal a stat that was never declared and the book
+ * compiled. They go through the same check as the story's now, so these are
+ * the errors a node would have raised for the same text.
+ */
+const withFrontmatter = (fields) => `---
+title: T
+stats:
+  gold: { start: 1 }
+items:
+  bread: { name: Bread, kind: consumable, uses: 2${fields.item ?? ', effect: "gold = gold + 1"'} }
+${fields.extra ?? ''}---
+`;
+
+test('an item effect answers to the same scope as a node', () => {
+  const body = '# A {#a}\n\n~ take("bread")\n-> END\n';
+  // Reading and writing, both halves of the same assignment.
+  expectError(body, 'E131', { frontmatter: withFrontmatter({ item: ', effect: "mana = mana + 1"' }) });
+  expectError(body, 'E131', { frontmatter: withFrontmatter({ item: ', effect: "mana = 1"' }) });
+  expectError(body, 'E131', { frontmatter: withFrontmatter({ item: ', effect: "nowhere(1)"' }) });
+  expectError(body, 'E131', { frontmatter: withFrontmatter({ item: ', effect: "gold = gold + 1", when: "mana > 0"' }) });
+  // `due` counts firings owed to an event, and an item is not an event.
+  expectError(body, 'E173', { frontmatter: withFrontmatter({ item: ', effect: "gold = gold + due"' }) });
+  // A node reference is resolved wherever it stands.
+  expectError(body, 'E041', { frontmatter: withFrontmatter({ item: ', effect: "gold = visits(nowhere)"' }) });
+});
+
+test('the rest of the frontmatter is checked as well', () => {
+  const body = '# A {#a}\n\n-> END\n';
+  expectError(body, 'E131', { frontmatter: withFrontmatter({ extra: 'checks:\n  dice: "roll(2,6) + mana"\n' }) });
+  expectError(body, 'E131', { frontmatter: withFrontmatter({ extra: 'combat:\n  attack: "mana + roll(2,6)"\n' }) });
+  expectError(body, 'E131', { frontmatter: withFrontmatter({ extra: 'death:\n  when: "mana <= 0"\n' }) });
+  expectError(body, 'E131',
+    { frontmatter: withFrontmatter({}).replace('gold: { start: 1 }', 'gold: { start: "mana + 1" }') });
+});
+
+test('an item may not assign to a fact', () => {
+  const frontmatter = withFrontmatter({
+    item: ', effect: "hour = 1"',
+    extra: 'facts:\n  hour: { source: fixed, value: 3 }\n',
+  });
+  expectError('# A {#a}\n\n-> END\n', 'E164', { frontmatter });
+});
+
+test('place() in an item effect is folded, not left for the runtime', () => {
+  // The runtime has no `place` of its own: an unfolded call landed in the
+  // function lookup and threw `no function "place"` mid-game.
+  const frontmatter = `---
+title: T
+stats:
+  gold: { start: 1 }
+  location: { start: 0 }
+items:
+  map: { name: Map, kind: consumable, uses: 1, effect: "location = place(\\"ridge\\")" }
+places:
+  variable: location
+  table:
+    - { id: crash, name: Crash }
+    - { id: ridge, name: Ridge }
+---
+`;
+  const { story } = compile('# A {#a}\n\n~ take("map")\n-> END\n', { frontmatter });
+  assert.deepEqual(story.config.items.map.effect, { op: 'assign', target: 'location', value: { lit: 1 } });
+  expectError('# A {#a}\n\n-> END\n', 'E165',
+    { frontmatter: frontmatter.replace('place(\\"ridge\\")', 'place(\\"summit\\")') });
+});
+
 test('a choice that rolls to decide whether it appears is flagged', () => {
   const { warnings } = compile('# A {#a}\n\n* {test("gold")} [Luck](#a)\n+ [On](#b)\n\n# B {#b}\n\n-> END\n');
   assert.ok(warnings.messages.some((m) => m.code === 'L020'));
