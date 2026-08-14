@@ -28,6 +28,13 @@ const MAX_DIVERTS = 100;
  * it is missing from a bare JavaScript engine such as the JSContext an iOS
  * host embeds (12.5). A runtime that claims to need nothing beyond the
  * standard library has to mean it.
+ *
+ * The two differ in one place: a key whose value is `undefined` survives
+ * `structuredClone` and does not survive this. That is not a loss but a check.
+ * A save is JSON (section 8), `undefined` is not a JSON value, and a state
+ * carrying one would lose it the moment a host wrote the save to a file. The
+ * copy now fails in the same place the file would, which is where a test can
+ * see it.
  */
 function clone(value) {
   return JSON.parse(JSON.stringify(value));

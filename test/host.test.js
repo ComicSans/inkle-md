@@ -97,6 +97,20 @@ test('the bundle is the story and the engine, each in its own file', () => {
   assert.doesNotMatch(files['inkle-md.js'], /document\.createElement/);
 });
 
+test('the engine reaches for nothing above the language', () => {
+  // Minified, because the comments are where these names are allowed to
+  // appear: `clone` explains at length why it is not `structuredClone`.
+  const engine = bundleFiles(book(), { minify: true })['inkle-md.js'];
+
+  // SPEC 12.5 states the rule; this is what keeps it from being a comment.
+  // The realm test below catches these too, but only along the path it walks,
+  // and only for a book that reaches them. This catches them on sight.
+  for (const api of ['structuredClone', 'localStorage', 'setTimeout', 'fetch',
+    'queueMicrotask', 'TextEncoder', 'crypto', 'console', 'document', 'window']) {
+    assert.doesNotMatch(engine, new RegExp(`\\b${api}\\b`), `the engine uses ${api}`);
+  }
+});
+
 test('the bundle plays a whole game in a bare JavaScript realm', () => {
   const files = bundleFiles(book());
   // Object.create(null) leaves the realm with the language and nothing else:
@@ -147,3 +161,58 @@ test('a fight reaches the host with both halves of the enemy bar', () => {
   assert.equal(round.round, 1);
   assert.equal(typeof round.text, 'string');
 });
+
+test('a fight against several counts the ones still waiting', () => {
+  const house = compileFile(join(here, '..', 'examples', 'house', 'book.yaml')).story;
+  const host = new Host(house, { seed: 5 });
+  // `go` jumps, it does not set out: without `begin` the reader has no
+  // stamina and the first blow kills them. That is what the command is, and a
+  // host building a chapter picker has to know it.
+  const setup = host.view.setup;
+  host.command({ cmd: 'begin', picks: setup.map((b) => b.from.slice(0, b.pick).map((o) => o.key)) });
+  // `!combat cultist, cultist` stands in the cellar; `go` reaches it without
+  // walking the book, which is what 12.6 says the command is for.
+  host.command({ cmd: 'go', node: 'cellar.guards' });
+
+  const first = host.view.combat;
+  assert.equal(first.waiting, 1, 'the second cultist is not counted as waiting');
+  assert.equal(first.enemy.stamina, first.enemy.max);
+
+  // Beat the first one down and the fight moves on to the second. The seed is
+  // a fixed sequence of dice (principle 5), so this walk is the same one every
+  // time and the assertion below is not a matter of luck.
+  for (let i = 0; i < 80 && host.view.combat?.waiting === 1; i++) host.command({ cmd: 'attack' });
+  const fight = host.view.combat;
+  assert.ok(fight, 'the reader did not survive the first cultist');
+  assert.equal(fight.waiting, 0);
+  assert.equal(fight.round, 0, 'a new enemy starts a new round count');
+  assert.equal(fight.enemy.stamina, fight.enemy.max, 'the second cultist starts unhurt');
+});
+
+test('a save survives the copy the runtime makes of it', () => {
+  // `clone` copies through JSON, which drops a key whose value is undefined.
+  // That is the same thing a host writing the save to a file would do, so a
+  // state that cannot survive it is broken before any host sees it (8).
+  for (const entry of ['thornwood.md', join('house', 'book.yaml'), join('nightside', 'book.yaml')]) {
+    const story = compileFile(join(here, '..', 'examples', entry)).story;
+    const host = new Host(story, { seed: 3 });
+    const setup = host.view.setup;
+    if (setup) host.command({ cmd: 'begin', picks: setup.map((b) => b.from.slice(0, b.pick).map((o) => o.key)) });
+
+    for (let turn = 0; turn < 40; turn++) {
+      const save = host.command({ cmd: 'save' }).did;
+      assert.deepEqual(paths(JSON.parse(JSON.stringify(save))), paths(save), `${entry} loses a key at turn ${turn}`);
+
+      const view = host.view;
+      if (view.combat) { host.command({ cmd: 'attack' }); continue; }
+      if (view.ended || view.choices.length === 0) break;
+      host.command({ cmd: 'choose', index: turn % view.choices.length });
+    }
+  }
+});
+
+/** Every key in an object tree, so two of them can be compared by name. */
+function paths(value, prefix = '') {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return [prefix];
+  return Object.entries(value).flatMap(([key, inner]) => paths(inner, `${prefix}${key}.`));
+}
