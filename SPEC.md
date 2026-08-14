@@ -491,39 +491,38 @@ An image is Markdown's own spelling, on a line of its own:
 ![An archway of roughly hewn stone, and beyond it nothing but darkness.](gruft.png)
 ```
 
-It takes a `{.name}` like a paragraph, and it is a line rather than something
-inside a sentence. A picture sits between paragraphs; writing one into the
-middle of a sentence is E181 rather than a picture that quietly reaches the
-reader as literal Markdown, which is what happened to diverts in prose before
-they were caught.
+It takes a `{.name}` like a paragraph does, and it is a line, never part of a
+sentence. A picture sits between paragraphs, so one written mid-sentence is
+E181. Without that error it would reach the reader quietly, as literal
+Markdown, which is exactly what diverts in prose used to do before they were
+caught.
 
-The alt text is required, and E182 when it is missing. That single rule
-decides a lot: this language has no decorative image, because a picture worth
-putting on the page is worth a sentence, and a reader who cannot see it is
-owed that sentence. It is the accessible name and never also a caption.
+The alt text is required, and E182 when it is missing. That one rule decides
+a lot: this language has no decorative image, because a picture worth putting
+on the page is worth a sentence, and a reader who cannot see it is owed that
+sentence. The alt text is the accessible name, never also a caption.
 
-The file is a path relative to the book's own directory, never a URL and never
-a path climbing out of that directory (E183). Principle 6 is the reason: what
-ships is the output and the files beside it, and a path that leaves is a
-picture no reader ever sees. The file has to be there, which is E184 and the
-one check in the whole compiler that reads the disk rather than the sources it
-was handed.
+The file is a path relative to the book's own directory, never a URL and
+never a path that climbs out of that directory (E183). Principle 6 is the
+reason: what ships is the output and the files beside it, and a path that
+leaves is a picture no reader ever sees. The file also has to exist, which is
+E184 and the one check in the whole compiler that reads the disk rather than
+the sources it was handed.
 
 Both halves are translated. In a catalogue (3.4) an image line replaces an
-image line, in source order, as a third stream beside paragraphs and labels.
-The alt text is translated because it is text; the file is translated because
-a map with names written on it has to be redrawn, not relabelled. A
-translation that names the same file is the ordinary case and costs nothing to
-write.
+image line, in source order, a third stream beside paragraphs and labels. The
+alt text is translated because it is text; the file is translated because a
+map with names written on it has to be redrawn, not relabelled. A translation
+that names the same file is the ordinary case and costs nothing to write.
 
 A second resolution rides along by name: `gruft@2x.png` beside `gruft.png` is
-the same picture at twice the size. Nothing in the language mentions it beyond
-this: the linter checks that a file exists, never that a size matches, so
-`@2x` and `@3x` are optional wherever they appear, and a book that ships base
-files alone is complete. The web export copies whatever is there and uses the
-base file; a native host picks the one that fits its screen (12.5). The
-spelling is Apple's, taken for want of a neutral one, and a host on a platform
-that writes it differently maps the suffix rather than the language growing a
+the same picture at twice the size. The language says nothing more about it.
+The linter checks that a file exists, never that a size matches, so `@2x` and
+`@3x` are optional wherever they appear, and a book that ships only base
+files is complete. The web export copies whatever is there and uses the base
+file; a native host picks the one that fits its screen (12.8). The spelling
+is Apple's, borrowed for want of a neutral one; a platform that writes it
+differently maps the suffix in its host, rather than the language growing a
 second spelling.
 
 ### 4.10 Functions
@@ -1155,8 +1154,9 @@ story.setup;                          // creation blocks, or null
 story.begin(picks);                   // answers the setup, rolls the stats
 story.choose(index);                  // take a choice
 story.advance(host);                  // a boundary: take host values, compute, run events
+story.go(node);                       // enter a node from outside the story (12.6)
 story.facts;                          // the published snapshot, read-only
-story.current;                        // { text: [...], choices: [...], stats, facts }
+story.current;                        // { node, title, text, choices, stats, facts, ended }
 story.combat;                         // active combat, or null
 story.inventory;                      // [{ id, name, kind, uses, equipped, usable }]
 story.memory;                         // code words in the order they were noted
@@ -1182,9 +1182,20 @@ while reading; switching back restores them. Nothing is discarded, because a
 reader who switches twice should not lose a once-only line they already saw.
 
 Text is delivered as an array of paragraphs, each with its CSS classes, so
-the host decides how to render. Combat is exposed as state plus `attack()`
-and `flee()`, never as a blocking loop, so your interface stays in charge of
-its own event loop.
+the host decides how to render. An image is an entry in that same array,
+carrying `image` and `alt` where a paragraph carries `text` (4.9). Combat is
+exposed as state plus `attack()` and `flee()`, never as a blocking loop, so
+your interface stays in charge of its own event loop.
+
+`go` is the odd one out, and worth a sentence. Everywhere else the story
+decides where it goes next: a divert moves it, a choice moves it, an event
+never does. `go` is the door in the side wall, for a host that already knows
+where it wants to be - a chapter picker, a debug jump, an episode entered
+from a map (12.6). It is not a way to tell a story with, because a jump the
+book did not write is a jump the book cannot account for: it rolls no stats,
+takes no boundary of its own beyond the node it enters, and leaves whatever
+the reader was in the middle of. What it is for is arriving, once, from
+outside.
 
 ### 12.2 Presentation
 
@@ -1280,69 +1291,70 @@ needs no dependency.
 ### 12.5 Hosts beyond the browser
 
 The runtime is one file with no imports and no globals beyond the standard
-library, and that is not a matter of taste. It is what lets one piece of story
-logic serve more than one surface. You have already met two hosts: the view of
-12.2, which draws the story in a browser, and `play` of 12.4, which draws it in
-a terminal. Neither of them is the runtime. Both talk to it through the API of
-12.1, and a reader on a phone is a third host of the same kind.
+library, and that is not a matter of taste. It is what lets one piece of
+story logic serve more than one surface. You have already met two hosts: the
+view of 12.2, which draws the story in a browser, and `play` of 12.4, which
+draws it in a terminal. Neither of them is the runtime. Both talk to it
+through the API of 12.1, and a reading app on a phone is a third host of the
+same kind.
 
 A host written in Swift or Kotlin cannot talk to that API, because it cannot
 call a JavaScript method. So it embeds a JavaScript engine, hands it the
 runtime unchanged, and speaks the protocol of 12.7.
 
-Why embed rather than translate the runtime into each language? Principle 5.
-Seed plus counter has to produce the same die on every platform, or a save
-carried from a phone to a browser resumes as a different story. One
-implementation cannot disagree with itself. A second one is a second sequence,
-a second set of rounding rules, and a bug that appears on one platform only,
-which is the kind nobody finds. The same argument covers everything in
-sections 5 to 7: those rules are written once, or they are written
-differently.
+Why embed rather than port the runtime into each language? Principle 5. Seed
+plus counter has to produce the same die on every platform, or a save carried
+from a phone to a browser resumes as a different story. One implementation
+cannot disagree with itself. A second one is a second sequence, a second set
+of rounding rules, and a bug that appears on one platform only, which is the
+kind nobody finds. The same argument covers everything in sections 5 to 7:
+those rules are written once, or they are written differently.
 
 Embedding has a price, and it is one line long: the runtime may use the
 language and nothing above it. `structuredClone` reads better than a copy
-through JSON and is out, because it is a web API rather than part of
+through JSON, and it is out, because it is a web API rather than part of
 JavaScript, and the JSContext an iOS host embeds does not have it. The test
-for this runs the bundle in a bare realm and plays a whole game there, because
-a missing web API fails at the first save rather than at load time.
+for this runs the bundle in a bare realm and plays a whole game there,
+because a missing web API fails at the first save rather than at load time.
 
 What is left to the host is what the runtime declines to decide.
 
 **The save.** Section 8's save is one JSON object, and 12.2 puts it in
 `localStorage` because that is what a browser has. A native host writes the
-same object to a file of its own. The format is the same either way; where it
-is kept was never part of it.
+same object to a file of its own. The format is the same either way; where
+it is kept was never part of it.
 
 **Time.** Nothing in the runtime reads a clock (principle 7, section 20). A
 host that wants real time measures it and hands it to `advance`, typically
 once when the app comes back to the foreground. A host value is consumed by
-the boundary that takes it (16.2), so those seconds go to `advance` or to the
-choice that follows, never to both.
+the boundary that takes it (16.2), so those seconds go to `advance` or to
+the choice that follows, never to both.
 
 **Looks.** Section 6 keeps presentation out of the book, and 12.2 is one
-answer to where it goes instead, not the answer. A native host writes its own,
-including the labels for its own buttons in each language the book declares.
+answer to where it goes instead, not the answer. A native host writes its
+own, down to the labels for its own buttons in each language the book
+declares.
 
 **Accessibility.** The list in 12.3 is what the web export gives a reader
 without any work by the author. A native host owes its readers the same list
-in its own platform's terms. The protocol hands it what that needs and nothing
-beyond it: a choice is a label and an index, never a rendered button.
+in its own platform's terms. The protocol hands it what that needs and
+nothing more: a choice is a label and an index, never a rendered button.
 
 ### 12.6 Two ways to play: a book, and an episode
 
 A book is normally read from its start to one of its endings. It can also be
-one episode inside something larger: an app holds a map, a party and a clock,
-and at some point on that map a book is entered, one passage is played, and
-the app takes over again. Both are ways of playing, and this section says how
-the second one works.
+one episode inside something larger: an app holds a map, a party and a
+clock, and at some point on that map a book is entered, one passage is
+played, and the app takes over again. Both are ways of playing, and this
+section says how the second one works.
 
 It needs nothing the language does not already have, and that is deliberate.
 The book does not know which of the two is happening, in exactly the way it
-does not know which output it becomes (12.5). An entry point is a node, and a
-book already declares nodes. What comes back is variables, an inventory and
-code words, and a book already declares those. Adding `episodes:` to the
-frontmatter would put the host's business into the book, which is the mistake
-L025 was corrected for.
+does not know which output it becomes (12.5). An entry point is a node, and
+a book already declares nodes. What comes back is variables, an inventory
+and code words, and a book already declares those too. Adding `episodes:` to
+the frontmatter would put the host's business into the book, which is the
+mistake L025 was corrected for.
 
 So an episode is four calls the host already has:
 
@@ -1353,33 +1365,33 @@ story.go(node);            // in at the passage the map points to
 story.save();              // out, with everything it changed
 ```
 
-Three things are worth knowing before writing that loop.
+Three things are worth knowing before you write that loop.
 
-**Order is load, then go.** `go` jumps, it does not set out: it does not roll
-stats, so a reader who arrives by `go` alone has none and dies of the first
-blow. The save carries them, so it goes first.
+**Load first, then go.** `go` jumps, it does not set out: it rolls no stats,
+so a reader who arrives by `go` alone has none and dies of the first blow.
+The save carries them, which is why it goes first.
 
 **The save is per book.** `load` refuses a save whose `story` does not match
-(8), and rightly: every field in it is keyed against one book's nodes and
-choice ids. Carrying a character from one book to the next is therefore not a
-load but a transfer: the host opens the next book normally, takes the save it
-writes, copies over the fields both books share, and loads that. What the two
-share is what they both declare, and nothing else travels. A stat the next
-book has never heard of is not that book's business.
+(8), and rightly so: every field in it is keyed against one book's nodes and
+choice ids. Carrying a character from one book to the next is therefore not
+a load but a transfer. The host opens the next book normally, takes the save
+it writes, copies over the fields both books share, and loads that. What the
+two share is what they both declare, and nothing else travels: a stat the
+next book has never heard of is not that book's business.
 
-**The way out is a node, and the host already knows node names.** It chose the
-one it went in at. So it watches `view.node` after every command and stops
-when it sees one of its own exits; `config.death.goto` in the story JSON names
-the one the book itself calls dying. Nothing needs to be declared for this,
-and nothing should be: which nodes are exits depends on the map, not on the
-book.
+**The way out is a node, and the host already knows node names.** It chose
+the one it went in at. So it watches `view.node` after every command and
+stops when it sees one of its own exits; `config.death.goto` in the story
+JSON names the one the book itself calls dying. Nothing needs to be declared
+for this, and nothing should be: which nodes are exits depends on the map,
+not on the book.
 
-What the app knows and the book only reads is the other half of this, and it
-is section 15's: a map's weather, a distance, a party's standing with a
-faction are host facts, declared `holds:` where they are a state rather than a
-duration (15.1). What the episode changes is variables and comes back in the
-save. The test is section 14's, unchanged: if the book writes it, it is a
-variable; if the book only reads it, it is a fact.
+The other half of this is what the app knows and the book only reads, and
+that half is section 15's: a map's weather, a distance, a party's standing
+with a faction are host facts, declared `holds:` where they are a state
+rather than a duration (15.1). What the episode changes is variables, and it
+comes back in the save. The test is section 14's, unchanged: if the book
+writes it, it is a variable; if the book only reads it, it is a fact.
 
 ### 12.7 The host protocol
 
@@ -1412,52 +1424,53 @@ one at a time is a dozen crossings for one page, and a turn should be one.
 | `seed`                   | `value` | sets the random stream                    |
 | `go`                     | `node`  | jumps; for chapter pickers, not for storytelling |
 
-`did` carries what the command returned and the view does not show: the round
-a fight just played, whether a luck test came off, `false` from a `use` whose
-`when:` was not met, the save from `save`. It is `null` where there is nothing
-to add.
+`did` carries what a command returned and the view does not show: the round
+a fight just played, whether a luck test came off, `false` from a `use`
+whose `when:` was not met, the save from `save`. Where there is nothing to
+add, it is `null`.
 
 A command that fails answers `{ "ok": false, "error": "…" }` instead of
 throwing. An exception crossing a language boundary arrives as a crash or as
-an empty string, and neither of those tells a host what went wrong. The story
-is untouched by a failed command, so the next one is answered normally.
+an empty string, and neither tells a host what went wrong. A failed command
+leaves the story untouched, so the next one is answered normally.
 
 The view is what 12.1 offers one member at a time, collected: `lang`,
 `languages`, `setup`, `node`, `title`, `ended`, `text`, `choices`, `stats`,
 `facts`, `inventory`, `memory`, `combat` and `canUndo`. Two of them are
-resolved on the way out, because a host should not have to repeat a lookup the
-runtime already makes. Setup labels arrive as one string in the reading
-language rather than as one string per language, each with the `key` that
-`begin` takes back, so a host never has to know which of the three spellings
-of section 6 an option used. And a fight arrives with the enemy's full stamina
+resolved on the way out, because a host should not have to repeat a lookup
+the runtime already makes. Setup labels arrive as one string in the reading
+language rather than one per language, each with the `key` that `begin`
+takes back, so a host never has to know which of the three spellings of
+section 6 an option used. And a fight arrives with the enemy's full stamina
 beside its current one, so a bar has both halves without reading the config.
 
 Text arrives as paragraphs with their classes, exactly as 12.1 delivers it.
 An image is an entry in that same list, carrying `image` and `alt` where a
-paragraph carries `text`, so a host walks one list in order and tells the two
+paragraph carries `text`: a host walks one list in order and tells the two
 apart by which field is there. It is not a part inside a text run, because a
-picture sits between paragraphs and not inside a sentence (4.9). What a host
-makes of a class, and of a picture, is the host's own business, and that is
-the point of this section: one story, one logic, as many surfaces as there are
-hosts.
+picture sits between paragraphs, not inside a sentence (4.9). What a host
+makes of a class, or of a picture, is the host's own business, and that is
+the point of this section: one story, one logic, as many surfaces as there
+are hosts.
 
 ### 12.8 The native bundle
 
 `inkle-md bundle book.yaml --out dir` writes what a native host needs:
 
-- `story.json`, the story of 9.1 as data, which the host can read itself as
-  well, for a chapter list or a cover;
-- `inkle-md.js`, the runtime and the protocol of 12.7 as one script, with the
-  module keywords removed, because the engine it runs in has no loader.
+- `story.json`, the story of 9.1 as data, which the host can also read
+  itself, for a chapter list or a cover;
+- `inkle-md.js`, the runtime and the protocol of 12.7 as one script, with
+  the module keywords removed, because the engine it runs in has no loader.
 
 `--minify` is the pass of section 12, unchanged. The view of 12.2 is not in
 the bundle: a native host draws its own. A book with images is these files
-plus those images, per principle 6, copied into the same directory with
-whatever `@2x` and `@3x` files stand beside them (4.9). A host resolves an
-`image` path against that directory and picks the resolution its screen wants.
+plus those images, per principle 6, copied into the same directory together
+with whatever `@2x` and `@3x` files stand beside them (4.9). A host resolves
+an `image` path against that directory and picks the resolution its screen
+wants.
 
-The script defines two names and nothing else, because two names is what a
-bridge carries without a wrapper per member:
+The script defines one name with two functions on it, and nothing else,
+because that is what a bridge carries without a wrapper per member:
 
 ```js
 inkleMd.start(storyJsonText, optionsJsonText);   // -> the first view, as text
@@ -1465,52 +1478,52 @@ inkleMd.send(commandText);                       // -> one answer, as text
 ```
 
 Strings in, strings out. That is what a `JSContext` on Apple platforms and a
-`WebView` on Android both do; anything richer is a wrapper written twice.
+`WebView` on Android both speak; anything richer is a wrapper written twice.
 
 ### 12.9 Inside a foreign game loop
 
-The hosts of this section so far have one thing in common: the reader acts and
-then the program waits. A game engine does not wait. It has a loop of its own,
-running many times a second, and a book living inside it has to fit that loop
-rather than the other way round. Four rules make that work, and none of them
-is new; they are what the rest of this document already implies, stated where
-an engine programmer will look for them.
+The hosts of this section so far share one assumption: the reader acts, and
+then the program waits. A game engine does not wait. It has a loop of its
+own, running many times a second, and a book living inside it has to fit
+that loop rather than the other way round. Four rules make that work. None
+of them is new; they are what the rest of this document already implies,
+stated where an engine programmer will look for them.
 
-**A frame is not a boundary.** This is the one that costs a bug if it is
+**A frame is not a boundary.** This is the rule that costs a bug when it is
 missed. Every boundary computes facts and runs events (16.2), so calling
-`advance` once per frame runs every scheduled event sixty times a second, and
-a book whose relief arrives after three hundred turns arrives in five seconds.
+`advance` once per frame runs every scheduled event sixty times a second,
+and relief scheduled for turn three hundred arrives in five seconds.
 `advance` is for handing over time that has actually passed, typically once
 when the program comes back to the reader after being away. Between two
-boundaries the page is stable on purpose: an engine may draw it as often as it
-likes, and reading `current` costs nothing and changes nothing.
+boundaries the page is stable on purpose: an engine may draw it as often as
+it likes, and reading `current` costs nothing and changes nothing.
 
-**A book runs on one thread and holds its own state.** The runtime is a plain
-object with no locking, no timers and nothing asynchronous in it; every call
-returns before the next one starts. Two playthroughs are two instances, which
-is also how a program plays two books at once, or the same book for two
-readers. Nothing is shared between them but the story JSON, which is read-only
-after loading.
+**A book runs on one thread and holds its own state.** The runtime is a
+plain object with no locking, no timers and nothing asynchronous; every call
+returns before the next one starts. Two playthroughs are two instances,
+which is also how a program plays two books at once, or the same book for
+two readers. They share nothing but the story JSON, which is read-only after
+loading.
 
-**The book never calls out.** There is no external function, and this is a
-decision rather than a gap. Principle 8 says a fact is a pure function of its
-state, and a book that could call the program around it could ask it anything,
-including a different answer each time; the guarantee that a save replays to
-the same story would be gone. The way in is a host fact (15), the way out is
-the save (8), and both are data rather than control. A program that wants a
-book to trigger something watches for it: a variable it set, a code word it
-noted, the node it reached.
+**The book never calls out.** There is no external function, and that is a
+decision, not a gap. Principle 8 says a fact is a pure function of its
+state, and a book that could call the program around it could ask it
+anything, including a different answer each time; the guarantee that a save
+replays to the same story would be gone. The way in is a host fact (15), the
+way out is the save (8), and both are data, not control. A program that
+wants a book to trigger something watches for it: a variable it set, a code
+word it noted, the node it reached.
 
 **Nothing in a book measures real time.** Principle 7 again, and it is what
-makes a book fit any loop at all. A turn-based engine advances the book's clock
-by whatever a turn is worth; a real-time one hands over seconds; a replay
-hands over the same numbers as last time and gets the same story back. The
-runtime never learns which of the three it is in.
+makes a book fit any loop at all. A turn-based engine advances the book's
+clock by whatever a turn is worth; a real-time one hands over seconds; a
+replay hands over the same numbers as last time and gets the same story
+back. The runtime never learns which of the three it is in.
 
 What an engine has to write itself is the loop around those calls: when to
-enter, what to draw, when to hand over time, and what to do with the save that
-comes back. Section 12.6 is the shape of that loop for the case where a book
-is one episode among many.
+enter, what to draw, when to hand over time, and what to do with the save
+that comes back. Section 12.6 is the shape of that loop for the case where a
+book is one episode among many.
 
 ## 13. Full example
 
@@ -1699,8 +1712,7 @@ Each source then asks for its own fields:
 | `host`    | `range:`, `fallback:` | Supplied from outside at a boundary. `holds:` optional. |
 | `derived` | `value:`            | An expression, parsed at compile time.    |
 
-A host fact answers one more question, and it is the difference between a
-duration and a state:
+A host fact answers one more question: is it a duration, or a state?
 
 ```yaml
 facts:
@@ -1709,16 +1721,17 @@ facts:
 ```
 
 `elapsed` is seconds since the last boundary. Handing the same seconds over
-twice would spend them twice, so a host value is **consumed** by the boundary
-that takes it and falls back afterwards (16.2). `weather` is not a duration.
-It is what the world is like right now, and it stays that way until the world
-changes. `holds: true` says so: the value stays until the host sends another
-one, and a book that has never been given one reads its `fallback:`.
+twice would spend them twice, so a host value is **consumed** by the
+boundary that takes it and falls back afterwards (16.2). `weather` is
+different. It is not an amount of anything; it is what the world is like
+right now, and it stays that way until the world changes. `holds: true` says
+exactly that: the value survives until the host sends another one, and a
+book that has never been given one reads its `fallback:`.
 
-Which one a fact is follows from the same test section 14 gives for facts and
-variables, asked once more: is this an amount that is used up, or a state that
-simply is? `holds:` on anything but a `host` fact is E172, because nothing
-supplies a `fixed` or `derived` fact in the first place.
+Which of the two a fact is follows from the test of section 14, asked once
+more: is this an amount that is used up, or a state that simply is? `holds:`
+on anything but a `host` fact is E172, because nothing supplies a `fixed` or
+`derived` fact in the first place.
 
 A few rules keep declarations tidy. A fact name shares the namespace of variables and stats: a collision is E170. Facts are global to the book, like variables (3.5). An unknown `source:` is E160, a missing required field E161, and a `fixed` value or a `fallback` outside its own `range:` is E162.
 
@@ -1881,7 +1894,7 @@ Three fields join the save:
 
 `host` keeps the values the host supplied, `facts` keeps the computed snapshot, and `events` remembers which one-time events have fired and where each recurring event's anchor stands. A clock and a place index are ordinary variables and live in `vars`. Nothing else is added.
 
-`host` is also where a `holds:` value lives between boundaries (15.1), which is why it survives a save: a reader who puts the book down on a stormy ridge picks it up on the same ridge, without the host having to remember to say so again.
+`host` is also where a `holds:` value lives between boundaries (15.1), and that is why it survives a save: a reader who puts the book down on a stormy ridge picks it up on the same ridge, and the host never has to remember to say so again.
 
 You might expect facts to be recomputed at load rather than stored. `facts` is a cache. It is in the save because a save may be written in the middle of a node, where variables have moved on since the last boundary; recomputing at load would then show the reader different numbers than the page they left. It is not in a checkpoint, because a checkpoint is always taken at a boundary (8.1) and principle 8 guarantees the same result.
 
@@ -2058,11 +2071,11 @@ each of them stands.
    repeating the event once per step.
 5. **What an alt text owes a map.** Images themselves are built and live in
    4.9. Alt text is required there, so there is no decorative image and
-   nothing to hide from a screen reader. What stays open is the case a rule
-   cannot settle: a picture that carries information rather than atmosphere,
-   such as a map of the marches with names on it. A sentence is the right
-   answer for an archway and the wrong one for a map, and what 12.3 should
-   promise instead waits for a book that has one.
+   nothing to hide from a screen reader. What stays open is the one case a
+   rule cannot settle: a picture that carries information rather than
+   atmosphere, such as a map of the marches with names on it. A sentence is
+   the right answer for an archway and the wrong one for a map, and what
+   12.3 should promise instead waits for a book that has one.
 6. **A save across a new edition.** Section 8 rejects a save whose `story`
    does not match the running book, and on the web that is a reload. In a
    shop that ships editions, it is a reader who loses a playthrough to an
@@ -2071,6 +2084,7 @@ each of them stands.
    the update, keeping the previous story JSON beside the new one, and
    migrating. Nothing here is decided until a book is actually shipped that
    way.
+
 ## 23. Next steps
 
 Of the open points in section 22, three have a natural order, and here it is.
@@ -2108,8 +2122,9 @@ each one added, section by section, so you can jump straight to what is new.
 
 ### 0.7 to 0.8
 
-0.8 is the version that lets a book live inside a program that is not its own.
-Nothing in how a book is written changes; everything here is about the edges.
+0.8 is the version that lets a book live inside a program that is not its
+own. Nothing changes in how a book is written; everything new sits at the
+edges.
 
 | Section | Change                                                                 |
 | ------- | ---------------------------------------------------------------------- |
