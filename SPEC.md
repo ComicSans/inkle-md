@@ -1,4 +1,4 @@
-# inkle-md, draft 0.7
+# inkle-md, draft 0.8
 
 Welcome. inkle-md is a gamebook language written in Markdown. It takes its
 story logic from ink, its syntax from Markdown, and it adds a fixed RPG layer
@@ -9,8 +9,10 @@ will be able to write anything a Fighting Fantasy or Lone Wolf volume needed.
 Here is a quick tour of what the language gives you. Keywords are English.
 Combat is built in, so a fight needs no custom code. A book can span several
 files, and one file points into another with a dotted reference. The export is
-a single file, and it stays one file: how a book carries images is still open,
-so no book has them yet. Translations carry text but not logic, and a book
+a single file plus the pictures a book links, and pictures carry alt text
+because that is not optional. The same book plays inside another program: an
+app that holds a map can enter it at one passage, let a reader play it, and
+take the character back out. Translations carry text but not logic, and a book
 holds no presentation, only story. On top of the story sits
 a layer of facts, values the book can read but never write. Events change
 values and never move the story somewhere else. Places live in a table and are
@@ -24,7 +26,8 @@ what this language keeps from ink and what it replaces, and how a project is
 laid out. Sections 4 to 9 are the language itself: the narrative text, the
 built-in functions, the character sheet, combat, and how the runtime saves and
 restores a game. Sections 10 to 12 describe the tools that keep a book
-honest: the parser, the linter, and the web export. Section 13 is a complete
+honest: the parser, the linter, the web export, and what it takes to embed a
+book in a program of your own. Section 13 is a complete
 small book you can read in one sitting. Sections 14 to 20 add the reality
 layer: facts, boundaries, events, state and undo, places, and the runtime
 calls behind them. Section 21 says why the parser and the linter check what
@@ -1464,6 +1467,51 @@ inkleMd.send(commandText);                       // -> one answer, as text
 Strings in, strings out. That is what a `JSContext` on Apple platforms and a
 `WebView` on Android both do; anything richer is a wrapper written twice.
 
+### 12.9 Inside a foreign game loop
+
+The hosts of this section so far have one thing in common: the reader acts and
+then the program waits. A game engine does not wait. It has a loop of its own,
+running many times a second, and a book living inside it has to fit that loop
+rather than the other way round. Four rules make that work, and none of them
+is new; they are what the rest of this document already implies, stated where
+an engine programmer will look for them.
+
+**A frame is not a boundary.** This is the one that costs a bug if it is
+missed. Every boundary computes facts and runs events (16.2), so calling
+`advance` once per frame runs every scheduled event sixty times a second, and
+a book whose relief arrives after three hundred turns arrives in five seconds.
+`advance` is for handing over time that has actually passed, typically once
+when the program comes back to the reader after being away. Between two
+boundaries the page is stable on purpose: an engine may draw it as often as it
+likes, and reading `current` costs nothing and changes nothing.
+
+**A book runs on one thread and holds its own state.** The runtime is a plain
+object with no locking, no timers and nothing asynchronous in it; every call
+returns before the next one starts. Two playthroughs are two instances, which
+is also how a program plays two books at once, or the same book for two
+readers. Nothing is shared between them but the story JSON, which is read-only
+after loading.
+
+**The book never calls out.** There is no external function, and this is a
+decision rather than a gap. Principle 8 says a fact is a pure function of its
+state, and a book that could call the program around it could ask it anything,
+including a different answer each time; the guarantee that a save replays to
+the same story would be gone. The way in is a host fact (15), the way out is
+the save (8), and both are data rather than control. A program that wants a
+book to trigger something watches for it: a variable it set, a code word it
+noted, the node it reached.
+
+**Nothing in a book measures real time.** Principle 7 again, and it is what
+makes a book fit any loop at all. A turn-based engine advances the book's clock
+by whatever a turn is worth; a real-time one hands over seconds; a replay
+hands over the same numbers as last time and gets the same story back. The
+runtime never learns which of the three it is in.
+
+What an engine has to write itself is the loop around those calls: when to
+enter, what to draw, when to hand over time, and what to do with the save that
+comes back. Section 12.6 is the shape of that loop for the case where a book
+is one episode among many.
+
 ## 13. Full example
 
 Here is a complete little book, start to finish. There is nothing new in it:
@@ -2033,9 +2081,10 @@ Of the open points in section 22, three have a natural order, and here it is.
    for them. They are the one open point that costs the language an epoch, and
    that price is worth paying only for a book that needs a date or a sky.
 
-Images led this list and are built (4.9), together with the two hosts of 12.5:
-the web export and a package for Apple platforms. What images left behind is
-the one question in 22.5 that a book has to ask before a rule can answer it.
+Images led this list and are built (4.9), together with the hosts of 12.5 to
+12.9: the web export, a package for Apple platforms, and the two ways a book
+can be played. What images left behind is the one question in 22.5 that a book
+has to ask before a rule can answer it.
 
 Everything these steps stand on is already built: grammar, parser and story
 JSON per sections 10 and 9.1; the linter of section 11 with its reachability
@@ -2045,10 +2094,33 @@ scheduled content cannot be tested at all; and three examples, one of which
 puts facts, events, places and a clock through the acceptance test rather than
 leaving them to the unit tests. Every example in this document is a test case.
 
+One thing 0.8 is missing, and it is worth naming rather than discovering: the
+layer it added has no written book behind it. Images have one, in the crypt of
+the two-chapter example, but `holds:` and the episode of 12.6 live in the unit
+tests alone. The three examples are the acceptance test for everything else in
+this document precisely because a written book finds what a unit test does not,
+and a book meant to be entered from a map is the one that is missing.
+
 ## 24. Change notes
 
-If you already know version 0.6 of the language, this table lists what 0.7
-added, section by section, so you can jump straight to what is new.
+If you already know an earlier version of the language, these tables list what
+each one added, section by section, so you can jump straight to what is new.
+
+### 0.7 to 0.8
+
+0.8 is the version that lets a book live inside a program that is not its own.
+Nothing in how a book is written changes; everything here is about the edges.
+
+| Section | Change                                                                 |
+| ------- | ---------------------------------------------------------------------- |
+| 4.9     | Images built: `![alt](file)` on a line of its own, alt text required, a path that stays inside the book's directory, both halves translated, `@2x` and `@3x` optional beside the base file. |
+| 9.1     | The `image` op added to the story JSON. |
+| 10.3    | E172 and E180 to E184 added to the error table. |
+| 11, 21  | L025 is an `info` about a book and a `warning` on an output with no host, because a book does not know which output it becomes. |
+| 12      | Retitled: the web export is one host of several. 12.5 to 12.9 added, with the hosts beyond the browser, the two ways to play, the host protocol, the native bundle, and what a foreign game loop has to know. |
+| 15.1, 16.2 | `holds:` added to a host fact: a state stays across boundaries where a duration is consumed. E172 rejects it anywhere else. |
+| 18.1    | A held host value rides in the save, so a reader comes back to the world they left. |
+| 22, 23  | Images and L025 leave the open points; what stays of 22.5 is what an alt text owes a map. |
 
 ### 0.6 to 0.7
 
@@ -2062,11 +2134,5 @@ added, section by section, so you can jump straight to what is new.
 | 10.1    | Fact and event expressions are parsed in step 2, with the other frontmatter expressions. |
 | 10.3    | E160 to E171 added to the error table.                                 |
 | 11      | L021 to L028 added; the reachability walk is repeated with host facts at their fallbacks, and L025 reads the difference. |
-| 4.9     | Images built: `![alt](file)` on a line of its own, alt text required, a path that stays inside the book's directory, both halves translated, `@2x` and `@3x` optional beside the base file. |
-| 9.1     | The `image` op added to the story JSON. |
-| 10.3    | E180 to E184 added to the error table. |
-| 11, 21  | L025 is an `info` about a book and a `warning` on an output with no host, because a book does not know which output it becomes. |
-| 12      | Retitled: the web export is one host of several. 12.5 to 12.8 added, with the two ways to play, the host protocol, the native bundle and the rule that the runtime uses the language and nothing above it. |
-| 15.1, 16.2 | `holds:` added to a host fact: a state stays across boundaries where a duration is consumed. E172 rejects it anywhere else. |
 | 12.1    | `advance` and `facts` added to the runtime API.                        |
 | 12.4    | `play` gains `--host` to supply host values per boundary; `simulate` takes the same flag as its policy for how counters and `elapsed` advance per turn, without which no scheduled content is ever tested. |
