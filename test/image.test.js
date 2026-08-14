@@ -71,6 +71,60 @@ The gate ![an iron gate](gate.png) stands open.
 `, 'E181');
 });
 
+test('every run of text is covered, not just a paragraph', () => {
+  // The check first sat where paragraphs are read, which left three other
+  // places passing literal Markdown through: a choice's follow-on text, a
+  // gather's text and a combat exit's. They all share one reader, and that
+  // is where it belongs.
+  expectError(`
+# Start {#start}
+
+* [Through the gate](#second) The gate ![an iron gate](gate.png) stands open.
+
+# Second {#second}
+
+-> END
+`, 'E181');
+
+  expectError(`
+# Start {#start}
+
+* [Fight](#second)
+* [Wait](#second)
+---
+
+Afterwards ![the gate](gate.png) stands open.
+
+# Second {#second}
+
+-> END
+`, 'E181');
+
+  expectError(`
+# Start {#start}
+
+!combat goblin
+  win  -> second
+  flee [Away](#second) You leave ![your shield](shield.png) behind.
+
+# Second {#second}
+
+-> END
+`, 'E181', { frontmatter: COMBAT_FRONTMATTER });
+});
+
+const COMBAT_FRONTMATTER = `---
+title: Test
+stats:
+  stamina: { start: 10 }
+combat:
+  attack: "roll(2,6)"
+  damage: "2"
+enemies:
+  goblin: { name: Goblin, skill: 5, stamina: 6 }
+---
+`;
+
 test('a path that leaves the book, or is a URL, is refused', () => {
   for (const path of ['../secret.png', '/etc/passwd', 'https://example.com/gate.png']) {
     expectError(`

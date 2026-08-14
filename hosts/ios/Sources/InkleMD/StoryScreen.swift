@@ -229,10 +229,15 @@ public struct StoryScreen: View {
         }
     }
 
+    /// What a round did is spoken without the focus moving (12.3).
+    ///
+    /// `AccessibilityNotification.Announcement` reads better and starts at
+    /// iOS 17; this package goes back to 16, so the older call is the one that
+    /// covers every reader it claims to.
     private func announce(_ round: Round??) {
         guard let text = (round ?? nil)?.text else { return }
-        #if os(iOS)
-        AccessibilityNotification.Announcement(text).post()
+        #if canImport(UIKit)
+        UIAccessibility.post(notification: .announcement, argument: text)
         #endif
     }
 

@@ -29,6 +29,34 @@ public struct StoryView: Decodable, Sendable {
     public let memory: [String]
     public let combat: Combat?
     public let canUndo: Bool
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        self.lang = try c.decode(String.self, forKey: .lang)
+        self.languages = try c.decode([String].self, forKey: .languages)
+        self.setup = try c.decodeIfPresent([SetupBlock].self, forKey: .setup)
+        self.node = try c.decodeIfPresent(String.self, forKey: .node)
+        self.title = try c.decodeIfPresent(String.self, forKey: .title)
+        self.ended = try c.decode(Bool.self, forKey: .ended)
+        self.choices = try c.decode([Choice].self, forKey: .choices)
+        self.stats = try c.decode([Stat].self, forKey: .stats)
+        self.facts = try c.decode([String: Double].self, forKey: .facts)
+        self.inventory = try c.decode([Item].self, forKey: .inventory)
+        self.memory = try c.decode([String].self, forKey: .memory)
+        self.combat = try c.decodeIfPresent(Combat.self, forKey: .combat)
+        self.canUndo = try c.decode(Bool.self, forKey: .canUndo)
+
+        // Position on the page is the identity of a paragraph. The protocol
+        // does not send one because it has no need of it; a view does.
+        var numbered = try c.decode([Paragraph].self, forKey: .text)
+        for index in numbered.indices { numbered[index].id = index }
+        self.text = numbered
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case lang, languages, setup, node, title, ended, text, choices
+        case stats, facts, inventory, memory, combat, canUndo
+    }
 }
 
 /// One thing on the page: a paragraph, or an image between two of them.
@@ -36,7 +64,10 @@ public struct StoryView: Decodable, Sendable {
 /// The protocol tells them apart by which field is there (SPEC 4.9), and so
 /// does `kind` below, so a `switch` on this side is exhaustive.
 public struct Paragraph: Decodable, Sendable, Identifiable {
-    public let id = UUID()
+    /// Position on the page. A fresh `UUID` per decode would give every
+    /// paragraph a new identity every turn, so `ForEach` would rebuild all of
+    /// them and an image would be read from disk again on each redraw.
+    public internal(set) var id: Int = 0
     /// The sentence, for a paragraph; empty for an image.
     public let text: String
     /// The file, relative to the bundle directory, for an image.

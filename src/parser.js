@@ -161,12 +161,6 @@ function parseContainer(lines, depth, state) {
       }
 
       case 'text': {
-        // An image belongs between paragraphs, not inside a sentence (4.9).
-        // Passed through as text it would reach the reader as literal
-        // Markdown, which is the mistake diverts in prose once made.
-        if (IMAGE_RE.test(cur.text)) {
-          throw new CompileError('E181', 'an image is a line of its own, not part of a sentence', cur);
-        }
         // A paragraph runs to the next blank line, as in Markdown: the line
         // breaks an author uses to keep the source narrow are not breaks in
         // the text.
@@ -300,6 +294,15 @@ function parseDirective(lines, i, depth, state) {
  * text, plus a trailing {.class}.
  */
 export function parseInline(text, at, state) {
+  // An image is a line of its own (4.9). This catches one written into any
+  // run of text, and every run of text comes through here: a paragraph, a
+  // choice's follow-on, a gather's own text, a combat exit. The check used to
+  // sit where paragraphs are read, which left the other three passing literal
+  // Markdown to the reader - the same hole diverts in prose once had.
+  if (IMAGE_RE.test(text)) {
+    throw new CompileError('E181', 'an image is a line of its own, not part of a sentence', at);
+  }
+
   // Glue (SPEC 4.5): the line joins the one printed before it, or the one
   // after it, instead of standing as a paragraph of its own.
   const glue = {};

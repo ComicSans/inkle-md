@@ -37,9 +37,17 @@ er Grün meldet. Der Abnahmetest ist deshalb von Hand vor jedem Commit:
 
 ```bash
 node --test 'test/*.test.js'
-node src/cli.js lint examples/thornwood.md --strict     # und house, nightside
+node src/cli.js lint examples/thornwood.md --strict     # und thornwood-book, house, nightside
 cd hosts/ios && swift test
+cd hosts/ios && xcrun swiftc -typecheck -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)" \
+  -target arm64-apple-ios16.0-simulator Sources/InkleMD/*.swift
 ```
+
+Der letzte Befehl ist kein Build, sondern eine Typprüfung: `swift test` läuft auf
+macOS und kompiliert alles hinter `#if canImport(UIKit)` nie. Genau dort saß ein
+Fehler - `AccessibilityNotification` gibt es erst ab iOS 17, das Package sagt 16.
+Ein echter Build für den Simulator ginge nur über `simulator-broker`, und der
+braucht ein Xcode-Projekt, das es hier nicht gibt.
 
 Entschieden mit Tobias am 11.08.2026, um den iOS-Host erweitert am 14.08.2026.
 
@@ -53,9 +61,11 @@ daraus, bis Tobias widerspricht:
   Schema, das sie aufrufen könnte.
 - **Der iOS-Simulator ist nicht Teil des Abnahmetests.** `swift test` läuft auf
   macOS gegen dasselbe JavaScriptCore und beweist, was hier zu beweisen ist:
-  dass die Runtime in JSC dieselbe Geschichte spielt wie in Node. Ein Bau für
-  den Simulator geht über `simulator-broker`, nie über `xcodebuild` direkt, und
-  ist ein eigener Schritt, wenn eine App dazukommt.
+  dass die Runtime in JSC dieselbe Geschichte spielt wie in Node. Die
+  Typprüfung oben schließt die Lücke, die das lässt. Ein echter Bau für den
+  Simulator geht über `simulator-broker`, nie über `xcodebuild` direkt, und
+  ist ein eigener Schritt, sobald eine App dazukommt - der Broker braucht ein
+  Xcode-Projekt, ein SwiftPM-Package genügt ihm nicht.
 
 **`examples/intercept.md` ist importiert, nicht geschrieben.** Es entsteht aus
 `inkle-md import` über inkles ink-Quelle von *The Intercept* und trägt deren

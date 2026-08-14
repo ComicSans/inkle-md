@@ -96,21 +96,39 @@ final class StoryTests: XCTestCase {
     /// than a property, and a save cannot travel between a phone and a
     /// browser.
     func testTheSameSeedPlaysTheSameStoryAsNodeDoes() throws {
-        let route = [0, 0, 0, 0]
+        // The route reaches the goblin and fights it, because a walk that
+        // stops short of the dice only proves the stats were rolled alike. A
+        // fight is where the stream is drawn from hardest: two rolls a round.
+        let route = [2, 0, 0, 0, 0, 0, 0, 0]
         let expected = try playInNode(example: "thornwood.md", seed: 7, picks: ["sword"], route: route)
 
         let story = try open(seed: 7)
         try story.begin([["sword"]])
         var walked: [String] = []
+        var fought = 0
         for index in route {
-            guard story.view.choices.indices.contains(index) else { break }
-            try story.choose(index)
+            if story.view.combat != nil {
+                try story.attack()
+                fought += 1
+            } else if story.view.choices.contains(where: { $0.index == index }) {
+                try story.choose(index)
+            } else {
+                break
+            }
             walked.append(story.view.node ?? "-")
         }
 
+        XCTAssertGreaterThan(fought, 0, "the route has to reach the fight for this to prove anything")
         XCTAssertEqual(walked, expected.nodes)
         XCTAssertEqual(story.view.stats.map { $0.value ?? -1 }, expected.stats)
-        XCTAssertEqual(story.view.text.map { $0.text }, expected.text)
+        XCTAssertEqual(story.view.text.map(\.text), expected.text)
+
+        // The counter is the whole of principle 5 in one number: roll n
+        // follows from seed and n, so two runs that agree here drew the same
+        // dice in the same order, whatever they did with them.
+        let save = try JSONSerialization.jsonObject(with: try story.save()) as? [String: Any]
+        XCTAssertEqual(save?["rolls"] as? Int, expected.rolls)
+        XCTAssertGreaterThan(expected.rolls, 0, "a walk that rolls nothing proves nothing")
     }
 
     func testAnImageArrivesAsItsOwnKindOfParagraphAndResolvesToAFile() throws {
@@ -181,6 +199,8 @@ extension StoryTests {
         let nodes: [String]
         let stats: [Int]
         let text: [String]
+        /// The dice counter of SPEC 8: roll n follows from seed and n.
+        let rolls: Int
     }
 
     /// Plays a fixed route in Node and reports where it ended up, so the run in
@@ -193,14 +213,16 @@ extension StoryTests {
           h.command({ cmd: 'begin', picks: [\(picks.map { "['\($0)']" }.joined(separator: ", "))] });
           const nodes = [];
           for (const i of \(route)) {
-            if (!h.view.choices.some((c) => c.index === i)) break;
-            h.command({ cmd: 'choose', index: i });
+            if (h.view.combat) h.command({ cmd: 'attack' });
+            else if (h.view.choices.some((c) => c.index === i)) h.command({ cmd: 'choose', index: i });
+            else break;
             nodes.push(h.view.node ?? '-');
           }
           process.stdout.write(JSON.stringify({
             nodes,
             stats: h.view.stats.map((s) => s.value ?? -1),
-            text: h.view.text.map((p) => p.text),
+            text: h.view.text.map((p) => p.text ?? ''),
+            rolls: h.command({ cmd: 'save' }).did.rolls,
           }));
         });
         """
