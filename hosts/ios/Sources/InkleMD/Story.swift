@@ -8,7 +8,7 @@
 import Foundation
 import JavaScriptCore
 
-/// A book being played, over the host protocol of SPEC 12.6.
+/// A book being played, over the host protocol of SPEC 12.7.
 ///
 /// The story logic is not written twice. This holds a `JSContext` running the
 /// engine `inkle-md bundle` wrote, sends it one command per turn and decodes
@@ -71,7 +71,7 @@ public final class Story: ObservableObject {
     ///   - engine: the contents of `inkle-md.js`
     ///   - story: the contents of `story.json`, unparsed. The engine parses it
     ///     itself; handing it across as text is what keeps the bridge to two
-    ///     names (12.7).
+    ///     names (12.8).
     public init(engine: String, story: String, seed: Int? = nil, language: String? = nil,
                 directory: URL? = nil) throws {
         guard let context = JSContext() else { throw StoryError.noEngine }
@@ -183,7 +183,7 @@ public final class Story: ObservableObject {
     // MARK: - The bridge
 
     /// One command, one view. `did` is whatever the command returned beyond
-    /// the page (12.6).
+    /// the page (12.7).
     @discardableResult
     private func send(_ command: [String: Any]) throws -> Any? {
         let text = String(decoding: try JSONSerialization.data(withJSONObject: command), as: UTF8.self)
@@ -225,7 +225,7 @@ public enum StoryError: Error, CustomStringConvertible {
     case engineFailed(String)
     case noAnswer
     case malformedAnswer(String)
-    /// The engine refused the command and said why (12.6).
+    /// The engine refused the command and said why (12.7).
     case refused(String)
 
     public var description: String {

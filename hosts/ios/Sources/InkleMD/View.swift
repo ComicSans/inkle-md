@@ -7,11 +7,11 @@
 
 import Foundation
 
-/// The view of SPEC 12.6: everything a page needs, as one value.
+/// The view of SPEC 12.7: everything a page needs, as one value.
 ///
 /// Every field here is what the protocol sends, named as the protocol names
 /// it. Nothing is computed on this side and nothing is left out, so that a
-/// change to 12.6 shows up as a compile error rather than as a field that
+/// change to 12.7 shows up as a compile error rather than as a field that
 /// silently stays at its default.
 public struct StoryView: Decodable, Sendable {
     public let lang: String

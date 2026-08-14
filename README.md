@@ -54,10 +54,15 @@ inkleMd.send('{"cmd":"choose","index":1}');        // -> one answer
 ```
 
 One command in, the whole view out, so a turn costs one crossing rather than a
-dozen. The runtime is embedded rather than translated because principle 5 wants
+dozen. A book can be played two ways: read from its start, or entered as one
+episode inside an app that holds the map. The second needs nothing new -
+`load` the character, `go` to the passage, play it, `save` what changed - and
+that is deliberate: the book must not learn which of the two is happening.
+World data the book only reads arrives as host facts, declared `holds:` where
+it is a state rather than a duration. The runtime is embedded rather than translated because principle 5 wants
 the same die on every platform, and one implementation cannot disagree with
 itself. What the host draws, where it keeps the save and what feeds its clock
-are its own; SPEC 12.5 to 12.7 says what that means.
+are its own; SPEC 12.5 to 12.8 says what that means.
 
 ## What is here
 
@@ -75,8 +80,8 @@ are its own; SPEC 12.5 to 12.7 says what that means.
 | `src/runtime.js` | The player: text, choices, combat, save and undo, SPEC 8 |
 | `src/view.js` | The view layer: labels, presentation, accessibility, SPEC 12 |
 | `src/export.js` | One self-contained HTML file, SPEC 12 |
-| `src/host.js` | The host protocol: one command in, the whole view out, SPEC 12.6 |
-| `src/bundle.js` | Story and engine as files a native host embeds, SPEC 12.7 |
+| `src/host.js` | The host protocol: one command in, the whole view out, SPEC 12.7 |
+| `src/bundle.js` | Story and engine as files a native host embeds, SPEC 12.8 |
 | `src/play.js` | Playing from the terminal, scripted replays, simulation |
 | `src/mcp.js` | lint, play and simulate as MCP tools over stdio |
 | `src/import.js` | Reads ink and writes inkle-md, reporting what has no equivalent |

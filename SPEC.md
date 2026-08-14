@@ -1055,6 +1055,7 @@ Errors abort compilation. Every message carries file, line, column and the offen
 | E169 | Fact expression that is not pure: dice, or a call that changes state |
 | E170 | Fact name colliding with a stat or variable |
 | E171 | `places.variable:` naming something that is not a declared stat |
+| E172 | `holds:` on a fact that is not supplied from outside |
 | E180 | An image line that is not `![alt](file)` |
 | E181 | An image inside a sentence rather than on a line of its own |
 | E182 | An image without alt text |
@@ -1284,7 +1285,7 @@ a terminal. Neither of them is the runtime. Both talk to it through the API of
 
 A host written in Swift or Kotlin cannot talk to that API, because it cannot
 call a JavaScript method. So it embeds a JavaScript engine, hands it the
-runtime unchanged, and speaks the protocol of 12.6.
+runtime unchanged, and speaks the protocol of 12.7.
 
 Why embed rather than translate the runtime into each language? Principle 5.
 Seed plus counter has to produce the same die on every platform, or a save
@@ -1324,7 +1325,60 @@ without any work by the author. A native host owes its readers the same list
 in its own platform's terms. The protocol hands it what that needs and nothing
 beyond it: a choice is a label and an index, never a rendered button.
 
-### 12.6 The host protocol
+### 12.6 Two ways to play: a book, and an episode
+
+A book is normally read from its start to one of its endings. It can also be
+one episode inside something larger: an app holds a map, a party and a clock,
+and at some point on that map a book is entered, one passage is played, and
+the app takes over again. Both are ways of playing, and this section says how
+the second one works.
+
+It needs nothing the language does not already have, and that is deliberate.
+The book does not know which of the two is happening, in exactly the way it
+does not know which output it becomes (12.5). An entry point is a node, and a
+book already declares nodes. What comes back is variables, an inventory and
+code words, and a book already declares those. Adding `episodes:` to the
+frontmatter would put the host's business into the book, which is the mistake
+L025 was corrected for.
+
+So an episode is four calls the host already has:
+
+```
+story.load(save);          // the character, as the app has been keeping it
+story.go(node);            // in at the passage the map points to
+…                          // choose, attack, advance: the episode is played
+story.save();              // out, with everything it changed
+```
+
+Three things are worth knowing before writing that loop.
+
+**Order is load, then go.** `go` jumps, it does not set out: it does not roll
+stats, so a reader who arrives by `go` alone has none and dies of the first
+blow. The save carries them, so it goes first.
+
+**The save is per book.** `load` refuses a save whose `story` does not match
+(8), and rightly: every field in it is keyed against one book's nodes and
+choice ids. Carrying a character from one book to the next is therefore not a
+load but a transfer: the host opens the next book normally, takes the save it
+writes, copies over the fields both books share, and loads that. What the two
+share is what they both declare, and nothing else travels. A stat the next
+book has never heard of is not that book's business.
+
+**The way out is a node, and the host already knows node names.** It chose the
+one it went in at. So it watches `view.node` after every command and stops
+when it sees one of its own exits; `config.death.goto` in the story JSON names
+the one the book itself calls dying. Nothing needs to be declared for this,
+and nothing should be: which nodes are exits depends on the map, not on the
+book.
+
+What the app knows and the book only reads is the other half of this, and it
+is section 15's: a map's weather, a distance, a party's standing with a
+faction are host facts, declared `holds:` where they are a state rather than a
+duration (15.1). What the episode changes is variables and comes back in the
+save. The test is section 14's, unchanged: if the book writes it, it is a
+variable; if the book only reads it, it is a fact.
+
+### 12.7 The host protocol
 
 One command goes in, the whole view comes out, both as plain JSON. The shape
 follows from what a language boundary costs: reading a dozen members of 12.1
@@ -1384,13 +1438,13 @@ makes of a class, and of a picture, is the host's own business, and that is
 the point of this section: one story, one logic, as many surfaces as there are
 hosts.
 
-### 12.7 The native bundle
+### 12.8 The native bundle
 
 `inkle-md bundle book.yaml --out dir` writes what a native host needs:
 
 - `story.json`, the story of 9.1 as data, which the host can read itself as
   well, for a chapter list or a cover;
-- `inkle-md.js`, the runtime and the protocol of 12.6 as one script, with the
+- `inkle-md.js`, the runtime and the protocol of 12.7 as one script, with the
   module keywords removed, because the engine it runs in has no loader.
 
 `--minify` is the pass of section 12, unchanged. The view of 12.2 is not in
@@ -1594,8 +1648,29 @@ Each source then asks for its own fields:
 | Source    | Required            | Notes                                     |
 | --------- | ------------------- | ----------------------------------------- |
 | `fixed`   | `value:`            | An integer literal, not an expression.    |
-| `host`    | `range:`, `fallback:` | Supplied from outside at a boundary.    |
+| `host`    | `range:`, `fallback:` | Supplied from outside at a boundary. `holds:` optional. |
 | `derived` | `value:`            | An expression, parsed at compile time.    |
+
+A host fact answers one more question, and it is the difference between a
+duration and a state:
+
+```yaml
+facts:
+  elapsed: { source: host, range: [0, 604800], fallback: 0 }
+  weather: { source: host, range: [0, 3], fallback: 0, holds: true }
+```
+
+`elapsed` is seconds since the last boundary. Handing the same seconds over
+twice would spend them twice, so a host value is **consumed** by the boundary
+that takes it and falls back afterwards (16.2). `weather` is not a duration.
+It is what the world is like right now, and it stays that way until the world
+changes. `holds: true` says so: the value stays until the host sends another
+one, and a book that has never been given one reads its `fallback:`.
+
+Which one a fact is follows from the same test section 14 gives for facts and
+variables, asked once more: is this an amount that is used up, or a state that
+simply is? `holds:` on anything but a `host` fact is E172, because nothing
+supplies a `fixed` or `derived` fact in the first place.
 
 A few rules keep declarations tidy. A fact name shares the namespace of variables and stats: a collision is E170. Facts are global to the book, like variables (3.5). An unknown `source:` is E160, a missing required field E161, and a `fixed` value or a `fallback` outside its own `range:` is E162.
 
@@ -1681,6 +1756,8 @@ The fourth step exists for the events. The second pass is what events see reflec
 
 Host values also come with an expiry date. A host value is **consumed** by the boundary that takes it in: afterwards the fact falls back to its `fallback:` until the next `advance`. `elapsed` is a duration since the previous boundary, so a `choose` that followed an `advance` without this rule would spend the same seconds a second time.
 
+Unless the fact is declared `holds:` (15.1). Then the value survives boundaries and stays until the host sends another one, which is what a state rather than a duration needs: the weather on the ridge does not stop being the weather because the reader took a choice. A value arriving now always wins over one being held.
+
 ### 16.3 The published snapshot
 
 The snapshot the view and every condition see is the one from step 4. A page that contradicted the events that had just run would be a bug the author could not fix.
@@ -1755,6 +1832,8 @@ Three fields join the save:
 ```
 
 `host` keeps the values the host supplied, `facts` keeps the computed snapshot, and `events` remembers which one-time events have fired and where each recurring event's anchor stands. A clock and a place index are ordinary variables and live in `vars`. Nothing else is added.
+
+`host` is also where a `holds:` value lives between boundaries (15.1), which is why it survives a save: a reader who puts the book down on a stormy ridge picks it up on the same ridge, without the host having to remember to say so again.
 
 You might expect facts to be recomputed at load rather than stored. `facts` is a cache. It is in the save because a save may be written in the middle of a node, where variables have moved on since the last boundary; recomputing at load would then show the reader different numbers than the page they left. It is not in a checkpoint, because a checkpoint is always taken at a boundary (8.1) and principle 8 guarantees the same result.
 
@@ -1987,6 +2066,7 @@ added, section by section, so you can jump straight to what is new.
 | 9.1     | The `image` op added to the story JSON. |
 | 10.3    | E180 to E184 added to the error table. |
 | 11, 21  | L025 is an `info` about a book and a `warning` on an output with no host, because a book does not know which output it becomes. |
-| 12      | Retitled: the web export is one host of several. 12.5 to 12.7 added, with the host protocol, the native bundle and the rule that the runtime uses the language and nothing above it. |
+| 12      | Retitled: the web export is one host of several. 12.5 to 12.8 added, with the two ways to play, the host protocol, the native bundle and the rule that the runtime uses the language and nothing above it. |
+| 15.1, 16.2 | `holds:` added to a host fact: a state stays across boundaries where a duration is consumed. E172 rejects it anywhere else. |
 | 12.1    | `advance` and `facts` added to the runtime API.                        |
 | 12.4    | `play` gains `--host` to supply host values per boundary; `simulate` takes the same flag as its policy for how counters and `elapsed` advance per turn, without which no scheduled content is ever tested. |

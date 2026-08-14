@@ -24,7 +24,7 @@ const BOOK_KEYS = new Set([
 
 const FACT_SOURCES = new Set(['fixed', 'host', 'derived']);
 
-const FACT_KEYS = new Set(['source', 'value', 'range', 'fallback', 'name']);
+const FACT_KEYS = new Set(['source', 'value', 'range', 'fallback', 'name', 'holds']);
 
 const EVENT_KEYS = new Set(['once', 'counter', 'every', 'max_catchup', 'when', 'do']);
 
@@ -177,6 +177,19 @@ export function validateFrontmatter(data, ctx) {
         throw new CompileError('E162',
           `fallback ${fact.fallback} of "${name}" is outside [${fact.range.join(', ')}]`, at);
       }
+      // A duration is spent by the boundary that takes it (16.2); a state the
+      // world is simply in is not. `holds:` says which of the two this is.
+      if (spec.holds !== undefined) {
+        if (typeof spec.holds !== 'boolean') {
+          throw new CompileError('E161', `holds: of "${name}" is true or false`, at);
+        }
+        if (spec.holds) fact.holds = true;
+      }
+    }
+
+    if (spec.holds !== undefined && spec.source !== 'host') {
+      throw new CompileError('E172',
+        `holds: on "${name}" needs source: host; a ${spec.source} fact is never supplied`, at);
     }
 
     if (spec.range && spec.source === 'fixed') {

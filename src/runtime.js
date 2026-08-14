@@ -176,6 +176,15 @@ export class Story {
     return this.current;
   }
 
+  /** What the last boundary was given and is allowed to keep (15.1, 16.2). */
+  #heldHost() {
+    const kept = {};
+    for (const [name, fact] of Object.entries(this.config.facts ?? {})) {
+      if (fact.holds && this.state.host?.[name] !== undefined) kept[name] = this.state.host[name];
+    }
+    return kept;
+  }
+
   /** The published snapshot, read-only (15, 20). */
   get facts() { return { ...this.state.facts }; }
 
@@ -424,7 +433,11 @@ export class Story {
   #boundary() {
     this.pending = false;
     this.inBoundary = true;
-    this.state.host = this.incoming ?? {};
+    // A host value is spent by the boundary that takes it (16.2), because a
+    // duration handed over twice would be spent twice. A fact declared
+    // `holds:` is not a duration but a state the world is in, so it stays
+    // until the host sends another one; what arrives now wins over it.
+    this.state.host = { ...this.#heldHost(), ...(this.incoming ?? {}) };
     this.incoming = null;
 
     const before = this.state.node;

@@ -49,6 +49,12 @@ export const ERRORS = {
   E169: 'Fact expression that is not pure',
   E170: 'Fact name colliding with a stat or variable',
   E171: 'places.variable: naming something that is not a declared stat',
+  E172: 'holds: on a fact that is not supplied from outside',
+  E180: 'An image line that is not ![alt](file)',
+  E181: 'An image inside a sentence rather than on a line of its own',
+  E182: 'An image without alt text',
+  E183: 'An image path that is a URL, or that leaves the book\'s directory',
+  E184: 'An image file that is not in the book\'s directory',
 };
 
 export class CompileError extends Error {

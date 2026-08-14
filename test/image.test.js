@@ -165,7 +165,7 @@ test('the runtime puts an image on the page beside the paragraphs', () => {
   assert.equal(image.image, 'gruft.png');
   assert.match(image.alt, /Torbogen/);
   // It is an entry in `text`, so a host walks one list and tells the two
-  // apart by which field is there (12.6).
+  // apart by which field is there (12.7).
   assert.equal(image.text, undefined);
   assert.ok(host.view.text.some((p) => p.text !== undefined), 'the prose is still there too');
 });

@@ -1,6 +1,6 @@
 # InkleMD for iOS
 
-A host for inkle-md books on Apple platforms, per SPEC 12.5 to 12.7. It plays
+A host for inkle-md books on Apple platforms, per SPEC 12.5 to 12.8. It plays
 the same story logic a browser plays, because it embeds the same runtime rather
 than reimplementing it.
 
@@ -45,6 +45,24 @@ screen carries in iOS terms: choices are buttons, the new text takes
 `@AccessibilityFocusState` after every turn, a combat round is announced
 without moving focus, a disabled control says why, touch targets are 44pt, and
 nothing is conveyed by colour alone.
+
+## Two ways to play
+
+Read from the start, or entered as one episode by an app that holds a map:
+
+```swift
+try story.enterEpisode(at: "crypt.chamber", carrying: save)   // load, then go
+// … choose, attack, advance …
+switch story.outcome(exits: ["crypt.daylight": "back to the map"], deathNode: death) {
+case .exit(let name, _):  // the app takes over again
+case .died, .ended, .playing: break
+}
+let changed = try story.save()
+```
+
+`adopt(_:)` carries a character from one book into the next: a save is keyed to
+one book, so what both books declare is copied over and the rest stays behind.
+See SPEC 12.6.
 
 ## What the host owns
 

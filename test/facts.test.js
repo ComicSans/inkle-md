@@ -740,3 +740,64 @@ A door that sticks.
   const s = new Story(story, { seed: 1 });
   assert.throws(() => s.choose(0), /does not settle/);
 });
+
+test('holds: keeps a host value across boundaries, a duration does not', () => {
+  const story = book(`facts:
+  elapsed: { source: host, range: [0, 1000], fallback: 0 }
+  weather: { source: host, range: [0, 3], fallback: 0, holds: true }
+`, `
+# Start {#start}
+
+The ridge.
+
++ [On](#start)
+`).story;
+  const s = new Story(story, { seed: 1 });
+  s.advance({ elapsed: 600, weather: 3 });
+  assert.equal(s.facts.elapsed, 600);
+  assert.equal(s.facts.weather, 3);
+
+  // The choice is a boundary, and it spends what was meant to be spent.
+  s.choose(0);
+  assert.equal(s.facts.elapsed, 0, 'a duration is consumed by the boundary that took it (16.2)');
+  assert.equal(s.facts.weather, 3, 'a state stays until the world changes it (15.1)');
+
+  s.choose(0);
+  assert.equal(s.facts.weather, 3, 'and stays across the next one too');
+
+  // A value arriving now wins over one being held.
+  s.advance({ weather: 0 });
+  assert.equal(s.facts.weather, 0);
+});
+
+test('a held value rides in the save, so the reader comes back to the same ridge', () => {
+  const story = book(`facts:
+  weather: { source: host, range: [0, 3], fallback: 0, holds: true }
+`, `
+# Start {#start}
+
+The ridge.
+
++ [On](#start)
+`).story;
+  const s = new Story(story, { seed: 1 });
+  s.advance({ weather: 2 });
+  const save = s.save();
+  assert.equal(save.host.weather, 2);
+
+  const later = new Story(story, { seed: 1 });
+  later.load(save);
+  assert.equal(later.facts.weather, 2, 'without the host having to say it again');
+});
+
+test('holds: on a fact nobody supplies is refused', () => {
+  // Nothing ever hands a fixed or derived fact a value, so there is nothing
+  // for it to hold on to.
+  expectError('# A {#a}\n\n-> END\n', 'E172',
+    { frontmatter: bare('facts:\n  day_length: { source: fixed, value: 24, holds: true }\n') });
+  expectError('# A {#a}\n\n-> END\n', 'E172',
+    { frontmatter: bare("facts:\n  x: { source: derived, value: 'time + 1', holds: false }\n") });
+  // And it is a yes or a no, not a number.
+  expectError('# A {#a}\n\n-> END\n', 'E161',
+    { frontmatter: bare('facts:\n  x: { source: host, range: [0, 5], fallback: 0, holds: 1 }\n') });
+});

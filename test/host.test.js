@@ -171,7 +171,7 @@ test('a fight against several counts the ones still waiting', () => {
   const setup = host.view.setup;
   host.command({ cmd: 'begin', picks: setup.map((b) => b.from.slice(0, b.pick).map((o) => o.key)) });
   // `!combat cultist, cultist` stands in the cellar; `go` reaches it without
-  // walking the book, which is what 12.6 says the command is for.
+  // walking the book, which is what 12.7 says the command is for.
   host.command({ cmd: 'go', node: 'cellar.guards' });
 
   const first = host.view.combat;

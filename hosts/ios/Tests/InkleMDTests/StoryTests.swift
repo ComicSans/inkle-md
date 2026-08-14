@@ -30,7 +30,7 @@ final class StoryTests: XCTestCase {
         let setup = try XCTUnwrap(story.view.setup, "thornwood asks the reader to choose a weapon")
         XCTAssertEqual(setup.count, 1)
         XCTAssertEqual(setup[0].pick, 1)
-        // Labels arrive in the reading language, not as a table of them (12.6).
+        // Labels arrive in the reading language, not as a table of them (12.7).
         XCTAssertFalse(setup[0].from[0].label.isEmpty)
         XCTAssertTrue(story.view.text.isEmpty, "no story text before the reader sets out")
     }
@@ -246,5 +246,71 @@ extension StoryTests {
             throw StoryError.engineFailed("node \(arguments.first ?? "") exited \(process.terminationStatus)")
         }
         return String(decoding: data, as: UTF8.self)
+    }
+}
+
+// MARK: - Playing a book as an episode (SPEC 12.6)
+
+@MainActor
+final class EpisodeTests: XCTestCase {
+    func testAnAppCarriesACharacterInAndTakesItBackOut() throws {
+        let bundle = try StoryTests.buildBundle(example: "thornwood-book/book.yaml")
+
+        // The app opened the book once, long ago, and has kept the character.
+        let first = try Story(bundle: bundle, seed: 11)
+        try first.begin([["sword"]])
+        var carried = try JSONSerialization.jsonObject(with: try first.save()) as! [String: Any]
+        var vars = carried["vars"] as! [String: Any]
+        vars["gold"] = 99
+        carried["vars"] = vars
+        let save = try JSONSerialization.data(withJSONObject: carried)
+
+        let episode = try Story(bundle: bundle, seed: 11)
+        try episode.enterEpisode(at: "crypt.chamber", carrying: save)
+
+        XCTAssertEqual(episode.view.node, "crypt.chamber")
+        XCTAssertEqual(episode.view.stats.first { $0.name == "gold" }?.value, 99)
+        XCTAssertFalse(episode.view.text.isEmpty)
+    }
+
+    func testTheAppRecognisesItsOwnWayOutAndNothingElse() throws {
+        let bundle = try StoryTests.buildBundle(example: "thornwood-book/book.yaml")
+        let story = try Story(bundle: bundle, seed: 11)
+        try story.begin([["sword"]])
+        try story.go(to: "crypt.chamber")
+
+        // Mid-passage the app is told to keep playing.
+        XCTAssertEqual(story.outcome(exits: ["crypt.daylight": "back to the map"]), .playing)
+
+        var outcome = Story.Outcome.playing
+        for _ in 0..<30 {
+            if story.view.combat != nil { try story.attack() }
+            else if let first = story.view.choices.first { try story.choose(first.index) }
+            else { break }
+            outcome = story.outcome(exits: ["crypt.daylight": "back to the map"], deathNode: "crypt.death")
+            if outcome != .playing { break }
+        }
+        XCTAssertEqual(outcome, .exit("back to the map", node: "crypt.daylight"))
+    }
+
+    func testACharacterCrossesFromOneBookToTheNext() throws {
+        let thornwood = try Story(bundle: try StoryTests.buildBundle(example: "thornwood-book/book.yaml"), seed: 11)
+        try thornwood.begin([["sword"]])
+        let hero = try thornwood.save()
+        let heroStamina = thornwood.view.stats.first { $0.name == "stamina" }?.value
+
+        let house = try Story(bundle: try StoryTests.buildBundle(example: "house/book.yaml"), seed: 11)
+        // A save from another book is refused outright, which is why `adopt`
+        // exists and is not just `load`.
+        XCTAssertThrowsError(try house.load(hero))
+
+        let setup = try XCTUnwrap(house.view.setup)
+        try house.begin(setup.map { $0.from.prefix($0.pick).map(\.key) })
+        let carried = try house.adopt(hero)
+
+        XCTAssertTrue(carried.contains("stamina"))
+        XCTAssertFalse(carried.contains("gold"), "the house never declared gold, so gold stays behind")
+        XCTAssertEqual(house.view.stats.first { $0.name == "stamina" }?.value, heroStamina)
+        XCTAssertTrue(house.view.inventory.contains { $0.id == "sword" }, "the sword came along")
     }
 }
