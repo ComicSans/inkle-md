@@ -16,7 +16,7 @@ machine.
 The chanting is Latin, but wrong Latin, the way someone speaks it who
 learned it from someone who could not speak it either. Between the lines
 falls your name. Your heart skips a beat. Then dinner comes back to you: the
-questions, the attentive listening, the nodding.
+{knows("NIEMAND-WARTET"): questions, the attentive listening, the satisfied nod.|questions, and how attentively he listened to the last of them.}
 
 * Unlock
 * Back to the stairs
@@ -35,8 +35,9 @@ You leave him standing there, and your politeness with him.
 
 ## The Key {#butler-down}
 
-From the butler's belt hangs a key. You take it and try not to look down at
-him.
+From the butler's belt hangs a key, the twin of yours. You leave it where it is.
+
+From the butler's belt hangs a key. You take it and try not to look down at him.
 
 * Unlock
 * Nothing for it - to the front door
@@ -117,7 +118,7 @@ which someone has thrown a stone. It is not a blade for opening letters.
 
 {visits(rite) == 1 and knows("NUECHTERN"): The master looks over at you, and then at the empty chair, as if to remark that there had been a more comfortable way here.}
 
-{visits(rite) == 1 and knows("KRUG-GEWUERZT"): Eleven of the twelve are no longer standing especially straight. One yawns in mid-Latin, and the precentor gives him a look that would be a dismissal in better houses.}
+{visits(rite) == 1 and knows("KRUG-GEWUERZT"): The twelve robes are no longer standing especially straight. One yawns in mid-Latin, and the precentor gives him a look that would be a dismissal in better houses.}
 
 {turns() > 60: The chanting is faster than it sounded at the door just now. Whatever is meant to be finished here: it is nearly so.}
 
@@ -133,7 +134,7 @@ You walk in, right in, take the coat off the chair and put it on. Not one
 robe stirs. No one stops you. It is the eeriest thing this house has done to
 you yet.
 
-One after another, eleven figures sit down, at first with dignity, then
+One after another, twelve figures sit down, at first with dignity, then
 quickly.
 
 It grows so hot you nearly drop it, and the chanting stops.
@@ -157,7 +158,7 @@ better.
 
 # Alone {#alone}
 
-The master of the house stands at the end between eleven snoring robes, and
+The master of the house stands at the end between twelve snoring robes, and
 it is hard to say which of you two this embarrasses more.
 
 "Good staff," he says, "has always been the problem out here."
@@ -173,7 +174,8 @@ thing about it.
 
 The chanting stops. The master goes very still. "From where," he says, and
 gets no further. Something leaves him - posture, colour, size, in that
-order. Names are contracts, you read somewhere, presumably tonight. His has
+order. Names are contracts, you read or heard somewhere, presumably tonight.
+His has
 just been terminated.
 
 You try to think the name once more. It is gone. Spent like a match.

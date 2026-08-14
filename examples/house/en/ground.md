@@ -109,7 +109,8 @@ You leave him standing there, and your politeness with him.
 
 ## The Key Ring {#caught-won}
 
-From his belt hangs a ring of keys. One of them carries a paper label:
-"Cellar". You take it and try not to look down at the butler as you do.
+From his belt hangs a ring of keys. One of them carries a paper label: "Cellar", the twin of the one in your pocket. You leave it hanging.
+
+From his belt hangs a ring of keys. One of them carries a paper label: "Cellar". You take it and try not to look down at the butler as you do.
 
 * Back to the hall

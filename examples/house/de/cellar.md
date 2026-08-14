@@ -16,7 +16,7 @@ geduldige Maschine.
 Der Gesang ist Latein, aber falsches Latein, so wie jemand es spricht, der es
 von jemandem gelernt hat, der es auch nicht konnte. Zwischen den Zeilen fällt
 dein Name. Dein Herz setzt einen Schlag aus. Dann fällt dir das Abendessen
-wieder ein: die Fragen, das aufmerksame Zuhören, das Nicken.
+wieder ein: {knows("NIEMAND-WARTET"): die Fragen, das aufmerksame Zuhören, das zufriedene Nicken.|die Fragen und wie aufmerksam er bei der letzten zugehört hat.}
 
 { visits(listen) == 1 }
   ~ fear = fear + 1
@@ -24,7 +24,7 @@ wieder ein: die Fragen, das aufmerksame Zuhören, das Nicken.
 
 * {has("cellar-key")} [Aufschließen](#wine)
 + [Zurück zur Treppe](#stairs)
-+ {not knows("BUTLER-ERLEDIGT")} [Es mit der Schulter versuchen](#servant-fight)
++ {not knows("BUTLER-ERLEDIGT") and not has("cellar-key")} [Es mit der Schulter versuchen](#servant-fight)
 
 ## Der Butler kommt {#servant-fight}
 
@@ -39,10 +39,14 @@ Butler, mit einer Kerze in der einen und etwas Länglichem in der anderen Hand.
 
 ## Der Schlüssel {#butler-down}
 
-Am Gürtel des Butlers hängt ein Schlüssel. Du nimmst ihn und versuchst, nicht
-auf ihn hinunterzusehen.
+{ has("cellar-key") }
+  Am Gürtel des Butlers hängt ein Schlüssel, das Gegenstück zu deinem. Du
+  lässt ihn, wo er ist.
+{ else }
+  Am Gürtel des Butlers hängt ein Schlüssel. Du nimmst ihn und versuchst,
+  nicht auf ihn hinunterzusehen.
+  ~ take("cellar-key")
 
-~ take("cellar-key")
 ~ remember("BUTLER-ERLEDIGT")
 
 * [Aufschließen](#wine)
@@ -141,7 +145,7 @@ man Briefe öffnet.
 
 {visits(rite) == 1 and knows("NUECHTERN"): Der Hausherr sieht zu dir herüber und dann zu dem leeren Stuhl, als wolle er anmerken, dass es einen bequemeren Weg hierher gegeben hätte.}
 
-{visits(rite) == 1 and knows("KRUG-GEWUERZT"): Elf der zwölf stehen nicht mehr besonders gerade. Einer gähnt mitten im Latein, und der Vorsänger wirft ihm einen Blick zu, der in besseren Häusern eine Kündigung wäre.}
+{visits(rite) == 1 and knows("KRUG-GEWUERZT"): Die zwölf Kutten stehen nicht mehr besonders gerade. Einer gähnt mitten im Latein, und der Vorsänger wirft ihm einen Blick zu, der in besseren Häusern eine Kündigung wäre.}
 
 {turns() > 60: Der Gesang ist schneller, als er vorhin an der Tür geklungen hat. Was immer hier fertig werden soll: Es ist fast so weit.}
 
@@ -153,7 +157,7 @@ man Briefe öffnet.
   ~ equip("coat")
   ~ fear = fear + 1
 * {knows("WAHRER-NAME")} [Den Namen aussprechen, den der Efeu verdeckt](#named)
-* {knows("KRUG-GEWUERZT")} [Am Türrahmen lehnen und dem Würzwein Zeit geben](#alone) Nacheinander setzen sich elf Gestalten, erst würdevoll, dann schnell.
+* {knows("KRUG-GEWUERZT")} [Am Türrahmen lehnen und dem Würzwein Zeit geben](#alone) Nacheinander setzen sich zwölf Gestalten, erst würdevoll, dann schnell.
   ~ arrival.calm(2)
 * {has("crucifix")} [Das Kruzifix hochhalten](#break) Es wird so heiß, dass du es fast fallen lässt, und der Gesang bricht ab.
 * {knows("KRUG-GEWUERZT")} [Den Kreidekreis verwischen, solange die Kutten schwanken](#thing) Die, die dich aufhalten wollen, müssten dazu erst aufstehen. Sie versuchen es. Es sieht aus wie eine schlechte Turnstunde.
@@ -172,7 +176,7 @@ steht. Es steht wirklich etwas Größeres hinter ihnen.
 
 # Allein {#alone}
 
-Der Hausherr steht am Ende zwischen elf schnarchenden Kutten, und es ist
+Der Hausherr steht am Ende zwischen zwölf schnarchenden Kutten, und es ist
 schwer zu sagen, wen von euch beiden das mehr verlegen macht.
 
 "Gutes Personal", sagt er, "war hier draußen schon immer das Problem."
@@ -188,7 +192,8 @@ an ihm ist.
 
 Der Gesang bricht ab. Der Hausherr wird sehr still. "Woher", sagt er, und
 weiter kommt er nicht. Etwas verlässt ihn - Haltung, Farbe, Größe, in dieser
-Reihenfolge. Namen sind Verträge, hast du irgendwo gelesen, vermutlich heute
+Reihenfolge. Namen sind Verträge, hast du irgendwo gelesen oder gehört,
+vermutlich heute
 Nacht. Seiner ist soeben gekündigt worden.
 
 ~ forget("WAHRER-NAME")

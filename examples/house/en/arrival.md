@@ -62,10 +62,11 @@ He decides in favour of professional honour.
 
 ## The Chained Hound {#dogfight}
 
+The hound has declared the negotiations closed.
+
 * Run
 
-You reach the door with the breath of the drowning and the dignity of someone
-who has just run for their life.
+You reach the door with the breath of the drowning and the dignity of someone who has just run for their life. The hound stops at the edge of the gravel, as though its territory ended there.
 
 # At the Door {#door}
 

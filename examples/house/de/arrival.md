@@ -69,9 +69,11 @@ Die Kette, stellst du beim Näherkommen fest, hängt an nichts.
 
 ## Der Kettenhund {#dogfight}
 
+Der Hund hat die Verhandlungen für beendet erklärt.
+
 !combat hound
   win  -> door
-  flee [Rennen](#door) Du erreichst die Tür atemlos wie beim Ertrinken und mit der Würde, die ein Lauf ums nackte Leben übrig lässt.
+  flee [Rennen](#door) Du erreichst die Tür atemlos wie beim Ertrinken und mit der Würde, die ein Lauf ums nackte Leben übrig lässt. Der Hund bleibt am Rand des Kieses zurück, als ende dort sein Revier.
 
 # Vor der Tür {#door}
 

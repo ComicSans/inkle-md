@@ -122,11 +122,16 @@ Räumen, die dem Herrn besonders am Herzen liegen."
 
 ## Der Schlüsselbund {#caught-won}
 
-An seinem Gürtel hängt ein Schlüsselbund. Einer der Schlüssel trägt ein
-Papierschild: "Keller". Du nimmst ihn und versuchst dabei, nicht auf den
-Butler hinunterzusehen.
+{ has("cellar-key") }
+  An seinem Gürtel hängt ein Schlüsselbund. Einer der Schlüssel trägt ein
+  Papierschild: "Keller", das Gegenstück zu dem in deiner Tasche. Du lässt ihn
+  hängen.
+{ else }
+  An seinem Gürtel hängt ein Schlüsselbund. Einer der Schlüssel trägt ein
+  Papierschild: "Keller". Du nimmst ihn und versuchst dabei, nicht auf den
+  Butler hinunterzusehen.
+  ~ take("cellar-key")
 
-~ take("cellar-key")
 ~ remember("BUTLER-ERLEDIGT")
 
 * [Zurück in die Halle](#hall)

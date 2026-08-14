@@ -83,7 +83,7 @@ deutlich dünnere darüber, wie man es wieder loswird.
   ~ take("poker")
   { not has("dagger") }
     ~ equip("poker")
-+ [Zurück auf den Flur](#landing)
++ [Hinaus auf den Flur](#landing)
 ---
 Du hast in dieser Bibliothek gesehen, was zu sehen war.
 
@@ -170,11 +170,11 @@ hinaus als kenne sie den Ausblick auswendig und prüfe ihn trotzdem.
 
 # Die Treppe hinab {#tower-out}
 
-{knows("BETAEUBT"): Unten endet die Wendeltreppe an der schmalen Tür. Der Riegel ist von außen vorgelegt. Die Tür ist alt, der Rahmen ist älter.|Unten steht die schmale Tür offen, wie du sie gelassen hast.}
+{knows("BETAEUBT"): Unten endet die Wendeltreppe an der schmalen Tür. Der Riegel ist von außen vorgelegt. Die Tür ist alt, der Rahmen ist älter.|Unten steht die schmale Tür offen, der Riegel zurückgeschoben.}
 
 {choice_count() == 1: Es gibt nur einen Weg, und er führt hinunter.}
 
-* {knows("BETAEUBT") and knows("MECHANIKER")} [Die Scharniere mit dem Taschenmesser aushängen]() Riegel sind Überzeugungssache, Scharniere sind Physik. Die Tür lehnt sich dir in die Arme müde wie nach einer Doppelschicht.
+* {knows("BETAEUBT") and knows("MECHANIKER")} [Die Scharniere aushängen]() Riegel sind Überzeugungssache, Scharniere sind Physik. Das Taschenmesser, das du seit der Lehre in der Westentasche trägst, hebelt die Stifte heraus. Die Tür lehnt sich dir in die Arme müde wie nach einer Doppelschicht.
 * {knows("BETAEUBT")} [Die Schulter benutzen]()
   { test("skill") }
     Der Riegel hält. Der Rahmen nicht.
