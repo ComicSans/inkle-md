@@ -113,7 +113,7 @@ A scatter of plating that used to be hull section C. Between the panels lies a c
 * {knows("TECHNIK")} [Look closer]() You know how the Kestrel was packed: where section C lies, so does its emergency locker. It lies ten metres on, burst open, and the emergency kit inside has come through intact.
   ~ take("medikit")
   ~ time = time + 10
-* [Back](#site)
+* [Go back](#site)
 ---
 That is all the metal has to give, only edges and your own breathing.
 
@@ -126,7 +126,7 @@ You tilt your head back and read what is written there. The constellations are f
 ~ remember("BAHN")
 ~ time = time + 10
 
-* [Back](#site)
+* [Look back down](#site)
 
 # Resting {#rest}
 
@@ -141,13 +141,13 @@ You sit down with your back against a piece of hull and do nothing for a while. 
 
 Two directions that have names: the debris field down on the plain, the ridge above you. There would be a third, if you knew where to go. ARIS gives distances in minutes, as if they were prices.
 
-* [To the debris field](#wreck.arrival)
+* [Descend to the debris field](#wreck.arrival)
   ~ location = place("wreck")
   ~ time = time + 20
-* [To the ridge](#ridge.arrival)
+* [Walk to the ridge](#ridge.arrival)
   ~ location = place("ridge")
   ~ time = time + 30
-* {knows("SENKE")} [Into the basin](#basin.arrival)
+* {knows("SENKE")} [Descend into the basin](#basin.arrival)
   ~ location = place("basin")
   ~ time = time + 30
 + [Stay here after all](#site) You stay. The suit keeps counting.

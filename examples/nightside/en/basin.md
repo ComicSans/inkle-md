@@ -56,7 +56,7 @@ You stand before a door built for someone else, and the only open question is wh
 
 * [Look at the suits](#suits)
 * [Step to the wall and take the filter off one of them](#filter)
-* [Further in](#deep)
+* [Go further in](#deep)
 * [Follow the sound](#signal)
 * [Call ARIS](#aris_admits)
 * [Rest](#rest)
@@ -73,7 +73,7 @@ They are stranded like you. They stopped, and they did it tidily.
 
 * [Remove a filter](#filter)
 * {knows("MEDIZIN")} [Examine one of them](#body)
-+ [Back](#hall)
++ [Go back](#hall)
 
 # The Filter {#filter}
 
@@ -83,7 +83,7 @@ You take it off a dead one. The catch is made for fingers that count differently
 ~ remember("FILTER")
 ~ time = time + 20
 
-+ [Back](#hall)
++ [Go back](#hall)
 
 # The Stranger {#body}
 
@@ -92,7 +92,7 @@ You look at what it died of. It did not suffocate; the supply in its system woul
 ~ remember("AUFGEHOERT")
 ~ time = time + 15
 
-+ [Back](#hall)
++ [Go back](#hall)
 
 # The Receiver {#signal}
 
@@ -105,7 +105,7 @@ In the wall lies something that has been listening and answering for a long time
 ~ time = time + 15
 
 * [Call ARIS](#aris_admits)
-+ [Back](#hall)
++ [Go back](#hall)
 
 # What ARIS Says {#aris_admits}
 
@@ -131,19 +131,19 @@ At the very back, something is still running. No light, no sound, only an instal
 ~ remember("ANLAGE")
 ~ time = time + 20
 
-* [On](#choice)
-+ [Back](#hall)
+* [Go on](#choice)
++ [Go back](#hall)
 
 # What Now {#choice}
 
 Air {air}, time {time}. You run the numbers twice, and both times the same thing comes out: from here, the only ways left are ways that do not lead back.
 
-* {knows("BAKE")} [To the orbit window, while the beacon stands](#ende.rettung)
+* {knows("BAKE")} [Climb to the orbit window while the beacon stands](#ende.rettung)
   ~ time = time + 30
 * {knows("FILTER")} [Stay and switch off the radio](#ende.bleiben)
 * {knows("GESTAENDNIS")} [Shut ARIS down](#ende.abschalten)
 * {knows("MORGEN")} [Go out and look at the morning](#ende.dunkel)
-+ [Not yet](#hall)
++ [Wait a little longer](#hall)
 
 # Resting in the Chamber {#rest}
 
@@ -152,16 +152,16 @@ You sit down with your back to the wall, between two of the suits, and for a whi
 ~ time = time + 20
 ~ stamina = min(stamina + 3, stamina_max)
 
-+ [On](#hall)
++ [Go on](#hall)
 
 # Out {#depart}
 
 The door lets you out as unresistingly as it let you in. Outside, the night stands where you left it, and the silence out there sounds like something else now.
 
-* [To the ridge](#ridge.arrival)
+* [Walk to the ridge](#ridge.arrival)
   ~ location = place("ridge")
   ~ time = time + 25
-* [To the wreck field](#wreck.arrival)
+* [Walk to the wreck field](#wreck.arrival)
   ~ location = place("wreck")
   ~ time = time + 30
 + [Stay after all](#hall)

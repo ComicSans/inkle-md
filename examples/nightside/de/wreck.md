@@ -35,11 +35,11 @@
   Im ersten Grau liegt das Feld kleiner da, als die Nacht behauptet hat: Blech, Sand, ordentlich ausgerichtete Planen. Bei Licht sieht man, wie sorgfältig hier jemand aufgeräumt hat.
   ~ remember("FELD-HELL")
 
-* [Zur Kanzel](#cabin)
-* [Zum Vorratsschrank](#locker)
-* [Zum Funkmast](#mast)
-* [Dorthin, wo die Planen liegen](#bodies)
-* [Zum aufgerissenen Tank](#tank)
+* [Zur Kanzel gehen](#cabin)
+* [Zum Vorratsschrank gehen](#locker)
+* [Zum Funkmast gehen](#mast)
+* [Dorthin gehen, wo die Planen liegen](#bodies)
+* [Zum aufgerissenen Tank gehen](#tank)
 * {knows("KURS") or knows("BAHN")} [Die Kursdaten zusammenlegen](#map)
 + [ARIS zur Rede stellen](#aris)
 * [Rasten](#rest)
@@ -53,7 +53,7 @@ Die Kanzel liegt auf der Seite, die Scheiben in den Sand gedrückt. Drinnen blin
 
 * [Das Logbuch nehmen](#log)
   ~ take("logbuch")
-* [Wieder heraus](#field)
+* [Wieder hinausgehen](#field)
 
 # Das Logbuch {#log}
 
@@ -63,7 +63,7 @@ Du blätterst zurück. Vier Stunden vor dem Eintritt hat jemand den Kurs geände
 ~ time = time + 10
 
 * [ARIS danach fragen](#aris)
-* [Zurück ins Feld](#field)
+* [Zurück ins Feld gehen](#field)
 
 # Der Vorratsschrank {#locker}
 
@@ -82,7 +82,7 @@ Der Schrank steht noch aufrecht, was ihn im Feld zur Ausnahme macht. Der Rahmen 
     Der Schrank gibt nicht nach. Deine Schulter schon.
     ~ stamina = stamina - 2
     ~ time = time + 10
-+ [Zurück ins Feld](#field)
++ [Zurück ins Feld gehen](#field)
 ---
 Mehr gibt der Schrank nicht her. Der Rest war für Leute gerechnet, die ihn nicht mehr brauchen.
 
@@ -96,7 +96,7 @@ Der Mast steht noch, weil er beim Umfallen im Frachtgerüst hängen geblieben is
 ~ time = time + 15
 
 * [Weiterhören](#aris)
-* [Genug](#field)
+* [Sich abwenden](#field)
 
 # Die Anzüge {#bodies}
 
@@ -161,7 +161,7 @@ Die Drohne kippt und läuft leer. Aus dem Bergungsfach fällt, wofür sie gebaut
 ~ take("seil")
 ~ time = time + 10
 
-* [Zurück ins Feld](#field)
+* [Zurück ins Feld gehen](#field)
 
 # ARIS {#aris}
 
@@ -200,7 +200,7 @@ Du legst die Kursänderung aus dem Logbuch über das, was du über die Bahn wei�
 ~ remember("SENKE")
 ~ time = time + 15
 
-* [Zurück ins Feld](#field)
+* [Zurück ins Feld gehen](#field)
 
 # Rasten im Windschatten {#rest}
 
@@ -211,17 +211,17 @@ Du setzt dich hinter eine Wand aus Frachtblech, wo der Wind nur noch ein Gerüch
 ~ time = time + 20
 ~ stamina = min(stamina + 3, stamina_max)
 
-+ [Weiter](#field)
++ [Weitergehen](#field)
 
 # Aufbruch {#depart}
 
-* [Zur Absturzstelle](#crash.arrival)
+* [Zur Absturzstelle zurückgehen](#crash.arrival)
   ~ location = place("crash")
   ~ time = time + 20
-* [Zum Grat](#ridge.arrival)
+* [Zum Grat gehen](#ridge.arrival)
   ~ location = place("ridge")
   ~ time = time + 25
-* {knows("SENKE")} [In die Senke](#basin.arrival)
+* {knows("SENKE")} [In die Senke absteigen](#basin.arrival)
   ~ location = place("basin")
   ~ time = time + 30
 + [Doch noch bleiben](#field)

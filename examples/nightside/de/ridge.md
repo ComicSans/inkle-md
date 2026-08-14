@@ -26,7 +26,7 @@
 
 * [Klettern](#climb)
 * [Die Wand ablaufen](#cache)
-* {knows("HELM")} [Noch einmal zu dem Helm](#vasquez)
+* {knows("HELM")} [Noch einmal zu dem Helm steigen](#vasquez)
 * [ARIS fragen, ob jemand hier oben ist](#aris)
 * [Rasten](#rest)
 + [Aufbrechen](#depart)
@@ -104,7 +104,7 @@ Du stellst die Bake auf den höchsten Punkt und richtest sie auf das Orbitfenste
 
 ~ remember("BAKE")
 
-* {knows("TECHNIK")} [Fertig](#top)
+* {knows("TECHNIK")} [Die Ausrichtung abschließen](#top)
   ~ time = time + 15
 * [Weiter probieren, bis sie steht](#top) Du drehst, prüfst, drehst zurück. Irgendwann kommt das grüne Licht, und du beschließt, ihm zu glauben.
   ~ time = time + 30
@@ -119,7 +119,7 @@ Der Wind trägt Töne, und die Töne kommen in Abständen, die sich zählen lass
 ~ remember("KENNUNG")
 ~ time = time + 10
 
-* [Zurück](#top)
+* [Zurückgehen](#top)
 
 # ARIS am Grat {#aris}
 
@@ -141,7 +141,7 @@ Der Wind trägt Töne, und die Töne kommen in Abständen, die sich zählen lass
   ~ remember("HELM-VORGEHALTEN")
   ~ zweifel = min(zweifel + 1, zweifel_max)
   ~ time = time + 5
-+ [Zurück an die Wand](#foot)
++ [An die Wand zurückgehen](#foot)
 * [Es dabei belassen](#foot) Du sagst nichts mehr, und sie auch nicht. Unter der Stille läuft leise das Ticken weiter, drei, sieben, drei.
   ~ time = time + 5
 
@@ -152,7 +152,7 @@ Am Fuß der Wand hat sich ein Beutel aus dem Wrack verfangen, zwei Kilometer vom
 ~ take("kartusche")
 ~ time = time + 10
 
-* [Zurück](#foot)
+* [Zurückgehen](#foot)
 
 # Rasten am Fels {#rest}
 
@@ -163,29 +163,29 @@ Der Fels hält den Wind ab. Du setzt dich in den Winkel zwischen zwei Blöcken, 
 ~ time = time + 20
 ~ stamina = min(stamina + 3, stamina_max)
 
-+ [Weiter](#foot)
++ [Weitergehen](#foot)
 
 # Abstieg {#descent}
 
 Die Südseite des Grats fällt sanfter ab als die Wand, in langen Schuttbändern, die auf die Senke zulaufen. Von hier oben sieht der Weg aus wie eine Einladung. Du hast heute schon Einladungen gesehen, die keine waren.
 
-* {knows("SENKE")} [Nach Süden, in die Senke](#basin.arrival)
+* {knows("SENKE")} [Nach Süden in die Senke absteigen](#basin.arrival)
   ~ location = place("basin")
   ~ time = time + 25
-* [Zurück an den Fuß](#foot)
+* [An den Fuß zurückklettern](#foot)
   ~ time = time + 15
 
 # Aufbruch {#depart}
 
 Du gehst die Wand ein letztes Mal mit der Lampe ab, aus keinem besseren Grund als dem, dass man einen Ort ansieht, bevor man ihn verlässt. Der Grat sieht nicht zurück.
 
-* [Zur Absturzstelle](#crash.arrival)
+* [Zur Absturzstelle zurückgehen](#crash.arrival)
   ~ location = place("crash")
   ~ time = time + 30
-* [Zum Wrackfeld](#wreck.arrival)
+* [Zum Wrackfeld absteigen](#wreck.arrival)
   ~ location = place("wreck")
   ~ time = time + 25
-* {knows("SENKE")} [In die Senke](#basin.arrival)
+* {knows("SENKE")} [In die Senke absteigen](#basin.arrival)
   ~ location = place("basin")
   ~ time = time + 25
 + [Doch noch bleiben](#foot)

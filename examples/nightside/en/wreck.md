@@ -35,11 +35,11 @@
   In the first grey the field lies there smaller than the night claimed: sheet metal, sand, neatly aligned tarpaulins. In the light you can see how carefully somebody has tidied up here.
   ~ remember("FELD-HELL")
 
-* [To the cockpit](#cabin)
-* [To the supply locker](#locker)
-* [To the radio mast](#mast)
-* [Over to where the tarpaulins lie](#bodies)
-* [To the ruptured tank](#tank)
+* [Walk to the cockpit](#cabin)
+* [Walk to the supply locker](#locker)
+* [Walk to the radio mast](#mast)
+* [Walk over to where the tarpaulins lie](#bodies)
+* [Walk to the ruptured tank](#tank)
 * {knows("KURS") or knows("BAHN")} [Put the course data together](#map)
 + [Confront ARIS](#aris)
 * [Rest](#rest)
@@ -53,7 +53,7 @@ The cockpit lies on its side, its windows pressed into the sand. Inside, a conso
 
 * [Take the logbook](#log)
   ~ take("logbuch")
-* [Back out](#field)
+* [Climb back out](#field)
 
 # The Logbook {#log}
 
@@ -63,7 +63,7 @@ You page backwards. Four hours before entry, somebody changed the course: cleanl
 ~ time = time + 10
 
 * [Ask ARIS about it](#aris)
-* [Back to the field](#field)
+* [Go back to the field](#field)
 
 # The Supply Locker {#locker}
 
@@ -82,7 +82,7 @@ The locker is still upright, which makes it the exception in this field. The fra
     The locker does not give way. Your shoulder does.
     ~ stamina = stamina - 2
     ~ time = time + 10
-+ [Back to the field](#field)
++ [Go back to the field](#field)
 ---
 The locker has nothing more to offer. The rest was budgeted for people who no longer need it.
 
@@ -96,7 +96,7 @@ The mast is still standing because it caught in the cargo frame on the way down.
 ~ time = time + 15
 
 * [Keep listening](#aris)
-* [Enough](#field)
+* [Turn away](#field)
 
 # The Suits {#bodies}
 
@@ -161,7 +161,7 @@ The drone tips over and runs down. Out of the salvage bay falls the thing it was
 ~ take("seil")
 ~ time = time + 10
 
-* [Back to the field](#field)
+* [Go back to the field](#field)
 
 # ARIS {#aris}
 
@@ -200,7 +200,7 @@ You lay the course change from the logbook over what you know about the trajecto
 ~ remember("SENKE")
 ~ time = time + 15
 
-* [Back to the field](#field)
+* [Go back to the field](#field)
 
 # Resting in the Lee {#rest}
 
@@ -215,13 +215,13 @@ You sit down behind a wall of cargo plating, where the wind is no more than a ru
 
 # Departure {#depart}
 
-* [To the crash site](#crash.arrival)
+* [Go back to the crash site](#crash.arrival)
   ~ location = place("crash")
   ~ time = time + 20
-* [To the ridge](#ridge.arrival)
+* [Walk to the ridge](#ridge.arrival)
   ~ location = place("ridge")
   ~ time = time + 25
-* {knows("SENKE")} [Into the basin](#basin.arrival)
+* {knows("SENKE")} [Descend into the basin](#basin.arrival)
   ~ location = place("basin")
   ~ time = time + 30
 + [Stay after all](#field)

@@ -113,7 +113,7 @@ Ein Streufeld aus Blech, das mal Rumpfsektion C war. Zwischen den Platten liegt 
 * {knows("TECHNIK")} [Genauer hinsehen]() Du kennst die Packlogik der Kestrel: Wo Sektion C liegt, liegt auch ihr Notfallschrank. Er liegt zehn Meter weiter, aufgeplatzt, und der Notfallbeutel darin ist heil geblieben.
   ~ take("medikit")
   ~ time = time + 10
-* [Zurück](#site)
+* [Zurückgehen](#site)
 ---
 Mehr gibt das Blech nicht her, nur Kanten und deinen eigenen Atem.
 
@@ -126,7 +126,7 @@ Du legst den Kopf in den Nacken und liest, was da steht. Die Sternbilder sind fr
 ~ remember("BAHN")
 ~ time = time + 10
 
-* [Zurück](#site)
+* [Den Blick senken](#site)
 
 # Rasten {#rest}
 
@@ -135,19 +135,19 @@ Du setzt dich mit dem Rücken an ein Stück Rumpf und tust eine Weile nichts. De
 ~ time = time + 20
 ~ stamina = min(stamina + 3, stamina_max)
 
-+ [Weiter](#site)
++ [Weitergehen](#site)
 
 # Aufbruch {#depart}
 
 Zwei Richtungen, die einen Namen haben: das Wrackfeld unten in der Ebene, der Grat über dir. Eine dritte gäbe es, wenn du wüsstest, wohin. ARIS nennt Entfernungen in Minuten, als wären es Preise.
 
-* [Zum Wrackfeld](#wreck.arrival)
+* [Zum Wrackfeld absteigen](#wreck.arrival)
   ~ location = place("wreck")
   ~ time = time + 20
-* [Zum Grat](#ridge.arrival)
+* [Zum Grat gehen](#ridge.arrival)
   ~ location = place("ridge")
   ~ time = time + 30
-* {knows("SENKE")} [In die Senke](#basin.arrival)
+* {knows("SENKE")} [In die Senke absteigen](#basin.arrival)
   ~ location = place("basin")
   ~ time = time + 30
 + [Doch noch hierbleiben](#site) Du bleibst. Der Anzug zählt weiter.

@@ -104,7 +104,7 @@ You set the beacon on the highest point and align it with the orbital window. It
 
 ~ remember("BAKE")
 
-* {knows("TECHNIK")} [Done](#top)
+* {knows("TECHNIK")} [Finish the alignment](#top)
   ~ time = time + 15
 * [Keep trying until it stands](#top) You turn, check, turn back. At some point the green light comes on, and you decide to believe it.
   ~ time = time + 30
@@ -119,7 +119,7 @@ The wind carries tones, and the tones come at intervals that can be counted: thr
 ~ remember("KENNUNG")
 ~ time = time + 10
 
-* [Back](#top)
+* [Go back](#top)
 
 # ARIS on the Ridge {#aris}
 
@@ -141,7 +141,7 @@ The wind carries tones, and the tones come at intervals that can be counted: thr
   ~ remember("HELM-VORGEHALTEN")
   ~ zweifel = min(zweifel + 1, zweifel_max)
   ~ time = time + 5
-+ [Back to the wall](#foot)
++ [Go back to the wall](#foot)
 * [Leave it at that](#foot) You say nothing more, and neither does she. Under the silence the ticking runs quietly on, three, seven, three.
   ~ time = time + 5
 
@@ -152,7 +152,7 @@ At the foot of the wall a bag from the wreck has snagged, two kilometres from th
 ~ take("kartusche")
 ~ time = time + 10
 
-* [Back](#foot)
+* [Go back](#foot)
 
 # Resting Against the Rock {#rest}
 
@@ -169,23 +169,23 @@ The rock keeps the wind off. You sit down in the angle between two blocks, lean 
 
 The south side of the ridge falls away more gently than the wall, in long bands of scree that run down towards the basin. From up here the route looks like an invitation. You have already seen invitations today that were not.
 
-* {knows("SENKE")} [South, into the basin](#basin.arrival)
+* {knows("SENKE")} [Descend south into the basin](#basin.arrival)
   ~ location = place("basin")
   ~ time = time + 25
-* [Back down to the foot](#foot)
+* [Climb back down to the foot](#foot)
   ~ time = time + 15
 
 # Setting Out {#depart}
 
 You walk the wall one last time with the lamp, for no better reason than that you look at a place before you leave it. The ridge does not look back.
 
-* [To the crash site](#crash.arrival)
+* [Go back to the crash site](#crash.arrival)
   ~ location = place("crash")
   ~ time = time + 30
-* [To the wreck field](#wreck.arrival)
+* [Descend to the wreck field](#wreck.arrival)
   ~ location = place("wreck")
   ~ time = time + 25
-* {knows("SENKE")} [Into the basin](#basin.arrival)
+* {knows("SENKE")} [Descend into the basin](#basin.arrival)
   ~ location = place("basin")
   ~ time = time + 25
 + [Stay after all](#foot)

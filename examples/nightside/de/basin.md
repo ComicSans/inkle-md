@@ -56,7 +56,7 @@ Du stehst vor einer Tür, die für jemand anderen gebaut wurde, und die einzige 
 
 * [Die Anzüge ansehen](#suits)
 * [An die Wand treten und einem von ihnen den Filter abnehmen](#filter)
-* [Weiter nach innen](#deep)
+* [Weiter nach innen gehen](#deep)
 * [Dem Ton nachgehen](#signal)
 * [ARIS rufen](#aris_admits)
 * [Rasten](#rest)
@@ -73,7 +73,7 @@ Sie sind gestrandet wie du. Sie haben aufgehört, und sie haben es ordentlich ge
 
 * [Einen Filter ausbauen](#filter)
 * {knows("MEDIZIN")} [Einen von ihnen untersuchen](#body)
-+ [Zurück](#hall)
++ [Zurückgehen](#hall)
 
 # Der Filter {#filter}
 
@@ -83,7 +83,7 @@ Du nimmst ihn einem der toten Anzüge ab. Der Verschluss ist für Finger gemacht
 ~ remember("FILTER")
 ~ time = time + 20
 
-+ [Zurück](#hall)
++ [Zurückgehen](#hall)
 
 # Die fremde Gestalt {#body}
 
@@ -92,7 +92,7 @@ Du siehst dir an, woran sie gestorben ist. Sie ist nicht erstickt; der Vorrat in
 ~ remember("AUFGEHOERT")
 ~ time = time + 15
 
-+ [Zurück](#hall)
++ [Zurückgehen](#hall)
 
 # Der Empfänger {#signal}
 
@@ -105,7 +105,7 @@ In der Wand liegt etwas, das seit langer Zeit hört und antwortet. Kein Sender, 
 ~ time = time + 15
 
 * [ARIS rufen](#aris_admits)
-+ [Zurück](#hall)
++ [Zurückgehen](#hall)
 
 # Was ARIS sagt {#aris_admits}
 
@@ -131,19 +131,19 @@ Ganz hinten läuft noch etwas. Kein Licht, kein Ton, nur eine Anlage, die in lan
 ~ remember("ANLAGE")
 ~ time = time + 20
 
-* [Weiter](#choice)
-+ [Zurück](#hall)
+* [Weitergehen](#choice)
++ [Zurückgehen](#hall)
 
 # Was jetzt {#choice}
 
 Atemluft {air}, Zeit {time}. Du rechnest es zweimal durch, und beide Male kommt dasselbe heraus: Von hier führen nur noch Wege weg, die nicht zurückführen.
 
-* {knows("BAKE")} [Zum Orbitfenster, solange die Bake steht](#ende.rettung)
+* {knows("BAKE")} [Zum Orbitfenster aufsteigen, solange die Bake steht](#ende.rettung)
   ~ time = time + 30
 * {knows("FILTER")} [Bleiben und den Funk abstellen](#ende.bleiben)
 * {knows("GESTAENDNIS")} [ARIS abschalten](#ende.abschalten)
 * {knows("MORGEN")} [Hinausgehen und den Morgen ansehen](#ende.dunkel)
-+ [Noch nicht](#hall)
++ [Noch warten](#hall)
 
 # Rasten in der Kammer {#rest}
 
@@ -152,16 +152,16 @@ Du setzt dich mit dem Rücken an die Wand, zwischen zwei der Anzüge, und tust e
 ~ time = time + 20
 ~ stamina = min(stamina + 3, stamina_max)
 
-+ [Weiter](#hall)
++ [Weitergehen](#hall)
 
 # Hinaus {#depart}
 
 Die Tür lässt dich hinaus, so widerstandslos, wie sie dich hereingelassen hat. Draußen steht die Nacht, wo du sie verlassen hast, und die Stille dort klingt jetzt nach etwas anderem.
 
-* [Zum Grat](#ridge.arrival)
+* [Zum Grat gehen](#ridge.arrival)
   ~ location = place("ridge")
   ~ time = time + 25
-* [Zum Wrackfeld](#wreck.arrival)
+* [Zum Wrackfeld gehen](#wreck.arrival)
   ~ location = place("wreck")
   ~ time = time + 30
 + [Doch noch bleiben](#hall)
