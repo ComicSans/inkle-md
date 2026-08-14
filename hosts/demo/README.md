@@ -21,11 +21,20 @@ is the one `src/` produces (12.8).
 `ShelfView` is the short one. Open the bundle, hand the story to
 `StoryScreen`, done. That is the whole of the first way to play.
 
-`MapView` is the interesting one. The world it draws belongs to the app: the
-party's stamina, their gold, the weather. A place leads into a book at a node
-the map names, and the app watches `view.node` after every turn until it sees
-one of its own exits. Two things there are worth reading before writing your
-own:
+`MapView` is the interesting one. It draws the house on the hill as a
+floorplan, four storeys of it, and the world it holds belongs to the app: the
+party's stamina, their gold, the weather, and which doors have been opened. A
+room leads into a book at a node the plan names, and the app watches
+`view.node` after every turn until it sees one of its own exits. One room in
+the cellar leads into the *other* book, because a save is per book (12.6) and
+an app is exactly the thing that can carry a character across.
+
+Two more things belong to the app rather than to any book: **Back to the plan**
+walks out of an episode mid-scene, keeping whatever the character earned, and
+**Start over** puts the whole world back, saves included. Neither is something
+a book could offer, and both are things a reader expects.
+
+Two things are worth reading before writing your own:
 
 - **The first visit has no save yet.** `go` alone would drop the reader into
   the passage with no stats, and the first blow would kill them. So the book

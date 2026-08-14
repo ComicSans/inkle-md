@@ -48,4 +48,24 @@ enum Books {
     }
 
     static let all = ["thornwood-book", "house"]
+
+    /// The title a reader sees. It is in the book's own frontmatter, and an
+    /// app that wanted it exactly could read `meta.title` out of story.json
+    /// (12.8). This one keeps a short name of its own, because a shelf label
+    /// and a title page are not the same thing.
+    static func title(_ name: String) -> String {
+        switch name {
+        case "thornwood-book": return "The Crypt under the Thorn"
+        case "house": return "The House on the Hill"
+        default: return name
+        }
+    }
+
+    static func note(_ name: String) -> String? {
+        switch name {
+        case "thornwood-book": return "two chapters"
+        case "house": return "a long night"
+        default: return nil
+        }
+    }
 }

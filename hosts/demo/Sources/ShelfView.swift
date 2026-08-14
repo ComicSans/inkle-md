@@ -15,39 +15,59 @@ import InkleMD
 /// because where it is kept was never part of the format (12.5).
 struct ShelfView: View {
     @State private var open: Story?
+    @State private var openName: String?
     @State private var failure: String?
+
+    private let columns = [GridItem(.adaptive(minimum: 150), spacing: 20)]
 
     var body: some View {
         NavigationStack {
             Group {
                 if let story = open {
                     StoryScreen(story: story)
-                        .toolbar {
-                            ToolbarItem {
-                                Button("Close") { close(story) }
-                            }
-                        }
                 } else {
                     shelf
                 }
             }
-            .navigationTitle(open == nil ? "Shelf" : "")
+            .navigationTitle(open == nil ? "Shelf" : (openName ?? ""))
+            .toolbar {
+                if let story = open {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button("Close", systemImage: "books.vertical") { close(story) }
+                    }
+                }
+            }
         }
     }
 
     private var shelf: some View {
-        List {
-            Section {
+        ScrollView {
+            LazyVGrid(columns: columns, spacing: 20) {
                 ForEach(Books.all, id: \.self) { name in
-                    Button(name) { openBook(name) }
-                        .frame(minHeight: 44)
+                    Button { openBook(name) } label: {
+                        VStack(spacing: 6) {
+                            Cover(title: Books.title(name), subtitle: Books.note(name))
+                            if hasSave(name) {
+                                Label("Started", systemImage: "bookmark.fill")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(Books.title(name))
+                    .accessibilityHint(hasSave(name) ? "Continues where you left it" : "Opens at the first page")
                 }
-            } footer: {
-                Text("A book opens where it begins, and remembers where you left it.")
             }
+            .padding()
+
             if let failure {
-                Text(failure).foregroundStyle(.red)
+                Text(failure).font(.footnote).foregroundStyle(.red).padding(.horizontal)
             }
+            Text("A book opens where it begins, and remembers where you left it.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .padding()
         }
     }
 
@@ -64,6 +84,7 @@ struct ShelfView: View {
             if let saved = try? Data(contentsOf: saveFile(name)) {
                 try? story.load(saved)
             }
+            openName = Books.title(name)
             open = story
         } catch {
             failure = String(describing: error)
@@ -76,6 +97,11 @@ struct ShelfView: View {
             try? data.write(to: saveFile(name))
         }
         open = nil
+        openName = nil
+    }
+
+    private func hasSave(_ name: String) -> Bool {
+        FileManager.default.fileExists(atPath: saveFile(name).path)
     }
 
     private func saveFile(_ name: String) -> URL {
