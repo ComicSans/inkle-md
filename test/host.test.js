@@ -88,19 +88,19 @@ test('save and load cross the protocol as plain JSON', () => {
 test('the bundle is the story and the engine, each in its own file', () => {
   const files = bundleFiles(book());
 
-  assert.deepEqual(Object.keys(files).sort(), ['inkle-md.js', 'story.json']);
+  assert.deepEqual(Object.keys(files).sort(), ['story-weaver.js', 'story.json']);
   assert.equal(JSON.parse(files['story.json']).format, 1);
   // No module keywords survive: the engine runs where there is no loader.
-  assert.doesNotMatch(files['inkle-md.js'], /^(import|export) /m);
-  assert.match(files['inkle-md.js'], /Mozilla Public License/);
+  assert.doesNotMatch(files['story-weaver.js'], /^(import|export) /m);
+  assert.match(files['story-weaver.js'], /Mozilla Public License/);
   // The view of 12.2 stays behind; a native host draws its own.
-  assert.doesNotMatch(files['inkle-md.js'], /document\.createElement/);
+  assert.doesNotMatch(files['story-weaver.js'], /document\.createElement/);
 });
 
 test('the engine reaches for nothing above the language', () => {
   // Minified, because the comments are where these names are allowed to
   // appear: `clone` explains at length why it is not `structuredClone`.
-  const engine = bundleFiles(book(), { minify: true })['inkle-md.js'];
+  const engine = bundleFiles(book(), { minify: true })['story-weaver.js'];
 
   // SPEC 12.5 states the rule; this is what keeps it from being a comment.
   // The realm test below catches these too, but only along the path it walks,
@@ -118,12 +118,12 @@ test('the bundle plays a whole game in a bare JavaScript realm', () => {
   const realm = createContext(Object.create(null));
   assert.equal(runInContext('typeof structuredClone', realm), 'undefined');
 
-  runInContext(files['inkle-md.js'], realm);
+  runInContext(files['story-weaver.js'], realm);
   runInContext(`globalThis.__story = ${JSON.stringify(files['story.json'])}`, realm);
   const send = (command) => JSON.parse(
-    runInContext(`inkleMd.send(${JSON.stringify(JSON.stringify(command))})`, realm));
+    runInContext(`storyWeaver.send(${JSON.stringify(JSON.stringify(command))})`, realm));
 
-  const started = JSON.parse(runInContext('inkleMd.start(__story, \'{"seed":7}\')', realm));
+  const started = JSON.parse(runInContext('storyWeaver.start(__story, \'{"seed":7}\')', realm));
   assert.equal(started.ok, true);
   assert.equal(send({ cmd: 'begin', picks: [['sword']] }).ok, true);
 

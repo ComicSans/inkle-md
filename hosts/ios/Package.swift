@@ -11,13 +11,13 @@ import PackageDescription
 // No dependencies here either, for the same reason the rest of the project has
 // none: JavaScriptCore is a system framework on every platform listed below.
 let package = Package(
-    name: "InkleMD",
+    name: "StoryWeaver",
     platforms: [.iOS(.v16), .macOS(.v13)],
     products: [
-        .library(name: "InkleMD", targets: ["InkleMD"]),
+        .library(name: "StoryWeaver", targets: ["StoryWeaver"]),
     ],
     targets: [
-        .target(name: "InkleMD"),
-        .testTarget(name: "InkleMDTests", dependencies: ["InkleMD"]),
+        .target(name: "StoryWeaver"),
+        .testTarget(name: "StoryWeaverTests", dependencies: ["StoryWeaver"]),
     ]
 )

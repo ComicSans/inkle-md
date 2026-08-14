@@ -5,7 +5,7 @@
  * Copyright 2026 Tobias Reithmeier
  */
 
-package de.tobiasreithmeier.inklemd
+package de.tobiasreithmeier.storyweaver
 
 import android.content.Context
 import android.webkit.WebView
@@ -18,7 +18,7 @@ import kotlin.coroutines.resume
  * A book being played, over the host protocol of SPEC 12.7.
  *
  * The story logic is not written twice, and not a third time either. This
- * hands `inkle-md.js` to a JavaScript engine Android already has and speaks
+ * hands `story-weaver.js` to a JavaScript engine Android already has and speaks
  * the same protocol the iOS host speaks: one command in, the whole view out,
  * both as text. Principle 5 is the reason - seed plus counter has to produce
  * the same die here as in a browser and on a phone of the other kind, and one
@@ -44,11 +44,11 @@ class Story private constructor(
 
     companion object {
         /**
-         * Opens the two files `inkle-md bundle --out dir` wrote, from the
+         * Opens the two files `story-weaver bundle --out dir` wrote, from the
          * app's assets.
          *
          * @param assetDirectory the directory inside `assets/` holding
-         *   `story.json` and `inkle-md.js`
+         *   `story.json` and `story-weaver.js`
          * @param seed fixes the dice so a playthrough replays exactly
          *   (principle 5); omit and the engine draws its own
          */
@@ -58,7 +58,7 @@ class Story private constructor(
             seed: Int? = null,
             language: String? = null,
         ): Story {
-            val engine = context.assets.open("$assetDirectory/inkle-md.js")
+            val engine = context.assets.open("$assetDirectory/story-weaver.js")
                 .bufferedReader().use { it.readText() }
             val story = context.assets.open("$assetDirectory/story.json")
                 .bufferedReader().use { it.readText() }

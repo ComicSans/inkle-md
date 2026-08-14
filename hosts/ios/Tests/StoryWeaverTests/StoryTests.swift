@@ -6,7 +6,7 @@
  */
 
 import XCTest
-@testable import InkleMD
+@testable import StoryWeaver
 
 /// The bundle is built from the examples in this repository rather than
 /// checked in beside the Swift, so there is one copy of the engine and it is
@@ -179,8 +179,8 @@ extension StoryTests {
     /// The repository root, found from this file rather than from a working
     /// directory, so the tests run from anywhere.
     static var repository: URL {
-        URL(fileURLWithPath: #filePath)      // …/hosts/ios/Tests/InkleMDTests/StoryTests.swift
-            .deletingLastPathComponent()     // …/InkleMDTests
+        URL(fileURLWithPath: #filePath)      // …/hosts/ios/Tests/StoryWeaverTests/StoryTests.swift
+            .deletingLastPathComponent()     // …/StoryWeaverTests
             .deletingLastPathComponent()     // …/Tests
             .deletingLastPathComponent()     // …/ios
             .deletingLastPathComponent()     // …/hosts
@@ -189,7 +189,7 @@ extension StoryTests {
 
     static func buildBundle(example: String) throws -> URL {
         let out = FileManager.default.temporaryDirectory
-            .appendingPathComponent("inkle-md-tests")
+            .appendingPathComponent("story-weaver-tests")
             .appendingPathComponent(example.replacingOccurrences(of: "/", with: "-"))
         try run(["src/cli.js", "bundle", "examples/\(example)", "--out", out.path, "--quiet"])
         return out
@@ -302,7 +302,7 @@ final class EpisodeTests: XCTestCase {
         // A new edition is the same book with a bumped `version:`. Here that
         // is faked by editing the story JSON, which is what an app would meet
         // on the day it ships one.
-        let engine = try String(contentsOf: bundle.appendingPathComponent("inkle-md.js"), encoding: .utf8)
+        let engine = try String(contentsOf: bundle.appendingPathComponent("story-weaver.js"), encoding: .utf8)
         var json = try JSONSerialization.jsonObject(
             with: try Data(contentsOf: bundle.appendingPathComponent("story.json"))) as! [String: Any]
         var meta = json["meta"] as! [String: Any]

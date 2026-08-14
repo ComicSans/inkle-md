@@ -7,13 +7,13 @@ character back out.
 
 ```bash
 cd hosts/demo
-xcodegen generate            # writes InkleMDDemo.xcodeproj from project.yml
-open InkleMDDemo.xcodeproj
+xcodegen generate            # writes StoryWeaverDemo.xcodeproj from project.yml
+open StoryWeaverDemo.xcodeproj
 ```
 
 The project is generated rather than checked in, because a `.xcodeproj` is not
 a thing to read or merge by hand. So are the books: a build step runs
-`inkle-md bundle` over `examples/`, so there is one copy of the runtime and it
+`story-weaver bundle` over `examples/`, so there is one copy of the runtime and it
 is the one `src/` produces (12.8).
 
 ## What to look at

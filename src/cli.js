@@ -7,14 +7,14 @@
  */
 
 /**
- * inkle-md build    <entry> [--out file.json] [--strict] [--quiet]
- * inkle-md lint     <entry> [--strict] [--json]
- * inkle-md export   <entry> [--out file.html] [--strict] [--minify]
- * inkle-md bundle   <entry> --out DIR [--strict] [--minify]
- * inkle-md play     <entry> [--seed N] [--lang xx] [--script 1,2,a,a] [--host k=v] [--json]
- * inkle-md simulate <entry> [--runs N] [--host k=v] [--json]
- * inkle-md import   <file.ink> [--out FILE] [--title T] [--author A] [--notice FILE]
- * inkle-md mcp
+ * story-weaver build    <entry> [--out file.json] [--strict] [--quiet]
+ * story-weaver lint     <entry> [--strict] [--json]
+ * story-weaver export   <entry> [--out file.html] [--strict] [--minify]
+ * story-weaver bundle   <entry> --out DIR [--strict] [--minify]
+ * story-weaver play     <entry> [--seed N] [--lang xx] [--script 1,2,a,a] [--host k=v] [--json]
+ * story-weaver simulate <entry> [--runs N] [--host k=v] [--json]
+ * story-weaver import   <file.ink> [--out FILE] [--title T] [--author A] [--notice FILE]
+ * story-weaver mcp
  *
  * `entry` is a .md file or a book.yaml.
  */
@@ -42,13 +42,13 @@ function main(argv) {
   if (!command || !entry || ['-h', '--help'].includes(command)) {
     process.stdout.write([
       'usage:',
-      '  inkle-md build    <entry> [--out FILE] [--strict] [--quiet]',
-      '  inkle-md lint     <entry> [--strict] [--json]',
-      '  inkle-md export   <entry> [--out FILE] [--strict] [--minify]',
-      '  inkle-md bundle   <entry> --out DIR [--strict] [--minify]',
-      '  inkle-md play     <entry> [--seed N] [--lang xx] [--script 1,2,a] [--host k=v] [--json]',
-      '  inkle-md simulate <entry> [--runs N] [--host k=v] [--json]',
-      '  inkle-md mcp',
+      '  story-weaver build    <entry> [--out FILE] [--strict] [--quiet]',
+      '  story-weaver lint     <entry> [--strict] [--json]',
+      '  story-weaver export   <entry> [--out FILE] [--strict] [--minify]',
+      '  story-weaver bundle   <entry> --out DIR [--strict] [--minify]',
+      '  story-weaver play     <entry> [--seed N] [--lang xx] [--script 1,2,a] [--host k=v] [--json]',
+      '  story-weaver simulate <entry> [--runs N] [--host k=v] [--json]',
+      '  story-weaver mcp',
       '',
     ].join('\n'));
     return command ? 1 : 0;
@@ -58,7 +58,7 @@ function main(argv) {
   const value = (name) => { const i = rest.indexOf(name); return i >= 0 ? rest[i + 1] : null; };
   const out = value('--out');
 
-  // The importer reads ink, not inkle-md, so it runs before the compiler.
+  // The importer reads ink, not story-weaver, so it runs before the compiler.
   if (command === 'import') {
     const notice = value('--notice') ? readFileSync(value('--notice'), 'utf8').trimEnd() : null;
     const result = importInk(readFileSync(entry, 'utf8'), {

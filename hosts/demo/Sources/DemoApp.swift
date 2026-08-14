@@ -6,7 +6,7 @@
  */
 
 import SwiftUI
-import InkleMD
+import StoryWeaver
 
 /// A shelf of books, on macOS and iOS from one source.
 ///
@@ -31,7 +31,7 @@ struct ContentView: View {
     }
 }
 
-/// Where the compiled books live: `inkle-md bundle` wrote them into the app's
+/// Where the compiled books live: `story-weaver bundle` wrote them into the app's
 /// resources at build time, one directory each.
 enum Books {
     static func directory(_ name: String) -> URL? {

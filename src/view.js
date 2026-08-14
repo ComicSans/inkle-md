@@ -56,7 +56,7 @@ const UI = {
 function mount(json, root, options = {}) {
   const setDocumentLang = options.setDocumentLang !== false;
   const headingTag = options.heading ?? 'h1';
-  const key = `inkle-md:${json.meta.start}`;
+  const key = `story-weaver:${json.meta.start}`;
   const open = new Set();   // aufgeklappte Abschnitte des Heldenbogens
   const wanted = json.meta.languages.includes(options.lang)
     ? options.lang

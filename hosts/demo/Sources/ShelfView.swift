@@ -6,7 +6,7 @@
  */
 
 import SwiftUI
-import InkleMD
+import StoryWeaver
 
 /// The first way to play: a book, read from its first page (SPEC 12.6).
 ///

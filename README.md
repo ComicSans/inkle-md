@@ -1,4 +1,4 @@
-# inkle-md
+# Story Weaver
 
 A gamebook language written in Markdown: ink semantics, Markdown syntax, and a
 fixed RPG layer modelled on the 1980s gamebooks. [SPEC.md](SPEC.md) is the
@@ -44,13 +44,13 @@ on after every redraw, so a host can follow along in the source: `meta.files`
 names the chapter files and every node carries its `file` and `line`.
 
 A host in another language cannot call any of that, so it gets a protocol
-instead. `bundle` writes `story.json` and `inkle-md.js` into a directory; the
+instead. `bundle` writes `story.json` and `story-weaver.js` into a directory; the
 script defines two names, both taking and returning text, and a host on iOS or
 Android hands them to the JavaScript engine it already has:
 
 ```js
-inkleMd.start(storyJsonText, '{"seed":7}');        // -> the first view
-inkleMd.send('{"cmd":"choose","index":1}');        // -> one answer
+storyWeaver.start(storyJsonText, '{"seed":7}');        // -> the first view
+storyWeaver.send('{"cmd":"choose","index":1}');        // -> one answer
 ```
 
 One command in, the whole view out, so a turn costs one crossing rather than a
@@ -84,7 +84,7 @@ are its own; SPEC 12.5 to 12.8 says what that means.
 | `src/bundle.js` | Story and engine as files a native host embeds, SPEC 12.8 |
 | `src/play.js` | Playing from the terminal, scripted replays, simulation |
 | `src/mcp.js` | lint, play and simulate as MCP tools over stdio |
-| `src/import.js` | Reads ink and writes inkle-md, reporting what has no equivalent |
+| `src/import.js` | Reads ink and writes Story Weaver, reporting what has no equivalent |
 | `src/cli.js` | `build`, `lint`, `export`, `bundle`, `play`, `simulate`, `import`, `mcp` |
 | `examples/thornwood.md` | One file, one language: creation, combat, two endings |
 | `examples/thornwood-book/` | The same book as a project: two chapters, German and English |
@@ -135,7 +135,7 @@ where the weave would have gone on. What has no equivalent at all - threads,
 lists, external functions - is reported with the ink line number and left out.
 
 Those notes carry no error code on purpose: SPEC 10.3 and 11 describe an
-inkle-md document, and the importer's input is not one.
+Story Weaver document, and the importer's input is not one.
 
 ## Three rules worth knowing before writing a book
 

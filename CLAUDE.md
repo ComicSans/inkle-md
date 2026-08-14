@@ -1,4 +1,4 @@
-# inkle-md
+# Story Weaver
 
 Ein Spielbuchformat in Markdown mit ink-Semantik und einer RPG-Schicht im Stil
 der Spielbücher der 80er. `SPEC.md` ist die Sprachdefinition und entscheidet;
@@ -42,7 +42,7 @@ node --test 'test/*.test.js'
 node src/cli.js lint examples/thornwood.md --strict     # und thornwood-book, house, nightside
 cd hosts/ios && swift test
 cd hosts/ios && xcrun swiftc -typecheck -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)" \
-  -target arm64-apple-ios16.0-simulator Sources/InkleMD/*.swift
+  -target arm64-apple-ios16.0-simulator Sources/StoryWeaver/*.swift
 ```
 
 Der letzte Befehl ist kein Build, sondern eine Typprüfung: `swift test` läuft auf
@@ -70,7 +70,7 @@ daraus, bis Tobias widerspricht:
   Xcode-Projekt, ein SwiftPM-Package genügt ihm nicht.
 
 **`examples/intercept.md` ist importiert, nicht geschrieben.** Es entsteht aus
-`inkle-md import` über inkles ink-Quelle von *The Intercept* und trägt deren
+`story-weaver import` über inkles ink-Quelle von *The Intercept* und trägt deren
 MIT-Vermerk im Frontmatter statt des MPL-Headers - fremder Text bleibt unter
 fremder Lizenz. Es bleibt englisch, weil Übersetzen den Nachweis entwertet, und
 es ist als einziges Beispiel nicht `--strict` sauber: L012 meldet wiederholte

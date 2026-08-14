@@ -6,13 +6,13 @@
  */
 
 /**
- * Reads an ink file and writes the same story as inkle-md.
+ * Reads an ink file and writes the same story as story-weaver.
  *
- * The importer covers the part of ink that inkle-md has a word for. Where ink
+ * The importer covers the part of ink that story-weaver has a word for. Where ink
  * says something this language does not, the importer says so with the ink
  * line number rather than guessing: a note is not an error code from SPEC 10.3
  * or a warning from SPEC 11, because its subject is the ink source, and that
- * is not an inkle-md document.
+ * is not an story-weaver document.
  *
  * What is carried over: knots, stitches, weaves with their gathers and labels,
  * choices with their bracket split and conditions, diverts, variables and
@@ -580,7 +580,7 @@ function readChoiceBody(rest, line, notes) {
   }
 
   // ink: text before `[` shows in both, inside `[ ]` only on the button, after
-  // `]` only in the text. inkle-md prints the button and the follow-on text
+  // `]` only in the text. story-weaver prints the button and the follow-on text
   // separately, so the shared part is written twice (SPEC 4.3).
   const open = body.indexOf('[');
   const close = body.indexOf(']');
@@ -789,7 +789,7 @@ function terminates(children) {
 
 /**
  * In ink a knot runs on into its next stitch when nothing diverts away.
- * inkle-md wants every path to name where it goes (E110), so the fall-through
+ * story-weaver wants every path to name where it goes (E110), so the fall-through
  * is written out.
  */
 function linkFallthrough(nodes, ctx) {
@@ -825,7 +825,7 @@ function linkFallthrough(nodes, ctx) {
 
 /**
  * ink closes a nested run of choices by itself: once one is taken, the flow
- * falls out to the gather above. inkle-md keeps offering the level until a
+ * falls out to the gather above. story-weaver keeps offering the level until a
  * gather closes it, so a nested run that has none gets one.
  */
 function closeWeaves(node) {
@@ -854,7 +854,7 @@ function closeWeaves(node) {
 
 /**
  * ink lets a divert land on any label, including one on a choice or on a
- * plain run of text. inkle-md jumps to nodes and to gathers, so a label used
+ * plain run of text. story-weaver jumps to nodes and to gathers, so a label used
  * as a target becomes a node of its own, carrying whatever followed it.
  */
 function liftTargets(nodes, ctx) {
@@ -980,7 +980,7 @@ function liftDeepWeaves(nodes, ctx) {
 }
 
 /**
- * ink resolves a repeated label by context; inkle-md ids are global (SPEC
+ * ink resolves a repeated label by context; story-weaver ids are global (SPEC
  * 3.5), so a second one gets a number and the collision is reported.
  */
 function uniqueName(wanted, nodes, ctx, line) {
@@ -1160,7 +1160,7 @@ function inlineText(text, ctx) {
   });
 }
 
-/** Resolves an ink divert target to an inkle-md id. */
+/** Resolves an ink divert target to an story-weaver id. */
 function divertTarget(target, ctx, line) {
   const name = target.trim();
   if (/^(END|DONE)$/i.test(name)) return 'END';

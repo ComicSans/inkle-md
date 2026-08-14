@@ -121,7 +121,7 @@ async function handle(message) {
     return {
       protocolVersion: params?.protocolVersion ?? PROTOCOL_VERSION,
       capabilities: { tools: {} },
-      serverInfo: { name: 'inkle-md', version: '0.1.0' },
+      serverInfo: { name: 'story-weaver', version: '0.1.0' },
     };
   }
   if (method === 'ping') return {};

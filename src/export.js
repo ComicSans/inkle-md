@@ -107,7 +107,7 @@ export function exportHtml(story, options = {}) {
   const runtime = shrink(read('runtime.js').replace(/^export /gm, ''));
   const view = shrink(read('view.js').replace(/^export /gm, ''));
   const css = shrink(CSS);
-  const title = pick(story.meta.title) ?? 'inkle-md';
+  const title = pick(story.meta.title) ?? 'story-weaver';
 
   return `<!doctype html>
 <html lang="${story.meta.default}">
@@ -121,7 +121,7 @@ export function exportHtml(story, options = {}) {
 <div id="app"></div>
 <script type="application/json" id="story">${escapeJson(JSON.stringify(story))}</script>
 <script>
-/* The runtime and view below are inkle-md, under the Mozilla Public License
+/* The runtime and view below are story-weaver, under the Mozilla Public License
  * 2.0. A copy of the source is this file; the licence is at
  * https://mozilla.org/MPL/2.0/. The story itself is the author's own work. */
 ${runtime}

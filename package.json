@@ -1,11 +1,11 @@
 {
-  "name": "inkle-md",
+  "name": "story-weaver",
   "version": "0.1.0",
   "description": "A gamebook language in Markdown: compiler, linter and web export",
   "type": "module",
   "license": "MPL-2.0",
   "engines": { "node": ">=20" },
-  "bin": { "inkle-md": "./src/cli.js" },
+  "bin": { "story-weaver": "./src/cli.js" },
   "scripts": {
     "test": "node --test 'test/*.test.js'",
     "lint:example": "node src/cli.js lint examples/thornwood.md --strict",

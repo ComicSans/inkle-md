@@ -1,6 +1,6 @@
-# InkleMD for iOS
+# StoryWeaver for iOS
 
-A host for inkle-md books on Apple platforms, per SPEC 12.5 to 12.8. It plays
+A host for Story Weaver books on Apple platforms, per SPEC 12.5 to 12.8. It plays
 the same story logic a browser plays, because it embeds the same runtime rather
 than reimplementing it.
 
@@ -9,13 +9,13 @@ let story = try Story(bundle: Bundle.main.url(forResource: "thornwood", withExte
 StoryScreen(story: story)
 ```
 
-The directory it opens is what `inkle-md bundle` writes:
+The directory it opens is what `story-weaver bundle` writes:
 
 ```bash
 node src/cli.js bundle examples/thornwood.md --out MyApp/Resources/thornwood
 ```
 
-Two files land there. `story.json` is the book, `inkle-md.js` is the runtime
+Two files land there. `story.json` is the book, `story-weaver.js` is the runtime
 and the host protocol. Drop both into the app's resources as a folder
 reference, and the `Story` above reads them.
 

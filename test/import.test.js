@@ -162,7 +162,7 @@ test('a weave deeper than three levels is lifted into a node', () => {
   assert.ok(warnings);
 });
 
-test('what ink says and inkle-md does not is reported with its ink line', () => {
+test('what ink says and story-weaver does not is reported with its ink line', () => {
   const { notes } = build(`
 LIST colours = red, green
 === start ===

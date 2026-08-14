@@ -1,6 +1,6 @@
-# inkle-md, draft 0.8
+# Story Weaver, draft 0.8
 
-Welcome. inkle-md is a gamebook language written in Markdown. It takes its
+Welcome. Story Weaver is a gamebook language written in Markdown. It takes its
 story logic from ink, its syntax from Markdown, and it adds a fixed RPG layer
 modelled on the 1980s gamebooks. You write in a plain text file that stays
 readable in any editor and on GitHub. When you have read this document, you
@@ -82,7 +82,7 @@ and 11 exist for that reason.
 ## 2. What makes ink dense, and what replaces it
 
 ink is a fine language, but three of its habits make it hard to read cold.
-This section names them, and it says what inkle-md does instead. You do not
+This section names them, and it says what Story Weaver does instead. You do not
 need to know ink to follow along; each point starts with the ink habit and
 ends with the simpler rule you actually write.
 
@@ -899,7 +899,7 @@ Two small loose ends, and then you know everything about saves. Node references 
 
 ## 9. The two JSON formats
 
-This section is written for people building tools around inkle-md, such as a runtime or an exporter. If you are writing a book, nothing here changes how you write; feel free to skim or skip.
+This section is written for people building tools around Story Weaver, such as a runtime or an exporter. If you are writing a book, nothing here changes how you write; feel free to skim or skip.
 
 There are exactly two JSON formats in the whole system: the story JSON the compiler emits, and the save JSON from section 8. Let's look at each in turn.
 
@@ -1118,7 +1118,7 @@ Two of the warnings above lean on that same walk, and it helps to see how. The r
 ## 12. Export and hosts
 
 Once your book lints clean, you will want to hand it to readers. That is what
-the export is for. `inkle-md export book.yaml --out play.html` produces a
+the export is for. `story-weaver export book.yaml --out play.html` produces a
 single HTML file: the story JSON embedded as a
 `<script type="application/json">`, the runtime below it. No framework, no
 external resources, no network access at runtime. You can put that one file on
@@ -1249,7 +1249,7 @@ gives you all of this without any work on the author's side:
 
 ### 12.4 Playing without a browser
 
-You do not need the HTML export to read your own book. `inkle-md play
+You do not need the HTML export to read your own book. `story-weaver play
 <entry>` walks a book in the terminal, which is how an author reads their own
 text before anyone else does. Two flags make it a tool rather than a toy:
 
@@ -1266,7 +1266,7 @@ text before anyone else does. Two flags make it a tool rather than a toy:
   host fact stays at its `fallback:`, which is the same book a reader gets
   offline.
 
-Beyond walking one route, you can let the machine play for you. `inkle-md
+Beyond walking one route, you can let the machine play for you. `Story Weaver
 simulate <entry> --runs 300 --host elapsed=60` plays many games with
 pseudo-random choices and reports the endings, the dead ends and the average
 length. A balance problem shows up there long before it shows up in a
@@ -1286,7 +1286,7 @@ advance per turn. Without it nothing scheduled is ever tested: a book whose
 relief arrives at turn three hundred needs a walk that reaches turn three
 hundred, and a book that measures seconds needs someone to hand it seconds.
 
-There is a third way in, for tools rather than people. `inkle-md mcp` serves
+There is a third way in, for tools rather than people. `story-weaver mcp` serves
 the same three checks - lint, play, simulate - as MCP tools over stdio, so an
 agent can playtest a book against the real runtime instead of parsing
 terminal output. The server speaks JSON-RPC 2.0, one message per line, and
@@ -1470,11 +1470,11 @@ are hosts.
 
 ### 12.8 The native bundle
 
-`inkle-md bundle book.yaml --out dir` writes what a native host needs:
+`story-weaver bundle book.yaml --out dir` writes what a native host needs:
 
 - `story.json`, the story of 9.1 as data, which the host can also read
   itself, for a chapter list or a cover;
-- `inkle-md.js`, the runtime and the protocol of 12.7 as one script, with
+- `story-weaver.js`, the runtime and the protocol of 12.7 as one script, with
   the module keywords removed, because the engine it runs in has no loader.
 
 `--minify` is the pass of section 12, unchanged. The view of 12.2 is not in
@@ -1488,8 +1488,8 @@ The script defines one name with two functions on it, and nothing else,
 because that is what a bridge carries without a wrapper per member:
 
 ```js
-inkleMd.start(storyJsonText, optionsJsonText);   // -> the first view, as text
-inkleMd.send(commandText);                       // -> one answer, as text
+storyWeaver.start(storyJsonText, optionsJsonText);   // -> the first view, as text
+storyWeaver.send(commandText);                       // -> one answer, as text
 ```
 
 Strings in, strings out. That is what a `JSContext` on Apple platforms and a

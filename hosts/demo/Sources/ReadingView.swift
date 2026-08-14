@@ -6,7 +6,7 @@
  */
 
 import SwiftUI
-import InkleMD
+import StoryWeaver
 
 /// A book as one long text.
 ///

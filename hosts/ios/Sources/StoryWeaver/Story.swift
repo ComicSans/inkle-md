@@ -11,7 +11,7 @@ import JavaScriptCore
 /// A book being played, over the host protocol of SPEC 12.7.
 ///
 /// The story logic is not written twice. This holds a `JSContext` running the
-/// engine `inkle-md bundle` wrote, sends it one command per turn and decodes
+/// engine `story-weaver bundle` wrote, sends it one command per turn and decodes
 /// the view that comes back. Principle 5 is the reason: seed plus counter has
 /// to produce the same die here as in a browser, and one implementation
 /// cannot disagree with itself.
@@ -29,7 +29,7 @@ public final class Story: ObservableObject {
 
     // MARK: - Opening a book
 
-    /// Opens the two files `inkle-md bundle --out dir` wrote.
+    /// Opens the two files `story-weaver bundle --out dir` wrote.
     ///
     /// - Parameters:
     ///   - directory: the bundle directory, usually inside the app's own
@@ -38,7 +38,7 @@ public final class Story: ObservableObject {
     ///     (principle 5). Omit it and the engine draws its own.
     ///   - language: one of the book's languages; omit for its default.
     public convenience init(bundle directory: URL, seed: Int? = nil, language: String? = nil) throws {
-        let engine = try String(contentsOf: directory.appendingPathComponent("inkle-md.js"), encoding: .utf8)
+        let engine = try String(contentsOf: directory.appendingPathComponent("story-weaver.js"), encoding: .utf8)
         let story = try String(contentsOf: directory.appendingPathComponent("story.json"), encoding: .utf8)
         try self.init(engine: engine, story: story, seed: seed, language: language, directory: directory)
     }
@@ -68,7 +68,7 @@ public final class Story: ObservableObject {
     }
 
     /// - Parameters:
-    ///   - engine: the contents of `inkle-md.js`
+    ///   - engine: the contents of `story-weaver.js`
     ///   - story: the contents of `story.json`, unparsed. The engine parses it
     ///     itself; handing it across as text is what keeps the bridge to two
     ///     names (12.8).
@@ -89,9 +89,9 @@ public final class Story: ObservableObject {
         if let language { options["lang"] = language }
         let optionsText = String(decoding: try JSONSerialization.data(withJSONObject: options), as: UTF8.self)
 
-        context.setObject(story, forKeyedSubscript: "__inkleStory" as NSString)
-        context.setObject(optionsText, forKeyedSubscript: "__inkleOptions" as NSString)
-        let answer = context.evaluateScript("inkleMd.start(__inkleStory, __inkleOptions)")
+        context.setObject(story, forKeyedSubscript: "__swStory" as NSString)
+        context.setObject(optionsText, forKeyedSubscript: "__swOptions" as NSString)
+        let answer = context.evaluateScript("storyWeaver.start(__swStory, __swOptions)")
         if let thrown { throw StoryError.engineFailed(thrown) }
         guard let text = answer?.toString() else { throw StoryError.noAnswer }
 
@@ -187,8 +187,8 @@ public final class Story: ObservableObject {
     @discardableResult
     private func send(_ command: [String: Any]) throws -> Any? {
         let text = String(decoding: try JSONSerialization.data(withJSONObject: command), as: UTF8.self)
-        context.setObject(text, forKeyedSubscript: "__inkleCommand" as NSString)
-        guard let answer = context.evaluateScript("inkleMd.send(__inkleCommand)")?.toString() else {
+        context.setObject(text, forKeyedSubscript: "__swCommand" as NSString)
+        guard let answer = context.evaluateScript("storyWeaver.send(__swCommand)")?.toString() else {
             throw StoryError.noAnswer
         }
         let decoded = try Story.decode(answer, using: decoder)
@@ -223,7 +223,7 @@ public final class Story: ObservableObject {
 public enum StoryError: Error, CustomStringConvertible {
     /// JavaScriptCore would not give us a context at all.
     case noEngine
-    /// `inkle-md.js` did not load. The message is what the engine threw.
+    /// `story-weaver.js` did not load. The message is what the engine threw.
     case engineFailed(String)
     case noAnswer
     case malformedAnswer(String)

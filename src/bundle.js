@@ -32,7 +32,7 @@ const here = dirname(fileURLToPath(import.meta.url));
  * wrapper per member. So the whole engine is two names.
  */
 const BOOT = `
-var inkleMd = {
+var storyWeaver = {
   host: null,
   /** @param {string} json story JSON per SPEC 9.1, as text */
   start: function (json, options) {
@@ -47,7 +47,7 @@ var inkleMd = {
 };
 `;
 
-const NOTICE = `/* The engine below is inkle-md, under the Mozilla Public License 2.0. A copy
+const NOTICE = `/* The engine below is story-weaver, under the Mozilla Public License 2.0. A copy
  * of the source is this file; the licence is at https://mozilla.org/MPL/2.0/.
  * The story in story.json is the author's own work.
  */
@@ -66,7 +66,7 @@ export function bundleFiles(story, options = {}) {
 
   return {
     'story.json': `${JSON.stringify(story)}\n`,
-    'inkle-md.js': `${NOTICE}${shrink(engine)}\n`,
+    'story-weaver.js': `${NOTICE}${shrink(engine)}\n`,
   };
 }
 

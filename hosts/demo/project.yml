@@ -3,21 +3,21 @@
 # The project file is generated rather than checked in, because a .xcodeproj is
 # not a thing to read or merge by hand. `xcodegen generate` in this directory
 # writes it from here.
-name: InkleMDDemo
+name: StoryWeaverDemo
 
 options:
-  bundleIdPrefix: de.tobiasreithmeier.inklemd
+  bundleIdPrefix: de.tobiasreithmeier.storyweaver
   deploymentTarget:
     iOS: "16.0"
     macOS: "13.0"
   createIntermediateGroups: true
 
 packages:
-  InkleMD:
+  StoryWeaver:
     path: ../ios
 
 targets:
-  InkleMDDemo:
+  StoryWeaverDemo:
     type: application
     supportedDestinations: [iOS, macOS]
     sources:
@@ -28,11 +28,11 @@ targets:
         type: folder
         buildPhase: resources
     dependencies:
-      - package: InkleMD
+      - package: StoryWeaver
     info:
       path: Sources/Info.plist
       properties:
-        CFBundleDisplayName: inkle-md
+        CFBundleDisplayName: story-weaver
         UILaunchScreen: {}
         # The demo reads its books out of its own bundle and talks to nothing.
         NSAppTransportSecurity:

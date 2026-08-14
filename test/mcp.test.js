@@ -51,7 +51,7 @@ test('the MCP server lists its tools and lints a book', async () => {
     { jsonrpc: '2.0', id: 7, method: 'no/such/method' },
   ]);
 
-  assert.equal(byId.get(1).result.serverInfo.name, 'inkle-md');
+  assert.equal(byId.get(1).result.serverInfo.name, 'story-weaver');
   assert.deepEqual(byId.get(2).result.tools.map((t) => t.name), ['lint', 'play', 'simulate']);
 
   const lint = JSON.parse(byId.get(3).result.content[0].text);

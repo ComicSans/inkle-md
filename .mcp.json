@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "inkle-md": {
+    "story-weaver": {
       "command": "node",
       "args": ["src/cli.js", "mcp"]
     },

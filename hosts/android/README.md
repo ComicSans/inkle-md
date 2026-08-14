@@ -1,6 +1,6 @@
-# InkleMD for Android
+# Story Weaver for Android
 
-A host for inkle-md books on Android, per SPEC 12.5 to 12.9. It plays the same
+A host for Story Weaver books on Android, per SPEC 12.5 to 12.9. It plays the same
 story logic a browser and a phone of the other kind play, because it embeds the
 same runtime rather than reimplementing it.
 
@@ -11,7 +11,7 @@ story.choose(0)
 val page = story.view          // the whole page, as JSON
 ```
 
-The directory it opens is what `inkle-md bundle` writes, copied into
+The directory it opens is what `story-weaver bundle` writes, copied into
 `app/src/main/assets/`:
 
 ```bash
