@@ -1,6 +1,6 @@
 title: Der Leuchtturm auf der Sandbank
 author: inkle-md
-version: 0.2.0
+version: 0.3.0
 start: turm.ankunft
 
 chapters:
@@ -9,43 +9,84 @@ chapters:
 stats:
   # Minuten seit dem Absetzen. Jede Wahl zahlt darauf ein; was die Welt
   # draußen an Sekunden hereinreicht, rechnet das Ereignis `echtzeit` um.
+  # Die Schwellen des Buchs - Sturm, Stromausfall, Flut - hängen nur an
+  # dieser Uhr, nie am Wetter von draußen: dieselbe Handlungsfolge ergibt
+  # immer dasselbe Buch.
   zeit:   { name: Minuten, start: 0 }
   wasser: { name: Wasser im Keller, start: 0 }
-  # Ob die Lampe brennt. Jeder Knoten liest das, statt vorauszusetzen, auf
+  # Gewürfelt wird in diesem Buch an genau einer Stelle, der Außenleiter,
+  # und dort gegen diesen Wert.
+  geschick: { name: Geschick, start: 9 }
+  # Das Seekabel vom Festland. Es liefert, bis der Sturm es holt; das
+  # Ereignis `stromausfall` legt es um, und kein Knoten setzt voraus, auf
   # welchem Weg jemand hergekommen ist: eine App darf mitten im Buch
   # einsteigen (12.6), und dann gab es diesen Weg nie.
-  licht:  { start: 0 }
+  netz:      { start: 1 }
+  # Ob der Generator läuft. Er läuft erst, wenn das Netz tot ist, die
+  # Leitung gedichtet und der Tank gefüllt - der Knoten `anwerfen`
+  # entscheidet das, hier steht nur der Zustand.
+  generator: { start: 0 }
+  # Der Hebel der großen Lampe. Ob sie brennt, sagt der Fakt `lampe`:
+  # Hebel und Strom, beides zusammen.
+  schalter:  { start: 0 }
+  # Leitung gedichtet, Verschraubung nachgezogen.
+  gerichtet: { start: 0 }
+  # Benzin im Tank des Generators.
+  tank:      { start: 0 }
+  # Schlüssel, Dichtband und Kanister liegen auf dem Podest, über dem
+  # Wasser. Wer das versäumt, findet sie ab Kniehöhe nicht mehr.
+  bereit:    { start: 0 }
+  # Die Schotttüren seeseitig. Zugedreht drosseln sie die Flut auf ein
+  # Drittel; dicht bekommen sie den Keller nicht.
+  schott:    { start: 0 }
+  # Öl in der tragbaren Laterne. Leer gefunden, unten am Fass gefüllt -
+  # oder nie.
+  laterne_voll: { start: 0 }
   # Ob der Leser unten im Keller steht. Jeder Ortsknoten setzt es selbst,
   # damit auch ein Quereinstieg stimmt; `death:` liest es, denn das Wasser
   # holt nur, wen es erreicht.
   im_keller: { start: 0 }
+  # Zählt an der Leiter die Erschwernisse: Sturm, Dunkelheit, volle
+  # Hände. Nur der Knoten `leiter` schreibt und liest ihn.
+  proben:    { start: 0 }
 
-# Zwei Hände, mehr nicht. Die großen Teile unten im Keller brauchen beide;
-# wer sie auf Verdacht holt, geht zweimal, und der zweite Gang kostet die
-# Zeit, die keiner hat.
+# Zwei Hände, mehr nicht. Laterne, Schlüssel und Dichtband sind je ein
+# Platz; wer zwei davon trägt, klettert ohne sicheren Griff.
 inventory:
   slots: 2
 
 items:
-  docht: { name: Docht, kind: gear }
-  band:  { name: Dichtband, kind: gear }
-  rohr:  { name: Ersatzrohr, kind: gear }
-  fass:  { name: Ölfass, kind: gear }
-  feile: { name: Feile, kind: gear }
+  laterne:   { name: Öl-Laterne, kind: gear }
+  schluessel: { name: Werkzeugschlüssel, kind: gear }
+  band:      { name: Dichtband, kind: gear }
+
+# Die Fighting-Fantasy-Regel, ausgeschrieben: zwei Würfel, höchstens der
+# Wert. Geschick 9 besteht gut vier von fünf Proben.
+checks:
+  dice: "roll(2,6)"
+  succeeds: at-most
 
 # Was die Welt draußen weiß und das Buch nur liest (15).
 facts:
   # Eine Dauer: sie wird von der Grenze verbraucht, die sie nimmt (16.2).
   elapsed: { source: host, range: [0, 604800], fallback: 0, name: Verstrichen }
-  # Ein Zustand: das Wetter hört nicht auf, das Wetter zu sein, weil jemand
-  # eine Wahl getroffen hat. Deshalb `holds:` (15.1).
+  # Ein Zustand: das Wetter hört nicht auf, das Wetter zu sein, weil
+  # jemand eine Wahl getroffen hat. Deshalb `holds:` (15.1). Es färbt die
+  # Prosa und entscheidet nichts; die Schwellen unten lesen nur `zeit`.
   wetter:  { source: host, range: [0, 3], fallback: 1, holds: true, name: Wetter }
-  # Ab Minute 720 ist die Nacht vorbei; Sturm und Dunkelheit enden mit ihr.
-  tag:     { source: derived, value: 'zeit >= 720' }
-  # Der Sturm kommt von draußen oder ab Minute 135 mit der Uhr, je nachdem,
-  # was zuerst da ist. Ohne Host bleibt das Buch vollständig spielbar (15.4).
-  sturm:   { source: derived, value: 'wetter >= 2 or (zeit >= 135 and not tag)' }
-  dunkel:  { source: derived, value: 'zeit >= 75 and not tag' }
+  # Ab Minute 630 ist die Nacht vorbei.
+  tag:     { source: derived, value: 'zeit >= 630' }
+  # Eine halbe Stunde nach dem Absetzen geht das letzte Tageslicht.
+  nacht:   { source: derived, value: 'zeit >= 30 and not tag' }
+  # Der Sturm kommt mit der Uhr des Buchs, Minute 150, und nur mit ihr.
+  sturm:   { source: derived, value: 'zeit >= 150 and not tag' }
+  # Dunkel ist der Turm, wenn es Nacht ist und keine Quelle speist. Was
+  # eine Hand voll Licht daran ändert, fragt jeder Knoten selbst über
+  # `handlicht()`, denn das hängt am Inventar.
+  dunkel:  { source: derived, value: 'nacht and netz == 0 and generator == 0' }
+  # Die große Lampe brennt, wenn ihr Hebel liegt und irgendetwas Strom
+  # gibt. Sie ist der ganze Auftrag.
+  lampe:   { source: derived, value: 'schalter == 1 and (netz == 1 or generator == 1)' }
 
 events:
   # Prinzip 7: das Buch hält seine eigene Uhr, und die Welt draußen reicht
@@ -53,33 +94,43 @@ events:
   echtzeit:
     do: 'zeit += elapsed / 60'
 
-  # Die Flut steigt mit der Uhr. `due` sagt, wie viele Schritte fällig
-  # waren, und `max_catchup: 1` lässt das Ereignis genau einmal laufen: wer
-  # das Buch eine Woche weglegt, findet den Keller voll und nicht hundert
-  # Meldungen darüber, wie er voll wurde (17.2). Die Schwelle steht hier
-  # noch einmal ausgeschrieben, denn ein `when:` liest Fakten aus dem
-  # Schnappschuss vor den Ereignissen; `zeit` hat `echtzeit` aber eben erst
-  # bewegt, und Variablen ketten, Fakten nicht (16.2).
+  # Der Sturm nimmt das Seekabel fünf Minuten nach seiner Ankunft. Die
+  # Schwelle steht ausgeschrieben, denn ein `when:` liest Fakten aus dem
+  # Schnappschuss vor den Ereignissen; Variablen ketten, Fakten nicht
+  # (16.2).
+  stromausfall:
+    once: true
+    when: 'zeit >= 155'
+    do: 'netz = 0'
+
+  # Die See drückt durch die offenen Schotttüren. `due` sagt, wie viele
+  # Schritte fällig waren, und `max_catchup: 1` lässt das Ereignis genau
+  # einmal laufen: wer das Buch eine Woche weglegt, findet den Keller
+  # voll und nicht hundert Meldungen darüber, wie er voll wurde (17.2).
+  # Der Zähler beginnt erst mit dem Sturm zu laufen: Ein `when:` würde
+  # zwar frühere Auslösungen verwerfen, aber ein Sprung über die Schwelle
+  # hinweg - das Bett tut genau das - brächte den ganzen ruhigen Abend
+  # als Rückstand mit, und der Keller wäre voll, ehe die See ihn je
+  # angefasst hat.
   flut:
-    counter: 'zeit'
-    every: 5
+    counter: 'max(zeit - 155, 0)'
+    every: 8
     max_catchup: 1
-    when: 'zeit >= 135 or wetter >= 2'
+    when: 'schott == 0'
     do: 'wasser = min(wasser + due, 12)'
 
-  # Ein dunkler Turm in der ersten Sturmstunde: das geschieht genau einmal,
-  # und es geschieht ohne den Leser. Die Knoten erzählen es später (17.1).
-  # Auch hier die Schwelle statt `sturm`, aus demselben Grund wie bei
-  # `flut` - und ohne Ende bei `tag`: dass die Nacht vorbei ist, macht das
-  # Versäumte nicht ungeschehen.
-  kutter:
-    once: true
-    when: 'licht == 0 and (zeit >= 135 or wetter >= 2)'
-    do: 'remember("KUTTER")'
+  # Zugedrehte Schotts halten die See nicht auf, sie verlangsamen sie.
+  # Gleiche Rechnung, längerer Takt.
+  flut_gedrosselt:
+    counter: 'max(zeit - 155, 0)'
+    every: 20
+    max_catchup: 1
+    when: 'schott == 1'
+    do: 'wasser = min(wasser + due, 12)'
 
 death:
   when: 'wasser >= 6 and im_keller == 1'
-  goto: turm.ersoffen
+  goto: turm.ertrunken
 
 undo:
   depth: 5
