@@ -4,7 +4,7 @@
 
 ![An archway of roughly hewn stone, and beyond it nothing but darkness.](gruft.png)
 
-A goblin starts up out of an alcove.
+{!A goblin starts up out of an alcove.|The goblin is already waiting, blade half raised.}
 
 * Back through the gap
 
@@ -12,18 +12,19 @@ You leave more than your pride behind.
 
 ## The Second Chamber {#chamber}
 
-{!A silver key lies on the sarcophagus.|The sarcophagus lies open and empty.}
+{has("silver-key"): Nothing lies on the sarcophagus now.|A silver key lies on the sarcophagus.}
 
 * Take the key
 * On to the iron gate
 
-Something sighs in the dark.
+Something sighs in the dark. The sigh shapes a word: Kraken.
 
 # The Iron Gate {#gate}
 
 The gate closes the crypt off to the north.
 
-The key turns as though it had been waiting for you.
+You whisper the word, and the key turns as though it had been waiting for it.
+With the grinding of the lock, the cold drains from your limbs.
 
 Without the key and without the word, the gate stays what it is.
 

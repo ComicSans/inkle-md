@@ -4,18 +4,18 @@
 
 ![Ein Torbogen aus grob behauenen Steinen, dahinter nichts als Dunkelheit.](gruft.png)
 
-Ein Goblin fährt aus einer Nische hoch.
+{!Ein Goblin fährt aus einer Nische hoch.|Der Goblin wartet schon, die Klinge halb erhoben.}
 
 !combat goblin
   win  -> chamber
   lose -> death
-  flee [Zurück durch den Spalt](#start.thicket) Du lässt mehr als deinen Stolz zurück.
+  flee [Zurück durch den Spalt](#start.begin) Du lässt mehr als deinen Stolz zurück.
 
 ## Die zweite Kammer {#chamber}
 
-{!Auf dem Sarkophag liegt ein silberner Schlüssel.|Der Sarkophag liegt offen und leer.}
+{has("silver-key"): Auf dem Sarkophag liegt nichts mehr.|Auf dem Sarkophag liegt ein silberner Schlüssel.}
 
-* [Den Schlüssel nehmen](#chamber) Etwas seufzt in der Dunkelheit.
+* [Den Schlüssel nehmen](#chamber) Etwas seufzt in der Dunkelheit. Das Seufzen formt ein Wort: Kraken.
   ~ take("silver-key")
   ~ remember("KRAKEN")
 + [Zum eisernen Tor](#gate)
@@ -25,7 +25,8 @@ Ein Goblin fährt aus einer Nische hoch.
 Das Tor schließt die Gruft nach Norden ab.
 
 { has("silver-key") and knows("KRAKEN") }
-  Der Schlüssel dreht sich, als hätte er auf dich gewartet.
+  Du flüsterst das Wort, und der Schlüssel dreht sich, als hätte er darauf gewartet.
+  Mit dem Knirschen des Schlosses weicht die Kälte aus deinen Gliedern.
   ~ heal(2)
 { else }
   Ohne Schlüssel und ohne das Wort bleibt das Tor, was es ist.

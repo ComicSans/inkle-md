@@ -2,7 +2,7 @@
 
 The path forks before a thorn hedge. {&A crack|A crunch|Silence} in the undergrowth.
 
-You still have {gold} gold pieces and a luck of {luck}.
+You carry {gold} gold pieces and a luck of {luck}.
 
 * Left, into the thicket
 * Right, towards the brook
@@ -19,7 +19,7 @@ You squeeze in, lantern first.
 
 # At the Brook {#brook}
 
-The water is clear enough to show the bottom. Something pale lies in it.
+The water is clear enough to show the bottom. {knows("MUENZE"): Nothing gleams in it now.|Something pale lies in it.}
 
 * Reach for it
 * Jump the brook
