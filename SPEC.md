@@ -1063,7 +1063,7 @@ Beyond the warnings, the linter also emits a **reachability report**: node count
 
 Two of the warnings above lean on that same walk, and it helps to see how. The reachability walk behind the report is run a second time with every host fact at its `fallback:`, and L025 reads the difference between the two runs. The report itself carries the numbers of the first run: a reader with no host gets a smaller book, and saying so is the warning's job, not the report's. A book whose good ending needs a host is a book that quietly loses content when it is played as one file. L021 needs nothing new beyond the first run: the longest path answers the question a branching book cannot be proofread for, whether the relief that was scheduled for turn three hundred can arrive at all.
 
-## 12. Web export
+## 12. Export and hosts
 
 Once your book lints clean, you will want to hand it to readers. That is what
 the export is for. `inkle-md export book.yaml --out play.html` produces a
@@ -1182,7 +1182,7 @@ gives you all of this without any work on the author's side:
 - touch targets are at least 44 px on a coarse pointer;
 - the whole page works at 200% zoom and at 320 px width.
 
-## 12.4 Playing without a browser
+### 12.4 Playing without a browser
 
 You do not need the HTML export to read your own book. `inkle-md play
 <entry>` walks a book in the terminal, which is how an author reads their own
@@ -1226,6 +1226,136 @@ the same three checks - lint, play, simulate - as MCP tools over stdio, so an
 agent can playtest a book against the real runtime instead of parsing
 terminal output. The server speaks JSON-RPC 2.0, one message per line, and
 needs no dependency.
+
+### 12.5 Hosts beyond the browser
+
+The runtime is one file with no imports and no globals beyond the standard
+library, and that is not a matter of taste. It is what lets one piece of story
+logic serve more than one surface. You have already met two hosts: the view of
+12.2, which draws the story in a browser, and `play` of 12.4, which draws it in
+a terminal. Neither of them is the runtime. Both talk to it through the API of
+12.1, and a reader on a phone is a third host of the same kind.
+
+A host written in Swift or Kotlin cannot talk to that API, because it cannot
+call a JavaScript method. So it embeds a JavaScript engine, hands it the
+runtime unchanged, and speaks the protocol of 12.6.
+
+Why embed rather than translate the runtime into each language? Principle 5.
+Seed plus counter has to produce the same die on every platform, or a save
+carried from a phone to a browser resumes as a different story. One
+implementation cannot disagree with itself. A second one is a second sequence,
+a second set of rounding rules, and a bug that appears on one platform only,
+which is the kind nobody finds. The same argument covers everything in
+sections 5 to 7: those rules are written once, or they are written
+differently.
+
+Embedding has a price, and it is one line long: the runtime may use the
+language and nothing above it. `structuredClone` reads better than a copy
+through JSON and is out, because it is a web API rather than part of
+JavaScript, and the JSContext an iOS host embeds does not have it. The test
+for this runs the bundle in a bare realm and plays a whole game there, because
+a missing web API fails at the first save rather than at load time.
+
+What is left to the host is what the runtime declines to decide.
+
+**The save.** Section 8's save is one JSON object, and 12.2 puts it in
+`localStorage` because that is what a browser has. A native host writes the
+same object to a file of its own. The format is the same either way; where it
+is kept was never part of it.
+
+**Time.** Nothing in the runtime reads a clock (principle 7, section 20). A
+host that wants real time measures it and hands it to `advance`, typically
+once when the app comes back to the foreground. A host value is consumed by
+the boundary that takes it (16.2), so those seconds go to `advance` or to the
+choice that follows, never to both.
+
+**Looks.** Section 6 keeps presentation out of the book, and 12.2 is one
+answer to where it goes instead, not the answer. A native host writes its own,
+including the labels for its own buttons in each language the book declares.
+
+**Accessibility.** The list in 12.3 is what the web export gives a reader
+without any work by the author. A native host owes its readers the same list
+in its own platform's terms. The protocol hands it what that needs and nothing
+beyond it: a choice is a label and an index, never a rendered button.
+
+### 12.6 The host protocol
+
+One command goes in, the whole view comes out, both as plain JSON. The shape
+follows from what a language boundary costs: reading a dozen members of 12.1
+one at a time is a dozen crossings for one page, and a turn should be one.
+
+```json
+{ "cmd": "choose", "index": 1 }
+```
+
+```json
+{ "ok": true, "did": null,
+  "view": { "lang": "de", "node": "crypt.chamber", "text": [ "…" ] } }
+```
+
+| command                  | fields  | what it does                              |
+| ------------------------ | ------- | ----------------------------------------- |
+| `state`                  |         | nothing; answers with the view            |
+| `begin`                  | `picks` | answers the setup blocks and sets out     |
+| `choose`                 | `index` | takes a choice                            |
+| `advance`                | `host`  | a boundary: brings host values in (20)    |
+| `use`                    | `id`    | uses an item, honouring its `when:`       |
+| `equip`                  | `id`    | equips a weapon or a piece of armour      |
+| `attack`, `luck`, `flee` |         | a combat round, the luck test after a hit, running away |
+| `undo`                   |         | back to before the last root choice (8.1) |
+| `language`               | `lang`  | switches language and repaints            |
+| `save`                   |         | answers with the save of section 8 in `did` |
+| `load`                   | `save`  | takes a save back                         |
+| `seed`                   | `value` | sets the random stream                    |
+| `go`                     | `node`  | jumps; for chapter pickers, not for storytelling |
+
+`did` carries what the command returned and the view does not show: the round
+a fight just played, whether a luck test came off, `false` from a `use` whose
+`when:` was not met, the save from `save`. It is `null` where there is nothing
+to add.
+
+A command that fails answers `{ "ok": false, "error": "…" }` instead of
+throwing. An exception crossing a language boundary arrives as a crash or as
+an empty string, and neither of those tells a host what went wrong. The story
+is untouched by a failed command, so the next one is answered normally.
+
+The view is what 12.1 offers one member at a time, collected: `lang`,
+`languages`, `setup`, `node`, `title`, `ended`, `text`, `choices`, `stats`,
+`facts`, `inventory`, `memory`, `combat` and `canUndo`. Two of them are
+resolved on the way out, because a host should not have to repeat a lookup the
+runtime already makes. Setup labels arrive as one string in the reading
+language rather than as one string per language, each with the `key` that
+`begin` takes back, so a host never has to know which of the three spellings
+of section 6 an option used. And a fight arrives with the enemy's full stamina
+beside its current one, so a bar has both halves without reading the config.
+
+Text arrives as paragraphs with their classes, exactly as 12.1 delivers it.
+What a host makes of a class is the host's own business, and that is the point
+of this section: one story, one logic, as many surfaces as there are hosts.
+
+### 12.7 The native bundle
+
+`inkle-md bundle book.yaml --out dir` writes what a native host needs:
+
+- `story.json`, the story of 9.1 as data, which the host can read itself as
+  well, for a chapter list or a cover;
+- `inkle-md.js`, the runtime and the protocol of 12.6 as one script, with the
+  module keywords removed, because the engine it runs in has no loader.
+
+`--minify` is the pass of section 12, unchanged. The view of 12.2 is not in
+the bundle: a native host draws its own. A book with images is these files
+plus those images, per principle 6, and that is open point 22.5.
+
+The script defines two names and nothing else, because two names is what a
+bridge carries without a wrapper per member:
+
+```js
+inkleMd.start(storyJsonText, optionsJsonText);   // -> the first view, as text
+inkleMd.send(commandText);                       // -> one answer, as text
+```
+
+Strings in, strings out. That is what a `JSContext` on Apple platforms and a
+`WebView` on Android both do; anything richer is a wrapper written twice.
 
 ## 13. Full example
 
@@ -1742,7 +1872,25 @@ each of them stands.
    data embedded in it, per principle 6. Open is everything below that:
    whether a path may leave the export's own directory, what a translated
    catalogue does with an alt text, and what 12.3 promises a screen reader.
-   Nothing of it is built, so no book has images yet.
+   Nothing of it is built, so no book has images yet. A native host (12.5)
+   raises the same question a second time, for a bundle rather than a
+   directory: whether an image is a file beside `story.json` or an asset of
+   the app around it, and what an image at twice the resolution is called.
+6. **L025 in a book written for a host.** The warning exists because a
+   standalone export has nothing to supply host values, so content behind a
+   host fact is quietly lost (21). A native host is exactly the thing that
+   supplies them, so a book written for one is warned about content it does
+   not lose. What is missing is a way for a book to say which it is written
+   for. Until there is one, L025 stays as it is: it reports what it sees,
+   which is a book that loses content when it is played as one file.
+7. **A save across a new edition.** Section 8 rejects a save whose `story`
+   does not match the running book, and on the web that is a reload. In a
+   shop that ships editions, it is a reader who loses a playthrough to an
+   update they did not ask for. The strictness is right and the answer is not
+   the runtime's: a host that ships editions has to decide between refusing
+   the update, keeping the previous story JSON beside the new one, and
+   migrating. Nothing here is decided until a book is actually shipped that
+   way.
 ## 23. Next steps
 
 Of the open points in section 22, three have a natural order, and here it is.
@@ -1782,5 +1930,6 @@ added, section by section, so you can jump straight to what is new.
 | 10.1    | Fact and event expressions are parsed in step 2, with the other frontmatter expressions. |
 | 10.3    | E160 to E171 added to the error table.                                 |
 | 11      | L021 to L028 added; the reachability walk is repeated with host facts at their fallbacks, and L025 reads the difference. |
+| 12      | Retitled: the web export is one host of several. 12.5 to 12.7 added, with the host protocol, the native bundle and the rule that the runtime uses the language and nothing above it. |
 | 12.1    | `advance` and `facts` added to the runtime API.                        |
 | 12.4    | `play` gains `--host` to supply host values per boundary; `simulate` takes the same flag as its policy for how counters and `elapsed` advance per turn, without which no scheduled content is ever tested. |

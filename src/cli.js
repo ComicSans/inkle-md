@@ -10,6 +10,7 @@
  * inkle-md build    <entry> [--out file.json] [--strict] [--quiet]
  * inkle-md lint     <entry> [--strict] [--json]
  * inkle-md export   <entry> [--out file.html] [--strict] [--minify]
+ * inkle-md bundle   <entry> --out DIR [--strict] [--minify]
  * inkle-md play     <entry> [--seed N] [--lang xx] [--script 1,2,a,a] [--host k=v] [--json]
  * inkle-md simulate <entry> [--runs N] [--host k=v] [--json]
  * inkle-md import   <file.ink> [--out FILE] [--title T] [--author A] [--notice FILE]
@@ -19,11 +20,12 @@
  */
 
 import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { dirname, join } from 'node:path';
 
 import { compileFile } from './compile.js';
 import { importInk } from './import.js';
 import { exportHtml } from './export.js';
+import { bundleFiles } from './bundle.js';
 import { play, simulate } from './play.js';
 import { serveMcp } from './mcp.js';
 import { CompileError } from './errors.js';
@@ -41,6 +43,7 @@ function main(argv) {
       '  inkle-md build    <entry> [--out FILE] [--strict] [--quiet]',
       '  inkle-md lint     <entry> [--strict] [--json]',
       '  inkle-md export   <entry> [--out FILE] [--strict] [--minify]',
+      '  inkle-md bundle   <entry> --out DIR [--strict] [--minify]',
       '  inkle-md play     <entry> [--seed N] [--lang xx] [--script 1,2,a] [--host k=v] [--json]',
       '  inkle-md simulate <entry> [--runs N] [--host k=v] [--json]',
       '  inkle-md mcp',
@@ -143,6 +146,23 @@ function main(argv) {
       if (report.unfinished > 0) process.stdout.write(`  ohne Ende abgebrochen: ${report.unfinished}\n`);
     }
     return report.deadEnds.length > 0 ? 1 : 0;
+  }
+
+  // A bundle is several files, so it writes a directory rather than a stream.
+  if (command === 'bundle') {
+    if (!out) {
+      process.stderr.write('bundle needs --out DIR\n');
+      return 1;
+    }
+    mkdirSync(out, { recursive: true });
+    for (const [name, contents] of Object.entries(bundleFiles(story, { minify: flags.has('--minify') }))) {
+      const file = join(out, name);
+      writeFileSync(file, contents);
+      if (!quiet) {
+        process.stderr.write(`wrote ${file} (${Math.round(Buffer.byteLength(contents) / 1024)} kB)\n`);
+      }
+    }
+    return 0;
   }
 
   if (command !== 'build' && command !== 'export') {

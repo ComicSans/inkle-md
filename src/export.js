@@ -141,7 +141,7 @@ function read(name) {
  * parser, and the kilobytes it would save do not pay for one. The same pass
  * serves CSS, whose comments are the block form as well.
  */
-function strip(source) {
+export function strip(source) {
   const out = [];
   let inBlock = false;
 

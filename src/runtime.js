@@ -21,6 +21,18 @@
 // story: one transition can pass through a few nodes, never through hundreds.
 const MAX_DIVERTS = 100;
 
+/**
+ * A deep copy of anything this file copies, which is state and config, and
+ * both are JSON by definition (principle 4, section 8). `structuredClone`
+ * would read better and is out: it is a web API, not part of the language, so
+ * it is missing from a bare JavaScript engine such as the JSContext an iOS
+ * host embeds (12.5). A runtime that claims to need nothing beyond the
+ * standard library has to mean it.
+ */
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
 const SETUP = 'setup';
 const PLAYING = 'playing';
 const ENDED = 'ended';
@@ -368,14 +380,14 @@ export class Story {
 
   // --- save and load -----------------------------------------------------
 
-  save() { return structuredClone(this.state); }
+  save() { return clone(this.state); }
 
   load(save) {
     if (save.version > 1) throw new Error(`save version ${save.version} is newer than this runtime`);
     if (save.story !== this.state.story) {
       throw new Error(`save is from "${save.story}", this book is "${this.state.story}"`);
     }
-    this.state = structuredClone(save);
+    this.state = clone(save);
     this.lang = this.json.nodes[save.lang] ? save.lang : this.json.meta.default;
     this.state.lang = this.lang;
     this.phase = save.phase ?? PLAYING;
@@ -738,7 +750,7 @@ export class Story {
   // --- combat internals --------------------------------------------------
 
   #startCombat(op) {
-    const roster = op.enemies.map((id) => ({ id, ...structuredClone(this.config.enemies[id]) }));
+    const roster = op.enemies.map((id) => ({ id, ...clone(this.config.enemies[id]) }));
     this.state.fight = { roster, index: 0, round: 0 };
     this.choices = [];
     this.combat = this.#restoreCombat(op, this.state.fight);
@@ -1059,7 +1071,7 @@ export class Story {
    */
   #checkpoint() {
     const { undo, facts, ...rest } = this.state;
-    this.state.undo = [...undo, structuredClone(rest)].slice(-this.config.undo.depth);
+    this.state.undo = [...undo, clone(rest)].slice(-this.config.undo.depth);
   }
 
   #setPhase(phase) {

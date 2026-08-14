@@ -13,6 +13,7 @@ node src/cli.js lint examples/thornwood.md --strict
 node src/cli.js lint examples/house/book.yaml --strict
 node src/cli.js lint examples/nightside/book.yaml --strict
 node src/cli.js export examples/thornwood-book/book.yaml --out build/play.html
+node src/cli.js bundle examples/thornwood-book/book.yaml --out build/native
 ```
 
 - Keine Abhängigkeiten, kein Build-Schritt, Node 20 oder neuer. Was Node nicht

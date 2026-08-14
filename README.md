@@ -11,6 +11,7 @@ node src/cli.js build examples/thornwood.md --out build/thornwood.json
 node src/cli.js build examples/thornwood-book/book.yaml --out build/book.json
 node src/cli.js lint examples/thornwood.md --strict
 node src/cli.js export examples/thornwood-book/book.yaml --out build/play.html
+node src/cli.js bundle examples/thornwood-book/book.yaml --out build/native
 node src/cli.js play examples/house/book.yaml
 node --test 'test/*.test.js'
 ```
@@ -42,6 +43,22 @@ game marks its own region either way. `onRender` reports the node the reader is
 on after every redraw, so a host can follow along in the source: `meta.files`
 names the chapter files and every node carries its `file` and `line`.
 
+A host in another language cannot call any of that, so it gets a protocol
+instead. `bundle` writes `story.json` and `inkle-md.js` into a directory; the
+script defines two names, both taking and returning text, and a host on iOS or
+Android hands them to the JavaScript engine it already has:
+
+```js
+inkleMd.start(storyJsonText, '{"seed":7}');        // -> the first view
+inkleMd.send('{"cmd":"choose","index":1}');        // -> one answer
+```
+
+One command in, the whole view out, so a turn costs one crossing rather than a
+dozen. The runtime is embedded rather than translated because principle 5 wants
+the same die on every platform, and one implementation cannot disagree with
+itself. What the host draws, where it keeps the save and what feeds its clock
+are its own; SPEC 12.5 to 12.7 says what that means.
+
 ## What is here
 
 | Path | What it does |
@@ -58,10 +75,12 @@ names the chapter files and every node carries its `file` and `line`.
 | `src/runtime.js` | The player: text, choices, combat, save and undo, SPEC 8 |
 | `src/view.js` | The view layer: labels, presentation, accessibility, SPEC 12 |
 | `src/export.js` | One self-contained HTML file, SPEC 12 |
+| `src/host.js` | The host protocol: one command in, the whole view out, SPEC 12.6 |
+| `src/bundle.js` | Story and engine as files a native host embeds, SPEC 12.7 |
 | `src/play.js` | Playing from the terminal, scripted replays, simulation |
 | `src/mcp.js` | lint, play and simulate as MCP tools over stdio |
 | `src/import.js` | Reads ink and writes inkle-md, reporting what has no equivalent |
-| `src/cli.js` | `build`, `lint`, `export`, `play`, `simulate`, `import`, `mcp` |
+| `src/cli.js` | `build`, `lint`, `export`, `bundle`, `play`, `simulate`, `import`, `mcp` |
 | `examples/thornwood.md` | One file, one language: creation, combat, two endings |
 | `examples/thornwood-book/` | The same book as a project: two chapters, German and English |
 | `examples/house/` | A full-length book: 46 nodes, a fear stat that kills, secrets, three endings |
