@@ -46,7 +46,7 @@ struct ShelfView: View {
                 ForEach(Books.all, id: \.self) { name in
                     Button { openBook(name) } label: {
                         VStack(spacing: 6) {
-                            Cover(title: Books.title(name), subtitle: Books.note(name))
+                            Cover(title: Books.title(name), subtitle: Books.note(name), device: name != "intercept")
                             if hasSave(name) {
                                 Label("Started", systemImage: "bookmark.fill")
                                     .font(.caption2)

@@ -32,7 +32,7 @@ struct MapView: View {
                     plan
                 }
             }
-            .navigationTitle(episode == nil ? "The house on the hill" : (world.here?.name ?? ""))
+            .navigationTitle(episode == nil ? "The marches" : (world.here?.name ?? ""))
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     if episode == nil {
@@ -61,8 +61,9 @@ struct MapView: View {
 
     private var plan: some View {
         VStack(spacing: 0) {
+            explainer
             party
-            Picker("Floor", selection: $floor) {
+            Picker("Where to", selection: $floor) {
                 ForEach(Array(Floorplan.floors.enumerated()), id: \.offset) { index, floor in
                     Text(floor.name).tag(index)
                 }
@@ -99,7 +100,7 @@ struct MapView: View {
             Spacer(minLength: 0)
 
             if let report = world.report {
-                Text(report)
+                Label(report, systemImage: "arrow.uturn.backward")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .padding()
@@ -114,6 +115,22 @@ struct MapView: View {
         let ratio: CGFloat = 4.0 / 3.0
         let width = min(available.width, max(0, available.height) * ratio)
         return CGSize(width: max(240, width), height: max(180, width / ratio))
+    }
+
+    /// What this tab is, in two sentences, because a floorplan does not say it
+    /// by itself: the app owns the world, the books own the scenes.
+    private var explainer: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("This app holds the world. The books hold the scenes.")
+                .font(.subheadline.weight(.semibold))
+            Text("Tap a room: a chapter of a book is played there, and the party comes back out with whatever it earned. The shelf plays the same books from page one instead.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal)
+        .padding(.bottom, 10)
     }
 
     private var party: some View {
@@ -196,14 +213,26 @@ private struct RoomTile: View {
 
     var body: some View {
         Button(action: enter) {
-            VStack(spacing: 2) {
+            VStack(spacing: 3) {
+                if state == .shut {
+                    // Never colour alone: a closed room says so with a symbol.
+                    Image(systemName: "lock.fill").font(.caption2)
+                }
                 Text(room.name)
                     .font(.caption)
                     .multilineTextAlignment(.center)
                     .minimumScaleFactor(0.7)
+                Text(Books.title(room.book))
+                    .font(.system(size: 9))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .minimumScaleFactor(0.6)
+                    .lineLimit(2)
                 if state == .visited {
-                    // Never colour alone: a visited room says so twice.
-                    Image(systemName: "checkmark").font(.caption2)
+                    Label("been here", systemImage: "checkmark")
+                        .font(.system(size: 9))
+                        .labelStyle(.titleAndIcon)
+                        .foregroundStyle(.secondary)
                 }
             }
             .padding(4)
@@ -223,7 +252,9 @@ private struct RoomTile: View {
         .foregroundStyle(state == .shut ? Color.secondary : Color.primary)
         .accessibilityLabel(room.name)
         .accessibilityValue(spoken)
-        .accessibilityHint(state == .shut ? "No way in yet" : (room.hint ?? "Enters the book here"))
+        .accessibilityHint(state == .shut
+            ? "Closed. Another room opens this one."
+            : (room.hint ?? "Plays a chapter of \(Books.title(room.book)) here"))
     }
 
     private var background: some View {
@@ -233,9 +264,9 @@ private struct RoomTile: View {
 
     private var spoken: String {
         switch state {
-        case .shut: return "closed"
-        case .open: return "open"
-        case .visited: return "already been here"
+        case .shut: return "closed, in \(Books.title(room.book))"
+        case .open: return "open, in \(Books.title(room.book))"
+        case .visited: return "already been here, in \(Books.title(room.book))"
         }
     }
 }

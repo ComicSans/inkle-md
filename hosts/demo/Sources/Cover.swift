@@ -16,6 +16,10 @@ import SwiftUI
 struct Cover: View {
     let title: String
     let subtitle: String?
+    /// False for a book whose text is not ours. `examples/intercept.md` is
+    /// inkle's own game, imported and under its own licence, and inventing a
+    /// device for it would be putting our hand on someone else's cover.
+    var device = true
 
     var body: some View {
         ZStack {
@@ -24,11 +28,13 @@ struct Cover: View {
 
             // A device in the middle, chosen by the title so a book keeps its
             // own face: an arch, a house, a moon, a door.
-            Device(kind: kind)
-                .fill(Color.white.opacity(0.30))
-                .padding(.horizontal, 18)
-                .padding(.top, 26)
-                .padding(.bottom, 34)
+            if device {
+                Device(kind: kind)
+                    .fill(Color.white.opacity(0.30))
+                    .padding(.horizontal, 18)
+                    .padding(.top, 26)
+                    .padding(.bottom, 34)
+            }
 
             VStack {
                 Spacer()

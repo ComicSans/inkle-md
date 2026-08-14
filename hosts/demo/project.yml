@@ -54,8 +54,11 @@ targets:
         # copy of the engine and it is the one src/ produces (12.8).
         script: |
           cd "$SRCROOT/../.."
-          for book in thornwood-book/book.yaml house/book.yaml; do
+          for book in thornwood-book/book.yaml house/book.yaml nightside/book.yaml leuchtturm/book.yaml; do
             name=$(dirname "$book")
             node src/cli.js bundle "examples/$book" --out "hosts/demo/Books/$name" --quiet
           done
+          # The imported one is a single file and is not --strict clean, which
+          # `bundle` does not ask of it (see CLAUDE.md).
+          node src/cli.js bundle examples/intercept.md --out hosts/demo/Books/intercept --quiet
         basedOnDependencyAnalysis: false

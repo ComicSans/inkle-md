@@ -599,10 +599,10 @@ the ban on string comparison in 4.8 costs nothing.
 
 `has(x)` is exactly `uses(x) > 0`. A non-consumable counts as one use, and
 taking one that is already held changes nothing. Beyond the functions, five
-read-only variables come built in. Four of them are about equipment:
-`in_combat`, `weapon_attack`, `weapon_damage` and `armour_defence`, and you
-will meet them again in the combat chapter, section 7. The fifth is `due`,
-which belongs to scheduled events and means nothing anywhere else (17.2).
+read-only variables come built in. Four are about fighting: `in_combat`,
+`weapon_attack`, `weapon_damage` and `armour_defence`; you will meet them
+again in the combat chapter, section 7. The fifth, `due`, belongs to
+scheduled events and means nothing anywhere else (17.2).
 
 ## 6. Frontmatter: the character sheet
 
@@ -868,7 +868,7 @@ Let's walk through the parts that are not self-explanatory.
 
 `story` is the title and version of the book that wrote the save. Loading rejects a save whose `story` does not match the running book, and there is a good reason for that strictness: every other field is keyed against a specific book's nodes and choice ids, so a save from another version would resume as plausible-looking garbage. This also gives you a lever as an author: bumping `version:` in the frontmatter is the way to declare old saves invalid.
 
-A refusal says why in fields and not only in a sentence: `reason` is `story` or `version`, and for `story` it names both the book the save came from and the book that refused it. That is there because somebody has to act on it. A shop that ships a new edition meets this on every reader who was mid-playthrough, and the choice between offering the previous edition and carrying the character across is one an app makes in code, not one a reader should meet as an error message (12.6).
+A refusal says why in fields, not only in a sentence: `reason` is `story` or `version`, and for `story` it names both the book the save came from and the book that turned it away. The fields are there because somebody has to act on them. A shop that ships a new edition meets this refusal on every reader who was mid-playthrough, and choosing between offering the previous edition and carrying the character across is something an app does in code, not something a reader should meet as an error message (12.6).
 
 `at` is the position inside the current node, written as an index path. `[2, 0, 1]` reads as "op 2, its item 0, op 1 inside it". It is worth saying what `at` is not: it is not a call stack. There are no return addresses and no frames of their own, which is exactly what principle 4 rules out.
 
@@ -1391,14 +1391,15 @@ for this, and nothing should be: which nodes are exits depends on the map,
 not on the book.
 
 **A new edition is another book.** Bumping `version:` changes what a save is
-keyed against, so the save a reader has stops loading, and that is the point
-of the strictness in 8. In a shop it is also a reader losing a playthrough to
-an update they did not ask for, so a host that ships editions decides between
-two things, and the refusal names which case it is (8): keep the previous
-story JSON in the app and let anyone mid-playthrough finish in it, or carry
-the character across as above and let the position go. There is no third
-answer where the old position survives, because the ids it points at are the
-old edition's.
+keyed against, so the save a reader has stops loading; that is the strictness
+of 8 doing its job. In a shop it is also a reader losing a playthrough to an
+update they never asked for. A host that ships editions therefore decides
+between two answers: keep the previous story JSON in the app and let anyone
+mid-playthrough finish there, or carry the character across as above and let
+the position go. The refusal tells it which situation it is in, because a
+save from a newer runtime is refused too and wants a different answer (8). There
+is no third answer where the old position survives, because the ids it points
+at are the old edition's.
 
 The other half of this is what the app knows and the book only reads, and
 that half is section 15's: a map's weather, a distance, a party's standing
@@ -1885,7 +1886,7 @@ Picture a reader who puts the book down for a month and comes back. Their counte
 
 Without a bound a book that was closed for a month wakes up dead. With one the author decides whether time away is dangerous or merely long.
 
-There is a second way to spend that time, and it needs no second field. `max_catchup:` bounds how often `do:` runs; **`due`** says how often it was owed. In an event's `do:` it is the number of firings the counter asked for at this boundary, before the bound was applied; everywhere else it is E173, because there is no such number there and reading it as 1 would be a quiet wrong answer.
+There is a second way to spend that time, and it needs no second field. `max_catchup:` bounds how often `do:` runs; **`due`** says how often it was owed. Inside an event's `do:` it is the number of firings the counter asked for at this boundary, before the bound stepped in; everywhere else it is E173, because no such number exists there and reading it as 1 would be quietly wrong.
 
 ```yaml
 events:
@@ -1896,9 +1897,9 @@ events:
     do: 'oxygen -= due'
 ```
 
-That event fires once however long the book was closed, and takes what the whole absence cost. A month away is one loss of a month's air, not thirty losses of a day's, and not one loss of a day's with the rest quietly dropped. Which of the three a book wants is the author's to say, and now all three are sayable: repeat with a bound, drop past the bound, or fold what was missed into a single firing.
+That event fires once however long the book was closed, and takes what the whole absence cost: a month away is one loss of a month's air, not thirty losses of a day's, and not one loss of a day's with the rest quietly dropped. Which of the three a book wants is the author's call, and all three are now sayable: repeat up to the bound, drop what falls past it, or fold the whole backlog into one firing.
 
-The condition plays fair here too. A `when:` that is false costs the firings of that boundary but not the anchor: time passed whether or not the wound was there to worsen, so the event does not owe the reader fifty rounds of damage the moment they are finally wounded.
+The condition plays fair here too. A `when:` that is false forfeits that boundary's firings but not the anchor's advance: time passed whether or not the wound was there to worsen, so the event does not owe the reader fifty rounds of damage the moment they are finally wounded.
 
 ### 17.3 Death
 
@@ -2124,13 +2125,13 @@ scheduled content cannot be tested at all; and three examples, one of which
 puts facts, events, places and a clock through the acceptance test rather than
 leaving them to the unit tests. Every example in this document is a test case.
 
-The 0.8 layer has a written book behind it too, and it found things a unit test
-would not have. `examples/leuchtturm` is a lighthouse on a sandbank: the world
-outside supplies the weather as a `holds:` fact, an event lets the tide rise
-against the clock, and `due` is what turns a week of absence into one flooded
-cellar rather than a hundred reports of it filling. Played without a host every
-reader comes back in the morning; played with a storm, thirty-four in two
-hundred do not.
+The 0.8 layer has a written book behind it too, and writing it turned up
+things no unit test would have. `examples/leuchtturm` is a lighthouse on a
+sandbank: the world outside supplies the weather as a `holds:` fact, an event
+sends the tide up against the clock, and `due` is what turns a week of absence
+into one flooded cellar rather than a hundred reports of it filling. Played
+without a host, every reader comes back in the morning; played with a storm,
+a good few do not.
 
 ## 24. Change notes
 

@@ -37,7 +37,7 @@ enum Floorplan {
         let rooms: [Room]
     }
 
-    static let floors: [Floor] = [outside, ground, upstairs, cellar]
+    static let floors: [Floor] = [outside, ground, upstairs, cellar, sandbank]
 
     /// Everything before the front door: the road, the wall, the dog.
     static let outside = Floor(id: "outside", name: "Outside", rooms: [
@@ -123,8 +123,30 @@ enum Floorplan {
              hint: "It runs further than the house does"),
     ])
 
+    /// A second place entirely, and a second book: the lighthouse reads the
+    /// weather this app holds, which is what a `holds:` fact is for (15.1).
+    /// Turn the weather to a storm on the map and the tide starts rising in
+    /// there, without the book having been told anything else.
+    static let sandbank = Floor(id: "sandbank", name: "The sandbank", rooms: [
+        Room(id: "landing-stage", name: "The landing", book: "leuchtturm", node: "turm.ankunft",
+             frame: CGRect(x: 0.00, y: 0.50, width: 0.50, height: 0.50),
+             opens: ["lamp", "vault"],
+             exits: ["turm.zurueck": "back to the boat", "turm.abgesoffen": "the cellar won"],
+             hint: "The boat leaves as soon as you step off it"),
+        Room(id: "lamp", name: "The lantern", book: "leuchtturm", node: "turm.laterne",
+             frame: CGRect(x: 0.50, y: 0.00, width: 0.50, height: 1.00),
+             opens: [],
+             exits: ["turm.zurueck": "back to the boat", "turm.abgesoffen": "the cellar won"],
+             hint: "Where the light is, if there is one"),
+        Room(id: "vault", name: "The cellar", book: "leuchtturm", node: "turm.keller",
+             frame: CGRect(x: 0.00, y: 0.00, width: 0.50, height: 0.50),
+             opens: [],
+             exits: ["turm.zurueck": "back to the boat", "turm.abgesoffen": "the cellar won"],
+             hint: "Two barrels of oil and the sea coming in"),
+    ])
+
     /// The rooms a party can walk into before anything has been explored.
-    static let openAtFirst: Set<String> = ["road", "wall", "hall", "landing", "room", "stairs"]
+    static let openAtFirst: Set<String> = ["road", "wall", "hall", "landing", "room", "stairs", "landing-stage"]
 
     static func room(_ id: String) -> Room? {
         floors.flatMap(\.rooms).first { $0.id == id }

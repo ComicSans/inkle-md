@@ -47,7 +47,10 @@ enum Books {
         Bundle.main.url(forResource: name, withExtension: nil, subdirectory: "Books")
     }
 
-    static let all = ["thornwood-book", "house"]
+    /// Every book in this repository, except `examples/thornwood.md`: that is the
+    /// same story as `thornwood-book` written as one file, and a shelf with it
+    /// twice would say something about the compiler rather than about reading.
+    static let all = ["thornwood-book", "house", "nightside", "leuchtturm", "intercept"]
 
     /// The title a reader sees. It is in the book's own frontmatter, and an
     /// app that wanted it exactly could read `meta.title` out of story.json
@@ -57,6 +60,9 @@ enum Books {
         switch name {
         case "thornwood-book": return "The Crypt under the Thorn"
         case "house": return "The House on the Hill"
+        case "nightside": return "Nachtseite"
+        case "leuchtturm": return "Der Leuchtturm auf der Sandbank"
+        case "intercept": return "The Intercept"
         default: return name
         }
     }
@@ -65,6 +71,9 @@ enum Books {
         switch name {
         case "thornwood-book": return "two chapters"
         case "house": return "a long night"
+        case "nightside": return "a long way down"
+        case "leuchtturm": return "one night, one lamp"
+        case "intercept": return "by inkle, imported"
         default: return nil
         }
     }

@@ -10,6 +10,10 @@ stats:
   zeit:   { name: Uhrzeit, start: 0 }
   oel:    { name: Öl, start: 2, max: 8 }
   wasser: { name: Wasser im Keller, start: 0 }
+  # Ob die Lampe brennt. Jeder Knoten liest das, statt vorauszusetzen, auf
+  # welchem Weg jemand hergekommen ist: eine App darf mitten im Buch
+  # einsteigen (12.6), und dann gab es diesen Weg nie.
+  licht:  { start: 0 }
 
 # Was die Welt draußen weiß und das Buch nur liest (15).
 facts:
