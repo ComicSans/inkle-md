@@ -37,7 +37,7 @@ Forbidding. The master of the house evidently thinks little of
 unannounced guests, which almost endears him to you.
 
 * Climb over
-* Back to the gate
+* Go back to the gate
 
 You come over the wall cleanly and land in the grass.
 

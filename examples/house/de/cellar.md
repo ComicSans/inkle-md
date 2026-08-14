@@ -8,8 +8,8 @@ geduldige Maschine.
 
 * {has("cellar-key")} [Die Kellertür aufschließen](#wine)
 + [An der Kellertür lauschen](#listen)
-+ [Zur Haustür und hinaus](#flight)
-+ [Zurück in die Halle](#ground.hall)
++ [Zur Haustür hinausgehen](#flight)
++ [In die Halle zurückgehen](#ground.hall)
 
 # An der Kellertür {#listen}
 
@@ -23,7 +23,7 @@ wieder ein: {knows("NIEMAND-WARTET"): die Fragen, das aufmerksame Zuhören, das 
 ~ remember("MEIN-NAME")
 
 * {has("cellar-key")} [Aufschließen](#wine)
-+ [Zurück zur Treppe](#stairs)
++ [Zur Treppe zurückgehen](#stairs)
 + {not knows("BUTLER-ERLEDIGT") and not has("cellar-key")} [Es mit der Schulter versuchen](#servant-fight)
 
 ## Der Butler kommt {#servant-fight}
@@ -35,7 +35,7 @@ Butler, mit einer Kerze in der einen und etwas Länglichem in der anderen Hand.
 
 !combat servant
   win  -> butler-down
-  flee [Zur Haustür](#flight) Du lässt ihn stehen und die Höflichkeit gleich mit.
+  flee [Zur Haustür fliehen](#flight) Du lässt ihn stehen und die Höflichkeit gleich mit.
 
 ## Der Schlüssel {#butler-down}
 
@@ -50,7 +50,7 @@ Butler, mit einer Kerze in der einen und etwas Länglichem in der anderen Hand.
 ~ remember("BUTLER-ERLEDIGT")
 
 * [Aufschließen](#wine)
-+ [Nichts wie weg hier, zur Haustür](#flight)
++ [Nichts wie weg hier, zur Haustür rennen](#flight)
 
 # Der Geheimgang {#passage}
 
@@ -60,8 +60,8 @@ hält, was du erst nach dem dritten Spinnennetz herausfindest.
 
 ~ fear = fear + 1
 
-* [Durch das Regal in den Weinkeller](#wine)
-* [Zurück hinauf](#ground.hall)
+* [Durch das Regal in den Weinkeller gehen](#wine)
+* [Zurück hinaufsteigen](#ground.hall)
 
 # Der Weinkeller {#wine}
 
@@ -89,7 +89,7 @@ Hinter der hinteren Tür: der Gesang.
 * {has("phial") and not knows("SCHLAEFER-WACH")} [Das Fläschchen in den Krug leeren](#wine) Du gießt es hinein und verzichtest auf das Umrühren. Wer Gästen solchen Wein vorsetzt, hat es nicht besser verdient. Kaum stehst du wieder im Schatten der Fässer, kommt eine Kutte heraus, nimmt den Krug und trägt ihn hinein.
   ~ drop("phial")
   ~ remember("KRUG-GEWUERZT")
-+ [Zur hinteren Tür](#sneak)
++ [Zur hinteren Tür schleichen](#sneak)
 
 ## Auf leisen Sohlen {#sneak}
 
@@ -113,7 +113,7 @@ Hinter der hinteren Tür: der Gesang.
 
 !combat cultist
   win  -> wine-loot
-  flee [Zurück zwischen die Fässer](#wine) Er setzt dir nicht nach. Er setzt sich wieder.
+  flee [Zwischen die Fässer zurückweichen](#wine) Er setzt dir nicht nach. Er setzt sich wieder.
 
 ## Zwischen den Fässern {#wine-loot}
 
@@ -125,7 +125,7 @@ man Briefe öffnet.
 ~ equip("kris")
 ~ remember("SCHLAEFER-ERLEDIGT")
 
-* [Zur hinteren Tür](#rite)
+* [Zur hinteren Tür gehen](#rite)
 
 # Der Keller {#rite}
 
@@ -172,7 +172,7 @@ steht. Es steht wirklich etwas Größeres hinter ihnen.
 
 !combat cultist, cultist
   win  -> thing
-  flee [Zurück zur Tür](#flight) Du gibst den Kreis auf. Der Kreis lässt dich gehen. Das macht es nicht besser.
+  flee [Zur Tür zurückweichen](#flight) Du gibst den Kreis auf. Der Kreis lässt dich gehen. Das macht es nicht besser.
 
 # Allein {#alone}
 
@@ -183,7 +183,7 @@ schwer zu sagen, wen von euch beiden das mehr verlegen macht.
 
 * {knows("WAHRER-NAME")} [Den Namen aussprechen](#named)
 * [Angreifen](#thing)
-* [Rückwärts zur Tür hinaus](#flight)
+* [Rückwärts zur Tür hinausgehen](#flight)
 
 # Der Name {#named}
 
@@ -225,7 +225,7 @@ zu erklären, und du bist ihm dankbar dafür. Deine ANGST steigt.
 !combat thing
   win  -> break
   lose -> jar
-  flee [Die Treppe hinauf](#flight) Hinter dir bleibt es stehen, als hätte es Zeit.
+  flee [Die Treppe hinaufrennen](#flight) Hinter dir bleibt es stehen, als hätte es Zeit.
 
 ## Das zwölfte Glas {#jar}
 

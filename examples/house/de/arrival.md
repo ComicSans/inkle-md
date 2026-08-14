@@ -40,7 +40,7 @@ beinahe sympathisch macht.
     Jahren nicht mehr geklettert bist und dass das gute Gründe hatte.
     ~ stamina = stamina - 2
     ~ fear = fear + 1
-+ [Zurück zum Tor](#gate)
++ [Zum Tor zurückgehen](#gate)
 ---
 Der Regen wird stärker, als wollte er dich zur Tür drängen.
 

@@ -63,16 +63,16 @@ Der Pfad teilt sich vor einer Weißdornhecke. {&Ein Krachen|Ein Knirschen|Stille
 
 Du hast noch {gold} Goldstücke und ein Glück von {luck}.
 
-* [Nach links, ins Dickicht](#thicket)
-* [Nach rechts, zum Bach](#brook)
-* {has("lantern")} [In den Spalt unter der Hecke](#crypt) Du zwängst dich hinein, die Laterne voran.
+* [Nach links ins Dickicht gehen](#thicket)
+* [Nach rechts zum Bach gehen](#brook)
+* {has("lantern")} [In den Spalt unter der Hecke klettern](#crypt) Du zwängst dich hinein, die Laterne voran.
 
 # Im Dickicht {#thicket}
 
 {!Dornen fahren dir über die Arme.|Du kennst den Weg durch die Dornen inzwischen.}
 
-* [Weiter, bis der Wald sich lichtet](#brook)
-+ [Zurück zur Hecke](#begin)
+* [Weitergehen, bis der Wald sich lichtet](#brook)
++ [Zur Hecke zurückgehen](#begin)
 
 # Am Bach {#brook}
 
@@ -91,7 +91,7 @@ Das Wasser ist klar genug, dass du den Grund siehst. Etwas Helles liegt darin.
   { else }
     Du rutschst am nassen Stein ab und schlägst dir das Knie auf.
     ~ stamina = stamina - 2
-+ [Zurück zur Hecke](#begin)
++ [Zur Hecke zurückgehen](#begin)
 ---
 Der Bach zieht weiter, ohne sich um dich zu kümmern.
 
@@ -106,7 +106,7 @@ Ein Goblin fährt aus einer Nische hoch.
 !combat goblin
   win  -> chamber
   lose -> death
-  flee [Zurück durch den Spalt](#thicket) Du lässt mehr als deinen Stolz zurück.
+  flee [Zurück durch den Spalt fliehen](#thicket) Du lässt mehr als deinen Stolz zurück.
 
 ## Die zweite Kammer {#chamber}
 
@@ -115,7 +115,7 @@ Auf dem Sarkophag liegt ein silberner Schlüssel.
 * [Den Schlüssel nehmen]() Etwas seufzt in der Dunkelheit.
   ~ take("silver-key")
   ~ remember("KRAKEN")
-+ [Zum eisernen Tor](#gate)
++ [Zum eisernen Tor gehen](#gate)
 ---
 -> gate
 
@@ -133,7 +133,7 @@ Das Tor schließt die Gruft nach Norden ab.
   Ohne Schlüssel bleibt das Tor, was es ist.
   -> chamber
 
-* [Hinaus ins Licht](#daylight)
+* [Hinaus ins Licht treten](#daylight)
 
 # Wieder im Licht {#daylight}
 

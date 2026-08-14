@@ -8,8 +8,8 @@ machine.
 
 * Unlock the cellar door
 * Listen at the cellar door
-* To the front door and out
-* Back to the hall
+* Go out through the front door
+* Go back to the hall
 
 # At the Cellar Door {#listen}
 
@@ -19,7 +19,7 @@ falls your name. Your heart skips a beat. Then dinner comes back to you: the
 {knows("NIEMAND-WARTET"): questions, the attentive listening, the satisfied nod.|questions, and how attentively he listened to the last of them.}
 
 * Unlock
-* Back to the stairs
+* Go back to the stairs
 * Try your shoulder
 
 ## The Butler Comes {#servant-fight}
@@ -29,7 +29,7 @@ butler, a candle in one hand and something elongated in the other.
 
 "You were not provided for in the cellar," he says, almost with regret.
 
-* To the front door
+* Flee to the front door
 
 You leave him standing there, and your politeness with him.
 
@@ -40,7 +40,7 @@ From the butler's belt hangs a key, the twin of yours. You leave it where it is.
 From the butler's belt hangs a key. You take it and try not to look down at him.
 
 * Unlock
-* Nothing for it - to the front door
+* Nothing for it - run to the front door
 
 # The Secret Passage {#passage}
 
@@ -48,8 +48,8 @@ Bricked steps, downwards, and cobwebs at eye level. The passage ends behind
 a wine rack you can see through if you hold your head at an angle, which you
 discover only after the third cobweb.
 
-* Through the rack into the wine cellar
-* Back up
+* Go through the rack into the wine cellar
+* Climb back up
 
 # The Wine Cellar {#wine}
 
@@ -71,7 +71,7 @@ served before the service.
 Behind the far door: the chanting.
 
 * Empty the phial into the jug
-* To the far door
+* Sneak to the far door
 
 You pour it in and decide against stirring. Anyone who serves his guests wine like the master's deserves no better. No sooner are you back in the shadow of the barrels than a robe comes out, takes the jug and carries it in.
 
@@ -89,7 +89,7 @@ you, and reaches for something that is not a corkscrew.
 
 ## The Man in the Robe {#wine-fight}
 
-* Back among the barrels
+* Fall back among the barrels
 
 He does not come after you. He sits back down.
 
@@ -98,7 +98,7 @@ He does not come after you. He sits back down.
 Under the robe he carried a curved dagger, its blade waved like water into
 which someone has thrown a stone. It is not a blade for opening letters.
 
-* To the far door
+* Go to the far door
 
 # The Cellar {#rite}
 
@@ -151,7 +151,7 @@ Two robes detach themselves from the circle and step into your way, with the
 resolve of people who know that something larger stands behind them.
 Something larger does in fact stand behind them.
 
-* Back to the door
+* Fall back to the door
 
 You give up the circle. The circle lets you go. That does not make it
 better.
@@ -165,7 +165,7 @@ it is hard to say which of you two this embarrasses more.
 
 * Speak the name
 * Attack
-* Backwards out through the door
+* Walk backwards out through the door
 
 # The Name {#named}
 
@@ -195,7 +195,7 @@ Behind you something comes down the stairs, four-legged and without a chain.
 The hound takes his place beside you and growls with an expertise that
 reassures you more than any prayer.
 
-* Up the stairs
+* Run up the stairs
 
 Behind you it comes to a halt, as if it had time.
 

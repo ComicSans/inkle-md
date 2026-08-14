@@ -4,9 +4,9 @@ The path forks before a thorn hedge. {&A crack|A crunch|Silence} in the undergro
 
 You carry {gold} gold pieces and a luck of {luck}.
 
-* Left, into the thicket
-* Right, towards the brook
-* Into the gap under the hedge
+* Go left into the thicket
+* Go right towards the brook
+* Climb into the gap under the hedge
 
 You squeeze in, lantern first.
 
@@ -14,8 +14,8 @@ You squeeze in, lantern first.
 
 {!Thorns rake across your arms.|You know the way through the thorns by now.}
 
-* On, until the wood thins out
-* Back to the hedge
+* Walk on until the wood thins out
+* Go back to the hedge
 
 # At the Brook {#brook}
 
@@ -23,7 +23,7 @@ The water is clear enough to show the bottom. {knows("MUENZE"): Nothing gleams i
 
 * Reach for it
 * Jump the brook
-* Back to the hedge
+* Go back to the hedge
 
 Your fingers close around a coin.
 

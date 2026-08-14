@@ -74,7 +74,7 @@ test('a once-only choice disappears, a sticky one stays', () => {
 
   pick(/Dickicht/);                              // once-only, into the thicket
   assert.equal(s.current.node, 'thicket');
-  pick(/Zurück/);                                // sticky, back to the hedge
+  pick(/Zur Hecke/);                             // sticky, back to the hedge
   assert.equal(s.current.node, 'begin');
   assert.ok(!s.current.choices.some((c) => /Dickicht/.test(c.label)), 'once-only is gone');
   assert.ok(s.current.choices.some((c) => /Bach/.test(c.label)));
@@ -88,11 +88,11 @@ test('an alternative advances, and a once-only alternative runs dry', () => {
   pick(/Dickicht/);
   assert.match(s.current.text[0].text, /Dornen fahren dir über die Arme/);
 
-  pick(/Zurück/);
+  pick(/Zur Hecke/);
   assert.notEqual(s.current.text[0].text, first, 'the cycle moved on');
 
   pick(/Bach/);
-  pick(/Zurück/);
+  pick(/Zur Hecke/);
   assert.notEqual(s.current.text[0].text, first);
 });
 
@@ -257,7 +257,7 @@ test('a language switch keeps the position and the state', () => {
   assert.equal(s.current.node, node);
   assert.deepEqual(s.state.taken, taken);
   assert.match(s.current.text[0].text, /Thorns rake|You know the way/);
-  assert.ok(s.current.choices.some((c) => /Back to the hedge/.test(c.label)));
+  assert.ok(s.current.choices.some((c) => /Go back to the hedge/.test(c.label)));
 });
 
 test('an overridden node runs its own logic', () => {

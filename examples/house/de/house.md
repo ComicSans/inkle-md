@@ -52,10 +52,10 @@ Ein Läufer, der jeden Schritt schluckt. Links die Bibliothek, rechts eine Tür
 mit einem Handtuch darüber, am Ende des Flurs eine schmale Tür, geradeaus die
 Treppe hinunter.
 
-* [In die Bibliothek](#library)
-* [Die Tür mit dem Handtuch](#bathroom)
-* {not knows("BETAEUBT")} [Die schmale Tür am Ende](#tower-door)
-+ [Die Treppe hinunter](#ground.hall)
+* [In die Bibliothek gehen](#library)
+* [Die Tür mit dem Handtuch öffnen](#bathroom)
+* {not knows("BETAEUBT")} [Zur schmalen Tür am Ende gehen](#tower-door)
++ [Die Treppe hinuntergehen](#ground.hall)
 
 # Die Bibliothek {#library}
 
@@ -83,7 +83,7 @@ deutlich dünnere darüber, wie man es wieder loswird.
   ~ take("poker")
   { not has("dagger") }
     ~ equip("poker")
-+ [Hinaus auf den Flur](#landing)
++ [Hinaus auf den Flur gehen](#landing)
 ---
 Du hast in dieser Bibliothek gesehen, was zu sehen war.
 
@@ -182,7 +182,7 @@ hinaus als kenne sie den Ausblick auswendig und prüfe ihn trotzdem.
     Die Tür gewinnt die ersten beiden Versuche.
     ~ stamina = stamina - 2
     Beim dritten gibt sie nach, das Haus gewinnt nicht immer.
-* {knows("BETAEUBT")} [Durch das Fenster und den Efeu hinunter]()
+* {knows("BETAEUBT")} [Durch das Fenster und den Efeu hinunterklettern]()
   { test("skill") }
     Der Efeu trägt dich ein Stockwerk tiefer, wo ein Fenster offen steht. Du
     steigst ein und stehst in der Bibliothek, als wäre das ein üblicher Weg,

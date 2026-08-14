@@ -50,10 +50,10 @@ A runner that swallows every step. To the left the library, to the right a
 door with a towel over it, at the end of the corridor a narrow door, straight
 ahead the stairs going down.
 
-* Into the library
-* The door with the towel
-* The narrow door at the end
-* Down the stairs
+* Go into the library
+* Open the door with the towel
+* Go to the narrow door at the end
+* Go down the stairs
 
 # The Library {#library}
 
@@ -68,7 +68,7 @@ distinctly thinner ones on how to get rid of it again.
 
 * Examine the shelf more closely
 * Take the poker from the fireplace
-* Back to the corridor
+* Go back to the corridor
 
 Behind the third volume lies a key with a paper label attached: "Cellar".
 
@@ -160,7 +160,7 @@ looking out like someone who knows the view by heart and checks it anyway.
 
 * Lift the door off its hinges with your pocketknife
 * Use your shoulder
-* Out of the window and down the ivy
+* Climb out of the window and down the ivy
 * Climb down
 
 Bolts are a matter of opinion; hinges are physics. The door leans into your

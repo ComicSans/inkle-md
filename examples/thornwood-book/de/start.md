@@ -4,16 +4,16 @@ Der Pfad teilt sich vor einer Weißdornhecke. {&Ein Krachen|Ein Knirschen|Stille
 
 Du hast {gold} Goldstücke bei dir und ein Glück von {luck}.
 
-+ [Nach links, ins Dickicht](#thicket)
-+ [Nach rechts, zum Bach](#brook)
-+ {has("lantern")} [In den Spalt unter der Hecke](#crypt.crypt) Du zwängst dich hinein, die Laterne voran.
++ [Nach links ins Dickicht gehen](#thicket)
++ [Nach rechts zum Bach gehen](#brook)
++ {has("lantern")} [In den Spalt unter der Hecke klettern](#crypt.crypt) Du zwängst dich hinein, die Laterne voran.
 
 # Im Dickicht {#thicket}
 
 {!Dornen fahren dir über die Arme.|Du kennst den Weg durch die Dornen inzwischen.}
 
-+ [Weiter, bis der Wald sich lichtet](#brook)
-+ [Zurück zur Hecke](#begin)
++ [Weitergehen, bis der Wald sich lichtet](#brook)
++ [Zur Hecke zurückgehen](#begin)
 
 # Am Bach {#brook}
 
@@ -29,7 +29,7 @@ Das Wasser ist klar genug, dass du den Grund siehst. {knows("MUENZE"): Nichts gl
   { else }
     Du rutschst am nassen Stein ab und schlägst dir das Knie auf.
     ~ stamina = stamina - 2
-+ [Zurück zur Hecke](#begin)
++ [Zur Hecke zurückgehen](#begin)
 ---
 Der Bach zieht weiter, ohne sich um dich zu kümmern.
 

@@ -10,10 +10,10 @@ zählt sie etwas anderes als Stunden.
   ~ fear = fear + 1
 
 * [Die Standuhr genauer ansehen](#clock)
-* [Ins Speisezimmer](#dining)
-* [In die Küche](#kitchen)
-* [In das Arbeitszimmer](#study)
-+ [Zur Kellertür](#cellar.stairs)
+* [Ins Speisezimmer gehen](#dining)
+* [In die Küche gehen](#kitchen)
+* [In das Arbeitszimmer gehen](#study)
++ [Zur Kellertür gehen](#cellar.stairs)
 
 # Die Standuhr {#clock}
 
@@ -44,7 +44,7 @@ es.
 * [Das Fläschchen einstecken](#dining) Du steckst es ein. Für wen auch immer.
   ~ take("phial")
   ~ remember("FLAESCHCHEN-WEG")
-+ [Zurück in die Halle](#hall)
++ [In die Halle zurückgehen](#hall)
 
 # Die Küche {#kitchen}
 
@@ -63,7 +63,7 @@ kurz darüber nach, wie niedrig die Messlatte inzwischen hängt.
 * [Die Gläser genauer ansehen](#kitchen) Eingelegtes, in Essig. Es sieht aus wie Gemüse, und du wiederholst das Wort Gemüse innerlich so lange, bis es hält. Elf Gläser tragen Namen. Das zwölfte ist leer, und das Etikett darauf ist neu. Der Leim daran glänzt noch feucht. Deine ANGST steigt.
   ~ remember("ZWOELFTES-GLAS")
   ~ fear = fear + 2
-+ [Zurück in die Halle](#hall)
++ [In die Halle zurückgehen](#hall)
 
 # Das Arbeitszimmer {#study}
 
@@ -97,7 +97,7 @@ Landwirtschaft, deren Rücken gemalt sind wie Kulissen. {knows("BRIEFOEFFNER-WEG
   ~ take("dagger")
   ~ remember("BRIEFOEFFNER-WEG")
   ~ equip("dagger")
-+ [Zurück in die Halle](#hall)
++ [In die Halle zurückgehen](#hall)
 ---
 Mehr gibt dieses Zimmer nicht her, und du bist nicht sicher, ob du ihm das
 glauben sollst.
@@ -134,4 +134,4 @@ Räumen, die dem Herrn besonders am Herzen liegen."
 
 ~ remember("BUTLER-ERLEDIGT")
 
-* [Zurück in die Halle](#hall)
+* [In die Halle zurückgehen](#hall)

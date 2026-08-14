@@ -9,7 +9,7 @@
 !combat goblin
   win  -> chamber
   lose -> death
-  flee [Zurück durch den Spalt](#start.begin) Du lässt mehr als deinen Stolz zurück.
+  flee [Zurück durch den Spalt fliehen](#start.begin) Du lässt mehr als deinen Stolz zurück.
 
 ## Die zweite Kammer {#chamber}
 
@@ -18,7 +18,7 @@
 * [Den Schlüssel nehmen](#chamber) Etwas seufzt in der Dunkelheit. Das Seufzen formt ein Wort: Kraken.
   ~ take("silver-key")
   ~ remember("KRAKEN")
-+ [Zum eisernen Tor](#gate)
++ [Zum eisernen Tor gehen](#gate)
 
 # Das eiserne Tor {#gate}
 
@@ -32,7 +32,7 @@ Das Tor schließt die Gruft nach Norden ab.
   Ohne Schlüssel und ohne das Wort bleibt das Tor, was es ist.
   -> chamber
 
-* [Hinaus ins Licht](#daylight)
+* [Hinaus ins Licht treten](#daylight)
 
 # Wieder im Licht {#daylight}
 

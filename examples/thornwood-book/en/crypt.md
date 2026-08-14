@@ -6,7 +6,7 @@
 
 {!A goblin starts up out of an alcove.|The goblin is already waiting, blade half raised.}
 
-* Back through the gap
+* Flee back through the gap
 
 You leave more than your pride behind.
 
@@ -15,7 +15,7 @@ You leave more than your pride behind.
 {has("silver-key"): Nothing lies on the sarcophagus now.|A silver key lies on the sarcophagus.}
 
 * Take the key
-* On to the iron gate
+* Walk on to the iron gate
 
 Something sighs in the dark. The sigh shapes a word: Kraken.
 
@@ -28,7 +28,7 @@ With the grinding of the lock, the cold drains from your limbs.
 
 Without the key and without the word, the gate stays what it is.
 
-* Out into the light
+* Step out into the light
 
 # Back in the Light {#daylight}
 

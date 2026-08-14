@@ -7,10 +7,10 @@ Perhaps it counts something other than hours.
 {~Somewhere above you a door closes softly.|The works of the grandfather clock audibly gather themselves and then do not strike after all.|Beneath your feet, very far down, chanting starts up.}
 
 * Take a closer look at the grandfather clock
-* Into the dining room
-* Into the kitchen
-* Into the study
-* To the cellar door
+* Go into the dining room
+* Go into the kitchen
+* Go into the study
+* Go to the cellar door
 
 # The Grandfather Clock {#clock}
 
@@ -35,7 +35,7 @@ rather not be seen.
 {knows("ASPIDISTRA"): The aspidistra in the corner is drooping. You feel a little guilty, but only towards it.}
 
 * Pocket the phial
-* Back to the hall
+* Go back to the hall
 
 You pocket it. For whoever it may concern.
 
@@ -49,7 +49,7 @@ the bar has come to hang.
 
 * Pack up the pie
 * Look more closely at the jars
-* Back to the hall
+* Go back to the hall
 
 It smells of game. You decide to believe that.
 
@@ -65,7 +65,7 @@ A desk with a green lamp, behind it shelves of books on agriculture whose spines
 * Skim the diary the way one skims files
 * Open the diary
 * Take the letter opener
-* Back to the hall
+* Go back to the hall
 
 Twenty years on the local desk: you read diagonally, back to front, and the
 story sits where it always sits, between the columns. Arrival dates, page
@@ -113,4 +113,4 @@ From his belt hangs a ring of keys. One of them carries a paper label: "Cellar",
 
 From his belt hangs a ring of keys. One of them carries a paper label: "Cellar". You take it and try not to look down at the butler as you do.
 
-* Back to the hall
+* Go back to the hall
