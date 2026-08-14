@@ -1553,10 +1553,10 @@ once more with the walkthrough below.
 title: The Crypt Under the Thorn
 start: begin
 stats:
-  skill:   { start: "roll(1,6) + 6",  max: start, ui: bar }
-  stamina: { start: "roll(2,6) + 12", max: start, ui: bar }
-  luck:    { start: "roll(1,6) + 6",  max: start, ui: bar }
-  gold:    { start: 12, ui: number }
+  skill:   { name: Skill,   start: "roll(1,6) + 6",  max: start }
+  stamina: { name: Stamina, start: "roll(2,6) + 12", max: start }
+  luck:    { name: Luck,    start: "roll(1,6) + 6",  max: start }
+  gold:    { name: Gold,    start: 12 }
 inventory:
   slots: 8
   start: [sword, lantern, provisions]
@@ -1566,10 +1566,10 @@ items:
   provisions: { name: Provisions, kind: consumable, uses: 10,
                 effect: "stamina = min(stamina + 4, stamina_max)",
                 when: "not in_combat" }
+  silver-key: { name: Silver key, kind: gear }
 combat:
   attack: "skill + roll(2,6)"
-  damage: 2
-  rule: higher-wins
+  damage: "2"
 enemies:
   goblin: { name: Goblin, skill: 5, stamina: 6, flee_after: 3 }
 death:
@@ -1584,9 +1584,34 @@ undo:
 The path forks before a thorn hedge. {&A crack|A crunch|Silence} in the
 undergrowth.
 
-* [Left, into the thicket](#thicket)
-* [Right, towards the brook](#brook)
-* {has("lantern")} [Into the gap under the hedge](#crypt) You squeeze through.
++ [Go left, into the thicket](#thicket)
++ [Go right, towards the brook](#brook)
++ {has("lantern")} [Squeeze into the gap under the hedge](#crypt) You go in, lantern first.
+
+# The Thicket {#thicket}
+
+Thorns, and a path that was a path an hour ago.
+
++ [Push on until the wood thins out](#brook)
++ [Go back to the hedge](#begin)
+
+# At the Brook {#brook}
+
+The water is clear enough to show the bottom.
+
+* [Jump the brook]()
+  { test("skill") }
+    You land clean on the far side and work your way to the thicket.
+    -> thicket
+  { else }
+    You slip on the wet stone and open your knee.
+    ~ stamina = stamina - 2
++ [Follow the bank to the thicket](#thicket)
++ [Go back to the hedge](#begin)
+---
+The brook goes on without taking any notice of you.
+
+-> brook
 
 # The Crypt {#crypt}
 
@@ -1597,63 +1622,98 @@ A goblin starts up out of an alcove.
 !combat goblin
   win  -> chamber
   lose -> death
-  flee [Back through the gap](#thicket) You scramble out, thorns tearing at you.
+  flee [Scramble back through the gap](#begin) You leave more than your pride behind.
 
 ## The Second Chamber {#chamber}
 
-A silver key lies on the sarcophagus.
+{has("silver-key"): Nothing lies on the sarcophagus now.|A silver key lies on the sarcophagus.}
 
-* [Take the key]() Something sighs in the dark.
-  ~ take("silver key")
+* [Take the key]() Something sighs in the dark. The sigh shapes a word: Kraken.
+  ~ take("silver-key")
   ~ remember("KRAKEN")
-+ [Back to the light](#begin)
++ [Try the iron gate](#gate)
++ [Go back to the light](#begin)
 ---
--> begin
+-> chamber
+
+# The Iron Gate {#gate}
+
+The gate closes the crypt off to the north.
+
+{ has("silver-key") and knows("KRAKEN") }
+  You whisper the word, and the key turns as though it had been waiting for
+  it.
+  -> daylight
+{ test("luck") }
+  The lock is old and the hinge is older. It gives, and so does your luck.
+  -> daylight
+{ else }
+  Without the key and without the word, the gate stays what it is.
+  -> chamber
+
+# Back in the Light {#daylight}
+
+Beyond the gate the passage climbs, and somewhere above it the sun is out.
+Your adventure ends well, with {gold} gold pieces in your pocket.
+
+-> END
 
 # Dead {#death}
 
 Your adventure ends here.
+
 -> END
 ```
 
 Now the same book again, this time as a checklist of what you have learned.
 
-The frontmatter declares everything and narrates nothing, as principle 3
-asks. Three stats are rolled with `roll()` at the start of the game, and
-`max: start` pins each one to its opening value; `gold` starts at a plain
-number. The inventory has eight slots and three starting items. The
-provisions are a consumable with ten uses, an `effect:` that heals without
-overshooting the maximum, and a `when:` that keeps them out of combat. The
-combat block sets the attack formula and the damage for the whole book, the
+The frontmatter declares everything and narrates nothing, as principle 3 asks.
+Three stats are rolled with `roll()` at the start of the game, and `max: start`
+pins each one to its opening value; `gold` starts at a plain number. The
+inventory has eight slots and three starting items, and the key the crypt holds
+is declared there too, because an item a book hands out is an item a book has
+named. The provisions are a consumable with ten uses, an `effect:` that heals
+without overshooting the maximum, and a `when:` that keeps them out of combat.
+The combat block sets the attack formula and the damage for the whole book, the
 goblin brings its own numbers and a `flee_after`, and the `death` block says
-what state ends the game and where the story goes then. `undo` gives the
-reader ten steps back.
+what state ends the game and where the story goes then. `undo` gives the reader
+ten steps back.
 
-Then the story. `# At the Forest Edge {#begin}` is a node, a heading with an
-id, and `start: begin` in the frontmatter points at it. The
-`{&A crack|A crunch|Silence}` is a cycling alternative from 4.6, so the
-forest sounds different each time the reader comes back. The first two
-choices use `*`, once-only; the third is guarded by `{has("lantern")}` and
-only appears while the lantern is in the inventory, with a line of text that
-prints after the choice is taken.
+Then the story. `# At the Forest Edge {#begin}` is a node, a heading with an id,
+and `start: begin` in the frontmatter points at it. The `{&A crack|A
+crunch|Silence}` is a cycling alternative from 4.6, so the forest sounds
+different each time the reader comes back. All three choices there are `+`,
+sticky: a path through a wood does not close because somebody walked it once.
+The third is guarded by `{has("lantern")}` and only appears while the lantern is
+in the inventory, with a line of text that prints after the choice is taken.
 
-In the crypt, `{!Cold air meets you.|You know the way by now.}` is a
-once-only alternative: the first visit gets the first text, every later
-visit the second. The `!combat` block is section 7 in four lines: win and
-lose are diverts, and the flee exit becomes available after three rounds
-because the goblin declared `flee_after: 3`.
+The brook shows a check and a gather. `[Jump the brook]()` has an empty target,
+so the story stays in this node; the branch under it rolls `test("skill")` and
+diverts on success, while the failure costs stamina and falls through. What it
+falls through to is the `---` at the foot of the node, the gather, and the
+divert after it sends the reader back to the brook to try again. Without that
+gather the node would end in nothing, which is E110.
 
-The second chamber shows a subnode and a small weave. `[Take the key]()` has
-an empty target, so the story stays here, prints the sigh, and runs the two
-indented assignments: `take()` puts the key in the inventory and
-`remember()` notes a code word. The `+` choice is sticky, so going back to
-the light never wears out. The `---` underneath is a gather; the thread that
-took the key joins there and the divert sends it back to `begin`. The death
-node ends the story with `-> END`, which is the explicit ending every path
-must reach one way or another.
+In the crypt, `{!Cold air meets you.|You know the way by now.}` is a once-only
+alternative: the first visit gets the first text, every later visit the second.
+The `!combat` block is section 7 in four lines: win and lose are diverts, and
+the flee exit becomes available after three rounds because the goblin declared
+`flee_after: 3`.
 
-That is the whole language in one page. Everything after this section adds
-the fact layer on top; nothing changes what you just read.
+The second chamber is a subnode with a weave. Its opening line asks `has()`
+rather than counting visits, so the sarcophagus is empty when the key is gone
+and not when the reader has been here before. `[Take the key]()` runs the two
+indented assignments: `take()` puts the key in the inventory and `remember()`
+notes a code word. The gate then wants both, and if it has neither it offers
+`test("luck")` instead, which is the same dice as the brook against a different
+stat. Beyond it the story ends well and prints the gold; the death node ends it
+the other way. Both endings are `-> END`, which is the explicit ending every
+path must reach one way or another.
+
+That is the whole language in one page, and it compiles: a test in this
+repository lifts this very block out of the file and runs the compiler over it,
+so an example that stopped being true would fail the build. Everything after
+this section adds the fact layer on top; nothing changes what you just read.
 
 ## 14. What is a fact, and what is a variable
 
