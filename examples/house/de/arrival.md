@@ -9,8 +9,8 @@ brennt. Auf dem Torbogen steht ein Name, den der Efeu verdeckt.
 
 * {knows("MECHANIKER")} [Noch einmal unter die Haube sehen](#road) Du siehst nach, mit der Routine von tausend Pannen. Verteiler trocken, Zündung tot - aber tot auf eine Art, die dir neu ist. Ein Wagen, der nicht anspringen will, klingt anders als einer, der nicht anspringen kann.
   ~ fear = fear + 1
-* [Läuten](#gate)
-* [An der Mauer entlanggehen](#wall) Man muss ja nicht gleich klingeln.
++ [Läuten](#gate)
++ [An der Mauer entlanggehen](#wall) Man muss ja nicht gleich klingeln.
 
 # Am Tor {#gate}
 

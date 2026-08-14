@@ -63,9 +63,9 @@ Der Pfad teilt sich vor einer Weißdornhecke. {&Ein Krachen|Ein Knirschen|Stille
 
 Du hast noch {gold} Goldstücke und ein Glück von {luck}.
 
-* [Nach links ins Dickicht gehen](#thicket)
-* [Nach rechts zum Bach gehen](#brook)
-* {has("lantern")} [In den Spalt unter der Hecke klettern](#crypt) Du zwängst dich hinein, die Laterne voran.
++ [Nach links ins Dickicht gehen](#thicket)
++ [Nach rechts zum Bach gehen](#brook)
++ {has("lantern")} [In den Spalt unter der Hecke klettern](#crypt) Du zwängst dich hinein, die Laterne voran.
 
 # Im Dickicht {#thicket}
 

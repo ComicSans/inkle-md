@@ -162,7 +162,7 @@ man Briefe öffnet.
 * {has("crucifix")} [Das Kruzifix hochhalten](#break) Es wird so heiß, dass du es fast fallen lässt, und der Gesang bricht ab.
 * {knows("KRUG-GEWUERZT")} [Den Kreidekreis verwischen, solange die Kutten schwanken](#thing) Die, die dich aufhalten wollen, müssten dazu erst aufstehen. Sie versuchen es. Es sieht aus wie eine schlechte Turnstunde.
 * {not knows("KRUG-GEWUERZT")} [Den Kreidekreis mit dem Stiefel verwischen](#guards) Zwölf Köpfe drehen sich gleichzeitig, was mehr Eindruck macht als alles bisher.
-* [Rückwärts hinausgehen und die Tür schließen](#flight)
++ [Rückwärts hinausgehen und die Tür schließen](#flight)
 
 ## Die Wächter {#guards}
 

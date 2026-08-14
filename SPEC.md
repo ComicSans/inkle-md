@@ -306,6 +306,12 @@ The first form jumps within the file, the second across files, as you saw in
 is an error, not a silent stop (E110). Every path through your book has to
 lead somewhere, even if that somewhere is the end.
 
+That is a rule about what is written, and the compiler checks it as E110. It
+has a twin at runtime: a node whose choices have all been taken has no way on
+either, however carefully it was written. The runtime raises an error there
+rather than showing a page with nothing on it, and L029 finds most of those
+nodes before a reader ever does (11, 21).
+
 ### 4.3 Choices
 
 Choices are the moments your reader decides. You write them as Markdown list
@@ -1108,6 +1114,7 @@ That is the key difference to section 10: warnings do not abort compilation. `--
 | L026 | Divert into a place's `enter:` node without setting the index | warning |
 | L027 | Recurring event without `max_catchup:` | info |
 | L028 | Gather diverting back into its own node while every choice can run out | warning |
+| L029 | Every choice in a node can run out, and taking one leads back into it | warning |
 
 If you only remember two of these, make it L008 and L009. They are the ones that actually catch bugs in a gamebook: a key that is never granted, a code word that is never set. Both need the whole book to judge, so they run after resolution across all namespaces.
 
@@ -2128,12 +2135,39 @@ gather and arrives at itself with nothing left to offer. A sticky choice with
 no condition is what makes the difference, which is why the warning asks for
 exactly that and not for fewer once-only choices.
 
-One check lives in the runtime rather than the linter: a divert chain is
-finite. One transition may pass through a handful of nodes on its way to the
+L028 and L029 are the same trap seen from two sides, and both are needed. L028
+is the node that sends itself back: choices, then a gather, then a divert home.
+L029 is the node the reader walks back into from somewhere else, which is the
+commoner shape and the harder one to see while writing. Both ask one question:
+once every choice here is spent, is there still a way on? The answer has to be
+yes for a node a reader can stand in twice.
+
+The second half of L029 is what keeps it honest. A node whose choices all run
+out is only a trap where the reader can return to it, and only where the return
+is one nothing can close: through a divert, or through a sticky unconditional
+choice. A way back through a condition may be exactly the way that is gone by
+the time it matters, and warning about it would be a guess. The walk also
+starts at the targets rather than at the node, because a choice that ends the
+story cannot strand anybody - whoever spends it is not coming back, and whoever
+has not spent it still has it. Both of those refinements came from a real book
+that the first version of the check accused wrongly.
+
+Two checks live in the runtime rather than the linter. The first: a divert
+chain is finite. One transition may pass through a handful of nodes on its way to the
 page the reader ends up on (16.1). A book that has not settled after a hundred
 of them is looping, and the runtime raises an error naming the node it started
 from. Without that bound, the loop L028 describes ends as a stack overflow, and
 a stack trace tells an author nothing about which node to fix.
+
+The second: a page has to offer something. When a node is entered and neither a
+choice nor a fight nor an ending is left, the runtime raises an error naming
+that node. E110 asks the same of a book at compile time, but it can only count
+what is written; a node whose choices are all once-only passes that check and
+still runs out the second time somebody stands in it. What the reader would see
+otherwise is a page with no buttons and no way of telling whether the book
+ended or broke, and 4.2 is clear that a node without a way on is an error and
+not a quiet stop. L029 finds the shape beforehand wherever a static walk can
+see it; this catches every other way a book arrives there.
 
 ## 22. Open points
 
@@ -2210,6 +2244,7 @@ edges.
 | 9.1     | The `image` op added to the story JSON. |
 | 10.3    | E172 and E180 to E184 added to the error table. |
 | 11, 21  | L025 is an `info` about a book and a `warning` on an output with no host, because a book does not know which output it becomes. |
+| 4.2, 11, 21 | L029 added, and with it the runtime error for a node whose choices have all been taken: E110's twin, for what is left rather than for what is written. |
 | 12      | Retitled: the web export is one host of several. 12.5 to 12.9 added, with the hosts beyond the browser, the two ways to play, the host protocol, the native bundle, and what a foreign game loop has to know. |
 | 15.1, 16.2 | `holds:` added to a host fact: a state stays across boundaries where a duration is consumed. E172 rejects it anywhere else. |
 | 5, 17.2 | `due` added: how many firings a scheduled event was owed at this boundary, so an absence can be folded into one firing instead of repeated or dropped. E173 rejects it anywhere else. |

@@ -26,6 +26,7 @@ const LEVELS = {
   L020: 'warning',
   L021: 'warning', L022: 'warning', L023: 'info', L024: 'warning',
   L025: 'info', L026: 'warning', L027: 'info', L028: 'warning',
+  L029: 'warning',
 };
 
 /** Anything that consumes the dice stream. */
@@ -235,6 +236,21 @@ export function lint(story, { table, config, lang }) {
     }
   }
 
+  // L029: the same trap without a gather. A node whose choices can all run out
+  // is only a problem where the reader can stand in it twice, so the test is
+  // not "are they all once-only" but "are they all once-only and does a path
+  // lead back here". Without the second half this would fire on every ordinary
+  // scene in the book.
+  for (const [id, node] of Object.entries(nodes)) {
+    if (!reachable.has(id) || node.kind === 'function') continue;
+    if (loopsOnItself(node.body, id)) continue;         // that is L028's
+    if (!runsOut(node.body)) continue;
+    if (!strandsOnReturn(id, node.body, nodes)) continue;
+    add('L029',
+      `every choice in "${id}" can run out, and taking one leads back into it`,
+      node.source);
+  }
+
   const placeVar = config.places?.variable ?? null;
   for (const place of config.places?.table ?? []) {
     if (!place.enter) continue;
@@ -316,6 +332,72 @@ function configExpressions(config) {
  *        is known to be false, which is how L025 walks the book a reader gets
  *        with no host at all
  */
+/**
+ * True when a node ends on choices that can all disappear: none of them is
+ * both sticky and unconditional, and nothing after them carries the ending.
+ * A node that ends on a divert or a fight never runs out (SPEC 11, L029).
+ */
+function runsOut(ops) {
+  const groups = (ops ?? []).filter((op) => op.op === 'choices');
+  if (groups.length === 0) return false;                 // E110 has this one
+  const last = groups[groups.length - 1];
+  const after = ops.slice(ops.indexOf(last) + 1);
+  if (after.some((op) => op.op === 'divert' || op.op === 'combat')) return false;
+  return !last.items.some((item) => item.sticky && item.when === null);
+}
+
+/**
+ * True when taking one of a node's own choices can bring the reader back to it.
+ *
+ * Two things had to be got right here, and each of them was a false alarm on a
+ * real book before it was.
+ *
+ * The way back has to be one nothing can close. A path through a conditional
+ * branch or a once-only choice may be exactly the path that is gone by the
+ * time it would matter, and a warning about it is a guess. So only a divert
+ * and a sticky unconditional choice count as edges.
+ *
+ * And it has to start where the choice led. A node whose last choice ends the
+ * story cannot strand anybody: the reader who spends it is not coming back,
+ * and the reader who has not spent it still has it. So the walk starts at the
+ * targets, not at the node.
+ */
+function strandsOnReturn(id, ops, nodes) {
+  const groups = (ops ?? []).filter((op) => op.op === 'choices');
+  const targets = (groups[groups.length - 1]?.items ?? [])
+    .map((item) => (item.target?.end ? null : item.target?.ref))
+    .filter(Boolean);
+  return targets.some((target) => alwaysReturns(target, id, nodes));
+}
+
+function alwaysReturns(from, id, nodes) {
+  const open = new Map();
+  for (const [from, node] of Object.entries(nodes)) {
+    const to = new Set();
+    walkOps(node.body, (op) => {
+      if (op.op === 'divert' && !op.target.end) to.add(op.target.ref);
+      if (op.op === 'choices') {
+        for (const item of op.items) {
+          if (item.when || !item.sticky || !item.target || item.target.end) continue;
+          to.add(item.target.ref);
+        }
+      }
+    });
+    open.set(from, to);
+  }
+
+  const seen = new Set();
+  const queue = [from];
+  while (queue.length > 0) {
+    const next = queue.pop();
+    if (next === id) return true;
+    if (!next || seen.has(next)) continue;
+    seen.add(next);
+    for (const on of open.get(next) ?? []) queue.push(on);
+  }
+  return false;
+}
+
 function buildGraph(nodes, prune = () => false) {
   const graph = new Map();
   for (const [id, node] of Object.entries(nodes)) {

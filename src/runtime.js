@@ -584,6 +584,29 @@ export class Story {
     // never contradict the events that had just run (16.3).
     if (this.#boundaryIfPending()) return;
     this.#runOps(this.#node().body, []);
+    this.#requireAWayOn();
+  }
+
+  /**
+   * A page has to offer something: a choice, a fight, or an ending.
+   *
+   * E110 asks the same of a node at compile time, but it can only count what
+   * is written. A node whose choices are all `*` passes that check and still
+   * runs out the second time the reader stands in it, and then there is
+   * nothing to do and nothing to read. This is where that is caught, because
+   * a reader stuck on a page with no buttons has no way of knowing whether
+   * the book ended or broke.
+   *
+   * L029 finds the shape beforehand where a static walk can see it; this
+   * catches every other way a book arrives here.
+   */
+  #requireAWayOn() {
+    if (this.phase !== PLAYING) return;
+    if (this.choices.length > 0 || this.combat) return;
+    throw new Error(
+      `"${this.state.node}" has nothing left to offer: every choice it has is `
+      + 'once-only and every one has been taken. A node a reader can enter '
+      + 'twice needs a sticky choice or a divert at its end.');
   }
 
   /**

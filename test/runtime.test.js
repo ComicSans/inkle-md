@@ -69,15 +69,33 @@ test('the same seed replays exactly', () => {
 });
 
 test('a once-only choice disappears, a sticky one stays', () => {
-  const s = play(example());
+  const { story } = compile(`
+# Hub {#hub}
+
+The hub.
+
+* [Once](#side)
++ [Twice](#side)
+
+# Side {#side}
+
+The side.
+
++ [Back](#hub)
+`);
+  const s = new Story(story, { seed: 1 });
   const pick = (re) => s.choose(s.current.choices.find((c) => re.test(c.label)).index);
 
-  pick(/Dickicht/);                              // once-only, into the thicket
-  assert.equal(s.current.node, 'thicket');
-  pick(/Zur Hecke/);                             // sticky, back to the hedge
-  assert.equal(s.current.node, 'begin');
-  assert.ok(!s.current.choices.some((c) => /Dickicht/.test(c.label)), 'once-only is gone');
-  assert.ok(s.current.choices.some((c) => /Bach/.test(c.label)));
+  pick(/Once/);
+  assert.equal(s.current.node, 'side');
+  pick(/Back/);
+  assert.equal(s.current.node, 'hub');
+  assert.ok(!s.current.choices.some((c) => /Once/.test(c.label)), 'once-only is gone');
+  assert.ok(s.current.choices.some((c) => /Twice/.test(c.label)), 'sticky stays');
+
+  // And it stays however often the reader comes back.
+  pick(/Twice/); pick(/Back/);
+  assert.ok(s.current.choices.some((c) => /Twice/.test(c.label)));
 });
 
 test('an alternative advances, and a once-only alternative runs dry', () => {
@@ -539,4 +557,63 @@ test('a folded conditional still joins the line before it', () => {
   s.begin();
   s.choose(0);
   assert.deepEqual(s.current.text.map((t) => t.text), ['"Awkward," I reply, sipping at my tea.']);
+});
+
+test('a node whose choices have all run out is an error, not a silent stop', () => {
+  // SPEC 4.2: a node with no way on is an error. E110 says that about what is
+  // written; this says it about what is left at runtime. Before it existed,
+  // the reader was shown the previous node's choices under this node's text,
+  // and could take them.
+  const { story } = compile(`
+# Hub {#hub}
+
+The hub.
+
+* [Once](#side)
+
+# Side {#side}
+
+The side.
+
++ [Back](#hub)
+`);
+  const s = new Story(story, { seed: 1 });
+  s.choose(0);
+  assert.equal(s.current.node, 'side');
+
+  assert.throws(() => s.choose(0), (error) => {
+    assert.match(error.message, /"hub" has nothing left to offer/);
+    assert.match(error.message, /sticky choice or a divert/, 'it says what would fix it');
+    return true;
+  });
+});
+
+test('a node that ends, fights or diverts is never that error', () => {
+  // The three ways a page can be a page, each with its once-only choice spent.
+  for (const tail of ['-> END', '-> onwards', '+ [Stay](#hub)']) {
+    const { story } = compile(`
+# Hub {#hub}
+
+The hub.
+
+* [Once](#side)
+---
+${tail}
+
+# Side {#side}
+
+The side.
+
++ [Back](#hub)
+
+# Onwards {#onwards}
+
+-> END
+`);
+    const s = new Story(story, { seed: 1 });
+    s.choose(0);
+    s.choose(0);                       // back into the hub, choice spent
+    assert.ok(s.current.ended || s.current.choices.length > 0 || s.combat,
+      `"${tail}" left the reader with nothing`);
+  }
 });

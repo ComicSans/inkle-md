@@ -145,12 +145,15 @@ test('a fight reaches the host with both halves of the enemy bar', () => {
   const host = new Host(story, { seed: 7 });
   host.command({ cmd: 'begin', picks: [['sword']] });
 
-  // Walk until a fight starts; thornwood has one on a short path.
+  // Head for the crypt rather than taking whatever is first: the choices at
+  // the hedge are sticky, so index 0 walks in a circle for ever.
   let fight = null;
   for (let i = 0; i < 20 && !fight; i++) {
-    const view = host.command({ cmd: 'choose', index: 0 }).view;
-    fight = view.combat;
-    if (view.ended || (!view.choices.length && !fight)) break;
+    const view = host.view;
+    const towards = view.choices.find((c) => /Spalt|Hecke klettern/.test(c.label)) ?? view.choices[0];
+    if (!towards) break;
+    fight = host.command({ cmd: 'choose', index: towards.index }).view.combat;
+    if (host.view.ended) break;
   }
   assert.ok(fight, 'no fight on this walk');
   assert.equal(typeof fight.enemy.name, 'string');

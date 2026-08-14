@@ -896,3 +896,79 @@ test('a refused save carries fields, not only a sentence', () => {
     assert.deepEqual(error.refused, { reason: 'version', save: 99, runtime: 1 });
   }
 });
+
+// --- 11, L029 ---------------------------------------------------------------
+
+test('L029: every choice can run out, and taking one leads back', () => {
+  const { warnings } = compile(`
+# Hub {#hub}
+
+The hub.
+
+* [Once](#side)
+* [Twice](#side)
+
+# Side {#side}
+
+The side.
+
++ [Back](#hub)
+`);
+  const found = warnings.messages.find((m) => m.code === 'L029');
+  assert.ok(found, 'the trap is reported');
+  assert.match(found.detail, /"hub"/);
+});
+
+test('L029 stays quiet where the reader cannot come back to be stranded', () => {
+  const quiet = (source) => compile(source).warnings.messages.filter((m) => m.code === 'L029');
+
+  // The way back runs through a condition, so it may be the way that is gone.
+  assert.deepEqual(quiet(`
+# Hub {#hub}
+
+The hub.
+
+* [Once](#side)
+
+# Side {#side}
+
+The side.
+
++ {knows("WORD")} [Back](#hub)
++ [On](#done)
+
+# Done {#done}
+
+-> END
+`), []);
+
+  // The choice ends the story: whoever spends it is not coming back.
+  assert.deepEqual(quiet(`
+# Hub {#hub}
+
+The hub.
+
+* [Once](#done)
++ [Look around](#hub)
+
+# Done {#done}
+
+-> END
+`), []);
+
+  // And a sticky unconditional choice is a way on that never runs out.
+  assert.deepEqual(quiet(`
+# Hub {#hub}
+
+The hub.
+
+* [Once](#side)
++ [Wait](#hub)
+
+# Side {#side}
+
+The side.
+
++ [Back](#hub)
+`), []);
+});
