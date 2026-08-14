@@ -1,6 +1,6 @@
 # Das Gästezimmer {#room}
 
-{visits(room) == 1: Vier Wände, ein Bett mit Baldachin, ein Waschtisch, ein Porträt über dem Kamin. Der Mann auf dem Porträt hat die Augen des Hausherrn und die Mode von vor zweihundert Jahren. Vermutlich ein Vorfahre. Vermutlich.|Die Kerze ist ein Stück kürzer geworden. Das Bett wartet.}
+{visits(room) == 1: Vier Wände, ein Bett mit Baldachin, ein Waschtisch, ein Porträt über dem Kamin. Der Mann auf dem Porträt hat die Augen des Hausherrn und die Mode von vor zweihundert Jahren. Vermutlich ein Vorfahre. Vermutlich. Deinen nassen Mantel hängst du zum Trocknen über die Stuhllehne.|Die Kerze ist ein Stück kürzer geworden. Das Bett wartet.}
 
 {visits(room) == 1: Der Schlüssel steckt außen.}
 
@@ -145,6 +145,7 @@ Man hat sie nicht festgezogen. Das wirkt weniger wie Gnade als wie Routine:
 Wohin solltest du schon gehen. Deine ANGST steigt.
 
 ~ fear = fear + 2
+~ remember("BETAEUBT")
 
 -> lady
 

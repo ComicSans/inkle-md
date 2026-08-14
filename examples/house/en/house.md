@@ -1,6 +1,6 @@
 # The Guest Room {#room}
 
-{visits(room) == 1: Four walls, a four-poster bed, a washstand, a portrait above the fireplace. The man in the portrait has the master's eyes and the fashion of two hundred years ago. Presumably an ancestor. Presumably.|The candle has burned down a little further. The bed is waiting.}
+{visits(room) == 1: Four walls, a four-poster bed, a washstand, a portrait above the fireplace. The man in the portrait has the master's eyes and the fashion of two hundred years ago. Presumably an ancestor. Presumably. You hang your wet coat over the back of the chair to dry.|The candle has burned down a little further. The bed is waiting.}
 
 {visits(room) == 1: The key is in the outside of the lock.}
 

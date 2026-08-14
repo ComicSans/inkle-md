@@ -30,9 +30,7 @@ rather not be seen.
 
 # The Dining Room {#dining}
 
-Cleared, except for two glasses: yours and his. His is untouched. On the
-sideboard stands the decanter, and beside it a small unlabelled phial that
-answers the question about the wine thoroughly enough.
+{knows("GLAS-ABGERAEUMT"): Cleared, except for a single glass: his. It is untouched.|Cleared, except for two glasses: yours and his. His is untouched.} {knows("FLAESCHCHEN-WEG"): On the sideboard stands the decanter.|On the sideboard stands the decanter, and beside it a small unlabelled phial that answers the question about the wine thoroughly enough.}
 
 {knows("ASPIDISTRA"): The aspidistra in the corner is drooping. You feel a little guilty, but only towards it.}
 
@@ -47,8 +45,7 @@ Copper pans, a cold stove, and hanging from the hooks the things one expects
 in kitchens. The relief is considerable, and you briefly consider how low
 the bar has come to hang.
 
-In the pantry: a cold pie, immaculate, and a shelf with twelve preserving
-jars, carefully labelled. With first names.
+{knows("PASTETE-WEG"): In the pantry: a shelf with preserving jars, carefully labelled. With first names.|In the pantry: a cold pie, immaculate, and a shelf with preserving jars, carefully labelled. With first names.}
 
 * Pack up the pie
 * Look more closely at the jars
@@ -63,9 +60,7 @@ FEAR rises.
 
 # The Study {#study}
 
-A desk with a green lamp, behind it shelves of books on agriculture whose
-spines are painted like stage scenery. On the desk lies a diary with a brass
-clasp, beside it a silver letter opener.
+A desk with a green lamp, behind it shelves of books on agriculture whose spines are painted like stage scenery. {knows("BRIEFOEFFNER-WEG"): On the desk lies a diary with a brass clasp.|On the desk lies a diary with a brass clasp, beside it a silver letter opener.}
 
 * Skim the diary the way one skims files
 * Open the diary
@@ -99,6 +94,10 @@ More than that this room does not give up, and you are not sure you should
 believe it.
 
 ## Caught {#caught}
+
+The little bell rings out into a house where nobody is left to hear it. The
+only one who would have come is lying at the cellar door. You wait a whole
+minute anyway before you turn back round.
 
 The butler stands in the doorway, a candlestick in one hand and something
 elongated in the other. "The study," he says, "is among the rooms

@@ -75,7 +75,7 @@ Die Kette, stellst du beim Näherkommen fest, hängt an nichts.
 
 # Vor der Tür {#door}
 
-{knows("UEBER-DIE-MAUER"): Von hier siehst du, dass das Tor die ganze Zeit offen stand. Du beschließt, das niemandem zu erzählen.|Hinter dir fällt das Tor ins Schloss, ohne dass jemand es angefasst hätte.}
+{knows("UEBER-DIE-MAUER"): Von hier siehst du das offene Tor. Du bist über eine Mauer geklettert, keine zwanzig Schritte neben einem offenen Tor. Du beschließt, das niemandem zu erzählen.|Hinter dir fällt das Tor ins Schloss, ohne dass jemand es angefasst hätte.}
 
 {knows("HUND-FREUND"): Der Hund setzt sich neben den Türklopfer, als gehöre er zum Personal, und sieht dich an, als wüsste er mehr über dieses Haus, als er bellen kann.}
 
@@ -182,6 +182,7 @@ auffällt, dass er selbst noch keinen Schluck getrunken hat.
     ~ fear = fear + 1
 * [Ablehnen und vom empfindlichen Magen sprechen]() Der Butler räumt dein Glas mit dem Gesicht eines Mannes ab, dessen Abend soeben komplizierter geworden ist.
   ~ remember("NUECHTERN")
+  ~ remember("GLAS-ABGERAEUMT")
   ~ fear = fear + 1
 ---
 Danach zeigt der Butler dir dein Zimmer. Die Kerze, die er dir mitgibt, ist

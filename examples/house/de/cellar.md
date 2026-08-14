@@ -67,13 +67,22 @@ genau das ist, was er zu sein vorgibt, und du bist beinahe erleichtert.
 { visits(wine) == 1 }
   ~ fear = max(fear - 1, 0)
 
-{knows("SCHLAEFER-ERLEDIGT"): Der Tisch am Durchgang ist jetzt frei.|An einem Tisch beim Durchgang schläft ein Mann in einer Kutte, den Kopf auf den Armen. Neben ihm steht ein Krug, aus dem es nach Würzwein riecht - vor der Andacht wird hier offenbar ausgeschenkt.}
+{ knows("SCHLAEFER-ERLEDIGT") }
+  Der Tisch am Durchgang ist jetzt frei.
+{ knows("SCHLAEFER-WACH") }
+  Am Tisch beim Durchgang sitzt der Mann in der Kutte, sehr wach, und lässt
+  dich nicht aus den Augen. Was er unter dem Tisch festhält, ist kein
+  Korkenzieher.
+{ else }
+  An einem Tisch beim Durchgang schläft ein Mann in einer Kutte, den Kopf auf
+  den Armen. Neben ihm steht ein Krug, aus dem es nach Würzwein riecht -
+  offenbar wird für die Andacht ausgeschenkt.
 
 {knows("GEHEIMGANG"): Von dieser Seite ist das Weinregal nur ein Weinregal. Man muss die Lüge kennen, um sie zu sehen.}
 
 Hinter der hinteren Tür: der Gesang.
 
-* {has("phial")} [Das Fläschchen in den Krug leeren](#wine) Du gießt es hinein und verzichtest auf das Umrühren. Wer Gästen solchen Wein vorsetzt, hat es nicht besser verdient.
+* {has("phial") and not knows("SCHLAEFER-WACH")} [Das Fläschchen in den Krug leeren](#wine) Du gießt es hinein und verzichtest auf das Umrühren. Wer Gästen solchen Wein vorsetzt, hat es nicht besser verdient. Kaum stehst du wieder im Schatten der Fässer, kommt eine Kutte heraus, nimmt den Krug und trägt ihn hinein.
   ~ drop("phial")
   ~ remember("KRUG-GEWUERZT")
 + [Zur hinteren Tür](#sneak)
@@ -83,12 +92,17 @@ Hinter der hinteren Tür: der Gesang.
 { knows("SCHLAEFER-ERLEDIGT") }
   Der Weg am leeren Tisch vorbei ist nur noch ein Weg.
   -> rite
+{ knows("SCHLAEFER-WACH") }
+  Er sitzt, er wacht, und er hat dich längst gesehen. Für leise Sohlen ist es
+  zu spät.
+  -> wine-fight
 { test("skill") }
   Er schläft weiter, gründlich und mit Hingabe. Ein Profi.
   -> rite
 { else }
   Dein Ellbogen findet die einzige leere Flasche des Kellers. Der Mann fährt
   hoch, sieht dich an und greift nach etwas, das kein Korkenzieher ist.
+  ~ remember("SCHLAEFER-WACH")
   -> wine-fight
 
 ## Der Kuttenmann {#wine-fight}
@@ -212,9 +226,7 @@ zu erklären, und du bist ihm dankbar dafür. Deine ANGST steigt.
 
 Es ist schneller, als etwas dieser Größe sein dürfte. Der Boden kommt dir
 entgegen, die Kerzen wandern an die Decke, und dein letzter Gedanke ist von
-entwaffnender Klarheit: In der Speisekammer oben steht ein leeres Glas mit
-einem frischen Etikett, und jemand wird deinen Namen sehr sauber darauf
-schreiben.
+entwaffnender Klarheit: {knows("ZWOELFTES-GLAS"): In der Speisekammer oben steht ein leeres Glas mit einem frischen Etikett, und jemand wird deinen Namen sehr sauber darauf schreiben.|Irgendwo über dir, in einer stillen Speisekammer, steht ein leeres Glas bereit, und jemand wird deinen Namen sehr sauber darauf schreiben.}
 
 Dein Abenteuer endet hier.
 

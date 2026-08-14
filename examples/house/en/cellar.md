@@ -55,7 +55,15 @@ discover only after the third cobweb.
 Barrels, bottles, honest dust. It is the first room in this house that is
 exactly what it claims to be, and you are almost relieved.
 
-{knows("SCHLAEFER-ERLEDIGT"): The table by the doorway is free now.|At a table by the doorway a man in a robe lies asleep, head on his arms. Beside him stands a jug that smells of spiced wine - drinks are evidently served before the service.}
+The table by the doorway is free now.
+
+At the table by the doorway sits the man in the robe, very much awake, and he
+does not take his eyes off you. What he is holding under the table is not a
+corkscrew.
+
+At a table by the doorway a man in a robe lies asleep, head on his arms.
+Beside him stands a jug that smells of spiced wine - drinks are evidently
+served before the service.
 
 {knows("GEHEIMGANG"): From this side the wine rack is just a wine rack. You have to know the lie to see it.}
 
@@ -64,12 +72,14 @@ Behind the far door: the chanting.
 * Empty the phial into the jug
 * To the far door
 
-You pour it in and decide against stirring. Anyone who serves his guests
-wine like the master's deserves no better.
+You pour it in and decide against stirring. Anyone who serves his guests wine like the master's deserves no better. No sooner are you back in the shadow of the barrels than a robe comes out, takes the jug and carries it in.
 
 ## On Soft Soles {#sneak}
 
 The way past the empty table is just a way now.
+
+He is sitting, he is watching, and he saw you long ago. Soft soles are past
+being any use.
 
 He sleeps on, thoroughly and with devotion. A professional.
 
@@ -191,8 +201,7 @@ Behind you it comes to a halt, as if it had time.
 
 It is faster than anything that size has a right to be. The floor comes up
 to meet you, the candles drift towards the ceiling, and your last thought is
-of disarming clarity: in the pantry upstairs stands an empty jar with a
-fresh label, and someone is going to write your name on it very neatly.
+of disarming clarity: {knows("ZWOELFTES-GLAS"): in the pantry upstairs stands an empty jar with a fresh label, and someone is going to write your name on it very neatly.|somewhere above you, in a quiet pantry, an empty jar is waiting, and someone is going to write your name on it very neatly.}
 
 Your adventure ends here.
 

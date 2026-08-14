@@ -69,7 +69,7 @@ who has just run for their life.
 
 # At the Door {#door}
 
-{knows("UEBER-DIE-MAUER"): From here you can see that the gate stood open the whole time. You decide to tell no one.|Behind you the gate falls shut without anyone having touched it.}
+{knows("UEBER-DIE-MAUER"): From here you can see the open gate. You climbed a wall not twenty paces from an open gate. You decide to tell no one.|Behind you the gate falls shut without anyone having touched it.}
 
 {knows("HUND-FREUND"): The hound sits down beside the door knocker as if he were staff, and looks at you as if he knew more about this house than he can bark.}
 

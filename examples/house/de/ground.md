@@ -34,9 +34,7 @@ es.
 
 # Das Speisezimmer {#dining}
 
-Abgeräumt bis auf zwei Gläser: deins und seins. Seins ist unberührt. Auf der
-Anrichte steht die Karaffe, daneben ein Fläschchen ohne Etikett, das die
-Frage nach dem Wein hinreichend beantwortet.
+{knows("GLAS-ABGERAEUMT"): Abgeräumt bis auf ein einziges Glas: seins. Es ist unberührt.|Abgeräumt bis auf zwei Gläser: deins und seins. Seins ist unberührt.} {knows("FLAESCHCHEN-WEG"): Auf der Anrichte steht die Karaffe.|Auf der Anrichte steht die Karaffe, daneben ein Fläschchen ohne Etikett, das die Frage nach dem Wein hinreichend beantwortet.}
 
 {knows("ASPIDISTRA"): Die Aspidistra in der Ecke lässt die Blätter hängen. Du fühlst dich ein wenig schuldig, aber nur ihr gegenüber.}
 
@@ -45,6 +43,7 @@ Frage nach dem Wein hinreichend beantwortet.
 
 * [Das Fläschchen einstecken](#dining) Du steckst es ein. Für wen auch immer.
   ~ take("phial")
+  ~ remember("FLAESCHCHEN-WEG")
 + [Zurück in die Halle](#hall)
 
 # Die Küche {#kitchen}
@@ -53,23 +52,23 @@ Kupferpfannen, ein kalter Herd, und an den Haken hängen Dinge, die man in
 Küchen erwartet. Die Erleichterung darüber ist beträchtlich, und du denkst
 kurz darüber nach, wie niedrig die Messlatte inzwischen hängt.
 
-In der Speisekammer: eine kalte Pastete, tadellos, und ein Regal mit zwölf
-Einmachgläsern, sorgfältig beschriftet. Mit Vornamen.
+{knows("PASTETE-WEG"): In der Speisekammer: ein Regal mit Einmachgläsern, sorgfältig beschriftet. Mit Vornamen.|In der Speisekammer: eine kalte Pastete, tadellos, und ein Regal mit Einmachgläsern, sorgfältig beschriftet. Mit Vornamen.}
 
 { visits(kitchen) == 1 }
   ~ fear = fear + 1
 
 * [Die Pastete einpacken](#kitchen) Sie riecht nach Wild. Du beschließt, das zu glauben.
   ~ take("pie")
+  ~ remember("PASTETE-WEG")
 * [Die Gläser genauer ansehen](#kitchen) Eingelegtes, in Essig. Es sieht aus wie Gemüse, und du wiederholst das Wort Gemüse innerlich so lange, bis es hält. Elf Gläser tragen Namen. Das zwölfte ist leer, und das Etikett darauf ist neu. Der Leim daran glänzt noch feucht. Deine ANGST steigt.
+  ~ remember("ZWOELFTES-GLAS")
   ~ fear = fear + 2
 + [Zurück in die Halle](#hall)
 
 # Das Arbeitszimmer {#study}
 
 Ein Schreibtisch mit grüner Lampe, dahinter Regale voller Bücher über
-Landwirtschaft, deren Rücken gemalt sind wie Kulissen. Auf dem Tisch liegt
-ein Tagebuch mit einer Messingschließe, daneben ein silberner Brieföffner.
+Landwirtschaft, deren Rücken gemalt sind wie Kulissen. {knows("BRIEFOEFFNER-WEG"): Auf dem Tisch liegt ein Tagebuch mit einer Messingschließe.|Auf dem Tisch liegt ein Tagebuch mit einer Messingschließe, daneben ein silberner Brieföffner.}
 
 * {knows("JOURNALIST")} [Das Tagebuch überfliegen, wie man Akten überfliegt](#study) Zwanzig Jahre Lokalteil: Du liest quer, von hinten nach vorn, und die Geschichte steht da wie immer zwischen den Spalten. Ankunftsdaten, seitenweise, ohne eine einzige Abreise. Und auf dem Vorsatzblatt ein Name, der nicht der ist, unter dem sich der Hausherr vorgestellt hat. Du sprichst ihn zweimal lautlos vor dich hin, bis er sitzt.
 
@@ -96,6 +95,7 @@ ein Tagebuch mit einer Messingschließe, daneben ein silberner Brieföffner.
     -> caught
 * [Den Brieföffner nehmen](#study) {has("dagger"): Neben dem Silberdolch in deinem Stiefel wirkt er fast verwandt. Man fragt sich, wogegen in diesem Haus die Post verteidigt werden muss.|Er ist schwerer, als ein Brieföffner sein müsste, und schärfer, als die Post es verlangt.}
   ~ take("dagger")
+  ~ remember("BRIEFOEFFNER-WEG")
   ~ equip("dagger")
 + [Zurück in die Halle](#hall)
 ---
@@ -105,6 +105,12 @@ glauben sollst.
 -> hall
 
 ## Ertappt {#caught}
+
+{ knows("BUTLER-ERLEDIGT") }
+  Die kleine Glocke läutet in ein Haus, in dem niemand mehr auf sie hört. Der
+  Einzige, der gekommen wäre, liegt an der Kellertür. Du wartest trotzdem eine
+  ganze Minute, ehe du dich wieder umdrehst.
+  -> study
 
 Der Butler steht in der Tür, mit einem Leuchter in der einen und etwas
 Länglichem in der anderen Hand. "Das Arbeitszimmer", sagt er, "gehört zu den
