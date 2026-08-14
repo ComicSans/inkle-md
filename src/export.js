@@ -39,6 +39,9 @@ h1 { font-size: 1.3rem; margin: 0; }
 h2 { font-size: 1rem; margin: 1rem 0 .3rem; letter-spacing: .04em; text-transform: uppercase; }
 .prose { max-width: var(--measure); }
 .prose p { margin: 0 0 1rem; }
+/* An image never widens the measure and never overflows a narrow screen; the
+   height follows so it is not stretched. */
+.prose img { display: block; max-width: 100%; height: auto; margin: 0 0 1rem; }
 .prose .letter { font-style: italic; border-left: 3px solid var(--line); padding-left: 1rem; }
 .choices { list-style: none; padding: 0; margin: 1.5rem 0 0; display: grid; gap: .5rem;
   max-width: var(--measure); }

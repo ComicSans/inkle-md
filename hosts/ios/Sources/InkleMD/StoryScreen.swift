@@ -26,6 +26,7 @@ public struct StoryScreen: View {
 
     @AccessibilityFocusState private var textIsFocused: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.displayScale) private var displayScale
     @State private var picks: [Set<String>] = []
 
     public init(story: Story, labels: Labels? = nil) {
@@ -114,9 +115,14 @@ public struct StoryScreen: View {
     private var prose: some View {
         VStack(alignment: .leading, spacing: 12) {
             ForEach(story.view.text) { paragraph in
-                Text(paragraph.text)
-                    .font(font(for: paragraph.styleName))
-                    .italic(paragraph.styleName == "letter")
+                switch paragraph.kind {
+                case .prose(let text):
+                    Text(text)
+                        .font(font(for: paragraph.styleName))
+                        .italic(paragraph.styleName == "letter")
+                case .image(let file, let alt):
+                    picture(file, alt: alt)
+                }
             }
         }
         // Focus lands on the new text after every turn, so a screen reader
@@ -124,6 +130,40 @@ public struct StoryScreen: View {
         .accessibilityElement(children: .combine)
         .accessibilityFocused($textIsFocused)
         .onChange(of: story.view.node) { _ in textIsFocused = true }
+    }
+
+    /// An image between two paragraphs (SPEC 4.9).
+    ///
+    /// The alt text is the accessible name and never also visible text: the
+    /// language requires it, so there is no decorative image to hide and no
+    /// caption to duplicate. `Story.url(for:scale:)` picks `@2x` or `@3x` if
+    /// the book shipped one.
+    @ViewBuilder
+    private func picture(_ file: String, alt: String) -> some View {
+        if let url = story.url(for: file, scale: displayScale),
+           let image = platformImage(url) {
+            image
+                .resizable()
+                .scaledToFit()
+                .frame(maxWidth: .infinity)
+                .accessibilityLabel(alt)
+                // A picture is one element, not a decoration next to nothing.
+                .accessibilityAddTraits(.isImage)
+        } else {
+            // A missing file is a broken book, but the reader keeps the
+            // sentence the picture was carrying.
+            Text(alt).font(.footnote).foregroundStyle(.secondary)
+        }
+    }
+
+    private func platformImage(_ url: URL) -> Image? {
+        #if canImport(UIKit)
+        return UIImage(contentsOfFile: url.path).map(Image.init(uiImage:))
+        #elseif canImport(AppKit)
+        return NSImage(contentsOfFile: url.path).map(Image.init(nsImage:))
+        #else
+        return nil
+        #endif
     }
 
     /// The one place a `{.name}` from the book becomes a look. Section 6 keeps

@@ -15,7 +15,7 @@
  */
 
 import { CompileError } from './errors.js';
-import { lex, blockCondition, isElse } from './lexer.js';
+import { lex, blockCondition, isElse, IMAGE_RE } from './lexer.js';
 import { parseExpression, parseStatement } from './expr.js';
 
 const MAX_NESTING = 3;
@@ -154,7 +154,19 @@ function parseContainer(lines, depth, state) {
         break;
       }
 
+      case 'image': {
+        ops.push({ ...parseImage(cur), source: pos(cur) });
+        i++;
+        break;
+      }
+
       case 'text': {
+        // An image belongs between paragraphs, not inside a sentence (4.9).
+        // Passed through as text it would reach the reader as literal
+        // Markdown, which is the mistake diverts in prose once made.
+        if (IMAGE_RE.test(cur.text)) {
+          throw new CompileError('E181', 'an image is a line of its own, not part of a sentence', cur);
+        }
         // A paragraph runs to the next blank line, as in Markdown: the line
         // breaks an author uses to keep the source narrow are not breaks in
         // the text.
@@ -398,6 +410,40 @@ function refOrEnd(target, at) {
     throw new CompileError('E040', `"${t}" has more than one dot`, at);
   }
   return { ref: t };
+}
+
+/**
+ * One image line, `![alt](file)` per SPEC 4.9.
+ *
+ * Alt text is required rather than optional, which is why there is no
+ * decorative image in this language: a book that has nothing to say about a
+ * picture is a book whose picture carries nothing, and the reader who cannot
+ * see it is owed the difference.
+ */
+export function parseImage(line) {
+  const m = line.text.match(/^!\[([^\]]*)\]\(([^)]*)\)\s*(?:\{\.([A-Za-z][\w-]*)\})?\s*$/);
+  if (!m) {
+    throw new CompileError('E180', 'an image is "![alt text](file.png)"', line);
+  }
+  const [, alt, src, cssClass] = m;
+  if (alt.trim() === '') {
+    throw new CompileError('E182', 'an image needs alt text, for readers who cannot see it', line);
+  }
+  const path = src.trim();
+  if (path === '') {
+    throw new CompileError('E180', 'an image is "![alt text](file.png)"', line);
+  }
+  // Principle 6: what ships is the output and the files beside it. A path
+  // that climbs out of that directory names something that is not shipped,
+  // and a URL is not shipped at all.
+  if (/^[a-z][a-z0-9+.-]*:/i.test(path) || path.startsWith('//')) {
+    throw new CompileError('E183', `"${path}" is a URL; an image is a file beside the book`, line);
+  }
+  if (path.startsWith('/') || path.split('/').includes('..')) {
+    throw new CompileError('E183', `"${path}" leaves the book's own directory`, line);
+  }
+
+  return { op: 'image', src: path, alt: alt.trim(), ...(cssClass ? { class: cssClass } : {}) };
 }
 
 function pos(line) {

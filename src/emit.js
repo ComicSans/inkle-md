@@ -64,6 +64,12 @@ function emitOp(op) {
       return out;
     }
 
+    case 'image': {
+      const out = { op: 'image', src: op.src, alt: op.alt };
+      if (op.class) out.class = op.class;
+      return out;
+    }
+
     case 'choices':
       return { op: 'choices', items: op.items.map(emitChoice) };
 
@@ -152,4 +158,29 @@ function emitParts(parts) {
 
 function line(source) {
   return source?.line ? { line: source.line } : {};
+}
+
+/**
+ * Every image a compiled book links, once, in the order they are met.
+ *
+ * These are the files that travel with the output, per principle 6. Reading
+ * them back out of the story JSON rather than carrying a second list around
+ * keeps one source: what a reader can be shown is what the ops say.
+ */
+export function imagePaths(story) {
+  const out = [];
+  const walk = (ops) => {
+    for (const op of ops ?? []) {
+      if (op.op === 'image') { if (!out.includes(op.src)) out.push(op.src); continue; }
+      if (op.op === 'choices') { for (const item of op.items) walk(item.body); continue; }
+      if (op.op === 'branch') {
+        for (const b of op.branches) walk(b.body);
+        walk(op.else);
+      }
+    }
+  };
+  for (const nodes of Object.values(story.nodes)) {
+    for (const node of Object.values(nodes)) walk(node.body);
+  }
+  return out;
 }

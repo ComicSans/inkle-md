@@ -113,6 +113,31 @@ final class StoryTests: XCTestCase {
         XCTAssertEqual(story.view.text.map { $0.text }, expected.text)
     }
 
+    func testAnImageArrivesAsItsOwnKindOfParagraphAndResolvesToAFile() throws {
+        let bundle = try Self.buildBundle(example: "thornwood-book/book.yaml")
+        let story = try Story(bundle: bundle, seed: 3)
+        try story.begin([["sword"]])
+        try story.go(to: "crypt.crypt")
+
+        let picture = try XCTUnwrap(story.view.text.first { $0.image != nil })
+        guard case .image(let file, let alt) = picture.kind else {
+            return XCTFail("an image paragraph reports itself as one")
+        }
+        XCTAssertEqual(file, "gruft.png")
+        XCTAssertFalse(alt.isEmpty, "alt text is required by the language (4.9)")
+        // The prose around it is still ordinary text in the same list.
+        XCTAssertTrue(story.view.text.contains { $0.image == nil && !$0.text.isEmpty })
+
+        // `bundle` copied the file next to story.json, so the host can find it.
+        let base = try XCTUnwrap(story.url(for: file, scale: 1))
+        XCTAssertEqual(base.lastPathComponent, "gruft.png")
+        // At twice the scale it picks the file the book shipped for it (22.5).
+        let retina = try XCTUnwrap(story.url(for: file, scale: 2))
+        XCTAssertEqual(retina.lastPathComponent, "gruft@2x.png")
+        // A book that shipped no @3x falls back rather than failing.
+        XCTAssertEqual(try XCTUnwrap(story.url(for: file, scale: 3)).lastPathComponent, "gruft@2x.png")
+    }
+
     func testAFightReportsItsRoundsAndBothHalvesOfTheEnemyBar() throws {
         let house = try Self.buildBundle(example: "house/book.yaml")
         let story = try Story(bundle: house, seed: 5)

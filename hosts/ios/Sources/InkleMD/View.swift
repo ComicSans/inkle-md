@@ -31,16 +31,43 @@ public struct StoryView: Decodable, Sendable {
     public let canUndo: Bool
 }
 
+/// One thing on the page: a paragraph, or an image between two of them.
+///
+/// The protocol tells them apart by which field is there (SPEC 4.9), and so
+/// does `kind` below, so a `switch` on this side is exhaustive.
 public struct Paragraph: Decodable, Sendable, Identifiable {
     public let id = UUID()
+    /// The sentence, for a paragraph; empty for an image.
     public let text: String
+    /// The file, relative to the bundle directory, for an image.
+    public let image: String?
+    /// Required wherever `image` is set: the language has no decorative image.
+    public let alt: String?
     /// The `{.name}` a book wrote, or `nil`. What it looks like is this side's
     /// business: SPEC 6 keeps presentation out of the book on purpose.
     public let styleName: String?
 
+    public enum Kind: Sendable {
+        case prose(String)
+        case image(file: String, alt: String)
+    }
+
+    public var kind: Kind {
+        if let image { return .image(file: image, alt: alt ?? "") }
+        return .prose(text)
+    }
+
     private enum CodingKeys: String, CodingKey {
-        case text
+        case text, image, alt
         case styleName = "class"
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        self.text = try c.decodeIfPresent(String.self, forKey: .text) ?? ""
+        self.image = try c.decodeIfPresent(String.self, forKey: .image)
+        self.alt = try c.decodeIfPresent(String.self, forKey: .alt)
+        self.styleName = try c.decodeIfPresent(String.self, forKey: .styleName)
     }
 }
 

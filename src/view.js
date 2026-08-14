@@ -257,6 +257,15 @@ function mount(json, root, options = {}) {
     const page = el('main', { class: 'page' });
     const prose = el('div', { class: 'prose', 'aria-live': 'polite', tabindex: '-1' });
     for (const paragraph of story.current.text) {
+      if (paragraph.image) {
+        // Alt text is required by the language (4.9), so there is no
+        // decorative image and no empty alt to write here.
+        const img = el('img', { class: paragraph.class ?? null });
+        img.src = paragraph.image;
+        img.alt = paragraph.alt;
+        prose.append(img);
+        continue;
+      }
       if (paragraph.text.trim() === '') continue;
       prose.append(el('p', { class: paragraph.class ?? null, text: paragraph.text }));
     }

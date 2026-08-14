@@ -10,7 +10,7 @@
  * resolve, check, emit.
  */
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { dirname, basename, extname, join } from 'node:path';
 
 import { CompileError, ErrorBag } from './errors.js';
@@ -68,7 +68,7 @@ function compileProject(bookPath) {
     }),
   }));
 
-  return compileSources(variants, { entry: bookPath, book: data });
+  return compileSources(variants, { entry: bookPath, root, book: data });
 }
 
 function readChapter(path, bookPath) {
@@ -113,6 +113,8 @@ export function compileSources(input, ctx = {}) {
   built.sort((a, b) => config.languages.available.indexOf(a.lang) - config.languages.available.indexOf(b.lang));
 
   bag.throwIfFailed();
+
+  checkImages(built, ctx, bag);
 
   const start = resolveStart(primary, config, ctx, bag);
   bag.throwIfFailed();
@@ -162,6 +164,37 @@ export function compileSources(input, ctx = {}) {
     }
   }
   return { story, warnings };
+}
+
+/**
+ * The images a book links have to be there, per language (SPEC 4.9, 22.5).
+ *
+ * This is the one check in the compiler that reads the disk. Everything else
+ * answers from the sources it was handed; whether a file exists is a fact
+ * about a directory, and there is no honest way to ask it of a tree. A
+ * checkout without its images therefore fails to compile, which is right: the
+ * book is incomplete in that checkout.
+ *
+ * Paths are relative to the book's own directory, not to the chapter file that
+ * writes them, because that is where they land beside the output (principle 6).
+ */
+function checkImages(built, ctx, bag) {
+  if (!ctx.root) return;   // compiled from strings, so there is no directory
+  const seen = new Set();
+
+  for (const { lang, table } of built) {
+    for (const node of table.values()) {
+      walkOps(node.body ?? [], (op) => {
+        if (op.op !== 'image') return;
+        const key = `${lang}:${op.src}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+        if (!existsSync(join(ctx.root, op.src))) {
+          bag.add('E184', `"${op.src}" is not in the book's directory (${lang})`, op.source);
+        }
+      });
+    }
+  }
 }
 
 /** Builds one non-default language from its catalogue (SPEC 3.4). */

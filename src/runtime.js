@@ -584,13 +584,18 @@ export class Story {
         continue;
       }
       if (op?.op === 'text') kept.push({ text: this.#render(op.parts), class: entry.class, current });
+      // Both halves come from the op rather than from the entry, so a repaint
+      // after a language switch shows the other language's picture too (3.4).
+      else if (op?.op === 'image') kept.push({ image: op.src, alt: op.alt, class: entry.class, current });
       else if (current) dropped = true;   // a shape this language does not have
     }
 
     // A node one language overrides has a shape the other cannot follow.
     // Replay that node's text here instead of showing half a page; whatever
     // came from earlier nodes stays as it is.
-    this.text = kept.filter((k) => !dropped || !k.current).map(({ text, class: cls }) => ({ text, class: cls }));
+    this.text = kept
+      .filter((k) => !dropped || !k.current)
+      .map(({ current: _current, ...entry }) => entry);
     if (dropped) this.#replayText(this.state.node);
   }
 
@@ -599,6 +604,8 @@ export class Story {
     for (const op of ops ?? []) {
       if (op.op === 'text') {
         this.#print({ text: this.#render(op.parts), class: op.class ?? null }, op.glue);
+      } else if (op.op === 'image') {
+        this.text.push({ image: op.src, alt: op.alt, class: op.class ?? null });
       } else if (op.op === 'branch') {
         const index = op.branches.findIndex((b) => Boolean(this.#evaluate(b.when)));
         this.#replayText(nodeId, index >= 0 ? op.branches[index].body : op.else);
@@ -619,7 +626,9 @@ export class Story {
    */
   #print(paragraph, glue) {
     const last = this.text[this.text.length - 1];
-    if (last && (glue?.before || last.glue?.after)) {
+    // Glue joins a sentence to a sentence. An image is not one, so a run of
+    // glue that meets a picture ends there rather than concatenating onto it.
+    if (last?.text !== undefined && (glue?.before || last.glue?.after)) {
       const right = paragraph.text;
       const space = !right || last.text.endsWith(' ') || /^[.,;:!?'"\u2019\u201d)]/.test(right) ? '' : ' ';
       last.text += space + right;
@@ -678,6 +687,14 @@ export class Story {
         case 'text':
           this.state.screen.push({ node: this.state.node, at: [...path, i], class: op.class ?? null });
           this.#print({ text: this.#render(op.parts, true), class: op.class ?? null }, op.glue);
+          break;
+
+        case 'image':
+          // An image is an entry in `text` like a paragraph, carrying `image`
+          // and `alt` instead of `text` (SPEC 4.9). It joins `screen` for the
+          // same reason a paragraph does: a repaint must not lose it.
+          this.state.screen.push({ node: this.state.node, at: [...path, i], class: op.class ?? null });
+          this.text.push({ image: op.src, alt: op.alt, class: op.class ?? null });
           break;
 
         case 'assign':

@@ -2,6 +2,8 @@
 
 {!Cold air meets you.|You know the way now.}
 
+![An archway of roughly hewn stone, and beyond it nothing but darkness.](gruft.png)
+
 A goblin starts up out of an alcove.
 
 * Back through the gap

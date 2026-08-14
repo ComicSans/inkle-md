@@ -20,7 +20,7 @@
 
 import { CompileError } from './errors.js';
 import { lex } from './lexer.js';
-import { parseStory, parseInline } from './parser.js';
+import { parseStory, parseInline, parseImage } from './parser.js';
 
 const LABEL_RE = /^[*+]\s+(.*)$/s;
 const LINK_RE = /\[[^\]]*\]\([^)]*\)/;
@@ -55,7 +55,7 @@ export function parseCatalog(body, ctx) {
         throw new CompileError('E070',
           'a translated heading needs an explicit {#id}, or it drifts from the original', line);
       }
-      current = { id: m[1], paragraphs: [], labels: [], override: null, overrideLines: [], source: { file: line.file, line: line.line } };
+      current = { id: m[1], paragraphs: [], labels: [], images: [], override: null, overrideLines: [], source: { file: line.file, line: line.line } };
       currentLines = [line];
       continue;
     }
@@ -86,6 +86,12 @@ export function parseCatalog(body, ctx) {
         current.labels.push(parseInline(m[1].trim(), line, state).parts);
         break;
       }
+      case 'image':
+        // A third stream beside paragraphs and labels. Both halves of an image
+        // are translated: the alt text always, and the file because a map with
+        // names written on it has to be redrawn, not relabelled (22.5).
+        current.images.push(parseImage(line));
+        break;
       default:
         // divert, assign, block, directive, gather: this node carries logic.
         current.overrideLines.push(line);
@@ -138,6 +144,7 @@ export function applyCatalog(table, catalogue, ctx) {
     const streams = {
       paragraphs: [...entry.paragraphs],
       labels: [...entry.labels],
+      images: [...entry.images],
       bag: ctx.bag,
       lang: ctx.lang,
       id: node.id,
@@ -146,10 +153,11 @@ export function applyCatalog(table, catalogue, ctx) {
     const copy = structuredClone(node);
     substituteOps(copy.body, streams);
 
-    if (streams.paragraphs.length > 0 || streams.labels.length > 0) {
+    if (streams.paragraphs.length > 0 || streams.labels.length > 0 || streams.images.length > 0) {
       ctx.bag.add('E071',
-        `"${node.id}" has ${streams.paragraphs.length} paragraph(s) and ` +
-        `${streams.labels.length} label(s) too many in ${ctx.lang}`, entry.source);
+        `"${node.id}" has ${streams.paragraphs.length} paragraph(s), ` +
+        `${streams.labels.length} label(s) and ${streams.images.length} image(s) too many in ${ctx.lang}`,
+        entry.source);
     }
     out.set(id, copy);
   }
@@ -169,6 +177,19 @@ function substituteOps(ops, streams) {
       case 'text':
         op.parts = takeParts(streams, 'paragraphs', op.parts);
         break;
+      case 'image': {
+        // Both halves come from the translation, and its own `{.class}` is
+        // ignored: presentation is structure, and structure belongs to the
+        // default language (3.4).
+        const replacement = streams.images.shift();
+        if (!replacement) {
+          streams.bag.add('E071', `"${streams.id}" is missing an image in ${streams.lang}`, streams.source);
+          break;
+        }
+        op.src = replacement.src;
+        op.alt = replacement.alt;
+        break;
+      }
       case 'choices':
         for (const item of op.items) {
           item.label = takeParts(streams, 'labels', item.label);

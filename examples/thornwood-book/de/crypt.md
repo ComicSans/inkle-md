@@ -2,6 +2,8 @@
 
 {!Kalte Luft schlägt dir entgegen.|Du kennst den Weg jetzt.}
 
+![Ein Torbogen aus grob behauenen Steinen, dahinter nichts als Dunkelheit.](gruft.png)
+
 Ein Goblin fährt aus einer Nische hoch.
 
 !combat goblin

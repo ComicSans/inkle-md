@@ -15,7 +15,10 @@
 
 import { CompileError } from './errors.js';
 
-/** @typedef {'heading'|'function'|'choice'|'gather'|'divert'|'assign'|'directive'|'block'|'text'} LineKind */
+/** @typedef {'heading'|'function'|'choice'|'gather'|'divert'|'assign'|'directive'|'block'|'image'|'text'} LineKind */
+
+/** An image is a line of its own (SPEC 4.9); this finds one anywhere. */
+export const IMAGE_RE = /!\[([^\]]*)\]\(([^)]*)\)/;
 
 const INDENT_UNIT = 2;
 
@@ -69,7 +72,8 @@ function classify(cur, next) {
   if (/^-{3,}(\s|$)/.test(t)) return 'gather';
   if (t.startsWith('->')) return 'divert';
   if (/^~ /.test(t)) return 'assign';
-  if (/^![A-Za-z]/.test(t)) return 'directive';   // "![" is an image, not a directive
+  if (/^!\[/.test(t)) return 'image';             // SPEC 4.9, before the directive rule
+  if (/^![A-Za-z]/.test(t)) return 'directive';
   if (t.startsWith('{')) return classifyBrace(t, next && next.depth > cur.depth ? next : null);
   return 'text';
 }

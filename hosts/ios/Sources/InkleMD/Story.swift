@@ -20,6 +20,10 @@ public final class Story: ObservableObject {
     /// The current page. Every command replaces it.
     @Published public private(set) var view: StoryView
 
+    /// Where the book's images are, so a view can resolve `Paragraph.image`.
+    /// `nil` when the book was opened from strings rather than a directory.
+    public let directory: URL?
+
     private let context: JSContext
     private let decoder = JSONDecoder()
 
@@ -36,7 +40,31 @@ public final class Story: ObservableObject {
     public convenience init(bundle directory: URL, seed: Int? = nil, language: String? = nil) throws {
         let engine = try String(contentsOf: directory.appendingPathComponent("inkle-md.js"), encoding: .utf8)
         let story = try String(contentsOf: directory.appendingPathComponent("story.json"), encoding: .utf8)
-        try self.init(engine: engine, story: story, seed: seed, language: language)
+        try self.init(engine: engine, story: story, seed: seed, language: language, directory: directory)
+    }
+
+    /// The file for an image paragraph, at the best resolution that is there.
+    ///
+    /// `wald@2x.png` beside `wald.png` is the same picture at twice the size
+    /// (22.5). The suffix is Apple's spelling and the export ignores it; this
+    /// is the host that picks it up, matching the screen it draws on.
+    public func url(for image: String, scale: CGFloat) -> URL? {
+        guard let directory else { return nil }
+        let dot = image.lastIndex(of: ".")
+        let stem = dot.map { String(image[image.startIndex..<$0]) } ?? image
+        let ext = dot.map { String(image[$0...]) } ?? ""
+
+        // Wanted first, then larger, then smaller, then the base file, which
+        // the language guarantees is there (E184). A one-times screen asks for
+        // no suffix at all: a bigger file on it is bytes for nothing.
+        let wanted = max(1, Int(scale.rounded()))
+        let order = wanted >= 3 ? [3, 2] : wanted == 2 ? [2, 3] : []
+        for factor in order {
+            let candidate = directory.appendingPathComponent("\(stem)@\(factor)x\(ext)")
+            if FileManager.default.fileExists(atPath: candidate.path) { return candidate }
+        }
+        let base = directory.appendingPathComponent(image)
+        return FileManager.default.fileExists(atPath: base.path) ? base : nil
     }
 
     /// - Parameters:
@@ -44,9 +72,11 @@ public final class Story: ObservableObject {
     ///   - story: the contents of `story.json`, unparsed. The engine parses it
     ///     itself; handing it across as text is what keeps the bridge to two
     ///     names (12.7).
-    public init(engine: String, story: String, seed: Int? = nil, language: String? = nil) throws {
+    public init(engine: String, story: String, seed: Int? = nil, language: String? = nil,
+                directory: URL? = nil) throws {
         guard let context = JSContext() else { throw StoryError.noEngine }
         self.context = context
+        self.directory = directory
 
         var thrown: String?
         context.exceptionHandler = { _, value in thrown = value?.toString() ?? "unknown" }

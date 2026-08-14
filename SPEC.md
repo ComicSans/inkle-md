@@ -472,7 +472,7 @@ You have {gold} coins left.
 prints the reduced amount. What you change first, you see next. Inside a
 choice, assignments go on their own indented lines below it.
 
-### 4.9 Marking a kind of text
+### 4.9 Marking a kind of text, and images
 
 ```markdown
 The letter is written in a shaky hand. {.letter}
@@ -480,8 +480,48 @@ The letter is written in a shaky hand. {.letter}
 
 `{.name}` at the end of a paragraph says what kind of text this is, not what
 it should look like. The view layer decides whether a letter is indented,
-boxed or italic. There is no other formatting control. Images are a decided
-but unbuilt part of the language; 22.5 says what is still open about them.
+boxed or italic. There is no other formatting control.
+
+An image is Markdown's own spelling, on a line of its own:
+
+```markdown
+![An archway of roughly hewn stone, and beyond it nothing but darkness.](gruft.png)
+```
+
+It takes a `{.name}` like a paragraph, and it is a line rather than something
+inside a sentence. A picture sits between paragraphs; writing one into the
+middle of a sentence is E181 rather than a picture that quietly reaches the
+reader as literal Markdown, which is what happened to diverts in prose before
+they were caught.
+
+The alt text is required, and E182 when it is missing. That single rule
+decides a lot: this language has no decorative image, because a picture worth
+putting on the page is worth a sentence, and a reader who cannot see it is
+owed that sentence. It is the accessible name and never also a caption.
+
+The file is a path relative to the book's own directory, never a URL and never
+a path climbing out of that directory (E183). Principle 6 is the reason: what
+ships is the output and the files beside it, and a path that leaves is a
+picture no reader ever sees. The file has to be there, which is E184 and the
+one check in the whole compiler that reads the disk rather than the sources it
+was handed.
+
+Both halves are translated. In a catalogue (3.4) an image line replaces an
+image line, in source order, as a third stream beside paragraphs and labels.
+The alt text is translated because it is text; the file is translated because
+a map with names written on it has to be redrawn, not relabelled. A
+translation that names the same file is the ordinary case and costs nothing to
+write.
+
+A second resolution rides along by name: `gruft@2x.png` beside `gruft.png` is
+the same picture at twice the size. Nothing in the language mentions it beyond
+this: the linter checks that a file exists, never that a size matches, so
+`@2x` and `@3x` are optional wherever they appear, and a book that ships base
+files alone is complete. The web export copies whatever is there and uses the
+base file; a native host picks the one that fits its screen (12.5). The
+spelling is Apple's, taken for want of a neutral one, and a host on a platform
+that writes it differently maps the suffix rather than the language growing a
+second spelling.
 
 ### 4.10 Functions
 
@@ -912,7 +952,7 @@ For the two-chapter example, these four rules together make the output 40% small
 
 Expressions are small prefix trees: `{ "op": ">=", "args": [{ "var": "gold" }, { "lit": 10 }] }`.
 
-The ops you will meet are `text`, `choices`, `branch`, `divert`, `combat`, `assign`, `call`, `return` and `label` (a named gather). Text is a list of parts: `lit`, `print`, `alt` and `cond`. `-> END` is `{ "end": true }` in place of a `ref`.
+The ops you will meet are `text`, `image`, `choices`, `branch`, `divert`, `combat`, `assign`, `call`, `return` and `label` (a named gather). Text is a list of parts: `lit`, `print`, `alt` and `cond`. An image is `{ "op": "image", "src": "gruft.png", "alt": "…" }`, both required, with a `class` when the book wrote one. `-> END` is `{ "end": true }` in place of a `ref`.
 
 You may notice there is no op for weave, and that is on purpose. A run of choices at one depth is one `choices` op, and whatever follows it in the same container is the gather. A choice with `"target": null` runs its own body and then falls through to exactly that.
 
@@ -1015,6 +1055,11 @@ Errors abort compilation. Every message carries file, line, column and the offen
 | E169 | Fact expression that is not pure: dice, or a call that changes state |
 | E170 | Fact name colliding with a stat or variable |
 | E171 | `places.variable:` naming something that is not a declared stat |
+| E180 | An image line that is not `![alt](file)` |
+| E181 | An image inside a sentence rather than on a line of its own |
+| E182 | An image without alt text |
+| E183 | An image path that is a URL, or that leaves the book's directory |
+| E184 | An image file that is not in the book's directory |
 
 ### 10.4 Test suite
 
@@ -1087,10 +1132,11 @@ for the copy you hand out. The minifier is part of the exporter, written here
 rather than installed, like everything else in this project.
 
 One case adds to the single file. A book that links images is that file plus
-those images, resolved relative to it, per principle 6. Nothing else ever
-lands beside the export. How a book writes an image, and what the export does
-with a path that leaves its own directory, is open point 22.5; until it is
-settled, no book has images and the export is one file.
+those images, per principle 6, copied beside it by the export and resolved
+relative to it by the browser. Nothing else ever lands there. A path that
+leaves the book's directory never reaches this point: it is E183 at compile
+time (4.9). A book without images stays one file, which is the case the target
+size above is written for.
 
 ### 12.1 Runtime API
 
@@ -1330,8 +1376,13 @@ of section 6 an option used. And a fight arrives with the enemy's full stamina
 beside its current one, so a bar has both halves without reading the config.
 
 Text arrives as paragraphs with their classes, exactly as 12.1 delivers it.
-What a host makes of a class is the host's own business, and that is the point
-of this section: one story, one logic, as many surfaces as there are hosts.
+An image is an entry in that same list, carrying `image` and `alt` where a
+paragraph carries `text`, so a host walks one list in order and tells the two
+apart by which field is there. It is not a part inside a text run, because a
+picture sits between paragraphs and not inside a sentence (4.9). What a host
+makes of a class, and of a picture, is the host's own business, and that is
+the point of this section: one story, one logic, as many surfaces as there are
+hosts.
 
 ### 12.7 The native bundle
 
@@ -1344,7 +1395,9 @@ of this section: one story, one logic, as many surfaces as there are hosts.
 
 `--minify` is the pass of section 12, unchanged. The view of 12.2 is not in
 the bundle: a native host draws its own. A book with images is these files
-plus those images, per principle 6, and that is open point 22.5.
+plus those images, per principle 6, copied into the same directory with
+whatever `@2x` and `@3x` files stand beside them (4.9). A host resolves an
+`image` path against that directory and picks the resolution its screen wants.
 
 The script defines two names and nothing else, because two names is what a
 bridge carries without a wrapper per member:
@@ -1876,15 +1929,13 @@ each of them stands.
 4. **A second `max_catchup:` mode** that coalesces the missed firings into a
    single one, with the number of missed steps in a variable, rather than
    repeating the event once per step.
-5. **Images.** The shape is settled: Markdown links them, `![alt](file)`
-   with alt text required, and they are files next to the export rather than
-   data embedded in it, per principle 6. Open is everything below that:
-   whether a path may leave the export's own directory, what a translated
-   catalogue does with an alt text, and what 12.3 promises a screen reader.
-   Nothing of it is built, so no book has images yet. A native host (12.5)
-   raises the same question a second time, for a bundle rather than a
-   directory: whether an image is a file beside `story.json` or an asset of
-   the app around it, and what an image at twice the resolution is called.
+5. **What an alt text owes a map.** Images themselves are built and live in
+   4.9. Alt text is required there, so there is no decorative image and
+   nothing to hide from a screen reader. What stays open is the case a rule
+   cannot settle: a picture that carries information rather than atmosphere,
+   such as a map of the marches with names on it. A sentence is the right
+   answer for an archway and the wrong one for a map, and what 12.3 should
+   promise instead waits for a book that has one.
 6. **A save across a new edition.** Section 8 rejects a save whose `story`
    does not match the running book, and on the web that is a reload. In a
    shop that ships editions, it is a reader who loses a playthrough to an
@@ -1897,15 +1948,15 @@ each of them stands.
 
 Of the open points in section 22, three have a natural order, and here it is.
 
-1. Images per 22.5 come first: a line kind of their own, alt text as an error
-   when it is missing, and an export that refuses a path pointing outside its
-   directory. It is the only open point that changes what a book looks like on
-   the page, which is why it leads.
-2. Then the second `max_catchup:` mode of 22.4. The case to design it against
-   is a book that is put down for a week, not a table of turns.
-3. Calendar and ephemeris (22.1, 22.2) come last, and only once a book asks
+1. The second `max_catchup:` mode of 22.4. The case to design it against is a
+   book that is put down for a week, not a table of turns.
+2. Calendar and ephemeris (22.1, 22.2) come last, and only once a book asks
    for them. They are the one open point that costs the language an epoch, and
    that price is worth paying only for a book that needs a date or a sky.
+
+Images led this list and are built (4.9), together with the two hosts of 12.5:
+the web export and a package for Apple platforms. What images left behind is
+the one question in 22.5 that a book has to ask before a rule can answer it.
 
 Everything these steps stand on is already built: grammar, parser and story
 JSON per sections 10 and 9.1; the linter of section 11 with its reachability
@@ -1932,6 +1983,9 @@ added, section by section, so you can jump straight to what is new.
 | 10.1    | Fact and event expressions are parsed in step 2, with the other frontmatter expressions. |
 | 10.3    | E160 to E171 added to the error table.                                 |
 | 11      | L021 to L028 added; the reachability walk is repeated with host facts at their fallbacks, and L025 reads the difference. |
+| 4.9     | Images built: `![alt](file)` on a line of its own, alt text required, a path that stays inside the book's directory, both halves translated, `@2x` and `@3x` optional beside the base file. |
+| 9.1     | The `image` op added to the story JSON. |
+| 10.3    | E180 to E184 added to the error table. |
 | 11, 21  | L025 is an `info` about a book and a `warning` on an output with no host, because a book does not know which output it becomes. |
 | 12      | Retitled: the web export is one host of several. 12.5 to 12.7 added, with the host protocol, the native bundle and the rule that the runtime uses the language and nothing above it. |
 | 12.1    | `advance` and `facts` added to the runtime API.                        |

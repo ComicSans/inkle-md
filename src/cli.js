@@ -19,7 +19,7 @@
  * `entry` is a .md file or a book.yaml.
  */
 
-import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync, copyFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
 import { compileFile } from './compile.js';
@@ -27,6 +27,7 @@ import { importInk } from './import.js';
 import { exportHtml } from './export.js';
 import { bundleFiles } from './bundle.js';
 import { forHostlessOutput } from './lint.js';
+import { imagePaths } from './emit.js';
 import { play, simulate } from './play.js';
 import { serveMcp } from './mcp.js';
 import { CompileError } from './errors.js';
@@ -166,6 +167,8 @@ function main(argv) {
         process.stderr.write(`wrote ${file} (${Math.round(Buffer.byteLength(contents) / 1024)} kB)\n`);
       }
     }
+    const images = copyImages(story, dirname(entry), out);
+    if (images > 0 && !quiet) process.stderr.write(`copied ${images} image file(s)\n`);
     return 0;
   }
 
@@ -184,10 +187,43 @@ function main(argv) {
       const size = Buffer.byteLength(output);
       process.stderr.write(`wrote ${out} (${Math.round(size / 1024)} kB)\n`);
     }
+    // The export is one file plus the images the book links, resolved relative
+    // to it (principle 6). Without this the file would be one and the pictures
+    // would be missing.
+    if (command === 'export') {
+      const images = copyImages(story, dirname(entry), dirname(out));
+      if (images > 0 && !quiet) process.stderr.write(`copied ${images} image file(s)\n`);
+    }
   } else {
     process.stdout.write(output);
   }
   return 0;
+}
+
+/**
+ * The images an output travels with, copied beside it (principle 6).
+ *
+ * A second resolution rides along when it is there: `wald@2x.png` beside
+ * `wald.png` is the same picture at twice the size, which the export ignores
+ * and a native host picks (22.5). Nothing checks a size, only a name, so a
+ * book that ships base files alone is complete.
+ *
+ * @returns {number} how many files were copied
+ */
+function copyImages(story, from, to) {
+  let copied = 0;
+  for (const src of imagePaths(story)) {
+    const [stem, extension] = [src.slice(0, src.lastIndexOf('.')), src.slice(src.lastIndexOf('.'))];
+    for (const name of [src, `${stem}@2x${extension}`, `${stem}@3x${extension}`]) {
+      const source = join(from, name);
+      if (!existsSync(source)) continue;
+      const target = join(to, name);
+      mkdirSync(dirname(target), { recursive: true });
+      copyFileSync(source, target);
+      copied++;
+    }
+  }
+  return copied;
 }
 
 /** `--host elapsed=60,fuel=3` into the bag a boundary takes in (15.4). */
