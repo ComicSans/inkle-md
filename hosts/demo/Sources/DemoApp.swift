@@ -8,13 +8,11 @@
 import SwiftUI
 import InkleMD
 
-/// The demo of SPEC 12.6, on macOS and iOS from one source.
+/// A shelf of books, on macOS and iOS from one source.
 ///
-/// It shows the two ways a book can be played, side by side, because the
-/// difference between them is the whole point and it is invisible from inside
-/// the book. On the left a shelf: pick a book and read it from its first page.
-/// On the right a map: the app holds the world, and one place on it leads into
-/// a passage of a book and back out again.
+/// Pick a book and read it. What builds up on screen is one long text: the
+/// story, and between its parts what the reader did, so that a finished book
+/// reads back as an account of this particular playthrough.
 @main
 struct DemoApp: App {
     var body: some Scene {
@@ -29,12 +27,7 @@ struct DemoApp: App {
 
 struct ContentView: View {
     var body: some View {
-        TabView {
-            ShelfView()
-                .tabItem { Label("Shelf", systemImage: "books.vertical") }
-            MapView()
-                .tabItem { Label("Map", systemImage: "map") }
-        }
+        ShelfView()
     }
 }
 

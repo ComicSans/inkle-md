@@ -20,6 +20,9 @@ struct Cover: View {
     /// inkle's own game, imported and under its own licence, and inventing a
     /// device for it would be putting our hand on someone else's cover.
     var device = true
+    /// A book that has been opened before wears a ribbon, the way a book with
+    /// a bookmark in it does.
+    var started = false
 
     var body: some View {
         ZStack {
@@ -58,6 +61,17 @@ struct Cover: View {
                 Spacer()
             }
             .clipShape(RoundedRectangle(cornerRadius: 6))
+
+            if started {
+                HStack {
+                    Spacer()
+                    Ribbon()
+                        .fill(Color.white.opacity(0.85))
+                        .frame(width: 14, height: 34)
+                        .padding(.trailing, 14)
+                }
+                .frame(maxHeight: .infinity, alignment: .top)
+            }
         }
         .frame(width: 132, height: 190)
         .shadow(radius: 2, y: 1)
@@ -140,6 +154,21 @@ struct Device: Shape {
             path.addRoundedRect(in: inset, cornerSize: CGSize(width: inset.width / 2,
                                                               height: inset.width / 2))
         }
+        return path
+    }
+}
+
+
+/// A bookmark ribbon: a strip with a notch cut out of its foot.
+struct Ribbon: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY - rect.width * 0.55))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.closeSubpath()
         return path
     }
 }

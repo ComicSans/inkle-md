@@ -36,6 +36,8 @@ public struct Labels: Sendable {
     public var statValue: @Sendable (String, Int, Int?) -> String = { name, value, max in
         max.map { "\(name), \(value) of \($0)" } ?? "\(name), \(value)"
     }
+    /// Reads to a screen reader as what the line between two passages is.
+    public var youChose = "You chose"
     public var unusable = "not usable right now"
     public var cannotFleeYet = "not yet"
 
@@ -65,6 +67,7 @@ public struct Labels: Sendable {
         l.statValue = { name, value, max in
             max.map { "\(name), \(value) von \($0)" } ?? "\(name), \(value)"
         }
+        l.youChose = "Du hast gewählt"
         l.unusable = "gerade nicht benutzbar"
         l.cannotFleeYet = "noch nicht"
         return l

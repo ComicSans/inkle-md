@@ -24,7 +24,7 @@ struct ShelfView: View {
         NavigationStack {
             Group {
                 if let story = open {
-                    StoryScreen(story: story)
+                    ReadingView(story: story, labels: .forLanguage(story.view.lang))
                 } else {
                     shelf
                 }
@@ -45,17 +45,12 @@ struct ShelfView: View {
             LazyVGrid(columns: columns, spacing: 20) {
                 ForEach(Books.all, id: \.self) { name in
                     Button { openBook(name) } label: {
-                        VStack(spacing: 6) {
-                            Cover(title: Books.title(name), subtitle: Books.note(name), device: name != "intercept")
-                            if hasSave(name) {
-                                Label("Started", systemImage: "bookmark.fill")
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
+                        Cover(title: Books.title(name), subtitle: Books.note(name),
+                              device: name != "intercept", started: hasSave(name))
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel(Books.title(name))
+                    .accessibilityValue(hasSave(name) ? "started" : "")
                     .accessibilityHint(hasSave(name) ? "Continues where you left it" : "Opens at the first page")
                 }
             }
