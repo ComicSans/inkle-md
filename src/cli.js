@@ -26,6 +26,7 @@ import { compileFile } from './compile.js';
 import { importInk } from './import.js';
 import { exportHtml } from './export.js';
 import { bundleFiles } from './bundle.js';
+import { forHostlessOutput } from './lint.js';
 import { play, simulate } from './play.js';
 import { serveMcp } from './mcp.js';
 import { CompileError } from './errors.js';
@@ -94,7 +95,10 @@ function main(argv) {
   }
 
   const { story, warnings } = result;
-  const messages = [...warnings.messages].sort((a, b) => LEVEL_ORDER[b.level] - LEVEL_ORDER[a.level]);
+  // `export` is the one output with no host to supply values, so it is the one
+  // place L025 is a defect rather than a note about the book (11, 12.5).
+  const raw = command === 'export' ? forHostlessOutput(warnings.messages) : warnings.messages;
+  const messages = [...raw].sort((a, b) => LEVEL_ORDER[b.level] - LEVEL_ORDER[a.level]);
 
   if (json && (command === 'lint' || command === 'build')) {
     process.stdout.write(`${JSON.stringify({ messages, report: warnings.report }, null, 2)}\n`);

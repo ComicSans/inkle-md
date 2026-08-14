@@ -1052,7 +1052,7 @@ That is the key difference to section 10: warnings do not abort compilation. `--
 | L022 | Event whose assignment is never read | warning |
 | L023 | Fact never read anywhere | info |
 | L024 | Fact depending on a variable that is never written | warning |
-| L025 | Content unreachable when every host fact takes its fallback | warning |
+| L025 | Content unreachable when every host fact takes its fallback | info, warning on an output with no host |
 | L026 | Divert into a place's `enter:` node without setting the index | warning |
 | L027 | Recurring event without `max_catchup:` | info |
 | L028 | Gather diverting back into its own node while every choice can run out | warning |
@@ -1061,7 +1061,7 @@ If you only remember two of these, make it L008 and L009. They are the ones that
 
 Beyond the warnings, the linter also emits a **reachability report**: node count, unreachable nodes, endings found, longest and shortest path from start to an ending, counted over choices without evaluating conditions. That report is the closest thing to proofreading a branching book.
 
-Two of the warnings above lean on that same walk, and it helps to see how. The reachability walk behind the report is run a second time with every host fact at its `fallback:`, and L025 reads the difference between the two runs. The report itself carries the numbers of the first run: a reader with no host gets a smaller book, and saying so is the warning's job, not the report's. A book whose good ending needs a host is a book that quietly loses content when it is played as one file. L021 needs nothing new beyond the first run: the longest path answers the question a branching book cannot be proofread for, whether the relief that was scheduled for turn three hundred can arrive at all.
+Two of the warnings above lean on that same walk, and it helps to see how. The reachability walk behind the report is run a second time with every host fact at its `fallback:`, and L025 reads the difference between the two runs. The report itself carries the numbers of the first run: a reader with no host gets a smaller book, and saying so is the warning's job, not the report's. A book whose good ending needs a host is a book that quietly loses content when it is played as one file, which is why L025 is the one check whose level depends on what is being built (21). L021 needs nothing new beyond the first run: the longest path answers the question a branching book cannot be proofread for, whether the relief that was scheduled for turn three hundred can arrive at all.
 
 ## 12. Export and hosts
 
@@ -1823,11 +1823,20 @@ deliberately narrow. Only an event counted against `turns()` with a literal
 threshold is checked, because a threshold that depends on the reader is not a
 thing a static longest path can be compared against.
 
-L025 protects the export. When your book is played as one standalone file,
-there is no host to supply values, so every host fact falls back to its
-default. A book whose good ending needs a host is a book that quietly loses
-content in that setting, and this warning is how you find out before a reader
-does.
+L025 protects the export, and it is the one check that has to know which
+output is being built. When your book is played as one standalone file, there
+is no host to supply values, so every host fact falls back to its default. A
+book whose good ending needs a host quietly loses content in that setting, and
+this is how you find out before a reader does.
+
+But a book does not know which output it becomes. It is compiled to the story
+JSON of 9.1, and that same JSON is bundled with a runtime into a web page, an
+iOS app or something not built yet (12.5). Telling an author their book is
+defective because one of those outputs would lose content is telling them
+about an output they may never build. So L025 is an `info` about the book and
+a `warning` on an export, which is the only output in this document that has
+no host. Nothing is declared in the book to make that difference, and nothing
+should be: the book is the story, not the shipping.
 
 L028 is about the one shape a hub room gets wrong. A gather is the point where
 the paths of a node's choices come back together. A gather that sends the
@@ -1876,14 +1885,7 @@ each of them stands.
    raises the same question a second time, for a bundle rather than a
    directory: whether an image is a file beside `story.json` or an asset of
    the app around it, and what an image at twice the resolution is called.
-6. **L025 in a book written for a host.** The warning exists because a
-   standalone export has nothing to supply host values, so content behind a
-   host fact is quietly lost (21). A native host is exactly the thing that
-   supplies them, so a book written for one is warned about content it does
-   not lose. What is missing is a way for a book to say which it is written
-   for. Until there is one, L025 stays as it is: it reports what it sees,
-   which is a book that loses content when it is played as one file.
-7. **A save across a new edition.** Section 8 rejects a save whose `story`
+6. **A save across a new edition.** Section 8 rejects a save whose `story`
    does not match the running book, and on the web that is a reload. In a
    shop that ships editions, it is a reader who loses a playthrough to an
    update they did not ask for. The strictness is right and the answer is not
@@ -1930,6 +1932,7 @@ added, section by section, so you can jump straight to what is new.
 | 10.1    | Fact and event expressions are parsed in step 2, with the other frontmatter expressions. |
 | 10.3    | E160 to E171 added to the error table.                                 |
 | 11      | L021 to L028 added; the reachability walk is repeated with host facts at their fallbacks, and L025 reads the difference. |
+| 11, 21  | L025 is an `info` about a book and a `warning` on an output with no host, because a book does not know which output it becomes. |
 | 12      | Retitled: the web export is one host of several. 12.5 to 12.7 added, with the host protocol, the native bundle and the rule that the runtime uses the language and nothing above it. |
 | 12.1    | `advance` and `facts` added to the runtime API.                        |
 | 12.4    | `play` gains `--host` to supply host values per boundary; `simulate` takes the same flag as its policy for how counters and `elapsed` advance per turn, without which no scheduled content is ever tested. |

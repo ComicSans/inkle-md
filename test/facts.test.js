@@ -19,6 +19,7 @@ import assert from 'node:assert/strict';
 import { compile, expectError, nodesOf } from './helpers.js';
 import { compileSources } from '../src/compile.js';
 import { Story } from '../src/runtime.js';
+import { forHostlessOutput } from '../src/lint.js';
 
 /** A book whose frontmatter is written per test, with a two-node story. */
 function book(declarations, body = null, extraStats = '') {
@@ -566,7 +567,18 @@ Here.
 
 -> END
 `).warnings.messages;
-  assert.ok(codes.some((m) => m.code === 'L025' && m.detail.includes('opened')));
+  const found = codes.find((m) => m.code === 'L025' && m.detail.includes('opened'));
+  assert.ok(found);
+  // A book does not know which output it becomes (12.5), so about the book
+  // this is a note. It is a defect only where the output has no host, and
+  // nothing in the book declares which of the two it is.
+  assert.equal(found.level, 'info');
+  const raised = forHostlessOutput(codes).find((m) => m.code === 'L025');
+  assert.equal(raised.level, 'warning');
+  // Nothing else moves with it.
+  assert.deepEqual(
+    forHostlessOutput(codes).filter((m) => m.code !== 'L025'),
+    codes.filter((m) => m.code !== 'L025'));
 });
 
 test('L026: travelling to a place without setting the index', () => {

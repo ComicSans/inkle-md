@@ -25,11 +25,25 @@ const LEVELS = {
   L012: 'warning', L013: 'info', L016: 'warning', L017: 'warning', L018: 'warning',
   L020: 'warning',
   L021: 'warning', L022: 'warning', L023: 'info', L024: 'warning',
-  L025: 'warning', L026: 'warning', L027: 'info', L028: 'warning',
+  L025: 'info', L026: 'warning', L027: 'info', L028: 'warning',
 };
 
 /** Anything that consumes the dice stream. */
 const RANDOM_CALLS = new Set(['roll', 'random', 'test', 'test_luck']);
+
+/**
+ * A book does not know which output it becomes (12.5), so nothing the linter
+ * says about it may assume one. L025 is the one check that does: content
+ * behind a host fact is lost in an output that has no host, and nowhere else.
+ * It is therefore a note about the book, and this raises it to a warning for
+ * the one output where the loss is real.
+ *
+ * @param {object[]} messages what `lint` returned
+ * @returns {object[]} the same messages, with L025 raised
+ */
+export function forHostlessOutput(messages) {
+  return messages.map((m) => (m.code === 'L025' ? { ...m, level: 'warning' } : m));
+}
 
 export function lint(story, { table, config, lang }) {
   const out = [];
@@ -244,7 +258,9 @@ export function lint(story, { table, config, lang }) {
   }
 
   // L025: the same walk again, with every host fact at its fallback, which is
-  // the book a reader gets with no host at all (11, 15.4).
+  // the book a reader gets with no host at all (11, 15.4). What it says about
+  // the book is a note, because a book does not know which output it becomes;
+  // it is a defect only where that output is one that has no host (12.5).
   if (Object.values(config.facts ?? {}).some((f) => f.source === 'host')) {
     const constants = factConstants(config);
     const offline = buildGraph(nodes, (when) => fold(when, constants) === 0);
