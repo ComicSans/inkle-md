@@ -1,0 +1,58 @@
+# The demo of SPEC 12.6: one book, played both ways, on macOS and iOS.
+#
+# The project file is generated rather than checked in, because a .xcodeproj is
+# not a thing to read or merge by hand. `xcodegen generate` in this directory
+# writes it from here.
+name: InkleMDDemo
+
+options:
+  bundleIdPrefix: de.tobiasreithmeier.inklemd
+  deploymentTarget:
+    iOS: "16.0"
+    macOS: "13.0"
+  createIntermediateGroups: true
+
+packages:
+  InkleMD:
+    path: ../ios
+
+targets:
+  InkleMDDemo:
+    type: application
+    supportedDestinations: [iOS, macOS]
+    sources:
+      - path: Sources
+      # A folder reference, not a group: the books keep their directory each,
+      # because a bundle is a directory and `Story(bundle:)` opens one (12.8).
+      - path: Books
+        type: folder
+        buildPhase: resources
+    dependencies:
+      - package: InkleMD
+    info:
+      path: Sources/Info.plist
+      properties:
+        CFBundleDisplayName: inkle-md
+        UILaunchScreen: {}
+        # The demo reads its books out of its own bundle and talks to nothing.
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: false
+    settings:
+      base:
+        MARKETING_VERSION: "0.8"
+        CURRENT_PROJECT_VERSION: "1"
+        SWIFT_VERSION: "5.9"
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGNING_ALLOWED: NO
+    preBuildScripts:
+      - name: Compile the books
+        # The bundle is built from examples/ at build time, so there is one
+        # copy of the engine and it is the one src/ produces (12.8).
+        script: |
+          cd "$SRCROOT/../.."
+          for book in thornwood-book/book.yaml house/book.yaml; do
+            name=$(dirname "$book")
+            node src/cli.js bundle "examples/$book" --out "hosts/demo/Books/$name" --quiet
+          done
+        basedOnDependencyAnalysis: false
