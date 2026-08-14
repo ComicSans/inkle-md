@@ -35,6 +35,11 @@ public struct ReadingView: View {
     /// What has been read so far, oldest first.
     @State private var passages: [Passage] = []
     @State private var picks: [Set<String>] = []
+    /// False while a turn is being taken. The controls fade out, the new
+    /// passage arrives, and they fade back in at the foot of it: a border that
+    /// slides down the page with the text is a border the eye follows instead
+    /// of reading.
+    @State private var controlsVisible = true
     @AccessibilityFocusState private var latestIsFocused: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.displayScale) private var displayScale
@@ -76,6 +81,11 @@ public struct ReadingView: View {
                         }
                     }
                     .padding(.top, 28)
+                    .opacity(controlsVisible ? 1 : 0)
+                    // A new set of controls is a new thing, not the old one
+                    // moved: without this SwiftUI keeps the frames and slides
+                    // them down the page as the text grows.
+                    .id(passages.count)
 
                     sheet
                         .padding(.top, 40)
@@ -221,10 +231,12 @@ public struct ReadingView: View {
             }
             if story.view.canUndo {
                 Button(labels.back) {
-                    _ = try? story.undo()
-                    // Undo takes back the page too: the account should not
-                    // keep a passage the reader has just unmade.
-                    if passages.count > 1 { passages.removeLast() }
+                    act(labels.back) {
+                        _ = try? story.undo()
+                        // Undo takes back the page too: the account should not
+                        // keep a passage the reader has just unmade.
+                        if passages.count > 1 { passages.removeLast() }
+                    }
                 }
                 .buttonStyle(PageButton(kind: .quiet))
             }
@@ -391,9 +403,24 @@ public struct ReadingView: View {
     }
 
     /// Does something to the book and writes down what it was.
-    private func act(_ action: String, _ body: () -> Void) {
-        body()
-        record(action: action)
+    ///
+    /// The controls go first and come back last. In between the page grows,
+    /// which is the part worth looking at.
+    private func act(_ action: String, _ body: @escaping () -> Void) {
+        guard controlsVisible else { return }   // one turn at a time
+        if reduceMotion {
+            body()
+            record(action: action)
+            return
+        }
+        withAnimation(.easeOut(duration: 0.18)) { controlsVisible = false }
+        Task {
+            try? await Task.sleep(nanoseconds: 180_000_000)
+            body()
+            record(action: action)
+            try? await Task.sleep(nanoseconds: 220_000_000)
+            withAnimation(.easeIn(duration: 0.22)) { controlsVisible = true }
+        }
     }
 
     /// Adds what the book now shows as the next passage. An empty page adds
@@ -402,6 +429,9 @@ public struct ReadingView: View {
     private func record(action: String?) {
         let paragraphs = story.view.text
         guard !paragraphs.isEmpty else { return }
+        // Undo already put the page back where it was; appending it again
+        // would show the same scene twice.
+        if action == labels.back, passages.last?.node == story.view.node { return }
         passages.append(Passage(id: (passages.last?.id ?? 0) + 1,
                                 action: action,
                                 paragraphs: paragraphs,

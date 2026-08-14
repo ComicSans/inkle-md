@@ -18,6 +18,8 @@ struct ShelfView: View {
     @State private var openName: String?
     @State private var failure: String?
     @Environment(\.scenePhase) private var phase
+    /// The book a long press is asking to start over, if any.
+    @State private var restarting: String?
 
     private let columns = [GridItem(.adaptive(minimum: 150), spacing: 20)]
 
@@ -31,6 +33,18 @@ struct ShelfView: View {
                 }
             }
             .navigationTitle(open == nil ? "Shelf" : (openName ?? ""))
+            .confirmationDialog("Start over?",
+                                isPresented: Binding(get: { restarting != nil },
+                                                     set: { if !$0 { restarting = nil } }),
+                                titleVisibility: .visible) {
+                Button("Start over", role: .destructive) {
+                    if let name = restarting { forget(name) }
+                    restarting = nil
+                }
+                Button("Keep my place", role: .cancel) { restarting = nil }
+            } message: {
+                Text(restarting.map { "\(Books.title($0)) opens at its first page again, and what you did in it is gone." } ?? "")
+            }
             // A reader who switches away or quits has not decided to lose the
             // afternoon. The save is a file and writing it costs nothing, so
             // it is written whenever the app stops being in front.
@@ -56,6 +70,20 @@ struct ShelfView: View {
                               device: name != "intercept", started: hasSave(name))
                     }
                     .buttonStyle(.plain)
+                    // A long press offers the one thing a shelf can offer
+                    // about a book it is not showing: forget where I was.
+                    .contextMenu {
+                        if hasSave(name) {
+                            Button("Start over", systemImage: "arrow.counterclockwise", role: .destructive) {
+                                restarting = name
+                            }
+                        }
+                    }
+                    // VoiceOver does not reach a context menu by holding; it
+                    // reaches an action by name.
+                    .accessibilityAction(named: "Start over") {
+                        if hasSave(name) { restarting = name }
+                    }
                     .accessibilityLabel(Books.title(name))
                     .accessibilityValue(hasSave(name) ? "started" : "")
                     .accessibilityHint(hasSave(name) ? "Continues where you left it" : "Opens at the first page")
@@ -104,6 +132,13 @@ struct ShelfView: View {
         guard let name = Books.all.first(where: { Books.directory($0) == story.directory }),
               let data = try? story.save() else { return }
         try? data.write(to: saveFile(name))
+    }
+
+    /// Throws away the save of one book. The book itself is untouched: it is
+    /// a file in the app's own bundle, and what a reader did with it was never
+    /// part of it.
+    private func forget(_ name: String) {
+        try? FileManager.default.removeItem(at: saveFile(name))
     }
 
     private func hasSave(_ name: String) -> Bool {
