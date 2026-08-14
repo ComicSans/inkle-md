@@ -18,7 +18,9 @@ struct Cover: View {
     let subtitle: String?
     /// False for a book whose text is not ours. `examples/intercept.md` is
     /// inkle's own game, imported and under its own licence, and inventing a
-    /// device for it would be putting our hand on someone else's cover.
+    /// device for it would be putting our hand on someone else's cover. It
+    /// gets a typeset cover instead: deliberately plain rather than empty,
+    /// because those look the same and only one of them is meant.
     var device = true
     /// A book that has been opened before wears a ribbon, the way a book with
     /// a bookmark in it does.
@@ -37,6 +39,8 @@ struct Cover: View {
                     .padding(.horizontal, 18)
                     .padding(.top, 26)
                     .padding(.bottom, 34)
+            } else {
+                typeset
             }
 
             VStack {
@@ -78,6 +82,26 @@ struct Cover: View {
         // One element with one name: a screen reader does not want a spine.
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(title)
+    }
+
+    /// A cover made of rules and space. It says a book is here and claims
+    /// nothing about what is in it.
+    private var typeset: some View {
+        VStack(spacing: 0) {
+            Rectangle().fill(Color.white.opacity(0.35)).frame(height: 1)
+            Spacer(minLength: 0)
+            Rectangle().fill(Color.white.opacity(0.35)).frame(height: 1)
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 22)
+        .padding(.bottom, 46)
+        .overlay(alignment: .top) {
+            // The mark of a book that came from somewhere else.
+            Text("· · ·")
+                .font(.caption)
+                .foregroundStyle(.white.opacity(0.5))
+                .padding(.top, 34)
+        }
     }
 
     // MARK: - Everything below follows from the title
