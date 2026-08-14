@@ -86,6 +86,7 @@ are its own; SPEC 12.5 to 12.7 says what that means.
 | `examples/house/` | A full-length book: 46 nodes, a fear stat that kills, secrets, three endings |
 | `examples/nightside/` | The 0.7 layer at work: facts, events, places, an oxygen clock, five endings |
 | `examples/intercept.md` | ink's own demo game, imported: 132 nodes, no RPG layer at all |
+| `hosts/ios/` | The same runtime in a JSContext, with a SwiftUI screen, SPEC 12.5 |
 
 ## The examples
 

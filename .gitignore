@@ -2,6 +2,10 @@
 build/
 dist/
 
+# SwiftPM build output of hosts/ios
+.build/
+.swiftpm/
+
 # Dependencies, should any ever appear
 node_modules/
 

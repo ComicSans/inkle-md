@@ -1,0 +1,125 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * Copyright 2026 Tobias Reithmeier
+ */
+
+import Foundation
+
+/// The view of SPEC 12.6: everything a page needs, as one value.
+///
+/// Every field here is what the protocol sends, named as the protocol names
+/// it. Nothing is computed on this side and nothing is left out, so that a
+/// change to 12.6 shows up as a compile error rather than as a field that
+/// silently stays at its default.
+public struct StoryView: Decodable, Sendable {
+    public let lang: String
+    public let languages: [String]
+    /// The creation blocks, until they are answered; `nil` once play begins.
+    public let setup: [SetupBlock]?
+    public let node: String?
+    public let title: String?
+    public let ended: Bool
+    public let text: [Paragraph]
+    public let choices: [Choice]
+    public let stats: [Stat]
+    public let facts: [String: Double]
+    public let inventory: [Item]
+    public let memory: [String]
+    public let combat: Combat?
+    public let canUndo: Bool
+}
+
+public struct Paragraph: Decodable, Sendable, Identifiable {
+    public let id = UUID()
+    public let text: String
+    /// The `{.name}` a book wrote, or `nil`. What it looks like is this side's
+    /// business: SPEC 6 keeps presentation out of the book on purpose.
+    public let styleName: String?
+
+    private enum CodingKeys: String, CodingKey {
+        case text
+        case styleName = "class"
+    }
+}
+
+public struct Choice: Decodable, Sendable, Identifiable {
+    /// The index `choose` takes back. It is the identity too: a page never
+    /// shows the same index twice.
+    public let index: Int
+    public let label: String
+    public var id: Int { index }
+}
+
+public struct Stat: Decodable, Sendable, Identifiable {
+    public let name: String
+    public let label: String
+    /// False for a stat the book declared without a `name:`: it drives the
+    /// story and is not meant to be shown (SPEC 6).
+    public let named: Bool
+    /// Absent before `begin`, where no stat has been rolled yet.
+    public let value: Int?
+    public let max: Int?
+    public var id: String { name }
+}
+
+public struct Item: Decodable, Sendable, Identifiable {
+    public let id: String
+    public let name: String
+    public let kind: String
+    public let uses: Int
+    public let equipped: Bool
+    /// False when the item has no effect, or when its `when:` is not met right
+    /// now. A control for it belongs on the page either way, disabled and
+    /// saying why (12.3).
+    public let usable: Bool
+}
+
+public struct SetupBlock: Decodable, Sendable, Identifiable {
+    public let id = UUID()
+    public let title: String?
+    public let pick: Int
+    public let from: [SetupOption]
+
+    private enum CodingKeys: String, CodingKey { case title, pick, from }
+}
+
+public struct SetupOption: Decodable, Sendable, Identifiable {
+    public let label: String
+    public let item: String?
+    public let remember: String?
+    /// What `begin` takes back for this option.
+    public let key: String
+    public var id: String { key }
+}
+
+public struct Combat: Decodable, Sendable {
+    public let round: Int
+    public let enemy: Enemy
+    /// How many more enemies come after this one (SPEC 7).
+    public let waiting: Int
+    public let log: [Round]
+    /// Set after a hit when the book allows a luck test, naming who was hit.
+    public let luck: String?
+    public let canFlee: Bool
+
+    public struct Enemy: Decodable, Sendable {
+        public let id: String
+        public let name: String
+        public let stamina: Int
+        public let max: Int
+    }
+}
+
+/// One round of a fight, as `attack` and `luck` report it.
+public struct Round: Decodable, Sendable {
+    public let round: Int
+    public let mine: Int
+    public let theirs: Int
+    /// `"enemy"`, `"player"`, or `nil` for a tie.
+    public let hit: String?
+    /// Absent on a tie, which costs nothing.
+    public let damage: Int?
+    public let text: String
+}

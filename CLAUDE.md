@@ -31,11 +31,31 @@ node src/cli.js bundle examples/thornwood-book/book.yaml --out build/native
 
 **Keine lokalen CI-Hooks.** Die zentrale local-CI ist auf Xcode ausgelegt:
 Stage 1 ist der SwiftLint-Gate, Stage 2 baut und testet über den
-simulator-broker. Für ein reines Node-Projekt ohne Xcode-Target gibt es dort
-nichts auszuführen, und ein Hook, der nichts prüft, ist schlechter als keiner,
-weil er Grün meldet. Das Äquivalent ist `node --test 'test/*.test.js'` plus
-`--strict`-Lint auf allen drei Beispielen; solange das nicht als Hook läuft, wird
-es vor jedem Commit von Hand ausgeführt. Entschieden mit Tobias am 11.08.2026.
+simulator-broker. Hier gibt es kein Xcode-Target, sondern ein SwiftPM-Package
+ohne App-Hülle, und ein Hook, der nichts prüft, ist schlechter als keiner, weil
+er Grün meldet. Der Abnahmetest ist deshalb von Hand vor jedem Commit:
+
+```bash
+node --test 'test/*.test.js'
+node src/cli.js lint examples/thornwood.md --strict     # und house, nightside
+cd hosts/ios && swift test
+```
+
+Entschieden mit Tobias am 11.08.2026, um den iOS-Host erweitert am 14.08.2026.
+
+**Der iOS-Host lebt in `hosts/ios/`.** Entschieden mit Tobias am 14.08.2026,
+gegen ein eigenes Repo: Protokoll und Host ändern sich im selben Commit. Damit
+gilt hier nicht mehr "kein Swift im Projekt", und zwei Annahmen ziehe ich
+daraus, bis Tobias widerspricht:
+
+- **SwiftLint bleibt aus.** Der Workspace-Standard führt ihn als Stage 1 der
+  local-CI, und die läuft hier nicht. Ein Package ohne Xcode-Target hat kein
+  Schema, das sie aufrufen könnte.
+- **Der iOS-Simulator ist nicht Teil des Abnahmetests.** `swift test` läuft auf
+  macOS gegen dasselbe JavaScriptCore und beweist, was hier zu beweisen ist:
+  dass die Runtime in JSC dieselbe Geschichte spielt wie in Node. Ein Bau für
+  den Simulator geht über `simulator-broker`, nie über `xcodebuild` direkt, und
+  ist ein eigener Schritt, wenn eine App dazukommt.
 
 **`examples/intercept.md` ist importiert, nicht geschrieben.** Es entsteht aus
 `inkle-md import` über inkles ink-Quelle von *The Intercept* und trägt deren
@@ -52,7 +72,8 @@ Import zum einfachen Bindestrich. Das Original setzt sie auch mitten im Wort
 macht das selbst und meldet die Anzahl, damit ein Neuimport dieselbe Datei
 ergibt.
 
-**Kein SwiftLint, keine swift-contracts.** Kein Swift im Projekt.
+**Keine swift-contracts.** Sie prüfen Regeln für App-Code; `hosts/ios/` ist ein
+Package aus einer Bridge und einer Ansicht, kein App-Target.
 
 `tokensave` ist eingerichtet und indiziert nach jedem Commit über den globalen
 post-commit-Hook.
