@@ -45,10 +45,12 @@ Oben siehst du die große Lampe: dunkel. Sie ist dein Auftrag: Wenn der Sturm ko
 
 ~ im_keller = 0
 
-Ein Tisch, ein Bett, das Radio auf dem Bord, ein Fenster zur Wetterseite.
-Im Dienstbuch auf dem Tisch endet der letzte Eintrag vor drei Wochen,
-mitten im Satz. Am Haken neben der Tür {has("laterne"): hängt nur noch
-der leere Nagel der Öl-Laterne|hängt eine Öl-Laterne}.
+{Ein Tisch, ein Bett, das Radio auf dem Bord, ein Fenster zur
+Wetterseite. Im Dienstbuch auf dem Tisch endet der letzte Eintrag vor
+drei Wochen, mitten im Satz.|Der Arbeitsraum, wie du ihn verlassen
+hast.}
+Am Haken neben der Tür {has("laterne"): hängt nur noch der leere Nagel
+der Öl-Laterne|hängt eine Öl-Laterne}.
 
 { anzug >= 3 }
   Das Haus ist voller Lärm, das Mauerwerk dröhnt, die Scheibe steht unter
@@ -148,8 +150,9 @@ solange kein Strom kommt.}
 
 ~ im_keller = 0
 
-Rundum Glas, in der Mitte das Leuchtwerk: die große Lampe in ihrem
-Rund, das Getriebe, der Hebel an der grauen Schaltkiste.
+{Rundum Glas, in der Mitte das Leuchtwerk - die große Lampe in ihrem
+Rund, das Getriebe, der Hebel an der grauen Schaltkiste.|Wieder oben,
+rundum Glas.}
 
 {lampe: Die Lampe brennt. Der Strahl geht hinaus über die See und kommt
 im Takt zurück, und das Rundglas gibt Wärme in den Raum.}
@@ -220,20 +223,21 @@ tot.}
 ~ im_keller = 1
 
 { netz == 1 or generator == 1 }
-  Unter der Decke brennt eine Birne hinter Drahtglas und macht aus dem
-  Keller einen Arbeits- und Lagerraum: Auf dem Podest in der Mitte steht
+  Unter der Decke brennt eine Birne hinter Drahtglas. {Sie macht aus dem
+  Keller einen Arbeits- und Lagerraum. Auf dem Podest in der Mitte steht
   der Generator, daneben die Werkbank, das Ölfass an der Wand, im Regal
   der Benzinkanister. Seeseitig sitzen zwei schwere Schotttüren
   hintereinander, mit einem kurzen Gang dazwischen - dadurch kommen bei
-  Hochwasser die Vorratskisten vom Boot herein, statt über die Stiege.
+  Hochwasser die Vorratskisten vom Boot herein, statt über die Stiege.|}
 { handlicht() }
-  Der Schein der Öl-Laterne holt die Dinge einzeln aus dem Dunkel: das
-  Podest mit dem Generator, die Werkbank, das Ölfass, im Regal den
-  Kanister. Zuletzt, seeseitig, die beiden Schotttüren der Kistenschleuse,
-  eine hinter der anderen.
+  Der Schein der Öl-Laterne reicht so weit, wie er reicht. {Er holt die
+  Dinge einzeln aus dem Dunkel - das Podest mit dem Generator, die
+  Werkbank, das Ölfass, im Regal den Kanister. Zuletzt, seeseitig, die
+  beiden Schotttüren der Kistenschleuse, eine hinter der anderen.|}
 { else }
-  Hier unten ist die Nacht vollständig. Was der Keller hat, zeigt er deinen
-  Händen, nicht deinen Augen: das Podest, die Werkbank, irgendwo das Regal.
+  Hier unten ist die Nacht vollständig. {Was der Keller hat, zeigt er
+  deinen Händen, nicht deinen Augen - das Podest, die Werkbank, irgendwo
+  das Regal.|}
 
 Was die See vom Keller hält, steht am Boden:
 
@@ -405,9 +409,10 @@ Turm, und sie gehört dem Wind.
   See.
   -> weggespuelt
 
-Vier Pfähle, ein Bohlensteg, zwei Ringe für die Leinen. Die See davor
+{Vier Pfähle, ein Bohlensteg, zwei Ringe für die Leinen. Die See davor
 ist leer bis zum Horizont. Das Boot kommt am Morgen, so war es
-ausgemacht, und der Steg hat bis dahin nichts zu bieten.
+ausgemacht, und der Steg hat bis dahin nichts zu bieten.|Der Steg, und
+die See davor immer noch leer.}
 
 {anzug >= 1 or wetter >= 2: Die Böen greifen nach allem, was absteht, und
 der Steg zittert unter jedem Schlag der See.|Der Abend liegt glatt auf
@@ -432,9 +437,10 @@ dem Wasser, als hätte er Zeit.}
   er groß genug aus.
   -> erschlagen
 
-Drei Kiefern, krumm vom Westwind, das einzige Holz der Bank, auf der
+{Drei Kiefern, krumm vom Westwind, das einzige Holz der Bank, auf der
 einzigen Düne. Zwischen den Stämmen hindurch sieht man die Wolkenbank
-wachsen; von hier wirkt sie näher als vom Turm.
+wachsen; von hier wirkt sie näher als vom Turm.|Wieder unter den drei
+Kiefern.}
 
 {anzug >= 1 or wetter >= 2: Der Wind probiert die Kronen schon aus.|Noch
 halten die drei still, wie Tiere, die den Hund gesehen haben.}
