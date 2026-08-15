@@ -53,10 +53,30 @@ cd hosts/ios && xcrun swiftc -typecheck -sdk "$(xcrun --sdk iphonesimulator --sh
 Der letzte Befehl ist kein Build, sondern eine Typprüfung: `swift test` läuft auf
 macOS und kompiliert alles hinter `#if canImport(UIKit)` nie. Genau dort saß ein
 Fehler - `AccessibilityNotification` gibt es erst ab iOS 17, das Package sagt 16.
-Ein echter Build für den Simulator ginge nur über `simulator-broker`, und der
-braucht ein Xcode-Projekt, das es hier nicht gibt.
+Ein echter Build gehört nicht in diese Liste: er braucht ein Xcode-Projekt, und
+das hat nur `hosts/demo/`.
 
 Entschieden mit Tobias am 11.08.2026, um den iOS-Host erweitert am 14.08.2026.
+
+**Die Demo baut und installiert der `simulator-broker`, nie `xcodebuild`.** Das
+Xcode-Projekt ist nicht eingecheckt, also steht `xcodegen` davor; die Bücher
+kompiliert ein Pre-Build-Schritt aus `examples/`, sodass jeder Bau die aktuellen
+Fassungen mitnimmt:
+
+```bash
+cd hosts/demo && xcodegen generate
+```
+
+Danach über die Broker-Werkzeuge: `sim_acquire` auf `build` und das Gerät
+(`device:iphone` für den Simulator, `device:hw-iphone` für iPhone Tobias), dann
+`sim_build` und `sim_install` mit `project: hosts/demo`, `scheme:
+StoryWeaverDemo` und `target: simulator` oder `hardware` - `device:` heißt dort
+in beiden Fällen `iphone`. Am Ende `sim_release`. Screenshots gibt es nur vom
+Simulator; auf dem Gerät ist der Rückgabewert von `sim_install` der Beleg.
+Signiert wird automatisch gegen Team `9DNN6V58J9`; scheitert das, ist es eine
+Sache des Developer-Portals und nicht der Projektdatei.
+
+Am 15.08.2026 so auf iPhone Tobias installiert.
 
 **Der iOS-Host lebt in `hosts/ios/`.** Entschieden mit Tobias am 14.08.2026,
 gegen ein eigenes Repo: Protokoll und Host ändern sich im selben Commit. Damit
@@ -69,10 +89,10 @@ daraus, bis Tobias widerspricht:
 - **Der iOS-Simulator ist nicht Teil des Abnahmetests.** `swift test` läuft auf
   macOS gegen dasselbe JavaScriptCore und beweist, was hier zu beweisen ist:
   dass die Runtime in JSC dieselbe Geschichte spielt wie in Node. Die
-  Typprüfung oben schließt die Lücke, die das lässt. Ein echter Bau für den
-  Simulator geht über `simulator-broker`, nie über `xcodebuild` direkt, und
-  ist ein eigener Schritt, sobald eine App dazukommt - der Broker braucht ein
-  Xcode-Projekt, ein SwiftPM-Package genügt ihm nicht.
+  Typprüfung oben schließt die Lücke, die das lässt. Ein echter Bau für
+  Simulator oder Gerät läuft über `hosts/demo/` und den `simulator-broker`
+  (siehe oben), nicht über dieses Package: dem Broker genügt ein
+  SwiftPM-Package nicht, er braucht ein Xcode-Projekt.
 
 **`examples/intercept.md` ist importiert, nicht geschrieben.** Es entsteht aus
 `story-weaver import` über inkles ink-Quelle von *The Intercept* und trägt deren
