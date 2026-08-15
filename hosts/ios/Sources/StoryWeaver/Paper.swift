@@ -36,6 +36,9 @@ public struct PageButton: ButtonStyle {
         case quiet
         /// A picked option among several, as wide as its own words.
         case chosen
+        /// The one button that confirms - Begin, mostly. Filled, so it never
+        /// looks like one more option in the list above it.
+        case primary
     }
 
     public var kind: Kind = .plain
@@ -46,17 +49,18 @@ public struct PageButton: ButtonStyle {
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.custom("Georgia", size: kind == .plain ? 16 : 14))
+            .font(.custom("Georgia", size: kind == .plain || kind == .primary ? 16 : 14))
             .foregroundStyle(foreground)
             .multilineTextAlignment(.leading)
-            .frame(maxWidth: kind == .plain ? .infinity : nil, alignment: .leading)
+            .frame(maxWidth: kind == .plain || kind == .primary ? .infinity : nil, alignment: .leading)
             // 44pt on a coarse pointer, per SPEC 12.3, and it happens to be
             // the height a line of Georgia wants around it anyway.
             .frame(minHeight: 44)
             .padding(.horizontal, 14)
             .background(
                 RoundedRectangle(cornerRadius: 3)
-                    .fill(kind == .chosen ? Paper.accent.opacity(0.10) : Color.clear)
+                    .fill(kind == .primary ? Paper.accent
+                        : kind == .chosen ? Paper.accent.opacity(0.10) : Color.clear)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 3)
@@ -71,6 +75,7 @@ public struct PageButton: ButtonStyle {
         case .chosen: return Paper.accent
         case .quiet: return Paper.faded
         case .plain: return Paper.ink
+        case .primary: return Paper.background
         }
     }
 
@@ -80,6 +85,7 @@ public struct PageButton: ButtonStyle {
         case .chosen: return Paper.accent
         case .quiet: return Paper.rule
         case .plain: return Paper.rule
+        case .primary: return Paper.accent
         }
     }
 }

@@ -317,6 +317,9 @@ export class Story {
   // --- items -------------------------------------------------------------
 
   useItem(id) {
+    // A closed book takes no more provisions: after the end an effect would
+    // repaint a page that is no longer being played.
+    if (this.phase === ENDED) return false;
     const declared = this.config.items[id];
     if (!declared?.effect) return false;
     if (declared.when && !this.#evaluate(declared.when)) return false;
@@ -328,6 +331,7 @@ export class Story {
   }
 
   equipItem(id) {
+    if (this.phase === ENDED) return false;
     const declared = this.config.items[id];
     if (!declared || !this.#has(id)) return false;
     if (declared.kind !== 'weapon' && declared.kind !== 'armour') return false;

@@ -24,6 +24,17 @@ public final class Story: ObservableObject {
     /// `nil` when the book was opened from strings rather than a directory.
     public let directory: URL?
 
+    /// The back of the book (SPEC 6), per language. `nil` when the book has
+    /// none. Read from `meta` here because the view of 12.7 carries the page,
+    /// not the cover (12.8).
+    public private(set) var blurb: [String: String]?
+
+    /// The blurb in the reading language, or the book's first one.
+    public func blurbText() -> String? {
+        guard let blurb else { return nil }
+        return blurb[view.lang] ?? blurb.values.first
+    }
+
     private let context: JSContext
     private let decoder = JSONDecoder()
 
@@ -83,6 +94,12 @@ public final class Story: ObservableObject {
 
         context.evaluateScript(engine)
         if let thrown { throw StoryError.engineFailed(thrown) }
+
+        if let data = story.data(using: .utf8),
+           let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+           let meta = root["meta"] as? [String: Any] {
+            self.blurb = meta["blurb"] as? [String: String]
+        }
 
         var options: [String: Any] = [:]
         if let seed { options["seed"] = seed }

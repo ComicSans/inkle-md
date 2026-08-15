@@ -24,6 +24,7 @@ const UI = {
     character: 'Character', pick: (n) => `Choose ${n}`, uses: (n) => `${n} left`,
     pickFirst: 'Make your choice to begin.',
     round: (n) => `Round ${n}`, choices: 'What do you do?',
+    inHand: 'The weight sits well in your hand.',
   },
   de: {
     attack: 'Angreifen', flee: 'Fliehen', luck: 'Glück versuchen',
@@ -33,6 +34,7 @@ const UI = {
     character: 'Held', pick: (n) => `Wähle ${n}`, uses: (n) => `noch ${n}`,
     pickFirst: 'Triff deine Wahl, dann kann es losgehen.',
     round: (n) => `Runde ${n}`, choices: 'Was tust du?',
+    inHand: 'Das Gewicht liegt gut in der Hand.',
   },
 };
 
@@ -156,7 +158,10 @@ function mount(json, root, options = {}) {
       if ((item.kind === 'weapon' || item.kind === 'armour') && !item.equipped) {
         line.append(el('button', {
           class: 'small', 'aria-label': `${ui.equip}: ${item.name}`,
-          text: ui.equip, onclick: () => { story.equipItem(item.id); render(); },
+          text: ui.equip, onclick: () => {
+            if (story.equipItem(item.id)) announce(`${item.name}: ${ui.inHand}`);
+            render();
+          },
         }));
       }
       items.append(line);

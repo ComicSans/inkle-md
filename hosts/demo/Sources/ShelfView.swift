@@ -16,6 +16,9 @@ import StoryWeaver
 struct ShelfView: View {
     @State private var open: Story?
     @State private var openName: String?
+    /// Whether the open book resumed a save: a returning reader has read the
+    /// back of the book already, so the cover is only for a fresh start.
+    @State private var openResumed = false
     @State private var failure: String?
     @Environment(\.scenePhase) private var phase
     /// The book a long press is asking to start over, if any.
@@ -27,7 +30,7 @@ struct ShelfView: View {
         NavigationStack {
             Group {
                 if let story = open {
-                    ReadingView(story: story)
+                    ReadingView(story: story, showCover: !openResumed)
                 } else {
                     shelf
                 }
@@ -111,8 +114,9 @@ struct ShelfView: View {
             let story = try Story(bundle: directory)
             // A save from last time, if there is one. The character sheet is
             // JSON in a file; nothing about it is this app's invention (8).
-            if let saved = try? Data(contentsOf: saveFile(name)) {
-                try? story.load(saved)
+            openResumed = false
+            if let saved = try? Data(contentsOf: saveFile(name)), (try? story.load(saved)) != nil {
+                openResumed = true
             }
             openName = Books.title(name)
             open = story

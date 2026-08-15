@@ -124,6 +124,14 @@ Vorbei.
   assert.ok(said.filter(Boolean).length > 8, 'both fights were fought');
 });
 
+test('a closed book takes no more provisions: use and equip refuse after END', () => {
+  const s = fight('items:\n  trank: { name: Trank, kind: consumable, uses: 2, effect: "stamina = min(stamina + 1, stamina_max)" }\ninventory:\n  slots: 4\n  start: [trank]\n');
+  while (s.combat) s.attack();
+  while (!s.current.ended) s.choose(s.current.choices[0].index);
+  assert.equal(s.useItem('trank'), false);
+  assert.equal(s.equipItem('trank'), false);
+});
+
 test('what an enemy says is looked up, never copied into the save', () => {
   const s = fight('', BOOK.replace('!combat goblin', '!combat troll'));
   s.attack();

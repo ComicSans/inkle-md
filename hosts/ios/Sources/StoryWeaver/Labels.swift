@@ -38,6 +38,8 @@ public struct Labels: Sendable {
     }
     /// Reads to a screen reader as what the line between two passages is.
     public var youChose = "You chose"
+    /// The line the account keeps when something is equipped.
+    public var inHand = "The weight sits well in your hand."
     public var unusable = "not usable right now"
     public var cannotFleeYet = "not yet"
 
@@ -68,6 +70,7 @@ public struct Labels: Sendable {
             max.map { "\(name), \(value) von \($0)" } ?? "\(name), \(value)"
         }
         l.youChose = "Du hast gewählt"
+        l.inHand = "Das Gewicht liegt gut in der Hand."
         l.unusable = "gerade nicht benutzbar"
         l.cannotFleeYet = "noch nicht"
         return l

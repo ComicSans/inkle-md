@@ -27,14 +27,21 @@ public struct ReadingView: View {
     ///   - story: the book being read.
     ///   - labels: the words this app puts on its own controls. Omit them and
     ///     they follow the book's language.
-    public init(story: Story, labels: Labels? = nil) {
+    ///   - showCover: whether to open on the back of the book (SPEC 6) when
+    ///     the book has one. Pass `false` when a save was loaded: a reader
+    ///     returning to a game has read the cover already.
+    public init(story: Story, labels: Labels? = nil, showCover: Bool = true) {
         self.story = story
         self.labels = labels ?? .forLanguage(story.view.lang)
+        _coverPending = State(initialValue: showCover && story.blurbText() != nil)
     }
 
     /// What has been read so far, oldest first.
     @State private var passages: [Passage] = []
     @State private var picks: [Set<String>] = []
+    /// True while the back of the book is the page. The one button on it
+    /// begins.
+    @State private var coverPending = false
     /// False while a turn is being taken. The controls fade out, the new
     /// passage arrives, and they fade back in at the foot of it: a border that
     /// slides down the page with the text is a border the eye follows instead
@@ -79,7 +86,9 @@ public struct ReadingView: View {
                     }
 
                     Group {
-                        if story.view.setup != nil {
+                        if coverPending {
+                            cover
+                        } else if story.view.setup != nil {
                             creation
                         } else if let fight = story.view.combat {
                             combat(fight)
@@ -117,7 +126,7 @@ public struct ReadingView: View {
             }
         }
         .environment(\.locale, Locale(identifier: story.view.lang))
-        .onAppear { if passages.isEmpty { record(action: nil) } }
+        .onAppear { if passages.isEmpty && !coverPending { record(action: nil) } }
     }
 
     /// A book that has more than one language lets the reader pick, and the
@@ -285,6 +294,25 @@ public struct ReadingView: View {
         }
     }
 
+    /// The back of the book: what a browser in a shop would read. One button
+    /// under it, and nothing else of the page yet.
+    private var cover: some View {
+        VStack(alignment: .leading, spacing: 22) {
+            if let blurb = story.blurbText() {
+                Text(blurb)
+                    .font(.custom("Georgia", size: 17).italic())
+                    .lineSpacing(5)
+                    .foregroundStyle(Paper.ink)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            Button(labels.begin) {
+                coverPending = false
+                record(action: nil)
+            }
+            .buttonStyle(PageButton(kind: .primary))
+        }
+    }
+
     private var ending: some View {
         Text(labels.theEnd)
             .font(.custom("Georgia", size: 15).smallCaps())
@@ -351,7 +379,7 @@ public struct ReadingView: View {
                     try? story.begin(picks.map(Array.init))
                     record(action: nil)
                 }
-                .buttonStyle(PageButton())
+                .buttonStyle(PageButton(kind: .primary))
                 .disabled(!readyToBegin)
                 .accessibilityHint(readyToBegin ? "" : labels.pickFirst)
                 if !readyToBegin {
@@ -411,16 +439,16 @@ public struct ReadingView: View {
                                 .foregroundStyle(Paper.faded)
                         }
                         Spacer()
-                        if item.usable {
+                        if item.usable && !story.view.ended {
                             Button(labels.use) {
-                                act("\(labels.use): \(item.name)") { _ = try? story.use(item.id); return nil }
+                                aside("\(labels.use): \(item.name)") { (try? story.use(item.id)) == true }
                             }
                             .buttonStyle(PageButton(kind: .quiet))
                             .accessibilityLabel("\(labels.use) \(item.name), \(labels.uses(item.uses))")
                         }
-                        if (item.kind == "weapon" || item.kind == "armour") && !item.equipped {
+                        if (item.kind == "weapon" || item.kind == "armour") && !item.equipped && !story.view.ended {
                             Button(labels.equip) {
-                                act("\(labels.equip): \(item.name)") { _ = try? story.equip(item.id); return nil }
+                                aside("\(item.name): \(labels.inHand)") { (try? story.equip(item.id)) == true }
                             }
                             .buttonStyle(PageButton(kind: .quiet))
                             .accessibilityLabel("\(labels.equip) \(item.name)")
@@ -442,6 +470,15 @@ public struct ReadingView: View {
 
     private func take(_ choice: Choice) {
         act(choice.label) { try? story.choose(choice.index); return nil }
+    }
+
+    /// A use or an equip is not a scene: it changes a number, and the account
+    /// keeps one line saying so - never the page again, which is already
+    /// there. A refused command keeps nothing at all.
+    private func aside(_ line: String, _ body: () -> Bool) {
+        guard controlsVisible, body() else { return }
+        passages.append(Passage(id: (passages.last?.id ?? 0) + 1,
+                                action: nil, paragraphs: [], node: nil, line: line))
     }
 
     /// Does something to the book and writes down what it was.
