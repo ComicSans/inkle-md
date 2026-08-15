@@ -42,9 +42,14 @@ stats:
   # Öl in der tragbaren Laterne. Leer gefunden, unten am Fass gefüllt -
   # oder nie.
   laterne_voll: { start: 0 }
-  # Ob der Leser unten im Keller steht. Jeder Ortsknoten setzt es selbst,
-  # damit auch ein Quereinstieg stimmt; `death:` liest es, denn das Wasser
-  # holt nur, wen es erreicht.
+  # Ob der Leser unten im Keller steht. `death:` liest es, denn das Wasser
+  # holt nur, wen es erreicht. Gesetzt wird es nur in den Knoten, die
+  # Wahlen zeigen und damit eine Grenze haben: dort steht der Leser, wenn
+  # die Flut zuschlägt, und dort stimmt es auch nach einem Quereinstieg
+  # (12.6). Durchgangsknoten erben, was sie vorfinden: In einer Kette von
+  # Diverts liegt keine Grenze, also steigt das Wasser dort nicht, und was
+  # `death:` je zu sehen bekommt, ist der Stand des Knotens, in dem die
+  # Kette endet.
   im_keller: { start: 0 }
   # Zählt an der Leiter die Erschwernisse: Sturm, Dunkelheit, volle
   # Hände. Nur der Knoten `leiter` schreibt und liest ihn.
