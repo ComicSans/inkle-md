@@ -1,7 +1,7 @@
 {
   "name": "story-weaver",
   "displayName": "Story Weaver",
-  "description": "Den Knoten unter dem Cursor sehen und ab dort probespielen",
+  "description": "See the node under the cursor and play the book from there",
   "version": "0.1.0",
   "license": "MPL-2.0",
   "publisher": "tobiasreithmeier",
@@ -13,17 +13,17 @@
     "commands": [
       {
         "command": "storyWeaver.showPanel",
-        "title": "Story Weaver: Knoten zeigen",
+        "title": "Story Weaver: Show node",
         "category": "Story Weaver"
       },
       {
         "command": "storyWeaver.playHere",
-        "title": "Story Weaver: Ab hier probespielen",
+        "title": "Story Weaver: Play from here",
         "category": "Story Weaver"
       },
       {
         "command": "storyWeaver.playFromStart",
-        "title": "Story Weaver: Von vorn probespielen",
+        "title": "Story Weaver: Play from the start",
         "category": "Story Weaver"
       }
     ],
@@ -41,17 +41,17 @@
         "storyWeaver.follow": {
           "type": "boolean",
           "default": true,
-          "markdownDescription": "Das Panel folgt dem Cursor. Aus bleibt es bei dem Knoten stehen, den es zeigt."
+          "markdownDescription": "The panel follows the cursor. Off, it stays on the node it is showing."
         },
         "storyWeaver.host": {
           "type": "string",
           "default": "",
-          "markdownDescription": "Host-Werte für den Probelauf, als `schlüssel=wert`, mit Komma getrennt (etwa `steps=2000,elapsed=3600`). Ohne sie spielt ein Buch, das die Uhr oder einen Zähler liest, gegen seine Ersatzwerte."
+          "markdownDescription": "Host values for the playthrough, as `key=value`, comma separated (`steps=2000,elapsed=3600`, say). Without them a book that reads the clock or a counter plays against its fallbacks."
         },
         "storyWeaver.language": {
           "type": "string",
           "default": "",
-          "markdownDescription": "Die Sprache, in der probegespielt wird. Leer heißt: die Standardsprache des Buchs."
+          "markdownDescription": "The language to play in. Empty means the book's own default language."
         }
       }
     }

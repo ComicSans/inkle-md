@@ -4,97 +4,98 @@
 
      Copyright 2026 Tobias Reithmeier -->
 
-# Story Weaver für VS Code
+# Story Weaver for VS Code
 
-Ein Panel neben dem Text: links das Buch, rechts der Knoten, in dem der Cursor
-steht, und auf Knopfdruck das Buch, ab genau diesem Knoten gespielt.
+A panel beside the text: on the left the book, on the right the node the
+cursor is in, and on one keystroke the book, played from exactly that node.
 
-## Was das Panel zeigt
+## What the panel shows
 
-**Struktur** ist, was der Übersetzer über den Knoten weiß: Titel, Kennung,
-Fundstelle, jeder Weg weiter mit seinem Ziel, und die Warnungen, die in diesem
-Knoten stehen. Nichts davon wird ausgewertet - eine Alternative hat noch keinen
-Zug, ein `{...}` noch keinen Wert, eine Bedingung noch keinen Zustand. Dafür
-gibt es die Ansicht für jeden Knoten, auch für die, die noch kein Durchlauf
-erreicht.
+**Outline** is what the compiler knows about the node: title, id, location,
+every way on with its target, and the warnings that fall inside the node.
+None of it is evaluated - an alternative has no turn yet, a `{...}` no value,
+a condition no state. In return, the view exists for every node, including
+the ones no playthrough has reached.
 
-**Spielen** ist das Buch selbst, mit derselben Laufzeit und derselben Ansicht,
-die auch der HTML-Export mitgibt. Was hier steht, liest ein Leser genauso.
-Gespielt wird ab dem Knoten, in dem der Cursor steht; die Eröffnungswahl aus
-SPEC 7.2 findet trotzdem statt, sonst stünde die Heldin ohne Gepäck und mit
-leeren Werten da. Der Probelauf schreibt nichts weg: er fängt dort an, wo
-gerade geschrieben wird, nicht dort, wo zuletzt gelesen wurde.
+**Play** is the book itself, with the same runtime and the same view the HTML
+export ships. What stands here is what a reader reads. Play starts from the
+node the cursor is in; the opening choice from SPEC 7.2 still happens,
+otherwise the hero would stand there with no pack and empty stats. A test run
+writes nothing to disk: it starts where the author is writing, not where
+someone last read.
 
-Solange gespielt wird, folgt die Quelle dem Spiel und springt zum Absatz der
-gerade gelesenen Seite - ohne den Fokus zu nehmen.
+While a game runs, the source follows the game and scrolls to the paragraph
+of the page being read - without taking the focus.
 
-## Befehle
+## Commands
 
-| Befehl | Wirkung |
+| Command | Effect |
 | --- | --- |
-| `Story Weaver: Knoten zeigen` | Panel öffnen, Struktur des Knotens unter dem Cursor |
-| `Story Weaver: Ab hier probespielen` | Panel öffnen und ab diesem Knoten spielen (`cmd+alt+p`) |
-| `Story Weaver: Von vorn probespielen` | Ab dem Startknoten des Buchs spielen |
+| `Story Weaver: Show node` | Open the panel on the outline of the node under the cursor |
+| `Story Weaver: Play from here` | Open the panel and play from that node (`cmd+alt+p`) |
+| `Story Weaver: Play from the start` | Play from the book's start node |
 
-## Einstellungen
+## Settings
 
-- `storyWeaver.follow` - das Panel folgt dem Cursor. Aus bleibt es stehen.
-- `storyWeaver.host` - Host-Werte für den Probelauf, `schlüssel=wert`, mit
-  Komma getrennt, dieselbe Schreibweise wie `story-weaver play --host`. Ohne
-  sie spielt ein Buch, das die Uhr oder einen Zähler liest, gegen seine
-  Ersatzwerte; `nightside` und `leuchtturm` brauchen sie.
-- `storyWeaver.language` - die Sprache des Probelaufs, leer heißt die
-  Standardsprache des Buchs.
+- `storyWeaver.follow` - the panel follows the cursor. Off, it stays put.
+- `storyWeaver.host` - host values for the test run, `key=value`, separated
+  by commas, the same spelling `story-weaver play --host` uses. Without them
+  a book that reads the clock or a counter plays against its fallbacks;
+  `nightside` and `leuchtturm` need them.
+- `storyWeaver.language` - the language of the test run; empty means the
+  book's default language.
 
-## Was übersetzt wird
+## What gets compiled
 
-Das Buch zu der Datei im Editor: die nächstliegende `book.yaml` über ihr, und
-wenn es keine gibt, die Datei selbst. Gelesen wird, was im Editor steht, nicht
-was auf der Platte liegt - ungespeichert zählt auch. Bilder bleiben die
-Ausnahme: sie werden auf der Platte gesucht, weil sie dort liegen müssen
-(SPEC 4.9).
+The book belonging to the file in the editor: the nearest `book.yaml` above
+it, and if there is none, the file itself - provided that file carries the
+frontmatter a single-file book needs (SPEC 3.1). A markdown file without one
+is no book, and the panel leaves it alone rather than reporting compile
+errors in someone's README. What the editor holds is what gets read, not what
+is on disk - unsaved text counts too. Images are the exception: they are
+looked up on disk, because that is where they have to be (SPEC 4.9).
 
-Was gerade nicht übersetzt, lässt den letzten Stand stehen, der es tat, mit dem
-Fehler darüber. Beim Tippen ist eine Datei die meiste Zeit ungültig, und ein
-leeres Panel hilft niemandem.
+Whatever does not compile leaves the last state that did on screen, with the
+error above it. While typing, a file is invalid most of the time, and an
+empty panel helps no one.
 
-## Starten
+## Getting started
 
-Zum Ausprobieren und Weiterbauen: `tools/vscode` in VS Code öffnen und F5
-drücken. Das startet einen zweiten VS Code mit der Erweiterung und diesem
-Projekt darin.
+To try it out and keep building: open `tools/vscode` in VS Code and press F5.
+That starts a second VS Code with the extension and this project inside it.
 
-Für den täglichen Gebrauch wird ein Paket gebaut und installiert:
+For daily use, build and install a package:
 
 ```bash
 node tools/vscode/pack.mjs
 code --install-extension build/tobiasreithmeier.story-weaver-0.1.0.vsix
 ```
 
-`pack.mjs` schreibt den Pfad und die passende Installationszeile ins Terminal.
-Fehlt `code` im PATH, hilft einmal *Shell Command: Install 'code' command in
-PATH* aus der Befehlspalette, oder die Binärdatei im App-Bündel unter
+`pack.mjs` prints the path and the matching install line to the terminal. If
+`code` is missing from the PATH, run *Shell Command: Install 'code' command
+in PATH* from the command palette once, or use the binary inside the app
+bundle at
 `/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code`.
 
-Danach das Fenster neu laden (*Developer: Reload Window*). Einen Ordner nach
-`~/.vscode/extensions` zu kopieren oder zu verlinken genügt seit VS Code 1.74
-nicht mehr: geladen wird nur, was über das CLI oder die Oberfläche installiert
-wurde, und ein Symlink dort bleibt stumm liegen.
+Then reload the window (*Developer: Reload Window*). Copying or linking a
+folder into `~/.vscode/extensions` has not been enough since VS Code 1.74:
+only what the CLI or the UI installed is loaded, and a symlink there lies
+silent.
 
-`pack.mjs` braucht nichts Installiertes - eine .vsix ist ein Zip mit einem
-Manifest, und `zip` bringt macOS mit. `vsce` kommt nicht vor, und das Projekt
-bleibt ohne Abhängigkeiten.
+`pack.mjs` needs nothing installed - a .vsix is a zip with a manifest, and
+macOS ships `zip`. `vsce` never appears, and the project stays without
+dependencies.
 
-Übersetzer, Laufzeit und Ansicht reisen als `vendor/src` im Paket mit, weil
-eine installierte Erweiterung nicht ins Projekt greifen kann. Liegt über der
-Erweiterung ein Checkout - also beim Arbeiten in diesem Repository -, gewinnt
-dessen `src/`: eine Änderung dort wirkt sofort im Panel, ohne neu zu packen.
+Compiler, runtime and view travel inside the package as `vendor/src`,
+because an installed extension cannot reach into the project. If a checkout
+sits above the extension - that is, when working in this repository - its
+`src/` wins: a change there shows in the panel at once, without repacking.
 
-## Was getestet wird
+## What gets tested
 
-`test/vscode.test.js` im Testlauf des Projekts prüft, was ein laufender Editor
-nicht beantworten kann und was still falsch wäre: in welchem Knoten eine
-Cursorzeile liegt, zu welchem Buch eine Datei gehört, und dass der Übersetzer
-den Puffer nimmt statt der Datei. `extension.js` bleibt der dünne Anschluss an
-VS Code und wird von Hand geprüft; alles, was ohne `vscode` auskommt, steht in
+`test/vscode.test.js` in the project's test run checks what a running editor
+cannot answer and what would fail silently: which node a cursor line falls
+in, which book a file belongs to, and that the compiler takes the buffer
+rather than the file. `extension.js` stays the thin connection to VS Code
+and is checked by hand; everything that works without `vscode` lives in
 `book.mjs`.

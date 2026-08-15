@@ -9,10 +9,10 @@
  * The panel, inside the webview. It shows one of two things, and never both
  * at once, because they are not the same kind of knowledge:
  *
- * - Struktur: what the compiler holds about the node under the cursor - the
+ * - Outline: what the compiler holds about the node under the cursor - the
  *   title, the ways on, its warnings. No text is evaluated, so this is
  *   available for every node, including the ones no playthrough reaches.
- * - Spielen: the book itself, from a node the author picked, mounted with the
+ * - Play: the book itself, from a node the author picked, mounted with the
  *   project's own view. What is seen here is what a reader sees.
  *
  * Written as a plain script with no imports: the extension inlines it after
@@ -71,19 +71,19 @@
 
     if (playing) {
       bar.append(el('button', {
-        class: 'small', text: 'Struktur',
+        class: 'small', text: 'Outline',
         onclick: () => { game?.unmount(); game = null; playing = null; stale = false; draw(); },
       }));
       bar.append(el('button', {
-        class: 'small', text: 'Neu ab hier', onclick: () => start(playing),
+        class: 'small', text: 'Restart here', onclick: () => start(playing),
       }));
     } else if (node) {
       bar.append(el('button', {
-        class: 'small', text: 'Ab hier spielen', onclick: () => start(node.id),
+        class: 'small', text: 'Play from here', onclick: () => start(node.id),
       }));
       if (book) {
         bar.append(el('button', {
-          class: 'small', text: 'Von vorn', onclick: () => start(book.story.meta.start),
+          class: 'small', text: 'From the start', onclick: () => start(book.story.meta.start),
         }));
       }
     }
@@ -92,19 +92,19 @@
     if (banner) {
       chrome.append(el('p', {
         class: 'banner', role: 'status',
-        text: `${banner}\n(gezeigt wird der letzte Stand, der übersetzt hat)`,
+        text: `${banner}\n(showing the last version that compiled)`,
       }));
     }
     if (stale) {
       chrome.append(el('p', { class: 'note', role: 'status' }, [
-        el('span', { text: 'Das Buch hat sich geändert. ' }),
-        el('button', { class: 'small', text: 'Probelauf neu starten', onclick: () => start(playing) }),
+        el('span', { text: 'The book has changed. ' }),
+        el('button', { class: 'small', text: 'Restart the playthrough', onclick: () => start(playing) }),
       ]));
     }
     if (playing && book?.host) {
       chrome.append(el('p', {
         class: 'note',
-        text: `Host-Werte: ${Object.entries(book.host).map(([k, v]) => `${k}=${v}`).join(', ')}`,
+        text: `Host values: ${Object.entries(book.host).map(([k, v]) => `${k}=${v}`).join(', ')}`,
       }));
     }
   }
@@ -116,8 +116,8 @@
     content.textContent = '';
     if (!node) {
       content.append(el('p', { class: 'note', text: book
-        ? 'Der Cursor steht in keinem Knoten. Die Frontmatter ist keiner.'
-        : 'Noch kein Buch übersetzt.' }));
+        ? 'The cursor is in no node. The frontmatter is none.'
+        : 'No book compiled yet.' }));
       return;
     }
 
@@ -138,31 +138,31 @@
       content.append(list);
     }
 
-    content.append(el('h3', { text: node.ways.length === 1 ? 'Ein Weg weiter' : `${node.ways.length} Wege weiter` }));
+    content.append(el('h3', { text: node.ways.length === 1 ? 'One way on' : `${node.ways.length} ways on` }));
     if (node.ways.length === 0) {
-      content.append(el('p', { class: 'note', text: 'Keiner. Das ist ein Ende oder eine Sackgasse.' }));
+      content.append(el('p', { class: 'note', text: 'None. This is an ending or a dead end.' }));
       return;
     }
 
     const ways = el('ul', { class: 'ways' });
     for (const way of node.ways) {
-      const label = way.label || (way.kind === 'divert' ? 'weiter' : way.kind);
+      const label = way.label || (way.kind === 'divert' ? 'on' : way.kind);
       const line = el('li', { class: way.kind }, [
         el('span', { class: 'label', text: label }),
       ]);
-      if (way.conditional) line.append(el('span', { class: 'tag', text: 'bedingt' }));
-      if (way.sticky) line.append(el('span', { class: 'tag', text: 'bleibt' }));
+      if (way.conditional) line.append(el('span', { class: 'tag', text: 'conditional' }));
+      if (way.sticky) line.append(el('span', { class: 'tag', text: 'sticky' }));
       if (way.target === 'END') {
-        line.append(el('span', { class: 'target end', text: 'Ende' }));
+        line.append(el('span', { class: 'target end', text: 'END' }));
       } else if (way.target && way.reachable) {
         line.append(el('button', {
           class: 'link', text: `→ ${way.target}`,
           onclick: () => vscode.postMessage({ type: 'reveal', node: way.target }),
         }));
       } else if (way.target) {
-        line.append(el('span', { class: 'target missing', text: `→ ${way.target} (gibt es nicht)` }));
+        line.append(el('span', { class: 'target missing', text: `→ ${way.target} (does not exist)` }));
       } else {
-        line.append(el('span', { class: 'target', text: 'fällt durch' }));
+        line.append(el('span', { class: 'target', text: 'falls through' }));
       }
       ways.append(line);
     }

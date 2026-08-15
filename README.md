@@ -181,13 +181,13 @@ Reload the window (*Developer: Reload Window*), open a `.md` book, and:
 | | |
 | --- | --- |
 | `cmd+alt+p` / `ctrl+alt+p` | play from the node the cursor is in |
-| *Story Weaver: Knoten zeigen* | open the panel on that node's structure |
-| *Story Weaver: Von vorn probespielen* | play from the book's start node |
+| *Story Weaver: Show node* | open the panel on that node's outline |
+| *Story Weaver: Play from the start* | play from the book's start node |
 
 The panel follows the cursor, and while a game runs the source follows the
 game - it scrolls to the page being read without taking the focus. Clicking a
-target in the structure view jumps the editor to that node, which makes the
-panel an index as well.
+target in the outline jumps the editor to that node, which makes the panel an
+index as well.
 
 Three settings, all under `storyWeaver`: `follow`, on by default, lets the
 panel follow the cursor, `language` picks the language to play in, and `host`

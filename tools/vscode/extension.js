@@ -108,7 +108,7 @@ async function holdsBook(editor) {
 async function openPanel(context, out, playFrom) {
   const editor = vscode.window.activeTextEditor;
   if (!editor || !isBook(editor.document) || !(await holdsBook(editor))) {
-    vscode.window.showInformationMessage('Story Weaver: kein Buch im aktiven Editor.');
+    vscode.window.showInformationMessage('Story Weaver: no book in the active editor.');
     return;
   }
 
