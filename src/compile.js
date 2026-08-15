@@ -223,6 +223,14 @@ function translateVariant(variant, defaultTable, ctx, bag) {
     const catalogue = parseCatalog(body, {
       file: file.file, startLine: bodyStartLine, namespace: file.namespace,
     });
+    // The ambiguous heads of SPEC 4.6 have to be settled before the catalogue
+    // is matched against the default language, or a colon in prose lands as a
+    // seq on one side and a cond on the other and E071 fires on good text.
+    const scope = declaredNames(ctx.config);
+    for (const entry of catalogue.values()) {
+      for (const parts of entry.paragraphs) settleParts(parts, scope);
+      for (const parts of entry.labels) settleParts(parts, scope);
+    }
     const slice = new Map([...defaultTable].filter(([, node]) => node.namespace === file.namespace));
     const translated = applyCatalog(slice, catalogue, { lang: variant.lang, bag, file: file.file });
     table = new Map([...table, ...translated]);
@@ -246,13 +254,18 @@ function translateVariant(variant, defaultTable, ctx, bag) {
 }
 
 /** Checks only what a catalogue contributes: the expressions inside its text. */
-function checkTranslatedText(nodes, table, { config, multi, bag }) {
-  const scope = new Set([
+/** Every name a book declares, the scope an expression is checked against. */
+function declaredNames(config) {
+  return new Set([
     ...Object.keys(config.stats),
     ...Object.keys(config.stats).map((s) => `${s}_max`),
     ...Object.keys(config.facts ?? {}),
     ...BUILTIN_VARS,
   ]);
+}
+
+function checkTranslatedText(nodes, table, { config, multi, bag }) {
+  const scope = declaredNames(config);
   const functions = new Map();
   for (const node of table.values()) {
     if (node.kind === 'function') functions.set(node.qualified, node);
@@ -400,12 +413,7 @@ export function checkAndResolve(nodes, table, { config, multi, bag }) {
     return qualified;
   };
 
-  const knownVars = new Set([
-    ...Object.keys(config.stats),
-    ...Object.keys(config.stats).map((s) => `${s}_max`),
-    ...Object.keys(config.facts ?? {}),
-    ...BUILTIN_VARS,
-  ]);
+  const knownVars = declaredNames(config);
 
   const functions = new Map();
   for (const node of table.values()) {
@@ -675,35 +683,38 @@ export function walkOps(ops, onOp, onExpr = () => {}) {
  * condition when `lampe` is declared and the first words of a sequence when
  * it is not. The parser carries both readings; here the scope decides.
  */
-function settleHeads(ops, scope) {
-  const list = (parts) => {
-    for (let i = 0; i < (parts ?? []).length; i++) {
-      const part = parts[i];
-      if (part.t === 'cond') {
-        if (part.maybe && part.maybeNames.some((name) => !scope.has(name))) {
-          parts[i] = part.maybe;
-          list(parts[i].items.flat());
-          for (const arm of parts[i].items) list(arm);
-          continue;
-        }
-        delete part.maybe;
-        delete part.maybeNames;
-        list(part.then);
-        list(part.else);
-      } else if (part.t === 'alt') {
-        for (const arm of part.items) list(arm);
+export function settleParts(parts, scope) {
+  for (let i = 0; i < (parts ?? []).length; i++) {
+    const part = parts[i];
+    if (part.t === 'cond') {
+      if (part.maybe && part.maybeNames.some((name) => !scope.has(name))) {
+        parts[i] = part.maybe;
+        for (const arm of parts[i].items) settleParts(arm, scope);
+        continue;
       }
+      delete part.maybe;
+      delete part.maybeNames;
+      settleParts(part.then, scope);
+      settleParts(part.else, scope);
+    } else if (part.t === 'alt') {
+      for (const arm of part.items) settleParts(arm, scope);
     }
-  };
+  }
+}
+
+function settleHeads(ops, scope) {
   for (const op of ops ?? []) {
-    if (op.op === 'text') list(op.parts);
+    if (op.op === 'text') settleParts(op.parts, scope);
     else if (op.op === 'choices') {
-      for (const item of op.items) { list(item.label); settleHeads(item.body, scope); }
+      for (const item of op.items) { settleParts(item.label, scope); settleHeads(item.body, scope); }
     } else if (op.op === 'branch') {
       for (const b of op.branches) settleHeads(b.body, scope);
       settleHeads(op.else, scope);
     } else if (op.op === 'combat') {
-      for (const exit of Object.values(op.exits)) { list(exit.label); list(exit.text); }
+      for (const exit of Object.values(op.exits)) {
+        settleParts(exit.label, scope);
+        settleParts(exit.text, scope);
+      }
     }
   }
 }

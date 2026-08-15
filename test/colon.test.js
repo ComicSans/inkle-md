@@ -97,3 +97,28 @@ test('ein vertippter Vergleich bleibt ein Fehler und wird nicht zu Prosa', () =>
 test('ein Doppelpunkt im Arm war nie das Problem und bleibt es nicht', () => {
   assert.equal(sagt('{gold >= 3: Ein Glas: seins.|Zwei Glaeser: deins.}'), 'Ein Glas: seins.');
 });
+
+test('Prosa mit Doppelpunkt geht auch in einer Uebersetzung', () => {
+  // Der Katalog wird gegen die Standardsprache abgeglichen, ehe irgendetwas
+  // geprueft ist. Blieb der Kopf einer Uebersetzung dabei unaufgeloest, war
+  // derselbe Satz in der einen Sprache eine Sequenz und in der anderen eine
+  // Bedingung, und E071 feuerte auf gute Prosa.
+  const BOOK = {
+    title: 'P',
+    start: 'a',
+    languages: { default: 'de', available: ['de', 'en'] },
+    stats: { gold: { name: 'Gold', start: 5 } },
+  };
+  const zwei = (de, en) => compileSources([
+    { lang: 'de', files: [{ file: 'de/x.md', source: `# A {#a}\n\n${de}\n\n-> END\n`, namespace: null }] },
+    { lang: 'en', files: [{ file: 'en/x.md', source: `# A {#a}\n\n${en}\n`, namespace: null }] },
+  ], { entry: 'book.yaml', book: BOOK });
+
+  const { story } = zwei('{Achtung: eine Stufe|Vorsicht}', '{Careful: a step|Mind yourself}');
+  assert.equal(new Host(story, { seed: 1, lang: 'de' }).view.text[0].text, 'Achtung: eine Stufe');
+  assert.equal(new Host(story, { seed: 1, lang: 'en' }).view.text[0].text, 'Careful: a step');
+
+  // Umgekehrt bleibt es ein Fehler: die Uebersetzung behauptet eine Logik,
+  // die die Standardsprache nicht hat.
+  assert.throws(() => zwei('{Achtung: eine Stufe|Vorsicht}', '{?: a step|mind}'), /E071/);
+});
