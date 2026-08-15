@@ -67,6 +67,7 @@ const TOOLS = [
       properties: {
         entry: { type: 'string', description: 'Pfad zu book.yaml oder einer .md-Datei' },
         runs: { type: 'number' },
+        coverage: { type: 'boolean' },
         host: {
           type: 'object',
           description: 'Wie Zähler und elapsed je Zug vorrücken, z. B. {"elapsed": 60}',
@@ -108,7 +109,8 @@ async function callTool(name, args = {}) {
   }
   if (name === 'simulate') {
     const { story } = compileOrThrow(args.entry);
-    return simulate(story, { runs: args.runs ?? 300, host: args.host ?? null });
+    return simulate(story, { runs: args.runs ?? 300, host: args.host ?? null,
+      coverage: args.coverage ?? false });
   }
   throw new Error(`unbekanntes Werkzeug "${name}"`);
 }

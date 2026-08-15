@@ -12,7 +12,7 @@
  * story-weaver export   <entry> [--out file.html] [--strict] [--minify]
  * story-weaver bundle   <entry> --out DIR [--strict] [--minify]
  * story-weaver play     <entry> [--seed N] [--lang xx] [--script 1,2,a,a] [--host k=v] [--json]
- * story-weaver simulate <entry> [--runs N] [--host k=v] [--json]
+ * story-weaver simulate <entry> [--runs N] [--host k=v] [--coverage] [--json]
  * story-weaver import   <file.ink> [--out FILE] [--title T] [--author A] [--notice FILE]
  * story-weaver mcp
  *
@@ -47,7 +47,7 @@ function main(argv) {
       '  story-weaver export   <entry> [--out FILE] [--strict] [--minify]',
       '  story-weaver bundle   <entry> --out DIR [--strict] [--minify]',
       '  story-weaver play     <entry> [--seed N] [--lang xx] [--script 1,2,a] [--host k=v] [--json]',
-      '  story-weaver simulate <entry> [--runs N] [--host k=v] [--json]',
+      '  story-weaver simulate <entry> [--runs N] [--host k=v] [--coverage] [--json]',
       '  story-weaver mcp',
       '',
     ].join('\n'));
@@ -140,6 +140,7 @@ function main(argv) {
     const report = simulate(story, {
       runs: value('--runs') ? Number(value('--runs')) : 300,
       host,
+      coverage: flags.has('--coverage'),
     });
     if (json) process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
     else {
@@ -149,6 +150,13 @@ function main(argv) {
       }
       if (report.deadEnds.length > 0) process.stdout.write(`  Sackgassen: ${report.deadEnds.length}\n`);
       if (report.unfinished > 0) process.stdout.write(`  ohne Ende abgebrochen: ${report.unfinished}\n`);
+      if (report.coverage) {
+        const { seen, choices, unseen } = report.coverage;
+        process.stdout.write(`\n  ${seen} von ${choices} Wahlen standen einmal auf der Seite\n`);
+        for (const u of unseen) {
+          process.stdout.write(`  nie  ${u.conditional ? '[bedingt] ' : ''}${u.node}: ${u.label}\n`);
+        }
+      }
     }
     return report.deadEnds.length > 0 ? 1 : 0;
   }

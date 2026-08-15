@@ -45,6 +45,7 @@ story-weaver export   <entry> --out FILE       one playable HTML file
 story-weaver bundle   <entry> --out DIR        story and engine for a native app
 story-weaver play     <entry>                  read in the terminal
 story-weaver simulate <entry> [--runs N]       let the machine play many games
+story-weaver simulate <entry> --coverage       and name what no game ever showed
 story-weaver import   <file.ink> [--out FILE]  translate an ink file
 story-weaver mcp                               lint, play and simulate for AI tools
 ```

@@ -17,6 +17,7 @@ import { createInterface } from 'node:readline/promises';
 import { stdin, stdout } from 'node:process';
 
 import { Story } from './runtime.js';
+import { walkOps } from './compile.js';
 
 const HELP = `
   1-9   eine Wahl treffen        a   angreifen
@@ -189,11 +190,15 @@ function wrap(text, width = 76) {
  * Plays many games with pseudo-random choices and reports where they end.
  * A balance problem shows up here long before it shows up in a playthrough.
  */
-export function simulate(story, { runs = 300, maxSteps = 200, host = null } = {}) {
+export function simulate(story, { runs = 300, maxSteps = 200, host = null, coverage = false } = {}) {
   const endings = {};
   const deadEnds = [];
   let steps = 0;
   let unfinished = 0;
+  // Was ueber alle Partien hinweg schon angeboten und schon genommen wurde.
+  // Ohne `coverage` bleibt es aus, denn es lenkt den Leser und wuerde die
+  // Verteilung der Enden verschieben, an der ein Buch ausbalanciert wird.
+  const gesehen = coverage ? { angeboten: new Set(), genommen: new Set() } : null;
 
   for (let seed = 1; seed <= runs; seed++) {
     const s = new Story(story, { seed });
@@ -202,20 +207,51 @@ export function simulate(story, { runs = 300, maxSteps = 200, host = null } = {}
       .slice(0, block.pick)
       .map((o) => o.item ?? o.remember)));
 
-    const run = walk(s, { seed, maxSteps, host });
+    const run = walk(s, { seed, maxSteps, host, gesehen });
     steps += run.steps;
     if (run.deadEnd) deadEnds.push({ seed, node: s.current.node });
     if (run.ended) endings[s.current.node] = (endings[s.current.node] ?? 0) + 1;
     else unfinished++;
   }
 
-  return {
+  const report = {
     runs,
     endings,
     deadEnds,
     unfinished,
     averageSteps: Math.round((steps / runs) * 10) / 10,
   };
+  if (coverage) report.coverage = coverageReport(story, gesehen.angeboten);
+  return report;
+}
+
+/**
+ * Welche Wahl hat in keiner Partie je auf der Seite gestanden? Das ist die
+ * Frage, die `endings` nicht beantwortet: ein Buch kann jedes Ende erreichen
+ * und trotzdem Absaetze tragen, die nie jemand sieht.
+ *
+ * Gemeldet wird, was geschrieben steht und nie angeboten wurde - ob das ein
+ * Fehler ist, entscheidet die Autorin. Eine Wahl hinter einem mehrstufigen
+ * Plan taucht hier auf, und das ist richtig so: sie ist es wert, dass jemand
+ * einmal nachrechnet, ob der Plan aufgeht.
+ */
+function coverageReport(story, angeboten) {
+  const lang = story.meta.default;
+  const unseen = [];
+  let total = 0;
+  for (const [id, node] of Object.entries(story.nodes[lang] ?? {})) {
+    if (node.kind === 'function') continue;
+    walkOps(node.body, (op) => {
+      if (op.op !== 'choices') return;
+      for (const item of op.items) {
+        total++;
+        if (angeboten.has(item.id)) continue;
+        const label = (item.label ?? []).map((p) => (typeof p === 'string' ? p : '…')).join('');
+        unseen.push({ node: id, id: item.id, label: label.trim(), conditional: Boolean(item.when) });
+      }
+    });
+  }
+  return { choices: total, seen: total - unseen.length, unseen };
 }
 
 /**
@@ -225,7 +261,7 @@ export function simulate(story, { runs = 300, maxSteps = 200, host = null } = {}
  * back" choices would trap a purely cyclic walker forever, and no human
  * reads a gamebook that way.
  */
-export function walk(s, { seed = 1, maxSteps = 200, host = null } = {}) {
+export function walk(s, { seed = 1, maxSteps = 200, host = null, gesehen = null } = {}) {
   const taken = new Set();
   let steps = 0;
   while (!s.current.ended && steps < maxSteps) {
@@ -236,10 +272,20 @@ export function walk(s, { seed = 1, maxSteps = 200, host = null } = {}) {
     if (s.combat) { s.attack(); continue; }
     const choices = s.current.choices;
     if (choices.length === 0) return { ended: false, deadEnd: true, steps };
+    // `s.choices` traegt die Kennung, die der Compiler vergeben hat;
+    // `current.choices` nur den Platz auf der Seite, und der verschiebt sich
+    // mit jeder Bedingung.
+    const kennung = (c) => s.choices[c.index]?.id ?? `${s.current.node}#${c.index}`;
+    if (gesehen) for (const c of choices) gesehen.angeboten.add(kennung(c));
     const fresh = choices.filter((c) => !taken.has(`${s.current.node}#${c.index}`));
-    const pool = fresh.length > 0 ? fresh : choices;
+    // Ueber alle Partien hinweg zuerst das, was noch nie jemand genommen hat:
+    // so kommt eine Abdeckungsmessung an Stellen, die ein Buch hinter einem
+    // mehrstufigen Plan versteckt.
+    const neu = gesehen ? choices.filter((c) => !gesehen.genommen.has(kennung(c))) : [];
+    const pool = neu.length > 0 ? neu : (fresh.length > 0 ? fresh : choices);
     const pick = pool[(seed * 7 + steps * 3) % pool.length];
     taken.add(`${s.current.node}#${pick.index}`);
+    if (gesehen) gesehen.genommen.add(kennung(pick));
     s.choose(pick.index);
   }
   return { ended: s.current.ended, deadEnd: false, steps };

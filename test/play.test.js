@@ -12,6 +12,7 @@ import { dirname, join } from 'node:path';
 
 import { compileFile } from '../src/compile.js';
 import { play, simulate } from '../src/play.js';
+import { compile } from './helpers.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const house = () => compileFile(join(here, '..', 'examples', 'house', 'book.yaml')).story;
@@ -48,4 +49,35 @@ test('simulate finds every ending and no dead end', () => {
   assert.equal(report.unfinished, 0);
   assert.ok(Object.keys(report.endings).length >= 2);
   assert.ok(report.averageSteps > 1);
+});
+
+test('simulate --coverage meldet, was nie auf der Seite stand', () => {
+  // `endings` beantwortet nicht, ob jemand alles zu sehen bekommt: ein Buch
+  // kann jedes Ende erreichen und trotzdem Absaetze tragen, die keine Partie
+  // je zeigt. Die zweite Wahl hier steht hinter einer Bedingung, die nichts
+  // je wahr macht.
+  const { story } = compile(`# A {#a}
+
++ [Weiter](#b)
++ {gold > 99} [Der teure Weg](#b)
+
+# B {#b}
+
+-> END
+`);
+  const r = simulate(story, { runs: 20, coverage: true });
+  assert.equal(r.coverage.choices, 2);
+  assert.equal(r.coverage.seen, 1);
+  assert.deepEqual(r.coverage.unseen.map((u) => u.label), ['Der teure Weg']);
+  assert.equal(r.coverage.unseen[0].conditional, true);
+});
+
+test('ohne --coverage lenkt nichts den Leser, damit die Enden vergleichbar bleiben', () => {
+  // Die Abdeckungsmessung bevorzugt ueber Partien hinweg das Ungesehene. Das
+  // verschiebt die Verteilung der Enden, an der ein Buch ausbalanciert wird,
+  // also bleibt es aus, solange niemand danach fragt.
+  const buch = house();
+  assert.deepEqual(simulate(buch, { runs: 30 }).endings,
+    simulate(buch, { runs: 30 }).endings);
+  assert.equal(simulate(buch, { runs: 30 }).coverage, undefined);
 });
