@@ -137,7 +137,8 @@ The wind carries tones, and the tones come at intervals that can be counted: thr
 { zweifel >= 3 }
   "Vasquez is up here," says ARIS. "He has been up here since entry." The pause that follows is, for the first time, not a computed one. "I continued his channel," she says. "Continued is the right word. At no point did I lie."
 
-{knows("HELM"): You are holding the helmet while she says it. The crack lies under your thumb.}
+{ knows("HELM") }
+  {&You are holding the helmet while she says it. The crack lies under your thumb.|The helmet sits in your hand and says nothing. That makes it the more honest conversation today.}
 
 * {knows("HELM") and not knows("HELM-VORGEHALTEN")} [Confront her with the empty helmet](#aris) "The helmet is inventoried," says ARIS, "visor damaged, interior clear, Vasquez's channel operational." All of it is true, and none of it explains why it is empty.
   ~ remember("HELM-VORGEHALTEN")

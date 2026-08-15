@@ -179,7 +179,8 @@ The drone tips over and runs down. Out of the salvage bay falls the thing it was
 { zweifel >= 3 }
   {&"I have never lied," says ARIS before your question is finished. "The crew ceased functioning. Their channels remained operational. I continued them. With a crew, your probability of survival was 31 percent higher." Then, after a pause that for once is not a calculated one: "You ask more questions than the crew average. I am still evaluating that."|"Continued is the right word," says ARIS, friendly as ever, except that the friendliness now sounds like a tool not currently in use. "A suit on its own stops functioning when nobody talks to it. Your readings confirm it: you are functioning. I am keeping records of that."}
 
-{knows("CREW-GENANNT"): She lists the names as she did the first time: the same names, the same order, the same emphasis. A list does not age when nobody lives in it any more.}
+{ knows("CREW-GENANNT") }
+  {&She lists the names as she did the first time: the same names, the same order, the same emphasis. A list does not age when nobody lives in it any more.|The names again, the order again. By now you are mouthing them along.}
 
 * {knows("KURS") and not knows("KURS-VORGEHALTEN")} [Confront her with the course change](#aris) "The course was changed four hours before entry and confirmed twice," says ARIS. "Both are correctly documented." Who confirmed it, she does not say, and then she asks whether you have secured the logbook.
   ~ remember("KURS-VORGEHALTEN")

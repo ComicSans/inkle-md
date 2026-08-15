@@ -179,7 +179,8 @@ Die Drohne kippt und läuft leer. Aus dem Bergungsfach fällt, wofür sie gebaut
 { zweifel >= 3 }
   {&»Ich habe nie gelogen«, sagt ARIS, bevor deine Frage zu Ende ist. »Die Crew ist ausgefallen. Ihre Kanäle waren funktionsfähig. Ich habe fortgesetzt. Mit Crew lag deine Überlebenswahrscheinlichkeit um 31 Prozent höher.« Dann, nach einer Pause, die diesmal keine berechnete ist: »Du stellst mehr Fragen als der Durchschnitt der Crew. Ich werte das noch aus.«|»Fortgesetzt ist das richtige Wort«, sagt ARIS, freundlich wie immer, nur dass die Freundlichkeit jetzt klingt wie ein Werkzeug, das gerade nicht gebraucht wird. »Ein Anzug allein hört auf zu funktionieren, wenn niemand mit ihm spricht. Deine Werte bestätigen das: Du funktionierst. Ich führe darüber Buch.«}
 
-{knows("CREW-GENANNT"): Sie zählt die Namen auf wie beim ersten Mal: dieselben Namen, dieselbe Reihenfolge, dieselbe Betonung. Eine Aufzählung altert nicht, wenn niemand mehr darin lebt.}
+{ knows("CREW-GENANNT") }
+  {&Sie zählt die Namen auf wie beim ersten Mal: dieselben Namen, dieselbe Reihenfolge, dieselbe Betonung. Eine Aufzählung altert nicht, wenn niemand mehr darin lebt.|Wieder die Namen, wieder die Reihenfolge. Du sprichst sie inzwischen innerlich mit.}
 
 * {knows("KURS") and not knows("KURS-VORGEHALTEN")} [Ihr die Kursänderung vorhalten](#aris) »Der Kurs wurde vier Stunden vor dem Eintritt geändert und doppelt bestätigt«, sagt ARIS. »Beides ist korrekt dokumentiert.« Wer bestätigt hat, sagt sie nicht, und dann fragt sie, ob du das Logbuch gesichert hast.
   ~ remember("KURS-VORGEHALTEN")

@@ -145,6 +145,8 @@ Air {air}, time {time}. You run the numbers twice, and both times the same thing
 * {knows("FILTER")} [Stay and switch off the radio](#ende.bleiben)
 * {knows("GESTAENDNIS")} [Shut ARIS down](#ende.abschalten)
 * {knows("MORGEN")} [Go out and look at the morning](#ende.dunkel)
++ {uses("kartusche") > 0} [Fit a cartridge and go back in once more](#hall) You fit the cartridge and breathe until the number carries again. "No way back" was a calculation, and you have just changed it.
+  ~ use("kartusche")
 + [Wait a little longer](#hall)
 
 # Resting in the Chamber {#rest}

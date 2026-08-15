@@ -441,8 +441,9 @@ test('the nightside runs its clock down over three hundred playthroughs', () => 
       s.begin([[s.setup[0].from[seed % 3].remember]]);
 
       // More steps than the house needs: the filter in the basin holds the
-      // clock up, so a reader who keeps wandering takes longer to run out.
-      const run = walk(s, { seed, maxSteps: 400 });
+      // clock up, and a spare cartridge fitted at the last exit buys the way
+      // back in - a reader who keeps wandering takes longer to run out.
+      const run = walk(s, { seed, maxSteps: 600 });
       assert.ok(!run.deadEnd, `dead end at ${s.current.node} (seed ${seed}, ${lang})`);
       assert.ok(run.ended, `seed ${seed} never finished (${lang})`);
       ends.add(s.current.node);

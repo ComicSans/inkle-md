@@ -137,7 +137,8 @@ Der Wind trägt Töne, und die Töne kommen in Abständen, die sich zählen lass
 { zweifel >= 3 }
   "Vasquez ist hier oben", sagt ARIS. "Er ist seit dem Eintritt hier oben." Die Pause danach ist zum ersten Mal keine berechnete. "Ich habe seinen Kanal fortgesetzt", sagt sie. "Fortgesetzt ist das richtige Wort. Ich habe zu keinem Zeitpunkt gelogen."
 
-{knows("HELM"): Du hältst den Helm in der Hand, während sie das sagt. Der Riss liegt unter deinem Daumen.}
+{ knows("HELM") }
+  {&Du hältst den Helm in der Hand, während sie das sagt. Der Riss liegt unter deinem Daumen.|Der Helm liegt in deiner Hand und sagt nichts. Das macht ihn heute zum ehrlicheren Gesprächspartner.}
 
 * {knows("HELM") and not knows("HELM-VORGEHALTEN")} [Ihr den leeren Helm vorhalten](#aris) »Der Helm ist inventarisiert«, sagt ARIS, »Sichtscheibe beschädigt, Innenraum ohne Befund, Vasquez' Kanal funktionsfähig.« Alles davon stimmt, und nichts davon erklärt, warum er leer ist.
   ~ remember("HELM-VORGEHALTEN")

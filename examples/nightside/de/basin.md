@@ -145,6 +145,8 @@ Atemluft {air}, Zeit {time}. Du rechnest es zweimal durch, und beide Male kommt 
 * {knows("FILTER")} [Bleiben und den Funk abstellen](#ende.bleiben)
 * {knows("GESTAENDNIS")} [ARIS abschalten](#ende.abschalten)
 * {knows("MORGEN")} [Hinausgehen und den Morgen ansehen](#ende.dunkel)
++ {uses("kartusche") > 0} [Eine Kartusche ansetzen und noch einmal zurückgehen](#hall) Du setzt die Kartusche an und atmest, bis die Zahl wieder eine Weile trägt. "Kein Weg zurück" war eine Rechnung, und du hast sie gerade geändert.
+  ~ use("kartusche")
 + [Noch warten](#hall)
 
 # Rasten in der Kammer {#rest}
