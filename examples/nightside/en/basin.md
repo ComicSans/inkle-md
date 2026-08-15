@@ -54,6 +54,8 @@ You stand before a door built for someone else, and the only open question is wh
   ARIS has been silent since the entrance. It is the first time she has had nothing to say.
   ~ remember("KAMMER-STILL")
 
+{air <= 15: The suit has found a new register for the air: shorter reports, at shorter intervals. It calls this prioritising.}
+
 * [Look at the suits](#suits)
 * [Step to the wall and take the filter off one of them](#filter)
 * [Go further in](#deep)
@@ -77,7 +79,7 @@ They are stranded like you. They stopped, and they did it tidily.
 
 # The Filter {#filter}
 
-You take it off a dead one. The catch is made for fingers that count differently from yours, but it gives, and the filter runs on as if nothing had happened. It does not fit your suit, and it fits anyway; the rest is tape and stubbornness. The gauge stops falling, for the first time since the crash.
+You take it off a dead one. The catch is made for fingers that count differently from yours, but it gives, and the filter runs on as if nothing had happened. It does not fit your suit, and it fits anyway; the rest is tape and stubbornness. The gauge stops falling, for the first time since the crash. The rhythm the filter works to is not yours: it comes out of the walls, and it will not follow you.
 
 ~ take("filter")
 ~ remember("FILTER")
@@ -157,6 +159,8 @@ You sit down with your back to the wall, between two of the suits, and for a whi
 # Out {#depart}
 
 The door lets you out as unresistingly as it let you in. Outside, the night stands where you left it, and the silence out there sounds like something else now.
+
+{knows("FILTER"): A few steps short of the door the filter goes quieter. What it gives you, it gives you down here; outside, the gauge falls again.}
 
 * [Walk to the ridge](#ridge.arrival)
   ~ location = place("ridge")

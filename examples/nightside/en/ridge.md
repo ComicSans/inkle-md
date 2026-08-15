@@ -24,13 +24,15 @@
 { knows("WUNDE") }
   {&Your side reports in at every step, punctual and with no new arguments.|Your side has stopped arguing and merely reminds you that it is there.}
 
+{air <= 15: The suit has found a new register for the air: shorter reports, at shorter intervals. It calls this prioritising.}
+
 * [Climb](#climb)
 * [Walk the base of the wall](#cache)
 * {knows("HELM")} [Go back to the helmet](#vasquez)
 * [Ask ARIS whether someone is up there](#aris)
 * [Rest](#rest)
 + [Set out](#depart)
-* {knows("MORGEN")} [Wait for daylight](#ende.dunkel)
+* {knows("MORGEN")} [Watch the morning come, and nothing after that](#ende.dunkel)
 * {knows("GESTAENDNIS")} [Shut ARIS down](#ende.abschalten)
 
 # The Climb {#climb}
@@ -48,13 +50,13 @@ Forty metres, and the rock breaks in plates. You climb in gloves made for switch
 
 # The Fall {#fall}
 
-You do not fall far, but you fall wrong. A ledge catches you after four metres, side first, and something in there gives off a sound you would rather have heard from the rock. The suit reports no leak. The suit only takes an interest in things that concern the suit.
+You do not fall far, but you fall wrong. A ledge catches you after four metres, side first, and something in there gives off a sound you would rather have heard from the rock. The suit reports no leak. What it reports is a new consumption figure: breathing costs more with this side.
 
 ~ stamina = stamina - 3
 ~ remember("WUNDE")
 ~ time = time + 10
 
-* {knows("MEDIZIN")} [Treat yourself]() You know what a rib can take and what it cannot. You feel along your side, counting, rule for bruised over broken, and wrap the strap so the ruling holds. It is not good care, but it is yours.
+* {knows("MEDIZIN")} [Treat yourself]() You know what a rib can take and what it cannot. You feel along your side, counting, rule for bruised over broken, and wrap the strap so the ruling holds. It is not good care, but it is yours, and the suit takes the surcharge off your consumption again.
   ~ forget("WUNDE")
   ~ time = time + 20
 * {has("seil")} [Try again with the rope](#top) This time you lay the rope over a rock spur before you take the wall at its word again. It is slower. It is also the first thing today that holds because you arranged it that way.
@@ -149,7 +151,7 @@ The wind carries tones, and the tones come at intervals that can be counted: thr
 
 At the foot of the wall a bag from the wreck has snagged, two kilometres from the nearest piece of debris and wedged tidily between two rocks, as if someone had set it down. Inside: an air cartridge, intact, seal still on. You do not ask how far a bag can blow. You take it with you.
 
-~ take("kartusche")
+~ take("kartusche", 1)
 ~ time = time + 10
 
 * [Go back](#foot)

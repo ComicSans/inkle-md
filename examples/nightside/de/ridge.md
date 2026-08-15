@@ -24,13 +24,15 @@
 { knows("WUNDE") }
   {&Deine Seite meldet sich bei jedem Schritt, pünktlich und ohne neue Argumente.|Deine Seite hat aufgehört zu argumentieren und erinnert nur noch daran, dass sie da ist.}
 
+{air <= 15: Der Anzug hat für die Luft eine neue Tonlage gefunden: kürzere Meldungen, in kürzeren Abständen. Er nennt es Priorisierung.}
+
 * [Klettern](#climb)
 * [Die Wand ablaufen](#cache)
 * {knows("HELM")} [Noch einmal zu dem Helm steigen](#vasquez)
 * [ARIS fragen, ob jemand hier oben ist](#aris)
 * [Rasten](#rest)
 + [Aufbrechen](#depart)
-* {knows("MORGEN")} [Warten, bis es hell wird](#ende.dunkel)
+* {knows("MORGEN")} [Dem Morgen zusehen, und sonst nichts mehr](#ende.dunkel)
 * {knows("GESTAENDNIS")} [ARIS abschalten](#ende.abschalten)
 
 # Der Aufstieg {#climb}
@@ -48,13 +50,13 @@ Vierzig Meter, und der Fels bricht in Platten. Du kletterst mit Handschuhen, die
 
 # Der Sturz {#fall}
 
-Du fällst nicht weit, aber du fällst falsch. Ein Band fängt dich nach vier Metern, mit der Seite zuerst, und irgendetwas dort drin gibt einen Laut von sich, den du lieber vom Fels gehört hättest. Der Anzug meldet keine Leckage. Der Anzug interessiert sich nur für Dinge, die ihn selbst betreffen.
+Du fällst nicht weit, aber du fällst falsch. Ein Band fängt dich nach vier Metern, mit der Seite zuerst, und irgendetwas dort drin gibt einen Laut von sich, den du lieber vom Fels gehört hättest. Der Anzug meldet keine Leckage. Was er meldet, ist ein neuer Verbrauchswert: Mit dieser Seite atmet es sich teurer.
 
 ~ stamina = stamina - 3
 ~ remember("WUNDE")
 ~ time = time + 10
 
-* {knows("MEDIZIN")} [Dich selbst versorgen]() Du weißt, was eine Rippe aushält und was nicht. Du tastest die Seite ab, zählst mit, entscheidest auf geprellt statt gebrochen und wickelst den Gurt so, dass die Entscheidung hält. Es ist keine gute Versorgung, aber es ist deine.
+* {knows("MEDIZIN")} [Dich selbst versorgen]() Du weißt, was eine Rippe aushält und was nicht. Du tastest die Seite ab, zählst mit, entscheidest auf geprellt statt gebrochen und wickelst den Gurt so, dass die Entscheidung hält. Es ist keine gute Versorgung, aber es ist deine, und der Anzug nimmt den Aufschlag auf den Verbrauch zurück.
   ~ forget("WUNDE")
   ~ time = time + 20
 * {has("seil")} [Mit dem Seil noch einmal ansetzen](#top) Diesmal legst du das Seil über einen Felszahn, ehe du der Wand wieder etwas glaubst. Es ist langsamer. Es ist auch das erste Mal heute, dass etwas hält, weil du es so eingerichtet hast.
@@ -149,7 +151,7 @@ Der Wind trägt Töne, und die Töne kommen in Abständen, die sich zählen lass
 
 Am Fuß der Wand hat sich ein Beutel aus dem Wrack verfangen, zwei Kilometer vom nächsten Trümmerstück entfernt und ordentlich zwischen zwei Felsen geklemmt, als hätte ihn jemand abgelegt. Drinnen: eine Atemluftkartusche, unversehrt, die Plombe noch dran. Du fragst nicht, wie weit ein Beutel wehen kann. Du nimmst ihn mit.
 
-~ take("kartusche")
+~ take("kartusche", 1)
 ~ time = time + 10
 
 * [Zurückgehen](#foot)

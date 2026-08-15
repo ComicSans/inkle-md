@@ -54,6 +54,8 @@ Du stehst vor einer Tür, die für jemand anderen gebaut wurde, und die einzige 
   ARIS ist seit dem Eingang still. Es ist das erste Mal, dass sie nichts zu sagen hat.
   ~ remember("KAMMER-STILL")
 
+{air <= 15: Der Anzug hat für die Luft eine neue Tonlage gefunden: kürzere Meldungen, in kürzeren Abständen. Er nennt es Priorisierung.}
+
 * [Die Anzüge ansehen](#suits)
 * [An die Wand treten und einem von ihnen den Filter abnehmen](#filter)
 * [Weiter nach innen gehen](#deep)
@@ -77,7 +79,7 @@ Sie sind gestrandet wie du. Sie haben aufgehört, und sie haben es ordentlich ge
 
 # Der Filter {#filter}
 
-Du nimmst ihn einem der toten Anzüge ab. Der Verschluss ist für Finger gemacht, die anders zählen als deine, aber er gibt nach, und der Filter läuft weiter, als sei nichts gewesen. An deinem Anzug passt er nicht, und er passt trotzdem; der Rest ist Klebeband und Sturheit. Die Anzeige hört auf zu fallen, zum ersten Mal seit dem Absturz.
+Du nimmst ihn einem der toten Anzüge ab. Der Verschluss ist für Finger gemacht, die anders zählen als deine, aber er gibt nach, und der Filter läuft weiter, als sei nichts gewesen. An deinem Anzug passt er nicht, und er passt trotzdem; der Rest ist Klebeband und Sturheit. Die Anzeige hört auf zu fallen, zum ersten Mal seit dem Absturz. Der Takt, in dem der Filter arbeitet, ist nicht deiner: Er kommt aus den Wänden, und er wird dir nicht folgen.
 
 ~ take("filter")
 ~ remember("FILTER")
@@ -157,6 +159,8 @@ Du setzt dich mit dem Rücken an die Wand, zwischen zwei der Anzüge, und tust e
 # Hinaus {#depart}
 
 Die Tür lässt dich hinaus, so widerstandslos, wie sie dich hereingelassen hat. Draußen steht die Nacht, wo du sie verlassen hast, und die Stille dort klingt jetzt nach etwas anderem.
+
+{knows("FILTER"): Ein paar Schritte vor der Tür wird der Filter leiser. Was er dir gibt, gibt er hier unten; draußen fällt die Anzeige wieder.}
 
 * [Zum Grat gehen](#ridge.arrival)
   ~ location = place("ridge")

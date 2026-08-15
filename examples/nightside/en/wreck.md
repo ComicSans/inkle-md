@@ -35,16 +35,18 @@
   In the first grey the field lies there smaller than the night claimed: sheet metal, sand, neatly aligned tarpaulins. In the light you can see how carefully somebody has tidied up here.
   ~ remember("FELD-HELL")
 
+{air <= 15: The suit has found a new register for the air: shorter reports, at shorter intervals. It calls this prioritising.}
+
 * [Walk to the cockpit](#cabin)
 * [Walk to the supply locker](#locker)
 * [Walk to the radio mast](#mast)
 * [Walk over to where the tarpaulins lie](#bodies)
 * [Walk to the ruptured tank](#tank)
 * {knows("KURS") or knows("BAHN")} [Put the course data together](#map)
-+ [Confront ARIS](#aris)
++ {zweifel >= 1} [Confront ARIS](#aris)
 * [Rest](#rest)
 + [Move on](#depart)
-* {knows("MORGEN")} [Wait for daylight](#ende.dunkel)
+* {knows("MORGEN")} [Watch the morning come, and nothing after that](#ende.dunkel)
 * {knows("GESTAENDNIS")} [Shut ARIS down](#ende.abschalten)
 
 # The Cockpit {#cabin}
@@ -70,14 +72,14 @@ You page backwards. Four hours before entry, somebody changed the course: cleanl
 The locker is still upright, which makes it the exception in this field. The frame is warped, the door jams. Behind the inspection pane: oxygen cartridges, in tidy rows, budgeted for a crew.
 
 * {has("brechstange")} [Prise it open]() One purchase point, one heave. Two cartridges, undamaged.
-  ~ take("kartusche")
+  ~ take("kartusche", 2)
   ~ time = time + 5
-* {knows("TECHNIK")} [Remove the hinge]() Four screws, no force. The door comes away towards you like an apology.
-  ~ take("kartusche")
+* {knows("TECHNIK")} [Remove the hinge]() Four screws, no force. The door comes away towards you like an apology. Two cartridges, undamaged.
+  ~ take("kartusche", 2)
 * [Pull hard]()
   { test_luck() }
-    The locker gives way, with a noise that clips the suit microphones.
-    ~ take("kartusche")
+    The locker gives way, with a noise that clips the suit microphones. Two cartridges, undamaged.
+    ~ take("kartusche", 2)
   { else }
     The locker does not give way. Your shoulder does.
     ~ stamina = stamina - 2

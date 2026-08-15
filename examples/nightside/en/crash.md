@@ -96,11 +96,12 @@ You keep asking, and while ARIS runs through her list, you hear it: under her vo
   ~ remember("EBENE-HELL")
 {kurz_weg: You have been standing still for a while. The suit kept count.}
 {lang_weg: You have been standing still for a very long time. The planet has not moved in that time, not visibly anyway, and that worries you more than it should.}
+{air <= 15: The suit has found a new register for the air: shorter reports, at shorter intervals. It calls this prioritising.}
 
 * [Search the wreckage](#debris)
 * {knows("NAVIGATION")} [Read the stars](#sky)
 + [Set out](#depart)
-* {knows("MORGEN")} [Wait for the light](#ende.dunkel)
+* {knows("MORGEN")} [Watch the morning come, and nothing after that](#ende.dunkel)
 * {knows("GESTAENDNIS")} [Shut ARIS down](#ende.abschalten)
 + [Rest](#rest)
 

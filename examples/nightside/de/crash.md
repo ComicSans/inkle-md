@@ -96,11 +96,12 @@ Du fragst weiter, und während ARIS aufzählt, hörst du es: unter ihrer Stimme 
   ~ remember("EBENE-HELL")
 {kurz_weg: Du hast eine Weile stillgestanden. Der Anzug hat mitgezählt.}
 {lang_weg: Du hast sehr lange stillgestanden. Der Planet hat sich in der Zeit nicht bewegt, jedenfalls nicht sichtbar, und das beunruhigt dich mehr, als es sollte.}
+{air <= 15: Der Anzug hat für die Luft eine neue Tonlage gefunden: kürzere Meldungen, in kürzeren Abständen. Er nennt es Priorisierung.}
 
 * [Die Trümmer durchsuchen](#debris)
 * {knows("NAVIGATION")} [Die Sterne lesen](#sky)
 + [Aufbrechen](#depart)
-* {knows("MORGEN")} [Warten, bis es hell wird](#ende.dunkel)
+* {knows("MORGEN")} [Dem Morgen zusehen, und sonst nichts mehr](#ende.dunkel)
 * {knows("GESTAENDNIS")} [ARIS abschalten](#ende.abschalten)
 + [Rasten](#rest)
 

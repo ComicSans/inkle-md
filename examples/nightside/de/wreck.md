@@ -35,16 +35,18 @@
   Im ersten Grau liegt das Feld kleiner da, als die Nacht behauptet hat: Blech, Sand, ordentlich ausgerichtete Planen. Bei Licht sieht man, wie sorgfältig hier jemand aufgeräumt hat.
   ~ remember("FELD-HELL")
 
+{air <= 15: Der Anzug hat für die Luft eine neue Tonlage gefunden: kürzere Meldungen, in kürzeren Abständen. Er nennt es Priorisierung.}
+
 * [Zur Kanzel gehen](#cabin)
 * [Zum Vorratsschrank gehen](#locker)
 * [Zum Funkmast gehen](#mast)
 * [Dorthin gehen, wo die Planen liegen](#bodies)
 * [Zum aufgerissenen Tank gehen](#tank)
 * {knows("KURS") or knows("BAHN")} [Die Kursdaten zusammenlegen](#map)
-+ [ARIS zur Rede stellen](#aris)
++ {zweifel >= 1} [ARIS zur Rede stellen](#aris)
 * [Rasten](#rest)
 + [Aufbrechen](#depart)
-* {knows("MORGEN")} [Warten, bis es hell wird](#ende.dunkel)
+* {knows("MORGEN")} [Dem Morgen zusehen, und sonst nichts mehr](#ende.dunkel)
 * {knows("GESTAENDNIS")} [ARIS abschalten](#ende.abschalten)
 
 # Die Kanzel {#cabin}
@@ -70,14 +72,14 @@ Du blätterst zurück. Vier Stunden vor dem Eintritt hat jemand den Kurs geände
 Der Schrank steht noch aufrecht, was ihn im Feld zur Ausnahme macht. Der Rahmen ist verzogen, die Tür klemmt. Hinter der Sichtscheibe: Sauerstoffkartuschen, ordentlich in Reihen, gerechnet für eine Crew.
 
 * {has("brechstange")} [Aufhebeln]() Ein Ansatzpunkt, ein Ruck. Zwei Kartuschen, unbeschädigt.
-  ~ take("kartusche")
+  ~ take("kartusche", 2)
   ~ time = time + 5
-* {knows("TECHNIK")} [Das Scharnier ausbauen]() Vier Schrauben, keine Gewalt. Die Tür kommt dir entgegen wie eine Entschuldigung.
-  ~ take("kartusche")
+* {knows("TECHNIK")} [Das Scharnier ausbauen]() Vier Schrauben, keine Gewalt. Die Tür kommt dir entgegen wie eine Entschuldigung. Zwei Kartuschen, unbeschädigt.
+  ~ take("kartusche", 2)
 * [Gewaltsam ziehen]()
   { test_luck() }
-    Der Schrank gibt nach, mit einem Geräusch, das die Anzugmikros übersteuert.
-    ~ take("kartusche")
+    Der Schrank gibt nach, mit einem Geräusch, das die Anzugmikros übersteuert. Zwei Kartuschen, unbeschädigt.
+    ~ take("kartusche", 2)
   { else }
     Der Schrank gibt nicht nach. Deine Schulter schon.
     ~ stamina = stamina - 2
