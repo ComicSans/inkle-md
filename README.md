@@ -152,8 +152,38 @@ target, the warnings that fall inside it - and, on one keystroke, the book
 played from that node, with the same runtime and the same view the HTML
 export ships. It compiles the buffer rather than the file, so unsaved text
 counts, and a book that does not compile leaves the last one that did on
-screen with the error above it. No build step and no dependency: a symlink
-into `~/.vscode/extensions` is the whole install.
+screen with the error above it.
+
+No build step, no dependency and no `vsce`: a symlink is the whole install,
+and the extension loads the compiler, the runtime and the view from `src/`,
+so what you commit is what the panel plays.
+
+```bash
+ln -s "$PWD/tools/vscode" ~/.vscode/extensions/story-weaver
+```
+
+Restart VS Code, open a `.md` book, and:
+
+| | |
+| --- | --- |
+| `cmd+alt+p` / `ctrl+alt+p` | play from the node the cursor is in |
+| *Story Weaver: Knoten zeigen* | open the panel on that node's structure |
+| *Story Weaver: Von vorn probespielen* | play from the book's start node |
+
+The panel follows the cursor, and while a game runs the source follows the
+game - it scrolls to the page being read without taking the focus. Clicking a
+target in the structure view jumps the editor to that node, which makes the
+panel an index as well.
+
+Three settings, all under `storyWeaver`: `follow` stops the panel from
+following the cursor, `language` picks the language to play in, and `host`
+takes the host values of SPEC 12.4 as `key=value` pairs separated by commas -
+the same spelling `story-weaver play --host` uses. Without them a book that
+reads the clock or a counter plays against its fallbacks, which `nightside`
+and `leuchtturm` do.
+
+To work on the extension itself, open `tools/vscode` in VS Code and press F5.
+[`tools/vscode/README.md`](tools/vscode/README.md) has the rest.
 
 ## Importing ink
 
