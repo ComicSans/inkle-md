@@ -463,27 +463,124 @@ function report(story, nodes, graph, reachable, endings) {
   };
 }
 
-/** Shortest and longest simple path from start to an ending, over choices. */
+/**
+ * Shortest and longest path from start to an ending, over choices.
+ *
+ * The shortest is a breadth-first walk. The longest used to enumerate every
+ * simple path, which is exponential: `examples/intercept.md` spent 32 of the
+ * 33 seconds it took to compile inside that walk, and a book twice its size
+ * would never have finished.
+ *
+ * The longest simple path cannot be computed cheaply - the problem is
+ * NP-hard - so this counts the longest path through the graph with each
+ * knot of mutually reachable nodes collapsed to one, weighted by how many
+ * nodes it holds. On a book without loops that is the same number as before.
+ * On a book with them it is an upper bound, which is the direction that
+ * costs nothing: L021 warns when an event fires later than the book can
+ * last, and a bound that errs upwards stays quiet instead of crying wolf.
+ */
 function pathLengths(start, graph) {
-  let shortest = Infinity, longest = 0;
-  const walk = (id, depth, seen) => {
+  const to = (id) => graph.get(id)?.to ?? [];
+  const ends = (id) => {
     const entry = graph.get(id);
-    if (!entry) return;
-    if (entry.end || entry.to.size === 0) {
-      shortest = Math.min(shortest, depth);
-      longest = Math.max(longest, depth);
-      return;
+    return Boolean(entry) && (entry.end || entry.to.size === 0);
+  };
+
+  // Shortest: breadth first, so the first ending reached is the nearest one.
+  let shortest = 0;
+  const queue = [[start, 1]];
+  const gesehen = new Set([start]);
+  while (queue.length > 0) {
+    const [id, depth] = queue.shift();
+    if (!graph.has(id)) continue;
+    if (ends(id)) { shortest = depth; break; }
+    for (const next of to(id)) {
+      if (gesehen.has(next)) continue;
+      gesehen.add(next);
+      queue.push([next, depth + 1]);
     }
-    for (const next of entry.to) {
-      if (seen.has(next)) {
-        longest = Math.max(longest, depth);
+  }
+
+  // Longest: Tarjan's components, then the longest weighted path over the
+  // acyclic graph they form. Iterative, because a book is deeper than the
+  // call stack is tall.
+  const index = new Map();
+  const low = new Map();
+  const onStack = new Set();
+  const stack = [];
+  const comp = new Map();
+  let next = 0;
+
+  for (const wurzel of graph.keys()) {
+    if (index.has(wurzel)) continue;
+    const arbeit = [[wurzel, 0]];
+    while (arbeit.length > 0) {
+      const rahmen = arbeit[arbeit.length - 1];
+      const [id, i] = rahmen;
+      if (i === 0) {
+        index.set(id, next);
+        low.set(id, next);
+        next++;
+        stack.push(id);
+        onStack.add(id);
+      }
+      const kinder = [...to(id)].filter((k) => graph.has(k));
+      if (i < kinder.length) {
+        rahmen[1]++;
+        const kind = kinder[i];
+        if (!index.has(kind)) arbeit.push([kind, 0]);
+        else if (onStack.has(kind)) low.set(id, Math.min(low.get(id), index.get(kind)));
         continue;
       }
-      walk(next, depth + 1, new Set([...seen, next]));
+      arbeit.pop();
+      if (low.get(id) === index.get(id)) {
+        const gruppe = [];
+        for (;;) {
+          const oben = stack.pop();
+          onStack.delete(oben);
+          gruppe.push(oben);
+          comp.set(oben, id);
+          if (oben === id) break;
+        }
+        for (const m of gruppe) comp.set(m, id);
+      }
+      if (arbeit.length > 0) {
+        const eltern = arbeit[arbeit.length - 1][0];
+        low.set(eltern, Math.min(low.get(eltern), low.get(id)));
+      }
     }
+  }
+
+  const gewicht = new Map();
+  for (const id of graph.keys()) {
+    const c = comp.get(id);
+    gewicht.set(c, (gewicht.get(c) ?? 0) + 1);
+  }
+  const kanten = new Map();
+  const endet = new Set();
+  for (const id of graph.keys()) {
+    const c = comp.get(id);
+    if (!kanten.has(c)) kanten.set(c, new Set());
+    if (ends(id)) endet.add(c);
+    for (const k of to(id)) {
+      if (!graph.has(k) || comp.get(k) === c) continue;
+      kanten.get(c).add(comp.get(k));
+    }
+  }
+
+  const beste = new Map();
+  const laengste = (c) => {
+    if (beste.has(c)) return beste.get(c);
+    beste.set(c, gewicht.get(c) ?? 0);   // guards against a graph that lies
+    let weiter = 0;
+    for (const k of kanten.get(c) ?? []) weiter = Math.max(weiter, laengste(k));
+    const wert = (gewicht.get(c) ?? 0) + (endet.has(c) && weiter === 0 ? 0 : weiter);
+    beste.set(c, wert);
+    return wert;
   };
-  walk(start, 1, new Set([start]));
-  return { shortest: shortest === Infinity ? 0 : shortest, longest };
+
+  const longest = graph.has(start) ? laengste(comp.get(start)) : 0;
+  return { shortest, longest };
 }
 
 function fights(ops, enemy) {

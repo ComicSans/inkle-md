@@ -176,3 +176,45 @@ test('the reachability report counts what the linter walked', () => {
   assert.equal(warnings.report.unreachable, 1);
   assert.ok(warnings.messages.some((m) => m.code === 'L001'));
 });
+
+test('die Pfadlaenge rechnet polynomial und bleibt eine Obergrenze', () => {
+  // Frueher zaehlte der Linter jeden einfachen Pfad einzeln auf.
+  // `examples/intercept.md` verbrachte damit 32 von 33 Sekunden, und ein
+  // doppelt so grosses Buch waere nie fertig geworden. Jetzt: Breitensuche
+  // fuer den kuerzesten Weg, und fuer den laengsten die Komponenten des
+  // Graphen, nach Groesse gewichtet.
+  const gerade = compile(`# A {#a}
+
++ [Weiter](#b)
+
+# B {#b}
+
++ [Weiter](#c)
+
+# C {#c}
+
+-> END
+`).warnings.report;
+  assert.equal(gerade.shortestPath, 3);
+  assert.equal(gerade.longestPath, 3, 'ohne Schleife ist die Grenze der Weg selbst');
+
+  // Mit Schleife bleibt die Rechnung endlich, und sie irrt nach oben statt
+  // nach unten: L021 schweigt lieber, als vor einem Ereignis zu warnen, das
+  // doch noch feuern kann.
+  const schleife = compile(`# A {#a}
+
++ [Im Kreis](#b)
++ [Zum Ende](#c)
+
+# B {#b}
+
++ [Zurueck](#a)
+
+# C {#c}
+
+-> END
+`).warnings.report;
+  assert.equal(schleife.shortestPath, 2);
+  assert.ok(schleife.longestPath >= 2 && schleife.longestPath <= schleife.nodes,
+    `Grenze ${schleife.longestPath} liegt zwischen dem kuerzesten Weg und der Zahl der Knoten`);
+});

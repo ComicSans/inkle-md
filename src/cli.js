@@ -114,7 +114,7 @@ function main(argv) {
     const r = warnings.report;
     process.stderr.write(
       `\n${r.nodes} nodes, ${r.reachable} reachable, ${r.unreachable} unreachable, ` +
-      `${r.endings} ending(s), path length ${r.shortestPath} to ${r.longestPath}\n`);
+      `${r.endings} ending(s), ${r.shortestPath} page(s) to the nearest ending, ${r.longestPath} at most\n`);
   }
 
   if (strict && messages.some((m) => m.level === 'warning')) {
