@@ -16,8 +16,8 @@ gehört jetzt der See. Es gibt nur noch Wege, keine Orte mehr.|Im Westen
 liegt eine Wolkenbank, die nicht liegen bleibt. Wer hier arbeitet,
 arbeitet gegen sie.}
 
-{wetter >= 2: Böen treiben schon Schauer über die Bank.|Noch ist der
-Abend still, aber am Horizont zieht etwas herauf.}
+{aufziehend or wetter >= 2: Böen treiben schon Schauer über die Bank.|Noch
+ist der Abend still, aber am Horizont zieht etwas herauf.}
 
 {lampe: Über dir läuft der Strahl seine Runden. Die Nacht scheint sicher.|
 Oben siehst du die große Lampe: dunkel. Sie ist dein Auftrag: Wenn der Sturm kommt, muss sie brennen.}
@@ -58,20 +58,20 @@ ihre Arbeit.}
 der Schein. Oben liegt der Hebel auf EIN - nur das bedeutet nichts,
 solange kein Strom kommt.}
 
-{ knows("FUNK") and zeit >= 150 and wasser >= 6 and lampe == 0 }
+{ knows("FUNK") and zeit >= 90 and wasser >= 6 and lampe == 0 }
   Das Radio läuft auf Batterie und gibt Sturmwarnungen für die See aus.
-{ knows("FUNK") and zeit >= 150 }
+{ knows("FUNK") and zeit >= 90 }
   Das Radio, neue Warnungen: Orkanböen bis in den Morgen.
-{ knows("FUNK") and zeit >= 120 }
-  Die Funkuhr sagt kurz vor Mitternacht. Gleich der Orkan auf voller Stärke.
 { knows("FUNK") and zeit >= 60 }
-  Abend. Bis Mitternacht bleibt Zeit, sich auf den Sturm vorzubereiten.
+  Die Funkuhr sagt halb elf. Gleich der Orkan auf voller Stärke.
+{ knows("FUNK") and zeit >= 30 }
+  Abend. Bis elf bleibt Zeit, sich auf den Sturm vorzubereiten.
 { knows("FUNK") }
   Die Funkuhr sagt halb zehn.
 
 * {not knows("FUNK")} [Das Radio einschalten](#arbeitsraum)
-  Der Seewetterdienst, mitten im Satz: schweres Sturmtief, Orkanböen um
-  Mitternacht, abziehend erst gegen Morgen.
+  Der Seewetterdienst, mitten im Satz: schweres Sturmtief, Orkanböen
+  gegen elf, abziehend erst gegen Morgen.
   ~ zeit += 5
   ~ remember("FUNK")
 * {not has("laterne") and traglast() <= 1} [Die Öl-Laterne vom Haken nehmen](#arbeitsraum)
@@ -365,9 +365,9 @@ Vier Pfähle, ein Bohlensteg, zwei Ringe für die Leinen. Die See davor
 ist leer bis zum Horizont. Das Boot kommt am Morgen, so war es
 ausgemacht, und der Steg hat bis dahin nichts zu bieten.
 
-{wetter >= 2: Die Böen greifen nach allem, was absteht, und der Steg
-zittert unter jedem Schlag der See.|Der Abend liegt glatt auf dem
-Wasser, als hätte er Zeit.}
+{aufziehend or wetter >= 2: Die Böen greifen nach allem, was absteht, und
+der Steg zittert unter jedem Schlag der See.|Der Abend liegt glatt auf
+dem Wasser, als hätte er Zeit.}
 
 * [Warten, ob nicht doch etwas kommt](#anleger)
   Du wartest eine halbe Stunde gegen besseres Wissen. Wind und vereinzelt 
@@ -392,8 +392,8 @@ Drei Kiefern, krumm vom Westwind, das einzige Holz der Bank, auf der
 einzigen Düne. Zwischen den Stämmen hindurch sieht man die Wolkenbank
 wachsen; von hier wirkt sie näher als vom Turm.
 
-{wetter >= 2: Der Wind probiert die Kronen schon aus.|Noch halten die
-drei still, wie Tiere, die den Hund gesehen haben.}
+{aufziehend or wetter >= 2: Der Wind probiert die Kronen schon aus.|Noch
+halten die drei still, wie Tiere, die den Hund gesehen haben.}
 
 * [Bis an die Kante der Düne hinausgehen](#windbruch)
   Unten arbeitet die See am Sand, geduldig wie eine Feile. Hypnotisch, 
@@ -404,8 +404,8 @@ drei still, wie Tiere, die den Hund gesehen haben.}
 
 # Das Bett {#schlaf}
 
-{ zeit < 155 }
-  ~ zeit = 165
+{ zeit < 95 }
+  ~ zeit = 105
   ~ netz = 0
   Nur einen Augenblick die Augen zu, sagst du dir; die Nacht wird noch
   lang genug. Das Bett ist besser als sein Ruf, der Tag war länger als

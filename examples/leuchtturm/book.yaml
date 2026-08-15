@@ -78,13 +78,21 @@ facts:
   # Ein Zustand: das Wetter hört nicht auf, das Wetter zu sein, weil
   # jemand eine Wahl getroffen hat. Deshalb `holds:` (15.1). Es färbt die
   # Prosa und entscheidet nichts; die Schwellen unten lesen nur `zeit`.
+  # Es kann das Aufziehen vorziehen, nie verzögern: die Knoten fragen
+  # `aufziehend or wetter >= 2`, und ohne Host steht es auf 1.
   wetter:  { source: host, range: [0, 3], fallback: 1, holds: true, name: Wetter }
   # Ab Minute 630 ist die Nacht vorbei.
   tag:     { source: derived, value: 'zeit >= 630' }
   # Eine halbe Stunde nach dem Absetzen geht das letzte Tageslicht.
   nacht:   { source: derived, value: 'zeit >= 30 and not tag' }
-  # Der Sturm kommt mit der Uhr des Buchs, Minute 150, und nur mit ihr.
-  sturm:   { source: derived, value: 'zeit >= 150 and not tag' }
+  # Der Sturm kommt mit der Uhr des Buchs, Minute 90, und nur mit ihr.
+  sturm:   { source: derived, value: 'zeit >= 90 and not tag' }
+  # Mit dem Tageslicht geht auch das ruhige Wetter: ab Minute 30 zieht
+  # das Unwetter auf, ab Minute 90 ist der Sturm da. Dazwischen liegt
+  # eine Stunde, in der man es kommen sieht und noch etwas tun kann -
+  # das ist die ganze Länge des Buchs für alles, was vorbereitet sein
+  # will.
+  aufziehend: { source: derived, value: 'zeit >= 30 and not sturm and not tag' }
   # Dunkel ist der Turm, wenn es Nacht ist und keine Quelle speist. Was
   # eine Hand voll Licht daran ändert, fragt jeder Knoten selbst über
   # `handlicht()`, denn das hängt am Inventar.
@@ -105,7 +113,7 @@ events:
   # (16.2).
   stromausfall:
     once: true
-    when: 'zeit >= 155'
+    when: 'zeit >= 95'
     do: 'netz = 0'
 
   # Die See drückt durch die offenen Schotttüren. `due` sagt, wie viele
@@ -118,7 +126,7 @@ events:
   # als Rückstand mit, und der Keller wäre voll, ehe die See ihn je
   # angefasst hat.
   flut:
-    counter: 'max(zeit - 155, 0)'
+    counter: 'max(zeit - 95, 0)'
     every: 8
     max_catchup: 1
     when: 'schott == 0'
@@ -127,7 +135,7 @@ events:
   # Zugedrehte Schotts halten die See nicht auf, sie verlangsamen sie.
   # Gleiche Rechnung, längerer Takt.
   flut_gedrosselt:
-    counter: 'max(zeit - 155, 0)'
+    counter: 'max(zeit - 95, 0)'
     every: 20
     max_catchup: 1
     when: 'schott == 1'
