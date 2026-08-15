@@ -497,8 +497,8 @@ test('a gather closes its level and the scene goes on above it', () => {
 
 -> END
 `);
+  // Ohne setup: setzt der Konstruktor die Geschichte selbst in Gang.
   const s = new Story(story, { seed: 1 });
-  s.begin();
   s.choose(0);
   s.choose(0);
   // The gather joins the inner threads, so what stands now is the outer
@@ -521,8 +521,8 @@ He asks what I am.
 
 -> END
 `);
+  // Ohne setup: setzt der Konstruktor die Geschichte selbst in Gang.
   const s = new Story(story, { seed: 1 });
-  s.begin();
   s.choose(0);
   assert.deepEqual(s.current.text.map((t) => t.text), ['"Nothing," I say, and the room goes quiet.']);
 });
@@ -537,8 +537,8 @@ He says nothing<>
 
 -> END
 `);
+  // Ohne setup: setzt der Konstruktor die Geschichte selbst in Gang.
   const s = new Story(story, { seed: 1 });
-  s.begin();
   assert.deepEqual(s.current.text.map((t) => t.text), ['He says nothing.']);
 });
 
@@ -553,8 +553,8 @@ test('a folded conditional still joins the line before it', () => {
 
 -> END
 `);
+  // Ohne setup: setzt der Konstruktor die Geschichte selbst in Gang.
   const s = new Story(story, { seed: 1 });
-  s.begin();
   s.choose(0);
   assert.deepEqual(s.current.text.map((t) => t.text), ['"Awkward," I reply, sipping at my tea.']);
 });
@@ -616,4 +616,28 @@ The side.
     assert.ok(s.current.ended || s.current.choices.length > 0 || s.combat,
       `"${tail}" left the reader with nothing`);
   }
+});
+
+test('ein Buch ohne setup setzt einmal aus, und ein zweites begin() ist ein Fehler', () => {
+  // Zweimal aussetzen spielte den Startknoten komplett noch einmal: jede
+  // Zuweisung lief erneut, jedes Ereignis feuerte erneut, und jede
+  // Alternative rueckte eine Option weiter - die erste Option einer Sequenz
+  // war ueber diesen Weg nie zu sehen.
+  const { story } = compile(`# A {#a}
+
+{erste|zweite}
+
+~ zaehler = zaehler + 1
+
++ [Nochmal](#a)
+`, { frontmatter: '---\ntitle: Probe\nstart: a\nstats:\n  zaehler: { name: Zaehler, start: 0 }\n---\n\n' });
+
+  const s = new Story(story, { seed: 1 });
+  assert.equal(s.setup, null, 'dieses Buch hat nichts zu fragen');
+  assert.equal(s.current.text[0].text, 'erste');
+  assert.equal(s.stats.find((x) => x.name === 'zaehler').value, 1, 'die Zuweisung lief einmal');
+
+  assert.throws(() => s.begin(), /already set out/);
+  assert.equal(s.current.text[0].text, 'erste', 'der abgelehnte Aufruf laesst die Seite in Ruhe');
+  assert.equal(s.stats.find((x) => x.name === 'zaehler').value, 1);
 });

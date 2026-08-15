@@ -100,7 +100,9 @@ export class Story {
     this.choices = [];
     this.combat = null;
     this.#computeFacts();   // so a setup screen already has a snapshot to show
-    if (this.phase === PLAYING) this.begin();
+    // A book without a setup has nothing to ask, so it sets out here. That is
+    // also why `begin()` refuses below: it would set out a second time.
+    if (this.phase === PLAYING) this.#setOut([]);
   }
 
   // --- languages ---------------------------------------------------------
@@ -129,6 +131,19 @@ export class Story {
    *        setup block; omit when the book has no setup
    */
   begin(picks = []) {
+    // Setting out twice replayed the whole start node: every assignment ran
+    // again, every event fired again, and every alternative moved on a step,
+    // so the first option of a sequence was never seen. A book without a
+    // setup sets out in the constructor and has nothing left to answer, so
+    // the second call is a mistake and says so (SPEC 12.1).
+    if (this.phase !== SETUP) {
+      throw new Error('the story has already set out; begin() answers a setup, and there is none');
+    }
+    this.#setOut(picks);
+  }
+
+  /** Rolls the stats, hands out the starting kit and enters the first node. */
+  #setOut(picks) {
     this.#diverts = 0;
     this.config.setup.forEach((block, i) => {
       const chosen = picks[i] ?? [];

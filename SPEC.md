@@ -1202,7 +1202,7 @@ want your book inside your own app or website, you talk to this:
 ```js
 const story = new Story(json, { lang: 'de' });
 story.setup;                          // creation blocks, or null
-story.begin(picks);                   // answers the setup, rolls the stats
+story.begin(picks);                   // answers the setup, rolls the stats (once)
 story.choose(index);                  // take a choice
 story.advance(host);                  // a boundary: take host values, compute, run events
 story.go(node);                       // enter a node from outside the story (12.6)
@@ -1222,6 +1222,14 @@ story.save();                         // save JSON per section 8
 story.load(save);
 story.seed(n);
 ```
+
+**A book sets out exactly once.** `begin(picks)` answers the setup and rolls
+the stats, so a book that declares no `setup:` has nothing to answer and sets
+out the moment it is constructed - `story.setup` is `null` and the first page
+is already there. Calling `begin()` on such a book, or a second time on any
+book, is refused rather than obeyed: setting out twice would run every
+assignment in the first node again, fire its events again, and move every
+alternative on a step, so the first option of a sequence was never seen.
 
 Most of these calls do what their name says. Language switching deserves a
 closer look, because it touches the save. `setLanguage` re-renders the
