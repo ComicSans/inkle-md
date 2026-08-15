@@ -18,7 +18,7 @@ import { resolve } from 'node:path';
 
 import { compileFile } from '../src/compile.js';
 import {
-  findEntry, nodeAt, nodesOf, whereIs, outline, plain, rewriteImages, sourceDir,
+  findEntry, isBookEntry, nodeAt, nodesOf, whereIs, outline, plain, rewriteImages, sourceDir,
 } from '../tools/vscode/book.mjs';
 import { panelHtml } from '../tools/vscode/document.mjs';
 import { imagePaths } from '../src/emit.js';
@@ -69,6 +69,18 @@ test('a chapter of a book finds its book.yaml, a lone file is its own book', () 
 test('the search for a book.yaml stops where the workspace does', () => {
   const chapter = resolve('examples/house/de/cellar.md');
   assert.equal(findEntry(chapter, { stop: resolve('examples/house/de') }), chapter);
+});
+
+test('a markdown file without frontmatter is no book, so the panel leaves it alone', () => {
+  assert.equal(isBookEntry(HOUSE, ''), true, 'eine book.yaml braucht keinen Frontmatter');
+  assert.equal(isBookEntry(THORNWOOD, readFileSync(THORNWOOD, 'utf8')), true);
+
+  // The file that started this: the project's own README compiles to nonsense
+  // and is not a book at all.
+  const readme = resolve('README.md');
+  assert.equal(findEntry(readme, { stop: resolve('.') }), readme);
+  assert.equal(isBookEntry(readme, readFileSync(readme, 'utf8')), false);
+  assert.equal(isBookEntry(readme, ''), false);
 });
 
 test('every node of a book names the chapter file it stands in', () => {

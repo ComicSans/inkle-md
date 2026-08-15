@@ -20,6 +20,22 @@ test('references resolve, and unknown ones are named', () => {
   expectError('# A {#a}\n\n-> other.place\n', 'E040');   // single file has no namespace
 });
 
+test('a file without frontmatter is refused before its text is read', () => {
+  // Prose that is no book at all - a README, a note - is full of lines that
+  // read like gamebook syntax. The missing frontmatter is reported first and
+  // at line 1, instead of an error from somewhere in the middle of the file.
+  const source = 'Ein Absatz.\n\n```js\nmount(story, root, { onRender: (x) => x });\n```\n';
+  let error = null;
+  try {
+    compileSources([{ file: 'readme.md', source, namespace: null }], { entry: 'readme.md' });
+  } catch (thrown) {
+    error = thrown;
+  }
+  assert.ok(error, 'eine Datei ohne Frontmatter ist kein Buch');
+  assert.equal(error.code, 'E010');
+  assert.match(error.message, /readme\.md:1:/);
+});
+
 test('duplicate ids inside one file are rejected', () => {
   expectError('# A {#a}\n\n-> END\n\n# B {#a}\n\n-> END\n', 'E030');
 });

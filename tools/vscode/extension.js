@@ -85,17 +85,29 @@ function deactivate() {
   clearTimeout(timer);
 }
 
+/**
+ * The cheap question, asked in every event handler: could this file be part of
+ * a book at all? Whether it is one is `holdsBook`, which has to read a file to
+ * answer it and is therefore asked once, where the compiler is called.
+ */
 function isBook(document) {
   return document.languageId === 'markdown'
     || document.fileName.endsWith('book.yaml')
     || document.fileName.endsWith('book.yml');
 }
 
+/** Whether the file in an editor belongs to a book (SPEC 3.1, 3.2). */
+async function holdsBook(editor) {
+  const { book } = await load();
+  const entry = book.findEntry(editor.document.uri.fsPath, { stop: workspaceRoot(editor) });
+  return book.isBookEntry(entry, textOf(entry));
+}
+
 // --- the panel -----------------------------------------------------------
 
 async function openPanel(context, out, playFrom) {
   const editor = vscode.window.activeTextEditor;
-  if (!editor || !isBook(editor.document)) {
+  if (!editor || !isBook(editor.document) || !(await holdsBook(editor))) {
     vscode.window.showInformationMessage('Story Weaver: kein Buch im aktiven Editor.');
     return;
   }
@@ -176,6 +188,11 @@ async function refresh(out, options = {}) {
 
   const { compile, book } = await load();
   const entry = book.findEntry(editor.document.uri.fsPath, { stop: workspaceRoot(editor) });
+  // Not every markdown file is a book, and the ones that are not stay silent:
+  // no banner, no error in the channel, the last book that compiled left on
+  // screen. Reading the project's own README should not look like a broken
+  // book.
+  if (!book.isBookEntry(entry, textOf(entry))) return;
   const settings = vscode.workspace.getConfiguration('storyWeaver');
 
   let story = null;
@@ -229,6 +246,15 @@ function workspaceRoot(editor) {
 function buffered(path) {
   const open = vscode.workspace.textDocuments.find((d) => d.uri.fsPath === path);
   return open ? open.getText() : readFileSync(path, 'utf8');
+}
+
+/** The same, for the question whether a file is a book: unreadable is no. */
+function textOf(path) {
+  try {
+    return buffered(path);
+  } catch {
+    return '';
+  }
 }
 
 /**

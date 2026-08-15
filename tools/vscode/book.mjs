@@ -64,6 +64,27 @@ export function findEntry(filePath, options = {}) {
 }
 
 /**
+ * Whether an entry is a book at all. A `book.yaml` is one by definition; a
+ * lone `.md` file only when it carries the frontmatter SPEC 3.1 asks for.
+ *
+ * The panel needs the distinction because `findEntry` answers every markdown
+ * file with itself once no `book.yaml` stands above it - a README, a note, a
+ * changelog - and compiling those turns their prose into compile errors that
+ * mean nothing to whoever is writing them.
+ *
+ * The test is the compiler's own (`splitFrontmatter`): the first line, trimmed,
+ * is `---`.
+ *
+ * @param {string} entry the path `findEntry` returned
+ * @param {string} source the text of that file, the editor's buffer if it has one
+ * @returns {boolean}
+ */
+export function isBookEntry(entry, source) {
+  if (entry.endsWith('.yaml') || entry.endsWith('.yml')) return true;
+  return (source ?? '').split('\n')[0].trim() === '---';
+}
+
+/**
  * The nodes of one language, with their source position resolved to paths the
  * editor can compare. `meta.files` holds the paths as the compiler was given
  * them, so the extension passes absolute ones and gets absolute ones back.

@@ -330,6 +330,13 @@ function buildVariant(variant, bookConfig, ctx, bag) {
       if (data) validateFrontmatter(data, { file: file.file, chapter: true });
     } else if (data) {
       config = validateFrontmatter(data, { file: file.file, chapter: false });
+    } else if (!config) {
+      // Without a book.yaml the file carries its own frontmatter (SPEC 3.1).
+      // The check stands before the body is parsed, because a file that is no
+      // book at all - a README, a note - is full of text that reads like
+      // gamebook syntax, and an E130 inside a code fence tells its author
+      // nothing. The missing frontmatter is the whole story.
+      throw new CompileError('E010', 'no frontmatter found', { file: file.file, line: 1 });
     }
     const { nodes } = parseStory(body, {
       file: file.file, startLine: bodyStartLine, namespace: file.namespace,
