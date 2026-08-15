@@ -52,6 +52,10 @@ public struct ReadingView: View {
         let action: String?
         let paragraphs: [Paragraph]
         let node: String?
+        /// What a single combat round narrated. A round is not a page: it has
+        /// no paragraphs and no node of its own, only its sentence, and it
+        /// stands in the account under the passage the fight began on.
+        var line: String? = nil
     }
 
     public var body: some View {
@@ -62,11 +66,16 @@ public struct ReadingView: View {
                         languages
                     }
                     ForEach(passages) { passage in
-                        if let action = passage.action {
-                            deed(action)
+                        if let line = passage.line {
+                            round(line)
+                                .id(passage.id)
+                        } else {
+                            if let action = passage.action {
+                                deed(action)
+                            }
+                            prose(passage)
+                                .id(passage.id)
                         }
-                        prose(passage)
-                            .id(passage.id)
                     }
 
                     Group {
@@ -101,7 +110,10 @@ public struct ReadingView: View {
                 withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {
                     scroller.scrollTo(last.id, anchor: .top)
                 }
-                latestIsFocused = true
+                // What a round did is a status message, not a new page: the
+                // focus stays on the buttons the reader is using and the
+                // sentence is announced where they are (SPEC 12.3).
+                if let line = last.line { announce(line) } else { latestIsFocused = true }
             }
         }
         .environment(\.locale, Locale(identifier: story.view.lang))
@@ -133,6 +145,15 @@ public struct ReadingView: View {
         .padding(.bottom, 18)
     }
 
+    /// Says a line to a screen reader without moving anybody's focus.
+    /// `AccessibilityNotification` would be the SwiftUI spelling and it starts
+    /// at iOS 17; this package says 16.
+    private func announce(_ line: String) {
+        #if canImport(UIKit)
+        UIAccessibility.post(notification: .announcement, argument: line)
+        #endif
+    }
+
     private func name(of code: String) -> String {
         Locale.current.localizedString(forLanguageCode: code) ?? code
     }
@@ -145,6 +166,9 @@ public struct ReadingView: View {
         try? story.setLanguage(code)
         let paragraphs = story.view.text
         guard !paragraphs.isEmpty, let last = passages.last else { return }
+        // A round was said in the language it was said in, like every earlier
+        // passage: there is no page under it to repaint.
+        guard last.line == nil else { return }
         passages[passages.count - 1] = Passage(id: last.id, action: last.action,
                                                paragraphs: paragraphs, node: last.node)
     }
@@ -168,6 +192,19 @@ public struct ReadingView: View {
         // to work out that two rules and a phrase are a caption.
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(labels.youChose): \(action)")
+    }
+
+    /// One round of a fight, set in the account like any other line of the
+    /// book. No rule above it: eight rounds are eight sentences of the same
+    /// scene, and eight captions saying "Attack" would be the loudest thing
+    /// on the page.
+    private func round(_ line: String) -> some View {
+        Text(line)
+            .font(.custom("Georgia", size: 17))
+            .lineSpacing(5)
+            .foregroundStyle(Paper.ink)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 14)
     }
 
     private func prose(_ passage: Passage) -> some View {
@@ -231,11 +268,16 @@ public struct ReadingView: View {
             }
             if story.view.canUndo {
                 Button(labels.back) {
-                    act(labels.back) {
+                    act(labels.back) { () -> String? in
                         _ = try? story.undo()
                         // Undo takes back the page too: the account should not
-                        // keep a passage the reader has just unmade.
-                        if passages.count > 1 { passages.removeLast() }
+                        // keep a passage the reader has just unmade. A round is
+                        // no undo point (SPEC 8), so a fight unwinds whole:
+                        // every line said in it goes with the page it stood on.
+                        while passages.count > 1, passages.last?.node != story.view.node {
+                            passages.removeLast()
+                        }
+                        return nil
                     }
                 }
                 .buttonStyle(PageButton(kind: .quiet))
@@ -274,13 +316,13 @@ public struct ReadingView: View {
 
             HStack(spacing: 10) {
                 if fight.luck != nil {
-                    Button(labels.luck) { act(labels.luck) { _ = try? story.testLuck() } }
+                    Button(labels.luck) { act(labels.luck) { _ = try? story.testLuck(); return nil } }
                         .buttonStyle(PageButton(kind: .quiet))
                 }
-                Button(labels.attack) { act(labels.attack) { _ = try? story.attack() } }
+                Button(labels.attack) { act(labels.attack) { (try? story.attack())??.text } }
                     .buttonStyle(PageButton())
                 if fight.canFlee {
-                    Button(labels.flee) { act(labels.flee) { _ = try? story.flee() } }
+                    Button(labels.flee) { act(labels.flee) { _ = try? story.flee(); return nil } }
                         .buttonStyle(PageButton(kind: .quiet))
                 }
             }
@@ -371,14 +413,14 @@ public struct ReadingView: View {
                         Spacer()
                         if item.usable {
                             Button(labels.use) {
-                                act("\(labels.use): \(item.name)") { _ = try? story.use(item.id) }
+                                act("\(labels.use): \(item.name)") { _ = try? story.use(item.id); return nil }
                             }
                             .buttonStyle(PageButton(kind: .quiet))
                             .accessibilityLabel("\(labels.use) \(item.name), \(labels.uses(item.uses))")
                         }
                         if (item.kind == "weapon" || item.kind == "armour") && !item.equipped {
                             Button(labels.equip) {
-                                act("\(labels.equip): \(item.name)") { _ = try? story.equip(item.id) }
+                                act("\(labels.equip): \(item.name)") { _ = try? story.equip(item.id); return nil }
                             }
                             .buttonStyle(PageButton(kind: .quiet))
                             .accessibilityLabel("\(labels.equip) \(item.name)")
@@ -399,25 +441,29 @@ public struct ReadingView: View {
     // MARK: - Keeping the account
 
     private func take(_ choice: Choice) {
-        act(choice.label) { try? story.choose(choice.index) }
+        act(choice.label) { try? story.choose(choice.index); return nil }
     }
 
     /// Does something to the book and writes down what it was.
     ///
     /// The controls go first and come back last. In between the page grows,
     /// which is the part worth looking at.
-    private func act(_ action: String, _ body: @escaping () -> Void) {
+    /// `body` returns the sentence a combat round narrated, or `nil` when the
+    /// turn was an ordinary one and the page speaks for itself.
+    private func act(_ action: String, _ body: @escaping () -> String?) {
         guard controlsVisible else { return }   // one turn at a time
+        // Whether a fight was already going when this turn began. A page that
+        // was already on the screen is not put there twice, and the node is no
+        // way to tell: a book may enter the same node again.
+        let fighting = story.view.combat != nil
         if reduceMotion {
-            body()
-            record(action: action)
+            record(action: action, line: body(), during: fighting)
             return
         }
         withAnimation(.easeOut(duration: 0.18)) { controlsVisible = false }
         Task {
             try? await Task.sleep(nanoseconds: 180_000_000)
-            body()
-            record(action: action)
+            record(action: action, line: body(), during: fighting)
             try? await Task.sleep(nanoseconds: 220_000_000)
             withAnimation(.easeIn(duration: 0.22)) { controlsVisible = true }
         }
@@ -426,12 +472,24 @@ public struct ReadingView: View {
     /// Adds what the book now shows as the next passage. An empty page adds
     /// nothing: a use that only changed a number is not a new scene, and the
     /// deed alone would read as a heading over nothing.
-    private func record(action: String?) {
+    private func record(action: String?, line: String? = nil, during fight: Bool = false) {
+        // A round is one sentence on the page the fight stands on, so it is
+        // appended on its own; the page itself is not repeated under it. When
+        // the round ended the fight, the passage it led to follows below.
+        if let line, !line.isEmpty {
+            passages.append(Passage(id: (passages.last?.id ?? 0) + 1,
+                                    action: nil, paragraphs: [], node: nil, line: line))
+            if story.view.combat == nil { record(action: nil) }
+            return
+        }
         let paragraphs = story.view.text
         guard !paragraphs.isEmpty else { return }
         // Undo already put the page back where it was; appending it again
         // would show the same scene twice.
         if action == labels.back, passages.last?.node == story.view.node { return }
+        // Using an item mid-fight changes a number, not the scene: the page
+        // the fight stands on is already in the account.
+        if fight, story.view.combat != nil { return }
         passages.append(Passage(id: (passages.last?.id ?? 0) + 1,
                                 action: action,
                                 paragraphs: paragraphs,
