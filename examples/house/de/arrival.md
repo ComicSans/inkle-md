@@ -9,19 +9,24 @@ brennt. Auf dem Torbogen steht ein Name, den der Efeu verdeckt.
 
 * {knows("MECHANIKER")} [Noch einmal unter die Haube sehen](#road) Du siehst nach, mit der Routine von tausend Pannen. Verteiler trocken, Zündung tot - aber tot auf eine Art, die dir neu ist. Ein Wagen, der nicht anspringen will, klingt anders als einer, der nicht anspringen kann.
   ~ fear = fear + 1
-+ [Läuten](#gate)
++ [Ans Tor treten](#gate)
 + [An der Mauer entlanggehen](#wall) Man muss ja nicht gleich klingeln.
 
 # Am Tor {#gate}
 
-Die Glocke klingt tiefer, als du erwartet hast.
+{!Zwei Flügel Schmiedeeisen, geschlossen, und im Bogen darüber hängt eine Glocke, deren Seil im Regen pendelt.|}
 
-Danach passiert eine Weile nichts, was dir Zeit gibt, über deine
-Situation der letzten Stunde nachzudenken. Du bist mit der Lage nicht zufrieden.
+{knows("GELAEUTET"): Das Tor steht offen, wie du es verlassen hast.}
 
-{Dann öffnet sich das Tor. Von selbst. Sehr langsam, mit dem Geräusch, das Türen in Geschichten machen, die schlecht ausgehen.|Das Tor steht offen, wie du es verlassen hast. }
+* {not knows("GELAEUTET")} [Läuten](#gate)
+  Die Glocke klingt tiefer, als du erwartet hast.
 
-* [Hindurchgehen](#drive)
+  Danach passiert eine Weile nichts, was dir Zeit gibt, über deine
+  Situation der letzten Stunde nachzudenken. Du bist mit der Lage nicht zufrieden.
+
+  Dann öffnet sich das Tor. Von selbst. Sehr langsam, mit dem Geräusch, das Türen in Geschichten machen, die schlecht ausgehen.
+  ~ remember("GELAEUTET")
+* {knows("GELAEUTET")} [Hindurchgehen](#drive)
 + [Es dir anders überlegen und die Mauer probieren](#wall)
 
 # An der Mauer {#wall}

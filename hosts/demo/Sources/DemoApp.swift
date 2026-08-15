@@ -50,7 +50,7 @@ enum Books {
     static func title(_ name: String) -> String {
         switch name {
         case "thornwood-book": return "The Crypt under the Thorn"
-        case "house": return "The House on the Hill"
+        case "house": return "The House Behind the Moor"
         case "nightside": return "Nachtseite"
         case "leuchtturm": return "Der Leuchtturm auf der Sandbank"
         case "intercept": return "The Intercept"

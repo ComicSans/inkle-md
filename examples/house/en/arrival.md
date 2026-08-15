@@ -9,7 +9,7 @@ behind exactly one window. There is a name on the archway, which the ivy
 covers.
 
 * Take another look under the bonnet
-* Ring the bell
+* Step up to the gate
 * Walk along the wall
 
 You take a look, with the routine of a thousand breakdowns. Distributor dry,
@@ -20,15 +20,20 @@ You don't have to ring straight away, after all.
 
 # At the Gate {#gate}
 
+{!Two leaves of wrought iron, shut, and in the arch above hangs a bell, its rope swinging in the rain.|}
+
+{knows("GELAEUTET"): The gate stands open, the way you left it.}
+
+* Ring the bell
+* Go through
+* Think better of it and try the wall
+
 The bell rings deeper than you expected.
 
 Then nothing happens for a while, which gives you time to reflect on the
 situation of the last hour. You are not happy with it.
 
-{Then the gate opens. By itself. Very slowly, with the sound that doors make in stories that end badly.|The gate stands open, the way you left it. }
-
-* Go through
-* Think better of it and try the wall
+Then the gate opens. By itself. Very slowly, with the sound that doors make in stories that end badly.
 
 # At the Wall {#wall}
 
