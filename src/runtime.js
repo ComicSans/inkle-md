@@ -667,19 +667,27 @@ export class Story {
         else if (current) dropped = true;
         continue;
       }
-      if (op?.op === 'text') kept.push({ text: this.#render(op.parts), class: entry.class, current });
+      if (op?.op === 'text') {
+        // The glue comes along, or a repaint would take apart every sentence
+        // that was glued across a choice: after a load, an undo, a boundary
+        // or a language switch the page has to read as it read before (8).
+        kept.push({ text: this.#render(op.parts), class: entry.class, current, glue: op.glue });
       // Both halves come from the op rather than from the entry, so a repaint
       // after a language switch shows the other language's picture too (3.4).
-      else if (op?.op === 'image') kept.push({ image: op.src, alt: op.alt, class: entry.class, current });
+      } else if (op?.op === 'image') kept.push({ image: op.src, alt: op.alt, class: entry.class, current });
       else if (current) dropped = true;   // a shape this language does not have
     }
 
     // A node one language overrides has a shape the other cannot follow.
     // Replay that node's text here instead of showing half a page; whatever
-    // came from earlier nodes stays as it is.
-    this.text = kept
-      .filter((k) => !dropped || !k.current)
-      .map(({ current: _current, ...entry }) => entry);
+    // came from earlier nodes stays as it is. Dropping happens before the
+    // glue is folded, so a paragraph on its way out takes nothing with it.
+    this.text = [];
+    for (const entry of kept.filter((k) => !dropped || !k.current)) {
+      const { current: _current, glue, ...paragraph } = entry;
+      if (paragraph.text === undefined) this.text.push(paragraph);
+      else this.#print(paragraph, glue);
+    }
     if (dropped) this.#replayText(this.state.node);
   }
 
@@ -710,6 +718,23 @@ export class Story {
    */
   #print(paragraph, glue) {
     const last = this.text[this.text.length - 1];
+    // A paragraph of conditions where none is true renders to nothing, and
+    // the newline between its lines leaves a space behind. That is not a
+    // paragraph and never reaches a host (SPEC 4.6); it only keeps the glue
+    // running, so a sentence broken across it still closes.
+    if (paragraph.text !== undefined) {
+      // The same emptiness in its milder form: one line of the paragraph said
+      // nothing, and the newline that joined it to the next left a space
+      // standing. A run of spaces is one space, and none of them sits at an
+      // edge.
+      paragraph = { ...paragraph, text: paragraph.text.replace(/ {2,}/g, ' ').trim() };
+      if (paragraph.text === '') {
+        if (last?.text !== undefined && (glue?.before || last.glue?.after)) {
+          last.glue = { ...last.glue, after: glue?.after ?? false };
+        }
+        return;
+      }
+    }
     // Glue joins a sentence to a sentence. An image is not one, so a run of
     // glue that meets a picture ends there rather than concatenating onto it.
     if (last?.text !== undefined && (glue?.before || last.glue?.after)) {

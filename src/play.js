@@ -135,11 +135,11 @@ function line(paragraph) {
 }
 
 function render(s) {
+  // Kein Filter gegen leere Absaetze: die Runtime laesst sie gar nicht erst
+  // entstehen (SPEC 4.6), und ein Host, der hier siebt, verdeckt nur, wenn
+  // sie es doch tut.
   const out = [];
-  for (const paragraph of s.current.text) {
-    const text = line(paragraph);
-    if (text.trim() !== '') out.push(wrap(text));
-  }
+  for (const paragraph of s.current.text) out.push(wrap(line(paragraph)));
 
   if (s.combat) {
     const fight = s.combat;

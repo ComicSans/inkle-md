@@ -396,7 +396,10 @@ standing as two paragraphs:
 
 Either mark is enough; both may appear. The halves are printed in the same
 turn even though a choice stands between them in the source, so what the
-reader sees is one paragraph, and a screen reader hears one.
+reader sees is one paragraph, and a screen reader hears one. That holds every
+time the page is drawn, not only the first: a save that comes back, an undo,
+a boundary that brings time in and a language switch all rebuild the page,
+and they rebuild it glued.
 
 Glue is text, not logic, which is what lets 3.4 keep working: a translation
 sets its own glue where its own grammar wants it, or sets none and keeps the
@@ -428,6 +431,14 @@ the dice, so a seed reproduces it; a conditional `:` chooses by what is true;
 and a bare expression like `{gold}` prints its value. Alternatives inside
 alternatives do not exist, so each brace stays simple enough to read at a
 glance.
+
+**A paragraph that renders to nothing is not a paragraph.** Write four
+conditional lines under one another and, on a page where none of them is
+true, there is nothing to print - but the newlines that joined them would
+leave spaces behind. Nothing goes to the host: no empty paragraph, no
+paragraph that is only a space, and inside one that does have something to
+say, a run of spaces counts as one and none of them sits at an edge. A host
+does not have to sieve, and one that does hides the day the rule breaks.
 
 **A colon does not always mean a condition.** Prose is full of colons - "In
 the log book: the last entry breaks off" - and a sequence must be able to

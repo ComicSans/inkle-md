@@ -299,7 +299,6 @@ function mount(json, root, options = {}) {
         prose.append(img);
         continue;
       }
-      if (paragraph.text.trim() === '') continue;
       prose.append(el('p', { class: paragraph.class ?? null, text: paragraph.text }));
     }
     page.append(prose);
