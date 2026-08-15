@@ -1,8 +1,14 @@
-title: Der Leuchtturm auf der Sandbank
-blurb: "Ein Abend, eine Sandbank, ein Turm: Wenn der Sturm kommt, muss die große Lampe brennen. Das Seekabel hält nicht ewig, der Generator will Arbeit sehen, und die See kennt den Weg in den Keller. Ein Spielbuch gegen die Uhr, mit zwei Händen und einer Öl-Laterne."
+title: { de: Der Leuchtturm auf der Sandbank, en: The Lighthouse on the Sandbar }
+blurb:
+  de: "Ein Abend, eine Sandbank, ein Turm: Wenn der Sturm kommt, muss die große Lampe brennen. Ein Spielbuch gegen die Uhr."
+  en: "One evening, a sandbar, a tower: when the storm comes, the great lamp must be burning. A gamebook against the clock."
 author: inkle-md
 version: 0.3.0
 start: turm.ankunft
+
+languages:
+  default: de
+  available: [de, en]
 
 chapters:
   - turm.md
@@ -13,11 +19,11 @@ stats:
   # Die Schwellen des Buchs - Sturm, Stromausfall, Flut - hängen nur an
   # dieser Uhr, nie am Wetter von draußen: dieselbe Handlungsfolge ergibt
   # immer dasselbe Buch.
-  zeit:   { name: Minuten, start: 0 }
-  wasser: { name: Wasser im Keller, start: 0 }
+  zeit:   { name: { de: Minuten, en: Minutes }, start: 0 }
+  wasser: { name: { de: Wasser im Keller, en: Water in the Cellar }, start: 0 }
   # Gewürfelt wird in diesem Buch an genau einer Stelle, der Außenleiter,
   # und dort gegen diesen Wert.
-  geschick: { name: Geschick, start: 9 }
+  geschick: { name: { de: Geschick, en: Skill }, start: 9 }
   # Das Seekabel vom Festland. Es liefert, bis der Sturm es holt; das
   # Ereignis `stromausfall` legt es um, und kein Knoten setzt voraus, auf
   # welchem Weg jemand hergekommen ist: eine App darf mitten im Buch
@@ -63,9 +69,9 @@ inventory:
   slots: 2
 
 items:
-  laterne:   { name: Öl-Laterne, kind: gear }
-  schluessel: { name: Werkzeugschlüssel, kind: gear }
-  band:      { name: Dichtband, kind: gear }
+  laterne:   { name: { de: Öl-Laterne, en: Oil Lantern }, kind: gear }
+  schluessel: { name: { de: Werkzeugschlüssel, en: Wrench }, kind: gear }
+  band:      { name: { de: Dichtband, en: Sealing Tape }, kind: gear }
 
 # Die Fighting-Fantasy-Regel, ausgeschrieben: zwei Würfel, höchstens der
 # Wert. Geschick 9 besteht gut vier von fünf Proben.
@@ -76,13 +82,13 @@ checks:
 # Was die Welt draußen weiß und das Buch nur liest (15).
 facts:
   # Eine Dauer: sie wird von der Grenze verbraucht, die sie nimmt (16.2).
-  elapsed: { source: host, range: [0, 604800], fallback: 0, name: Verstrichen }
+  elapsed: { source: host, range: [0, 604800], fallback: 0, name: { de: Verstrichen, en: Elapsed } }
   # Ein Zustand: das Wetter hört nicht auf, das Wetter zu sein, weil
   # jemand eine Wahl getroffen hat. Deshalb `holds:` (15.1). Es färbt die
   # Prosa und entscheidet nichts; die Schwellen unten lesen nur `zeit`.
   # Es kann das Aufziehen vorziehen, nie verzögern: die Knoten fragen
   # `anzug >= 1 or wetter >= 2`, und ohne Host steht es auf 1.
-  wetter:  { source: host, range: [0, 3], fallback: 1, holds: true, name: Wetter }
+  wetter:  { source: host, range: [0, 3], fallback: 1, holds: true, name: { de: Wetter, en: Weather } }
   # Ab Minute 630 ist die Nacht vorbei.
   tag:     { source: derived, value: 'zeit >= 630' }
   # Eine halbe Stunde nach dem Absetzen geht das letzte Tageslicht.
