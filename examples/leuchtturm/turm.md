@@ -150,7 +150,7 @@ solange kein Strom kommt.}
 
 ~ im_keller = 0
 
-{Rundum Glas, in der Mitte das Leuchtwerk - die große Lampe in ihrem
+{Rundum Glas, in der Mitte das Leuchtwerk: die große Lampe in ihrem
 Rund, das Getriebe, der Hebel an der grauen Schaltkiste.|Wieder oben,
 rundum Glas.}
 
@@ -224,19 +224,19 @@ tot.}
 
 { netz == 1 or generator == 1 }
   Unter der Decke brennt eine Birne hinter Drahtglas. {Sie macht aus dem
-  Keller einen Arbeits- und Lagerraum. Auf dem Podest in der Mitte steht
+  Keller einen Arbeits- und Lagerraum: Auf dem Podest in der Mitte steht
   der Generator, daneben die Werkbank, das Ölfass an der Wand, im Regal
   der Benzinkanister. Seeseitig sitzen zwei schwere Schotttüren
   hintereinander, mit einem kurzen Gang dazwischen - dadurch kommen bei
   Hochwasser die Vorratskisten vom Boot herein, statt über die Stiege.|}
 { handlicht() }
   Der Schein der Öl-Laterne reicht so weit, wie er reicht. {Er holt die
-  Dinge einzeln aus dem Dunkel - das Podest mit dem Generator, die
+  Dinge einzeln aus dem Dunkel: das Podest mit dem Generator, die
   Werkbank, das Ölfass, im Regal den Kanister. Zuletzt, seeseitig, die
   beiden Schotttüren der Kistenschleuse, eine hinter der anderen.|}
 { else }
   Hier unten ist die Nacht vollständig. {Was der Keller hat, zeigt er
-  deinen Händen, nicht deinen Augen - das Podest, die Werkbank, irgendwo
+  deinen Händen, nicht deinen Augen: das Podest, die Werkbank, irgendwo
   das Regal.|}
 
 Was die See vom Keller hält, steht am Boden:

@@ -358,7 +358,7 @@ function inlinePart(inner, at, state) {
   }
 
   const colon = colonOutsideStrings(inner);
-  if (colon >= 0) {
+  if (colon >= 0 && looksLikeCondition(inner.slice(0, colon))) {
     // In a translation the condition is written as "?": it belongs to the
     // default language, and repeating it would duplicate logic (SPEC 3.4).
     const head = inner.slice(0, colon).trim();
@@ -371,7 +371,15 @@ function inlinePart(inner, at, state) {
     }
     const when = parseExpression(head, at);
     const arms = splitAlternatives(condBody(inner, colon), at, state);
-    return { t: 'cond', when, then: arms[0] ?? [], else: arms[1] ?? [] };
+    const cond = { t: 'cond', when, then: arms[0] ?? [], else: arms[1] ?? [] };
+    // Only a head of bare names is still open; anything with an operator or a
+    // call was meant as a condition and stays one, right or wrong.
+    const bare = namesIn(when);
+    if (bare.length > 0 && !/[<>=!]=|[<>]|\band\b|\bor\b|\bnot\b|\(/.test(head)) {
+      cond.maybe = { t: 'alt', kind: 'seq', id: id(), items: splitAlternatives(inner, at, state) };
+      cond.maybeNames = bare;
+    }
+    return cond;
   }
 
   if (inner.includes('|')) {
@@ -379,6 +387,48 @@ function inlinePart(inner, at, state) {
   }
 
   return { t: 'print', expr: parseExpression(inner, at) };
+}
+
+/**
+ * Whether the text before a colon is a condition or the first words of a
+ * sequence (SPEC 4.4). Prose has colons in it - "Im Dienstbuch: der letzte
+ * Eintrag" - and before this rule every one of them turned its paragraph
+ * into a conditional and then into E130.
+ *
+ * A head that carries an operator is a condition, whatever else is wrong
+ * with it: that keeps a mistyped `{gold >== 3: a|b}` an error instead of
+ * quietly becoming prose. A head that does not parse at all is text. What
+ * is left is a head of bare names, and whether `{lampe: an|aus}` tests a
+ * fact or introduces a sentence depends on whether `lampe` is declared -
+ * which the parser cannot know. It says "maybe" and `checkAndResolve`
+ * settles it.
+ */
+function looksLikeCondition(head) {
+  // The placeholder of a translation (SPEC 3.4) is a condition and nothing
+  // else; it parses as no expression at all.
+  if (head.trim() === '?') return true;
+  if (/[<>=!]=|[<>]|\band\b|\bor\b|\bnot\b|\)/.test(head)) return true;
+  try {
+    parseExpression(head.trim(), { file: '', line: 0, column: 0 });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Every bare name an expression reads, for the "maybe" of looksLikeCondition. */
+export function namesIn(expr) {
+  const names = [];
+  const walk = (e) => {
+    if (!e || typeof e !== 'object') return;
+    if (e.var !== undefined) names.push(e.var);
+    for (const value of Object.values(e)) {
+      if (Array.isArray(value)) value.forEach(walk);
+      else if (value && typeof value === 'object') walk(value);
+    }
+  };
+  walk(expr);
+  return names;
 }
 
 /** The arms of a conditional, without the space that follows the colon. */

@@ -16,7 +16,7 @@ import { dirname, basename, extname, join } from 'node:path';
 import { CompileError, ErrorBag } from './errors.js';
 import { splitFrontmatter, parseYaml } from './yaml.js';
 import { validateFrontmatter, languagesOf, DEFAULT_LANGUAGE } from './frontmatter.js';
-import { parseStory } from './parser.js';
+import { parseStory, namesIn } from './parser.js';
 import { BUILTINS, BUILTIN_VARS, IMPURE_CALLS, NAME_ARGS, walkExpression } from './expr.js';
 import { lint } from './lint.js';
 import { parseCatalog, applyCatalog } from './catalog.js';
@@ -414,6 +414,7 @@ export function checkAndResolve(nodes, table, { config, multi, bag }) {
 
   for (const node of nodes) {
     const scope = new Set([...knownVars, ...(node.params ?? [])]);
+    settleHeads(node.body, scope);
     walkOps(node.body, (op) => {
       if (op.op === 'divert') {
         if (op.target.end) return;
@@ -665,6 +666,44 @@ export function walkOps(ops, onOp, onExpr = () => {}) {
         break;
       default:
         break;
+    }
+  }
+}
+
+/**
+ * Settles what the parser left open (SPEC 4.4): `{lampe: an|aus}` is a
+ * condition when `lampe` is declared and the first words of a sequence when
+ * it is not. The parser carries both readings; here the scope decides.
+ */
+function settleHeads(ops, scope) {
+  const list = (parts) => {
+    for (let i = 0; i < (parts ?? []).length; i++) {
+      const part = parts[i];
+      if (part.t === 'cond') {
+        if (part.maybe && part.maybeNames.some((name) => !scope.has(name))) {
+          parts[i] = part.maybe;
+          list(parts[i].items.flat());
+          for (const arm of parts[i].items) list(arm);
+          continue;
+        }
+        delete part.maybe;
+        delete part.maybeNames;
+        list(part.then);
+        list(part.else);
+      } else if (part.t === 'alt') {
+        for (const arm of part.items) list(arm);
+      }
+    }
+  };
+  for (const op of ops ?? []) {
+    if (op.op === 'text') list(op.parts);
+    else if (op.op === 'choices') {
+      for (const item of op.items) { list(item.label); settleHeads(item.body, scope); }
+    } else if (op.op === 'branch') {
+      for (const b of op.branches) settleHeads(b.body, scope);
+      settleHeads(op.else, scope);
+    } else if (op.op === 'combat') {
+      for (const exit of Object.values(op.exits)) { list(exit.label); list(exit.text); }
     }
   }
 }

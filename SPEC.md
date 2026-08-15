@@ -421,12 +421,33 @@ curly braces:
 You have {gold} gold pieces left.
 ```
 
-In order: a sequence steps through its options and stays on the last; a cycle
-`&` wraps around; a once-only `!` shows each option once and then falls
-silent; a random `~` picks one; a conditional `:` chooses by what is true; and
-a bare expression like `{gold}` prints its value. Alternatives inside
+A sequence has no mark and steps through its options, then stays on the last;
+a cycle `&` wraps around; a once-only `!` shows each option once and then
+falls silent; a random `~` picks one of them, drawn from the same stream as
+the dice, so a seed reproduces it; a conditional `:` chooses by what is true;
+and a bare expression like `{gold}` prints its value. Alternatives inside
 alternatives do not exist, so each brace stays simple enough to read at a
 glance.
+
+**A colon does not always mean a condition.** Prose is full of colons - "In
+the log book: the last entry breaks off" - and a sequence must be able to
+carry one. The text before the first colon outside quotes is a condition when
+one of these holds:
+
+- it is `?`, the placeholder a translation writes (3.4);
+- it carries an operator: `==`, `!=`, `<`, `<=`, `>`, `>=`, `and`, `or`,
+  `not`, or a closing parenthesis. A head that says `gold >== 3` is a
+  condition with a typo in it, and stays E130 rather than turning into
+  prose;
+- it is made of names alone, and every one of them is declared. `{lamp: lit|
+  dark}` tests the fact `lamp`; `{Careful: a step|Mind yourself}` is a
+  sequence, because nothing called `Careful` was ever declared.
+
+Anything else is text. The last rule is the only one the parser cannot settle
+alone, because what is declared is known one pass later; nothing about the
+book depends on when it is decided. A head that lands differently in two
+languages is E071, the same mismatch as any other change of shape in a
+translation.
 
 ### 4.7 Branching
 
