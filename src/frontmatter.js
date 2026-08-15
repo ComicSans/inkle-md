@@ -17,7 +17,7 @@ import {
 import { parseInline } from './parser.js';
 
 const BOOK_KEYS = new Set([
-  'title', 'author', 'version', 'start', 'chapters', 'languages',
+  'title', 'blurb', 'author', 'version', 'start', 'chapters', 'languages',
   'stats', 'inventory', 'items', 'setup', 'combat', 'enemies',
   'death', 'undo', 'strings', 'checks',
   'facts', 'events', 'places',
@@ -138,6 +138,7 @@ export function validateFrontmatter(data, ctx) {
   const config = {
     languages,
     title: i18n(data.title, lang, 'title', at),
+    blurb: i18n(data.blurb, lang, 'blurb', at),
     author: data.author ?? null,
     version: data.version ?? null,
     start: data.start ?? null,

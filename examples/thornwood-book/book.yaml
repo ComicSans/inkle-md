@@ -1,4 +1,7 @@
 title: { de: Die Gruft unter dem Weißdorn, en: The Crypt Under the Thorn }
+blurb:
+  de: "Eine Hecke, ein Spalt, eine Gruft - und ein Wort, das etwas im Dunkeln seufzt. Ein kleines Abenteuer über Mut, Würfelglück und einen Schlüssel aus Silber."
+  en: "A hedge, a gap, a crypt - and a word something sighs in the dark. A small adventure about nerve, dice, and a key made of silver."
 author: Story Weaver
 version: 0.1.0
 start: start.begin

@@ -33,6 +33,12 @@ const HELP = `
  */
 export async function play(story, options = {}) {
   const s = new Story(story, { seed: options.seed, lang: options.lang });
+  // The back of the book (SPEC 6), read before anything begins. A script or
+  // a JSON consumer is not reading for pleasure and skips it.
+  if (story.meta.blurb && !options.script && !options.json) {
+    const blurb = story.meta.blurb[s.lang] ?? Object.values(story.meta.blurb)[0];
+    stdout.write(`\n${blurb}\n`);
+  }
   if (s.setup) s.begin(pickSetup(s, options.picks));
   // The host brings time in at every boundary after the first; `elapsed` is
   // 0 at the first one, and without a host it stays at its fallback (15.4).

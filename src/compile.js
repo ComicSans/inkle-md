@@ -140,6 +140,7 @@ export function compileSources(input, ctx = {}) {
   const story = emitStory({
     meta: {
       title: config.title,
+      ...(config.blurb ? { blurb: config.blurb } : {}),
       author: config.author,
       version: config.version,
       start,

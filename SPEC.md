@@ -676,6 +676,7 @@ book; the sections after it walk through every part.
 
 ```yaml
 title: The Thornwood
+blurb: A hedge, a gap, a crypt - and one night to get all three wrong.
 author: ...
 version: 1.4.0
 start: start.begin
@@ -782,9 +783,17 @@ through them one by one. The example above leaves out `combat.flee_cost`,
 which is what running away takes off your stamina, because leaving it out is
 how you get the Fighting Fantasy value of two.
 
+`blurb:` is the back of the book: two or three sentences a reader sees
+before the story begins, and the one piece of prose that lives in the
+frontmatter rather than in a node, because it describes the book and not the
+world. It is plain text - no expression, no alternative - and it is
+optional. A player that has it shows it before the setup and the first page
+(12.2, 12.4), and a host that lists books on a shelf reads it from `meta`
+like a cover (12.8).
+
 Books travel, so translation is built in. Any field a reader can see may be a
-language table instead of a scalar, in `title:`, item `name:`, setup titles
-and labels, enemy `name:` and every entry of `strings:`:
+language table instead of a scalar, in `title:`, `blurb:`, item `name:`,
+setup titles and labels, enemy `name:` and every entry of `strings:`:
 
 ```yaml
 items:
@@ -1346,6 +1355,10 @@ rule per `{.name}` a book uses, plus the labels for its own buttons and
 panels in each language the book declares. None of that is readable from the
 story JSON, which is the point of section 6's rule.
 
+A book that declares a `blurb:` (6) opens on it: the back of the book as the
+first page, with the one button that begins. A reader returning to a saved
+game has read it already and is not shown it again.
+
 Themes follow `prefers-color-scheme` and can be overridden by the reader.
 
 Saves live in `localStorage` under one key per book, plus export and import
@@ -1387,7 +1400,9 @@ gives you all of this without any work on the author's side:
 
 You do not need the HTML export to read your own book. `story-weaver play
 <entry>` walks a book in the terminal, which is how an author reads their own
-text before anyone else does. Two flags make it a tool rather than a toy:
+text before anyone else does. A declared `blurb:` (6) is printed before the
+setup; a `--script` walk and `--json` output skip it, because neither is
+reading for pleasure. Two flags make it a tool rather than a toy:
 
 - `--script 1,2,a,a` walks a fixed route and prints where it ended up. A
   digit takes the choice at that position; in a fight, `a` attacks, `l`
@@ -1623,7 +1638,7 @@ are hosts.
 `story-weaver bundle book.yaml --out dir` writes what a native host needs:
 
 - `story.json`, the story of 9.1 as data, which the host can also read
-  itself, for a chapter list or a cover;
+  itself, for a chapter list, a cover or the back of the book (`meta.blurb`);
 - `story-weaver.js`, the runtime and the protocol of 12.7 as one script, with
   the module keywords removed, because the engine it runs in has no loader.
 
@@ -2388,6 +2403,7 @@ edges.
 | 9.1     | The `image` op added to the story JSON. |
 | 10.3    | E172 and E180 to E184 added to the error table. |
 | 5, 10.1 | Frontmatter expressions are checked against the same scope as the story's (E130 to E133): a potion that healed a stat nobody declared now fails the compile instead of reaching the reader. |
+| 6, 12   | `blurb:` added: the back of the book, a language table shown before setup and first page by the export and by `play`, and readable from `meta` by any host. |
 | 11, 21  | L025 is an `info` about a book and a `warning` on an output with no host, because a book does not know which output it becomes. |
 | 4.2, 11, 21 | L029 added, and with it the runtime error for a node whose choices have all been taken: E110's twin, for what is left rather than for what is written. |
 | 12      | Retitled: the web export is one host of several. 12.5 to 12.9 added, with the hosts beyond the browser, the two ways to play, the host protocol, the native bundle, and what a foreign game loop has to know. |

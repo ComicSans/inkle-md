@@ -1,4 +1,7 @@
 title: { de: Nachtseite, en: Nightside }
+blurb:
+  de: "Die Kestrel ist auf der Nachtseite eines fremden Planeten niedergegangen, und der Bordrechner sagt, der Crew gehe es gut. Die Luft wird knapp, die Antworten kommen zu pünktlich, und im Süden wartet eine Senke, die zu regelmäßig ist, um Landschaft zu sein. Ein Spielbuch über Atem, Zweifel und die Frage, wer hier eigentlich mit dir spricht."
+  en: "The Kestrel came down on the nightside of a foreign planet, and the ship's computer says the crew is doing fine. Air is running low, the answers arrive too punctually, and to the south waits a basin too regular to be landscape. A gamebook about breath, doubt, and the question of who is actually talking to you."
 author: Story Weaver
 version: 0.1.0
 start: crash.wake

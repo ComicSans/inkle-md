@@ -87,6 +87,15 @@ test('a multi-file project namespaces its nodes and resolves across files', () =
   assert.equal(nodesOf(story)['start.begin'].body[0].target, 'crypt.chamber');
 });
 
+test('the blurb is the back of the book and travels in meta', () => {
+  const scalar = compile('# A {#a}\n\n-> END\n', {
+    frontmatter: '---\ntitle: T\nblurb: Ein Abend, ein Haus, kein Weg zurück.\nstats:\n  gold: { start: 1 }\n---\n',
+  });
+  assert.equal(scalar.story.meta.blurb.default, 'Ein Abend, ein Haus, kein Weg zurück.');
+  const without = compile('# A {#a}\n\n-> END\n');
+  assert.ok(!('blurb' in without.story.meta));
+});
+
 test('a single-file book compiles without warnings', () => {
   const { story, warnings } = compileFile(join(here, 'fixtures', 'thornwood.md'));
   const warned = warnings.messages.filter((m) => m.level === 'warning');

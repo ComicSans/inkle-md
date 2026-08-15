@@ -71,6 +71,9 @@ function mount(json, root, options = {}) {
     : preferredLanguage(json);
   let story = new Story(json, { lang: wanted });
   let ui = UI[story.lang] ?? UI.en;
+  // The back of the book (SPEC 6): shown once, before anything begins. A
+  // reader returning to a saved game has read it already.
+  let coverPending = Boolean(json.meta.blurb);
 
   const el = (tag, props = {}, children = []) => {
     const node = document.createElement(tag);
@@ -281,6 +284,19 @@ function mount(json, root, options = {}) {
     ]);
     root.append(header);
 
+    if (coverPending) {
+      const prose = el('div', { class: 'prose' });
+      for (const paragraph of (text(json.meta.blurb) ?? '').split(/\n\n+/)) {
+        if (paragraph.trim()) prose.append(el('p', { text: paragraph.trim() }));
+      }
+      const begin = el('div', { class: 'choices' }, [
+        el('button', { text: ui.begin, 'data-key': '1', onclick: () => { coverPending = false; render(); } }),
+      ]);
+      root.append(el('main', { class: 'page' }, [prose, begin]));
+      options.onRender?.({ node: null, lang: story.lang });
+      return;
+    }
+
     if (story.setup) {
       root.append(el('main', {}, [setupScreen()]));
       options.onRender?.({ node: null, lang: story.lang });
@@ -405,7 +421,7 @@ function mount(json, root, options = {}) {
 
   const saved = loadSaved();
   if (saved) {
-    try { story.load(saved); } catch {
+    try { story.load(saved); coverPending = false; } catch {
       // An old save from another book or version: it would resume garbage,
       // so it is dropped rather than retried on every reload.
       forget();
