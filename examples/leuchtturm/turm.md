@@ -10,14 +10,20 @@ Ringsum arbeitet die See.}
 
 ![Ein gedrungener Leuchtturm auf einer Sandbank, das Wasser bis an die Tür.](turm.png)
 
-{sturm: Der Sturm ist da. Die Brandung nimmt die Bank in Handbreiten, die
-Gischt steht bis ans Mauerwerk, und was hier draußen keinen Halt hat,
-gehört jetzt der See. Es gibt nur noch Wege, keine Orte mehr.|Im Westen
-liegt eine Wolkenbank, die nicht liegen bleibt. Wer hier arbeitet,
-arbeitet gegen sie.}
-
-{aufziehend or wetter >= 2: Böen treiben schon Schauer über die Bank.|Noch
-ist der Abend still, aber am Horizont zieht etwas herauf.}
+{ anzug >= 3 }
+  Der Orkan steht. Die Gischt geht waagerecht über die Insel, und du gehst
+  gebückt, oder du gehst gar nicht. Was hier draußen keinen Halt hat,
+  gehört jetzt der See: Es gibt nur noch Wege, keine Orte mehr.
+{ anzug >= 2 or wetter >= 3 }
+  Die Wolkenbank hat den halben Himmel, die See läuft in langen Reihen
+  gegen die Bank. Der Wind lehnt sich gegen dich, wenn du stehen bleibst.
+{ anzug >= 1 or wetter >= 2 }
+  Das Licht geht, und die Wolkenbank ist gewachsen. Der Wind hat gedreht
+  und zupft an deiner Jacke.
+{ else }
+  Der Abend ist still, die See liegt flach um die Bank. Im Westen steht
+  die Wolkenbank, noch weit, noch niedrig. Wer hier arbeitet, arbeitet
+  gegen sie.
 
 {lampe: Über dir läuft der Strahl seine Runden. Die Nacht scheint sicher.|
 Oben siehst du die große Lampe: dunkel. Sie ist dein Auftrag: Wenn der Sturm kommt, muss sie brennen.}
@@ -43,6 +49,19 @@ Ein Tisch, ein Bett, das Radio auf dem Bord, ein Fenster zur Wetterseite.
 Im Dienstbuch auf dem Tisch endet der letzte Eintrag vor drei Wochen,
 mitten im Satz. Am Haken neben der Tür {has("laterne"): hängt nur noch
 der leere Nagel der Öl-Laterne|hängt eine Öl-Laterne}.
+
+{ anzug >= 3 }
+  Das Haus ist voller Lärm, das Mauerwerk dröhnt, die Scheibe steht unter
+  Wasser. Du hörst das Radio nicht mehr, auch wenn es liefe.
+{ anzug >= 2 }
+  Der Ton im Mauerwerk ist gestiegen, der Rahmen schlägt jetzt bei jeder
+  Bö an. Regen kommt in Schauern gegen die Scheibe, wie geworfen.
+{ anzug >= 1 }
+  Der Wind hat einen Ton im Mauerwerk gefunden, tief und gleichmäßig. Der
+  Fensterrahmen zur Wetterseite arbeitet leise.
+{ else }
+  Es ist still genug, dass du unter allem die See hörst, gleichmäßig wie
+  ein Atem.
 
 {netz == 1: Unter der Decke brennt die Funzel, als wäre nichts. Das
 Seekabel vom Festland tut seine Arbeit noch.}
@@ -95,9 +114,18 @@ solange kein Strom kommt.}
   niemand schrieb ihn zu Ende.
   ~ zeit += 20
 + [Eine Weile am Fenster stehen](#arbeitsraum)
-  {&Die Wolkenbank ist näher.|Der Wind hat Stimme und Melodie
-  gefunden und singt im Mauerwerk.|Die See hat die Bank umrundet und 
-  fängt mit einer neuen Welle an.}
+  { anzug >= 3 }
+    Am Fenster ist nichts mehr zu sehen als Wasser auf Glas. Was du
+    erfährst, erfährst du mit den Ohren, und es ist genug.
+  { anzug >= 2 }
+    Eine Viertelstunde am Fenster, und du siehst die Brandung wachsen.
+    Die Wolkenbank ist keine Bank mehr, sie ist der Himmel.
+  { anzug >= 1 }
+    Du siehst dem Licht beim Gehen zu. Die Wolkenbank ist näher, und auf
+    der See stehen die ersten weißen Kämme.
+  { else }
+    Die See ist ruhig, die Wolkenbank im Westen liegt da, wo sie vorhin
+    lag - fast.
   ~ zeit += 15
 
 # Vor der Tür {#vortreten}
@@ -111,7 +139,7 @@ solange kein Strom kommt.}
 { else }
   Du bekommst die Tür einen Spalt weit auf, und die Nacht schlägt sie 
   dir wieder zu. Da draußen ist kein Ort mehr, an dem man verweilen möchte;
-  es gibt nur noch die zwanzig Schritte an der Mauer entlang zur Kellertür, für
+  es gibt nur noch die zwanzig Schritte an der Mauer entlang zur Wettertür, für
   den, der dort etwas Dringendes zu erledigen hat. Du drückst die Tür wieder ins
   Schloss.
   -> arbeitsraum
@@ -133,10 +161,20 @@ Der Hebel liegt auf EIN, und nichts geschieht, sooft du auch hinsiehst.}
 und der Hebel ist im Augenblick nur ein Stück Eisen: Die Schiene ist
 tot.}
 
-{sturm: Die Scheiben stehen voll Wasser, und bei jeder Bö geht ein
-Zittern durch das Gestänge.|Von hier oben ist die Wolkenbank im Westen
-ein dunkler Deckel, der sich langsam über die See schiebt. Unten liegen der
-Anleger, die drei Kiefern auf der Düne und geduckt das Maschinenhaus.}
+{ anzug >= 3 }
+  Das Glas ist blind von Gischt, der Turm arbeitet unter dir wie ein
+  Schiff. Von der Insel siehst du nichts mehr - der Orkan hat sie sich
+  genommen.
+{ anzug >= 2 }
+  Der Turm nimmt die Böen auf, du spürst sie hier oben als Zittern im
+  Boden. Unten liegt die Bank schon halb unter Weiß.
+{ anzug >= 1 }
+  Rundum wird es grau, unten frisst sich die erste Brandung an der Bank
+  fest. Die Wolkenbank im Westen hat Höhe bekommen.
+{ else }
+  Hinter dem Glas liegt die Insel klein und ordentlich unter dir: der
+  Anleger, die drei Kiefern auf der Düne, geduckt das Maschinenhaus, die
+  stille See. Nur im Westen steht die Wolkenbank und wartet.
 
 + {schalter == 0} [Den Hebel auf EIN legen](#kammer)
   {netz == 1 or generator == 1: Ein Schlag, ein Summen, dann steht der
@@ -156,25 +194,25 @@ Anleger, die drei Kiefern auf der Düne und geduckt das Maschinenhaus.}
 
 { wasser >= 6 }
   ~ zeit += 10
-  Die Kellertür steht einen Fingerbreit offen und bewegt sich nicht
-  mehr, wie du dich ihr auch entgegenstemmst. Dahinter steht das Wasser und 
+  Die Wettertür steht einen Fingerbreit offen und bewegt sich nicht
+  mehr, wie du dich ihr auch entgegenstemmst. Dahinter steht das Wasser und
   hält dagegen. Was noch dort unten liegt, liegt jetzt bei ihr. Zurück
   bleibt nur der Turm.
   -> arbeitsraum
 { not sturm }
   ~ zeit += 5
-  Zwanzig Schritte hinüber, durch das große Tor des Maschinenhauses,
-  die kurze Stiege hinab. {netz == 1: Unten brennt Licht; das Seekabel
-  reicht bis in den Keller.}
+  Zwanzig Schritte hinüber zum Maschinenhaus, durch die schmale Wettertür
+  auf der Leeseite, die kurze Stiege hinab in den Keller. {netz == 1:
+  Unten brennt Licht; das Seekabel reicht bis in den Keller.}
   -> keller
 { else }
   ~ zeit += 5 + (not handlicht()) * 5
-  Zwanzig Schritte an der Mauer entlang, die Gischt von der Kante her
-  im Rücken. Das große Tor hat die See verkeilt; die schmale Wettertür
-  an der Leeseite gibt nach. {handlicht(): Der Schein der Öl-Laterne
-  reicht gerade für die eigenen Füße, und das genügt.|Du tastest die
-  Strecke im Finstern ab, eine Hand an der Mauer, bis die Klinke
-  kommt.}
+  Das große Tor auf der Seeseite hat die See längst verkeilt, also die
+  zwanzig Schritte auf der Leeseite, die Gischt im Rücken. Die Wettertür
+  gibt nach, und du fällst mehr in das Maschinenhaus, als dass du es
+  betrittst. {handlicht(): Der Schein der Öl-Laterne reicht gerade für
+  die eigenen Füße, und das genügt.|Du tastest die Strecke im Finstern
+  ab, eine Hand an der Mauer, bis die Klinke kommt.}
   -> keller
 
 # Der Maschinenkeller {#keller}
@@ -183,14 +221,16 @@ Anleger, die drei Kiefern auf der Düne und geduckt das Maschinenhaus.}
 
 { netz == 1 or generator == 1 }
   Unter der Decke brennt eine Birne hinter Drahtglas und macht aus dem
-  Keller einen normalen Arbeits- und Lagerraum: das Podest mit dem Generator, 
-  die Werkbank, das Ölfass, das Regal mit dem Benzinkanister, seeseitig 
-  die beiden Schotttüren für die Belieferung mit größeren Gegenständen wie 
-  den Kisten mit Vorräten.
+  Keller einen Arbeits- und Lagerraum: Auf dem Podest in der Mitte steht
+  der Generator, daneben die Werkbank, das Ölfass an der Wand, im Regal
+  der Benzinkanister. Seeseitig sitzen zwei schwere Schotttüren
+  hintereinander, mit einem kurzen Gang dazwischen - dadurch kommen bei
+  Hochwasser die Vorratskisten vom Boot herein, statt über die Stiege.
 { handlicht() }
   Der Schein der Öl-Laterne holt die Dinge einzeln aus dem Dunkel: das
-  Podest mit dem Generator, die Werkbank, das Ölfass, das Regal,
-  seeseitig die beiden Schotttüren.
+  Podest mit dem Generator, die Werkbank, das Ölfass, im Regal den
+  Kanister. Zuletzt, seeseitig, die beiden Schotttüren der Kistenschleuse,
+  eine hinter der anderen.
 { else }
   Hier unten ist die Nacht vollständig. Was der Keller hat, zeigt er deinen
   Händen, nicht deinen Augen: das Podest, die Werkbank, irgendwo das Regal.
@@ -198,9 +238,9 @@ Anleger, die drei Kiefern auf der Düne und geduckt das Maschinenhaus.}
 Was die See vom Keller hält, steht am Boden:
 
 { wasser >= 5 }
-  Das Wasser steht dir über die Knie, und die Tür drückt schon schwer
-  gegen seinen Stand. Viel fehlt nicht, dann geht sie nicht mehr auf -
-  nach keiner Seite.
+  Das Wasser steht dir über die Knie, und oben an der Stiege drückt die
+  Wettertür schon schwer gegen seinen Stand. Viel fehlt nicht, dann geht
+  sie nicht mehr auf - nach keiner Seite.
 { wasser >= 3 }
   Kniehoch steht die See im Keller und zerrt bei jedem Schritt. Das
   Unterste der Regale ist schon nass.
@@ -227,9 +267,10 @@ Was die See vom Keller hält, steht am Boden:
   ~ drop("band")
   ~ bereit = 1
 * {schott == 0} [Die Schotttüren seeseitig zudrehen](#keller)
-  Du brauchst deine ganze Kraft und lehnst dich mit vollem Gewicht dagegen.
-  Ganz dicht waren die beiden nie; aber was jetzt noch durchkommt, muss
-  sich seinen Weg erst suchen.
+  Du gehst durch den kurzen Gang, stemmst dich in das Rad der äußeren Tür
+  und drehst sie zu, dann die innere. Dicht waren sie nie - aber die See
+  muss sich jetzt durch zwei schlechte Dichtungen arbeiten statt durch
+  eine offene Tür. Das hält sie nicht auf. Es kauft dir Zeit.
   ~ zeit += 10 + (dunkel and not handlicht()) * 5
   ~ schott = 1
 * {bereit == 0 and gerichtet == 0 and wasser <= 2 and traglast() == 0} [Werkzeugschlüssel und Dichtband einstecken](#keller)
@@ -304,8 +345,8 @@ herum, einmal, zweimal.
 ~ zeit += 5
 
 { not sturm }
-  Die Stiege hinauf, durch das Tor, über die Bank. Der Turm nimmt dich
-  wieder auf.
+  Die Stiege hinauf, durch die Wettertür, über die Bank. Der Turm nimmt
+  dich wieder auf.
   -> arbeitsraum
 { else }
   Durch die Wettertür in den Lärm, zwanzig Schritte an der Mauer
@@ -368,7 +409,7 @@ Vier Pfähle, ein Bohlensteg, zwei Ringe für die Leinen. Die See davor
 ist leer bis zum Horizont. Das Boot kommt am Morgen, so war es
 ausgemacht, und der Steg hat bis dahin nichts zu bieten.
 
-{aufziehend or wetter >= 2: Die Böen greifen nach allem, was absteht, und
+{anzug >= 1 or wetter >= 2: Die Böen greifen nach allem, was absteht, und
 der Steg zittert unter jedem Schlag der See.|Der Abend liegt glatt auf
 dem Wasser, als hätte er Zeit.}
 
@@ -395,7 +436,7 @@ Drei Kiefern, krumm vom Westwind, das einzige Holz der Bank, auf der
 einzigen Düne. Zwischen den Stämmen hindurch sieht man die Wolkenbank
 wachsen; von hier wirkt sie näher als vom Turm.
 
-{aufziehend or wetter >= 2: Der Wind probiert die Kronen schon aus.|Noch
+{anzug >= 1 or wetter >= 2: Der Wind probiert die Kronen schon aus.|Noch
 halten die drei still, wie Tiere, die den Hund gesehen haben.}
 
 * [Bis an die Kante der Düne hinausgehen](#windbruch)

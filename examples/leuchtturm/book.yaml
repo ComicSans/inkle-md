@@ -79,7 +79,7 @@ facts:
   # jemand eine Wahl getroffen hat. Deshalb `holds:` (15.1). Es färbt die
   # Prosa und entscheidet nichts; die Schwellen unten lesen nur `zeit`.
   # Es kann das Aufziehen vorziehen, nie verzögern: die Knoten fragen
-  # `aufziehend or wetter >= 2`, und ohne Host steht es auf 1.
+  # `anzug >= 1 or wetter >= 2`, und ohne Host steht es auf 1.
   wetter:  { source: host, range: [0, 3], fallback: 1, holds: true, name: Wetter }
   # Ab Minute 630 ist die Nacht vorbei.
   tag:     { source: derived, value: 'zeit >= 630' }
@@ -92,7 +92,11 @@ facts:
   # eine Stunde, in der man es kommen sieht und noch etwas tun kann -
   # das ist die ganze Länge des Buchs für alles, was vorbereitet sein
   # will.
-  aufziehend: { source: derived, value: 'zeit >= 30 and not sturm and not tag' }
+  # Wie weit der Sturm heran ist, in vier Stufen: 0 ruhig, 1 ab Minute 30,
+  # 2 ab Minute 60, 3 ist der Sturm selbst. Nur die Prosa liest das - keine
+  # Wahl und keine Rechnung hängt daran, sonst verschöbe eine Zeile Text
+  # das Gleichgewicht des Buchs.
+  anzug: { source: derived, value: '((zeit >= 30) + (zeit >= 60) + (zeit >= 90)) * (not tag)' }
   # Dunkel ist der Turm, wenn es Nacht ist und keine Quelle speist. Was
   # eine Hand voll Licht daran ändert, fragt jeder Knoten selbst über
   # `handlicht()`, denn das hängt am Inventar.
