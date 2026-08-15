@@ -101,8 +101,7 @@ Any of us could have taken it; and no one else would have known its worth.
 * {drugged} [Evade]()
   "We're all under pressure here."
 
-  He looks at me with pity.
-
+  He looks at me with pity.<>
   -> harris_has_seen_it_before
 
 ---
@@ -143,13 +142,11 @@ There's a long pause, like the delay between feeding a line of cypher into the B
 
   ---
 * {not drugged} [Don't explain]()
-  "There's nothing to explain," I reply stiffly.
-
+  "There's nothing to explain," I reply stiffly.<>
   -> admitted_to_something_i_know_where
 * {not drugged} [Lie](#claim_hooper_took_component)
 * {not drugged} [Evade]()
-  "Explain what you should be doing, do you mean, rather than bullying me? Certainly." I fold my arms.
-
+  "Explain what you should be doing, do you mean, rather than bullying me? Certainly." I fold my arms.<>
   -> admitted_to_something_i_know_where
 * {drugged} [Say nothing]()
   -> admitted_to_something_say_nothing
@@ -372,8 +369,7 @@ I have become, somehow, an accustomed liar - the words roll easily off my tongue
 
     He pauses for a moment, considering something. Then he continues:
 
-    "It might have been Hooper. It might have been you.
-
+    "It might have been Hooper. It might have been you.<>
     -> claim_hooper_took_component_we_wont_guess
   * [Confident]()
     "Ask the others," I reply, leaning back. "They'll tell you. If they haven't already, that's only because they're protecting Hooper. Hoping he'll come to his senses and stop being an idiot. I hope he does too. And if you lock him up in a freezing hut like you've done me, I'm sure he will."
@@ -469,8 +465,7 @@ The Captain, looking puzzled, steps out. The door is closed. Hooper stares at me
   Hooper looks back at me, appalled. "You're asking me to commit treason?"
 
   * [Yes]()
-    "Yes, perhaps. But also to ensure your name goes down in the annals of mathematics.
-
+    "Yes, perhaps. But also to ensure your name goes down in the annals of mathematics.<>
     -> inside_hoopers_hut_back_of_hut_2
   * [No]()
     "No. It's not treason. It's a trade, plain and simple."
@@ -649,8 +644,7 @@ It's the work of a moment. I was once an excellent bowler for the second XI back
 
 ~ framedhooper = 1
 ~ gotcomponent = 0
-For a second I hold my breath, but nothing and no-one stirs.
-
+For a second I hold my breath, but nothing and no-one stirs.<>
 -> return_to_room_after_excursion
 
 ## Toss component into bushes {#go_to_hoopers_dorm_toss_component_into_bushes}
@@ -693,8 +687,7 @@ The rest of the night passes slowly. I sleep a little, dozing mostly. Then I'm w
 * [Confess]()
   "I broke it," I reply. There doesn't seem any use in trying to lie. "I thought I could escape. But I couldn't get myself through."
 
-  The Commander laughs.
-
+  The Commander laughs.<>
   -> night_passes_glad_youre_here
 * [Deny]()
   "I'm not sure. I was asleep: I woke up when someone broke the window. I looked out to see who it was, but they were already gone."
@@ -712,8 +705,7 @@ The rest of the night passes slowly. I sleep a little, dozing mostly. Then I'm w
   * {framedhooper} [Deny it]()
     "I tell you, someone broke it. Someone wanted to threaten me, I think."
 
-    Harris shakes his head. "Well, we can look into that matter later. For now, you probably want to hear the more pressing news.
-
+    Harris shakes his head. "Well, we can look into that matter later. For now, you probably want to hear the more pressing news.<>
     -> night_passes_found_missing_component
 
   ---
@@ -926,8 +918,7 @@ Nothing, that is, except to act as if there is no game being played. I'll have a
   But not today. Today, there's an intercept to resolve.
 
 * [Lie]()
-  In a week's time, this whole affair will be in the past and quite forgotten. I'm quite sure of that.
-
+  In a week's time, this whole affair will be in the past and quite forgotten. I'm quite sure of that.<>
   -> ending_return_to_normal_moreimportant
 * [Evade]() I've more important problems to think about now. There's still yesterday's intercept to be resolved.
   -> ending_return_to_normal_moreimportant
@@ -988,8 +979,7 @@ I head on around the back of the hut. The breeze-block with the cavity is on the
 
   -> left_alone
 * {not gotcomponent and not throwncomponentaway} [Confess]()
-  I nod. "I don't need twelve minutes.
-
+  I nod. "I don't need twelve minutes.<>
   -> reveal_location_of_component
 * [Stay silent](#my_lips_are_sealed)
 * {gotcomponent} [Show him the component]()
@@ -1041,8 +1031,7 @@ I head on around the back of the hut. The breeze-block with the cavity is on the
   "Indeed. And Mr Manning: God help you if you're lying to me."
 { else }
   "I thought as much. I hadn't expected you to give it out so easily, however. You understand, Hooper has said nothing, of course. In fact, he went to Hut 2 directly after we released him and uncovered the component. But he told us you had instructed him where to go. Hence my little double bluff. Frankly, I'll be glad when I'm shot of the lot of you mathematicians."
-Harris stands, and slips away smartly.
-
+Harris stands, and slips away smartly.<>
 -> left_alone
 
 
@@ -1168,8 +1157,7 @@ He has brought two cups of tea in metal mugs: he sets them down on the tabletop 
 * {seen_tellme} [Deny]() "I'm not pretending anything."
   {seen_cooperate: I'm lying already, despite my good intentions.}
 
-  Harris looks disapproving.
-
+  Harris looks disapproving.<>
   -> start_pushes_cup
 * [Take one]()
   ~ seen_took = 1
@@ -1214,8 +1202,7 @@ He has brought two cups of tea in metal mugs: he sets them down on the tabletop 
 * [Evade]()
   "I don't know what gives you the right to pick on me. {forceful > 0: I demand a lawyer.|I want a lawyer.}"
 
-  "This is time of war," Harris answers. "And by God, if I have to shoot you to recover the component, I will. Understand?" He points at the mug,
-
+  "This is time of war," Harris answers. "And by God, if I have to shoot you to recover the component, I will. Understand?" He points at the mug,<>
   -> harris_demands_component_drinkit
 
 ---
@@ -1443,8 +1430,7 @@ The work is careful, and more than little fiddly - Hooper has tied the zips down
 
   * [On top of the tent](#go_to_hoopers_dorm_put_component_on_tent)
   * [Throw the component into the long grass]()
-    From inspiration - or desperation, I am not certain - a simple approach occurs to me.
-
+    From inspiration - or desperation, I am not certain - a simple approach occurs to me.<>
     -> go_to_hoopers_dorm_toss_component_into_bushes
   * [Give up]()
     There is nothing to be gained here. I have the component now; maybe it will be of some value tomorrow.
@@ -1513,8 +1499,7 @@ I wave to him and move away, my thoughts turning to the young man in the village
 
   -> ending_return_to_normal
 * [Act normal]()
-  But there is nothing to be done about it.
-
+  But there is nothing to be done about it.<>
   -> ending_return_to_normal
 -> END
 
@@ -1672,8 +1657,7 @@ It's difficult not to shake the sense that he's {evasive > 1: mocking|simply hum
 * [Evade]()
   ~ teacup = 0
   ~ forceful = forceful + 1
-  "How should I know?" I reply, defensively. {teacup: I set the teacup back on the table.}
-
+  "How should I know?" I reply, defensively. {teacup: I set the teacup back on the table.}<>
   -> here_at_bletchley_diversion_suggest_its_a_lie
 
 ---
@@ -1732,8 +1716,7 @@ Enough to give me hope?
   I raise the cup to my mouth but it's too hot to drink.
 
 * {teacup} [Wait]()
-  I say nothing as
-
+  I say nothing as<>
   -> start_lift_up_cup
 
 ---
@@ -1863,8 +1846,7 @@ We're not in the business of guessing here at Bletchley. We are military intelli
 
   ---
 * [Don't offer to help]()
-  I lean back.
-
+  I lean back.<>
   -> claim_hooper_took_component_its_your_problem
 -> claim_hooper_took_component_putmein
 
@@ -2020,8 +2002,7 @@ I cast around the small room. There's a bucket in one corner for emergencies - I
 
 I mean, he managed to find it, by accident, somewhere where it wasn't the night before. And at the same time, you're sitting here with your window broken. So, I rather think you've played your last hand and lost. It's utterly implausible that Hooper stole that component and then left it lying around in the doorway of his tent. So I came to tell you that the game is up, for you."
 
-He nods and gets to his feet.
-
+He nods and gets to his feet.<>
 -> left_alone
 
 ## Someone threw component {#night_passes_someone_threw_component}
@@ -2227,8 +2208,7 @@ Harris picks his own up and just holds it.
 
 # I met a young man still have {#i_met_a_young_man_still_have}
 
-"I still have it. Not on me, of course.
-
+"I still have it. Not on me, of course.<>
 -> reveal_location_of_component
 -> i_met_a_young_man_join2
 
@@ -2253,8 +2233,7 @@ Harris picks his own up and just holds it.
 ~ losttemper = 0
 * [Tell them]()
   ~ revealedhooperasculprit = 0
-  "All right." I am beaten, after all. "
-
+  "All right." I am beaten, after all. "<>
   -> reveal_location_of_component
 * [Say nothing](#my_lips_are_sealed)
 -> slam_door_shut_and_gone_find_something_to_smash_window
@@ -2280,8 +2259,7 @@ Let me see. There's the bunk, {not smashingWindowItem == 2: a bucket,} nothing e
 
 # I met a young man didnt have long {#i_met_a_young_man_didnt_have_long}
 
-"Yes. I only had a moment.
-
+"Yes. I only had a moment.<>
 -> reveal_location_of_component
 -> i_met_a_young_man_join2
 
@@ -2386,8 +2364,7 @@ I lift the cup {teacup: to my lips}and sip. He waits for me to swallow before sp
 
   -> slam_door_shut_and_gone_bunk_opts
 * [The jacket]()
-  I slip off my jacket and hold it with one hand over the glass.
-
+  I slip off my jacket and hold it with one hand over the glass.<>
   -> smash_the_window
 * {not smashingWindowItem == 2} [The bucket]()
   The bucket? Hardly. The bucket might do some good if I wanted to sweep up the glass afterwards, but it won't help me smash the glass quietly.
@@ -2436,8 +2413,7 @@ I lift the cup {teacup: to my lips}and sip. He waits for me to swallow before sp
 
   -> slam_door_shut_and_gone_bunk_opts
 * [The blanket]()
-  The blanket. Perfect. I scoop it up off the bed and hold it in place over the window.
-
+  The blanket. Perfect. I scoop it up off the bed and hold it in place over the window.<>
   -> smash_the_window
 * [The pillow]()
   The pillow is fat and fluffy. I could put it over the window and it would muffle the sound of breaking glass, certainly; but I wouldn't be able to break any glass through it either.
@@ -2451,8 +2427,7 @@ I lift the cup {teacup: to my lips}and sip. He waits for me to swallow before sp
 
 # I met a young man nope didnt hide {#i_met_a_young_man_nope_didnt_hide}
 
-"Very well then." I swallow nervously, to make it look more genuine.
-
+"Very well then." I swallow nervously, to make it look more genuine.<>
 -> i_met_a_young_man_passed_onto_hooper
 -> i_met_a_young_man_join2
 

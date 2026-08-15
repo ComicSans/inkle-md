@@ -2185,7 +2185,7 @@ Ich führe die Tasse zum Mund, aber der Tee ist zu heiß zum Trinken.
 
 * Warten
 
-Ich sage nichts, während
+Ich schweige.
 
 # Anfang schiebt Tasse {#start_pushes_cup}
 

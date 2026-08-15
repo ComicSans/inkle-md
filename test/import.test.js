@@ -10,6 +10,7 @@ import assert from 'node:assert/strict';
 
 import { importInk } from '../src/import.js';
 import { compileSources } from '../src/compile.js';
+import { Story } from '../src/runtime.js';
 
 /** Compiles what the importer wrote, so a test proves more than a string match. */
 function build(ink, options = {}) {
@@ -226,6 +227,24 @@ test('glue that reaches across a choice is carried over, not dropped', () => {
   // One mark is enough; the gather text needs none of its own.
   assert.match(markdown, /I take the mug\. It is<>/);
   assert.match(markdown, /---\nfar too hot\./);
+});
+
+test('an arrow on the same line as text glues the sentence to where it arrives', () => {
+  const { markdown, story } = build(`
+=== start ===
+* [Wait]
+  I say nothing as -> lift_up_cup
+
+=== lift_up_cup ===
+I lift up the cup.
+-> END
+`);
+  // The arrow moves to a line of its own, so without the mark the sentence
+  // would break after "as" - which is what the reader saw.
+  assert.match(markdown, /I say nothing as<>\n\s*-> lift_up_cup/);
+  const s = new Story(story, { seed: 1 });
+  s.choose(0);
+  assert.deepEqual(s.current.text.map((t) => t.text), ['I say nothing as I lift up the cup.']);
 });
 
 test('ink markup becomes Markdown, and unknown tags are reported', () => {

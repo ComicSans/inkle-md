@@ -513,7 +513,8 @@ function readItem(line, notes) {
     }
     // A gather may carry text and then leave: `- He nods. -> elsewhere`. Kept
     // on one line the arrow is printed instead of followed, so it becomes a
-    // divert of its own below the text, the same split a text line gets.
+    // divert of its own below the text, the same split a text line gets - and
+    // the same glue with it, for the same reason.
     const split = trailing.match(/^(.*?\S)\s*->\s*([\w.]+)\s*$/);
     if (split && !RE.tunnel.test(trailing)) {
       return {
@@ -521,6 +522,7 @@ function readItem(line, notes) {
         depth,
         label: label ? label[1] : null,
         text: markup(split[1], line.line, notes),
+        glue: { before: glue.before, after: true },
         then: { kind: 'divert', target: split[2], line: line.line },
         line: line.line,
       };
@@ -540,12 +542,17 @@ function readItem(line, notes) {
   const logic = text.match(RE.logic);
   if (logic) return { kind: 'logic', code: logic[1], line: line.line };
 
+  // `I say nothing as -> lift_up_cup`: in ink an arrow on the same line as
+  // text follows without a break, so the line and the text it arrives at are
+  // one sentence. That is glue (SPEC 4.5), and it has to be written down,
+  // because here the arrow becomes a divert on a line of its own and a divert
+  // otherwise ends the paragraph.
   const trailing = text.match(/^(.*?)\s*->\s*([\w.]+)\s*$/);
   if (trailing && trailing[1].trim() && !RE.tunnel.test(text)) {
     return {
       kind: 'text',
       text: markup(trailing[1].trim(), line.line, notes),
-      glue,
+      glue: { before: glue.before, after: true },
       then: { kind: 'divert', target: trailing[2], line: line.line },
       line: line.line,
     };
