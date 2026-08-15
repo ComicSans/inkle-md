@@ -9,7 +9,7 @@ zu ändern oder der Code, aber nie stillschweigend nur eines von beidem.
 
 ```bash
 node --test 'test/*.test.js'
-node src/cli.js lint examples/thornwood.md --strict
+node src/cli.js lint examples/thornwood-book/book.yaml --strict
 node src/cli.js lint examples/house/book.yaml --strict
 node src/cli.js lint examples/nightside/book.yaml --strict
 node src/cli.js lint examples/leuchtturm/book.yaml --strict
@@ -23,10 +23,15 @@ node src/cli.js bundle examples/thornwood-book/book.yaml --out build/native
 - Fehler tragen einen Code aus SPEC 10.3, Warnungen einen aus SPEC 11. Ein
   neuer Prüffall braucht einen Code, einen Eintrag in der Spec und einen Test.
 - Die vier geschriebenen Beispiele müssen `--strict` sauber bleiben; sie sind
-  der Abnahmetest. `thornwood` und `house` decken die Grundschicht ab,
+  der Abnahmetest. `thornwood-book` und `house` decken die Grundschicht ab,
   `nightside` die 0.7-Schicht aus Fakten, Ereignissen, Orten und Host-Zeit,
   `leuchtturm` die 0.8-Schicht: ein Bild, ein `holds:`-Fakt, `due` und ein
   Einstieg für eine App, die das Buch als Episode spielt.
+- `test/fixtures/thornwood.md` ist kein Beispiel, sondern eine eingefrorene
+  Fixture: dieselbe Geschichte als eine einzelne Datei mit Frontmatter, weil
+  `test/names.test.js` eine Quelle braucht, in der es per `replace()` Fehler
+  einbauen kann. Sie stand bis zum 15.08.2026 als `examples/thornwood.md` im
+  Regal und ist dort gelöscht, weil sie dieselbe Geschichte doppelt erzählte.
 - Deutsche Texte mit echten Umlauten, auch in Beispielen und Commit-Nachrichten.
 
 ## Abweichungen von den Workspace-Standards
@@ -39,7 +44,7 @@ er Grün meldet. Der Abnahmetest ist deshalb von Hand vor jedem Commit:
 
 ```bash
 node --test 'test/*.test.js'
-node src/cli.js lint examples/thornwood.md --strict     # und thornwood-book, house, nightside
+node src/cli.js lint examples/thornwood-book/book.yaml --strict   # und house, nightside, leuchtturm
 cd hosts/ios && swift test
 cd hosts/ios && xcrun swiftc -typecheck -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)" \
   -target arm64-apple-ios16.0-simulator Sources/StoryWeaver/*.swift

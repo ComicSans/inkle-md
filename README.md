@@ -20,14 +20,14 @@ repository implements it. There are no dependencies and no build step. Node
 ## Trying it
 
 ```bash
-node src/cli.js play examples/thornwood.md
+node src/cli.js play examples/thornwood-book/book.yaml
 ```
 
 walks the smallest example book in the terminal: character creation, a
 fight, two endings. And
 
 ```bash
-node src/cli.js export examples/thornwood.md --out build/play.html
+node src/cli.js export examples/thornwood-book/book.yaml --out build/play.html
 ```
 
 turns it into a single HTML file with no framework and no network access at
@@ -67,16 +67,14 @@ comes to 210 kB, nearly all of it story.
 
 ## The examples
 
-`examples/` holds five books written for this project and one imported one.
+`examples/` holds four books written for this project and one imported one.
 Each is there to fail differently.
 
-**`thornwood.md`** is the smallest complete book: one file, one language,
-character creation, a fight, two endings. Read this one first, beside the
-full example at the end of the spec. You can play it
+**`thornwood-book/`** is the smallest complete book: character creation, a
+fight, two endings, spread over a `book.yaml`, two chapters and two
+languages. Read this one first, beside the full example at the end of the
+spec. You can play it
 [here](https://www.tobiasreithmeier.de/en/crypt-under-the-thorn).
-
-**`thornwood-book/`** is the same story as a project, to show what changes
-when a book grows a `book.yaml`, a second chapter and a second language.
 
 **`house/`** is full-length: 46 passages, secrets, and a fear stat that
 kills, so the numbers get exercised over a long game rather than a demo. You

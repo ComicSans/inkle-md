@@ -40,9 +40,7 @@ enum Books {
         Bundle.main.url(forResource: name, withExtension: nil, subdirectory: "Books")
     }
 
-    /// Every book in this repository, except `examples/thornwood.md`: that is the
-    /// same story as `thornwood-book` written as one file, and a shelf with it
-    /// twice would say something about the compiler rather than about reading.
+    /// Every book in this repository.
     static let all = ["thornwood-book", "house", "nightside", "leuchtturm", "intercept"]
 
     /// The title a reader sees. It is in the book's own frontmatter, and an

@@ -17,7 +17,7 @@ final class StoryTests: XCTestCase {
 
     override class func setUp() {
         super.setUp()
-        bundleDirectory = try! buildBundle(example: "thornwood.md")
+        bundleDirectory = try! buildBundle(example: "thornwood-book/book.yaml")
     }
 
     private func open(seed: Int = 7) throws -> Story {
@@ -40,7 +40,7 @@ final class StoryTests: XCTestCase {
         try story.begin([["sword"]])
 
         XCTAssertNil(story.view.setup)
-        XCTAssertEqual(story.view.node, "begin")
+        XCTAssertEqual(story.view.node, "start.begin")
         XCTAssertFalse(story.view.text.isEmpty)
         XCTAssertFalse(story.view.choices.isEmpty)
         let stamina = try XCTUnwrap(story.view.stats.first { $0.name == "stamina" })
@@ -100,7 +100,7 @@ final class StoryTests: XCTestCase {
         // stops short of the dice only proves the stats were rolled alike. A
         // fight is where the stream is drawn from hardest: two rolls a round.
         let route = [2, 0, 0, 0, 0, 0, 0, 0]
-        let expected = try playInNode(example: "thornwood.md", seed: 7, picks: ["sword"], route: route)
+        let expected = try playInNode(example: "thornwood-book/book.yaml", seed: 7, picks: ["sword"], route: route)
 
         let story = try open(seed: 7)
         try story.begin([["sword"]])

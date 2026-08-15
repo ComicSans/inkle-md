@@ -26,7 +26,7 @@ import { Story } from '../src/runtime.js';
 import { CompileError } from '../src/errors.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const thornwood = readFileSync(join(here, '..', 'examples', 'thornwood.md'), 'utf8');
+const thornwood = readFileSync(join(here, 'fixtures', 'thornwood.md'), 'utf8');
 
 /** Compiles a book and returns the codes it complained about. */
 function codes(source) {

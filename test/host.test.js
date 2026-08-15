@@ -27,7 +27,7 @@ import { Host } from '../src/host.js';
 import { bundleFiles } from '../src/bundle.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const book = () => compileFile(join(here, '..', 'examples', 'thornwood.md')).story;
+const book = () => compileFile(join(here, 'fixtures', 'thornwood.md')).story;
 
 test('one command answers with the whole view, so a turn is one crossing', () => {
   const host = new Host(book(), { seed: 42 });
@@ -196,8 +196,10 @@ test('a save survives the copy the runtime makes of it', () => {
   // `clone` copies through JSON, which drops a key whose value is undefined.
   // That is the same thing a host writing the save to a file would do, so a
   // state that cannot survive it is broken before any host sees it (8).
-  for (const entry of ['thornwood.md', join('house', 'book.yaml'), join('nightside', 'book.yaml')]) {
-    const story = compileFile(join(here, '..', 'examples', entry)).story;
+  for (const entry of [join(here, 'fixtures', 'thornwood.md'),
+    join(here, '..', 'examples', 'house', 'book.yaml'),
+    join(here, '..', 'examples', 'nightside', 'book.yaml')]) {
+    const story = compileFile(entry).story;
     const host = new Host(story, { seed: 3 });
     const setup = host.view.setup;
     if (setup) host.command({ cmd: 'begin', picks: setup.map((b) => b.from.slice(0, b.pick).map((o) => o.key)) });

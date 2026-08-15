@@ -20,7 +20,7 @@ import { walk } from '../src/play.js';
 import { compile } from './helpers.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const example = () => compileFile(join(here, '..', 'examples', 'thornwood.md')).story;
+const example = () => compileFile(join(here, 'fixtures', 'thornwood.md')).story;
 const house = () => compileFile(join(here, '..', 'examples', 'house', 'book.yaml')).story;
 const book = () => compileFile(join(here, '..', 'examples', 'thornwood-book', 'book.yaml')).story;
 

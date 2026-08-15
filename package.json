@@ -8,8 +8,8 @@
   "bin": { "story-weaver": "./src/cli.js" },
   "scripts": {
     "test": "node --test 'test/*.test.js'",
-    "lint:example": "node src/cli.js lint examples/thornwood.md --strict",
-    "build:example": "node src/cli.js build examples/thornwood.md --out build/thornwood.json",
+    "lint:example": "node src/cli.js lint examples/thornwood-book/book.yaml --strict",
+    "build:example": "node src/cli.js build examples/thornwood-book/book.yaml --out build/thornwood-book.json",
     "build:book": "node src/cli.js build examples/thornwood-book/book.yaml --out build/thornwood-book.json",
     "export:book": "node src/cli.js export examples/thornwood-book/book.yaml --out build/thornwood.html"
   }

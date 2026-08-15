@@ -40,10 +40,7 @@ bookmark ribbon.
 Five books stand on the shelf: the four written for this repository, and
 inkle's *The Intercept*, imported from ink. The Intercept keeps a plain
 cover without a drawn emblem, because inventing artwork for someone else's
-text is not this app's place. `examples/thornwood.md` is missing on purpose:
-it is the same story as `thornwood-book` in a single file, and a shelf with
-the same book twice would say something about the compiler rather than about
-reading.
+text is not this app's place.
 
 ## What is not here
 
