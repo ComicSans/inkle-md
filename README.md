@@ -288,6 +288,62 @@ put on the page. `lint --strict` has to stay clean.
 What the linter reports is a find, not a verdict. A choice behind a
 multi-step plan turns up in the coverage list, and that is as it should be.
 
+## Rule systems the language can carry
+
+The default rules are Fighting Fantasy, but almost everything about them is a
+number or an expression in the frontmatter, and a book overrides them there.
+Every variant below has been compiled and played; they work.
+
+**Fighting Fantasy, the default.** Skill, Stamina and Luck; a check rolls two
+six-sided dice and succeeds at or under the stat. A book that wants exactly
+this writes nothing. The examples `thornwood-book`, `house` and `nightside`
+work this way.
+
+**Over the threshold instead of under it.** `succeeds: at-least` flips the
+check. With `dice: "roll(1,20)"` and a stat that holds the threshold, this is
+the check of modern role-playing games.
+
+```yaml
+checks:
+  dice: "roll(1,20)"
+  succeeds: at-least
+```
+
+**Percentages.** `dice: "roll(1,100)"` with `succeeds: at-most`, and every
+stat is a percentage. That is the check of the systems from the early
+eighties, where "Sneak 65" means that 65 or less succeeds.
+
+**No dice at all.** A book never has to use `checks:`. Success can depend on
+state alone: whether the light is burning, whether the tool is up on the
+platform, what time it is. The `leuchtturm` example rolls dice in exactly one
+place, the ladder on the outside, and is otherwise a book made of state and a
+clock.
+
+**Your own combat arithmetic.** `attack:` and `damage:` are expressions, not
+fixed formulas, and they see everything the book knows. Fleeing costs
+whatever the book says: nothing, two points as in the original, or a roll.
+
+```yaml
+combat:
+  attack: "kraft + roll(1,10)"
+  damage: "roll(1,6)"
+  flee_cost: "roll(1,4)"
+```
+
+**Consumption instead of hit points.** A consumable item has `uses:`, an
+`effect:` that runs when someone uses it, and a `when:` that says when that
+is allowed. Provisions, lamp oil, cartridges: the tension comes from
+something running out, not from someone landing a blow.
+
+**A value that kills without a fight.** `death:` reads any expression. In the
+`house` example it is fear, which keeps rising; in `leuchtturm` it is the
+water in the cellar - both end the book without a single enemy in it.
+
+What is not adjustable is the shape of a combat round. Both sides compute an
+attack total, the higher one wins, the loser takes damage - `rule:` knows
+only `higher-wins`. Initiative order, hit locations or any other kind of
+comparison are written as ordinary nodes with conditions, not as combat.
+
 ## What is in this repository
 
 `SPEC.md` is the language definition; it decides, and the code follows.
