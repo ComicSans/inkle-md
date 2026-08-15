@@ -366,6 +366,10 @@ export class Story {
       line.text = this.#string('combat.tie', enemy);
     }
 
+    // The dying sentence (SPEC 7): when an enemy falls, the resolver says so
+    // in the same breath as the blow that felled it.
+    if (enemy.stamina <= 0) line.text += ` ${this.#string('combat.down', enemy)}`;
+
     fight.log.push(line);
     fight.luck = this.config.combat.luck_in_combat && line.hit ? line.hit : null;
     fight.canFlee = fight.fleeAfter !== null && fight.round >= fight.fleeAfter && Boolean(fight.exits.flee);
@@ -384,8 +388,14 @@ export class Story {
 
     if (fight.luck === 'enemy') {
       const extra = lucky ? 2 : -1;
+      const stood = fight.enemy.stamina > 0;
       fight.enemy.stamina -= extra;
       last.damage += extra;
+      // A lucky blow can be the one that fells: the dying sentence follows
+      // here too, but only once - an enemy already down said it in attack().
+      if (stood && fight.enemy.stamina <= 0) {
+        last.text += ` ${this.#string('combat.down', fight.enemy)}`;
+      }
     } else {
       const relief = lucky ? 2 : -1;
       this.state.vars.stamina += relief;

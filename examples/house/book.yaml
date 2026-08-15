@@ -78,6 +78,8 @@ enemies:
                       en: "{&The hound falls back, the chain pulled taut.|You catch it in the flank and it yelps.}" }
       combat.taken: { de: "{&Die Zähne finden deinen Unterarm.|Er reißt dich mit dem Gewicht des Sprungs von den Beinen.}",
                       en: "{&The teeth find your forearm.|The weight of the leap takes your legs from under you.}" }
+      combat.down:  { de: "Der Hund liegt still. Die Kette war an nichts befestigt, und jetzt hält ihn auch nichts mehr.",
+                      en: "The hound lies still. The chain was fixed to nothing, and now nothing holds him either." }
   servant: { name: { de: Der Diener, en: The Servant }, skill: 8, stamina: 9, flee_after: 4 }
   cultist: { name: { de: Verschlafener Kultist, en: Drowsy Cultist }, skill: 6, stamina: 6, flee_after: 2 }
   thing:
@@ -92,6 +94,8 @@ enemies:
                       en: "{&It closes on your wrist, and for a second you are somewhere else.|The cold arrives before the pain does.}" }
       combat.tie:   { de: "{&Es wartet ab. Das ist das Schlimmste daran.|Nichts geschieht, und das dauert zu lange.}",
                       en: "{&It waits. That is the worst of it.|Nothing happens, and it takes too long.}" }
+      combat.down:  { de: "Es fällt nicht. Es hört auf, da zu sein, und der Kreidekreis steht leer.",
+                      en: "It does not fall. It stops being there, and the chalk circle stands empty." }
 
 death:
   when: "stamina <= 0 or fear >= fear_max"
@@ -114,3 +118,5 @@ strings:
                  en: "{enemy} {&strikes you|is quicker than you are|catches you across the shoulder}." }
   combat.tie:   { de: "{&Ihr weicht einander aus, und nichts geschieht.|Zwei Schläge, beide ins Leere.}",
                  en: "{&You circle each other, and nothing comes of it.|Two blows, and both go wide.}" }
+  combat.down:  { de: "{enemy} geht zu Boden und bleibt liegen.",
+                 en: "{enemy} goes down and stays down." }

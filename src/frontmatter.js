@@ -45,6 +45,7 @@ export const STRING_KEYS = {
   'combat.hit': 'You wound {enemy}.',
   'combat.taken': '{enemy} wounds you.',
   'combat.tie': 'The blades meet and nothing comes of it.',
+  'combat.down': '{enemy} goes down.',
 };
 
 export const DEFAULT_LANGUAGE = 'default';

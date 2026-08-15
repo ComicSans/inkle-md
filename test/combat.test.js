@@ -61,6 +61,21 @@ function fight(extra = '', body = BOOK) {
   return new Story(story, { seed: 1 });
 }
 
+test('the dying sentence follows the blow that fells, in the same breath', () => {
+  const s = fight('  combat.down: "{enemy} geht zu Boden."\n');
+  for (let i = 0; i < 7; i++) s.attack();               // stamina 8, damage 1
+  const last = s.attack();
+  assert.match(last.text, /Kobold geht zu Boden\.$/);
+  assert.equal(s.combat, null);
+});
+
+test('an enemy may bring its own dying sentence, and it beats the book', () => {
+  const s = fight('  combat.down: "Der Troll ist Vergangenheit."\n',
+    BOOK.replace('!combat goblin', '!combat troll'));
+  for (let i = 0; i < 7; i++) s.attack();
+  assert.match(s.attack().text, /Der Troll ist Vergangenheit\.$/);
+});
+
 test('a combat line cycles through its wordings instead of repeating one', () => {
   const s = fight();
   assert.equal(s.attack().text, 'Du triffst Kobold.');
@@ -101,7 +116,10 @@ Vorbei.
   // wordings keep alternating across the seam between the fights.
   for (let i = 0; i < said.length; i++) {
     if (said[i] === undefined) break;
-    assert.equal(said[i], i % 2 === 0 ? 'Du triffst Kobold.' : 'Deine Klinge findet Kobold.');
+    // The felling round carries the dying sentence on top (SPEC 7), so the
+    // cycle is asserted on the round's own wording, not on the whole line.
+    const expected = i % 2 === 0 ? 'Du triffst Kobold.' : 'Deine Klinge findet Kobold.';
+    assert.ok(said[i].startsWith(expected), `round ${i}: ${said[i]}`);
   }
   assert.ok(said.filter(Boolean).length > 8, 'both fights were fought');
 });

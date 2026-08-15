@@ -63,4 +63,6 @@ strings:
   combat.taken:     { de: "{enemy} trifft dich.", en: "{enemy} wounds you." }
   combat.tie:       { de: Die Klingen kreuzen sich ohne Treffer.,
                       en: The blades meet and nothing comes of it. }
+  combat.down:      { de: "{enemy} geht zu Boden und bleibt liegen.",
+                      en: "{enemy} goes down and stays down." }
 

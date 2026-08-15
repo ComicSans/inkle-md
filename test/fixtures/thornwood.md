@@ -54,6 +54,7 @@ strings:
   combat.hit:       "Du triffst {enemy}."
   combat.taken:     "{enemy} trifft dich."
   combat.tie:       "Die Klingen kreuzen sich, ohne dass etwas daraus wird."
+  combat.down:      "{enemy} geht zu Boden."
 
 ---
 

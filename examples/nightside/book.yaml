@@ -132,3 +132,4 @@ strings:
   combat.hit:   { de: "Du triffst die Drohne.", en: "You strike the drone." }
   combat.taken: { de: "Die Drohne trifft dich.", en: "The drone strikes you." }
   combat.tie:   { de: "Ihr weicht einander aus, und nichts geschieht.", en: "You dodge each other, and nothing comes of it." }
+  combat.down:  { de: "Die Drohne kippt zur Seite, und die Arme falten sich ein, ordentlich bis zuletzt.", en: "The drone keels over, its arms folding in, tidy to the last." }

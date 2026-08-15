@@ -744,6 +744,7 @@ strings:
   combat.hit:   "{&You wound|Your blade finds|You get through the guard of} {enemy}."
   combat.taken: "{enemy} {&wounds you|gets past your guard|catches you across the ribs}."
   combat.tie:   "{~The blades meet and nothing comes of it.|Steel on steel, and no more.}"
+  combat.down:  "{enemy} {&goes down|does not get up again}."
 ```
 
 Start with `stats:`. Every stat becomes a global variable, so once you declare
@@ -878,7 +879,10 @@ view layer names the button itself.
 The fight itself runs on the formulas you declared under `combat:` in the
 frontmatter. The runtime resolves it round by round: both sides roll
 `combat.attack`, the higher total costs the loser `combat.damage` stamina,
-never below zero, a tie costs nothing. Nothing is added behind your back:
+never below zero, a tie costs nothing. When an enemy falls, the resolver
+says so in the same breath: `combat.down` is the dying sentence, and it
+follows the blow that felled it, whether that blow was the round's own or a
+lucky one. Nothing is added behind your back:
 equipment reaches the fight only through `weapon_attack`, `weapon_damage` and
 `armour_defence`, and a formula that does not name them ignores equipment
 entirely. Both formulas are evaluated for the enemy too, where the equipment
@@ -908,7 +912,7 @@ When several enemies come at once, list them in sequence:
 
 A goblin and a cave troll do not wound you the same way, and a fight reads
 better when they do not say so in the same sentence. An enemy may therefore
-carry a `strings:` block of its own, with the same three keys and the same
+carry a `strings:` block of its own, with the same four keys and the same
 prose as the book-wide one:
 
 ```yaml
@@ -924,7 +928,7 @@ enemies:
 Three levels, and the nearest one wins: what the enemy writes, else what the
 book writes under `strings:`, else the English default of section 6. It is
 per key, not per block, so the troll above still takes the book's wording for
-a hit and a tie. A fourth key is E062 there as it is in the book. Because the enemy is named by the block it stands in,
+a hit and a tie. A fifth key is E062 there as it is in the book. Because the enemy is named by the block it stands in,
 `{enemy}` is rarely what you want inside it: write "the troll" outright.
 
 An enemy is declared once and fought wherever the book likes, so its wordings
@@ -2404,6 +2408,7 @@ edges.
 | 10.3    | E172 and E180 to E184 added to the error table. |
 | 5, 10.1 | Frontmatter expressions are checked against the same scope as the story's (E130 to E133): a potion that healed a stat nobody declared now fails the compile instead of reaching the reader. |
 | 6, 12   | `blurb:` added: the back of the book, a language table shown before setup and first page by the export and by `play`, and readable from `meta` by any host. |
+| 6, 7    | `combat.down` added to `strings:`: the dying sentence, spoken in the same breath as the blow that fells an enemy, overridable per enemy like the other three. |
 | 11, 21  | L025 is an `info` about a book and a `warning` on an output with no host, because a book does not know which output it becomes. |
 | 4.2, 11, 21 | L029 added, and with it the runtime error for a node whose choices have all been taken: E110's twin, for what is left rather than for what is written. |
 | 12      | Retitled: the web export is one host of several. 12.5 to 12.9 added, with the hosts beyond the browser, the two ways to play, the host protocol, the native bundle, and what a foreign game loop has to know. |
