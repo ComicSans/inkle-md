@@ -16,20 +16,23 @@
 
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
-import { CSS } from '../../src/export.js';
+import { sourceDir } from './book.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const SRC = join(here, '..', '..', 'src');
 
 /**
- * @param {{nonce: string, cspSource?: string|null}} options `cspSource` is
- *        what the webview allows images from; without it no policy is written,
- *        which is what a plain browser preview wants.
- * @returns {string} a complete HTML document
+ * @param {{nonce: string, cspSource?: string|null, src?: string}} options
+ *        `cspSource` is what the webview allows images from; without it no
+ *        policy is written, which is what a plain browser preview wants.
+ *        `src` is where the project's own sources are, defaulting to wherever
+ *        this copy of the extension finds them.
+ * @returns {Promise<string>} a complete HTML document
  */
-export function panelHtml({ nonce, cspSource = null }) {
+export async function panelHtml({ nonce, cspSource = null, src = null }) {
+  const SRC = src ?? sourceDir(here);
+  const { CSS } = await import(pathToFileURL(join(SRC, 'export.js')).href);
   const script = (path) => readFileSync(path, 'utf8').replace(/^export /gm, '');
   const policy = cspSource
     ? `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${cspSource} data:; style-src 'unsafe-inline'; script-src 'nonce-${nonce}';">`

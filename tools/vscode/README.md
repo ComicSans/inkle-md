@@ -64,16 +64,31 @@ Zum Ausprobieren und Weiterbauen: `tools/vscode` in VS Code öffnen und F5
 drücken. Das startet einen zweiten VS Code mit der Erweiterung und diesem
 Projekt darin.
 
-Für den täglichen Gebrauch ein Symlink in die Erweiterungen:
+Für den täglichen Gebrauch wird ein Paket gebaut und installiert:
 
 ```bash
-ln -s /Users/tobias/inkle-md/tools/vscode ~/.vscode/extensions/story-weaver
+node tools/vscode/pack.mjs
+code --install-extension build/tobiasreithmeier.story-weaver-0.1.0.vsix
 ```
 
-Danach VS Code neu starten. Die Erweiterung lädt den Übersetzer und die
-Laufzeit aus `../../src`, also aus dem Projekt selbst - was hier committet
-wird, gilt sofort auch im Panel. Kein Build-Schritt, keine Abhängigkeit,
-`vsce` wird nicht gebraucht.
+`pack.mjs` schreibt den Pfad und die passende Installationszeile ins Terminal.
+Fehlt `code` im PATH, hilft einmal *Shell Command: Install 'code' command in
+PATH* aus der Befehlspalette, oder die Binärdatei im App-Bündel unter
+`/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code`.
+
+Danach das Fenster neu laden (*Developer: Reload Window*). Einen Ordner nach
+`~/.vscode/extensions` zu kopieren oder zu verlinken genügt seit VS Code 1.74
+nicht mehr: geladen wird nur, was über das CLI oder die Oberfläche installiert
+wurde, und ein Symlink dort bleibt stumm liegen.
+
+`pack.mjs` braucht nichts Installiertes - eine .vsix ist ein Zip mit einem
+Manifest, und `zip` bringt macOS mit. `vsce` kommt nicht vor, und das Projekt
+bleibt ohne Abhängigkeiten.
+
+Übersetzer, Laufzeit und Ansicht reisen als `vendor/src` im Paket mit, weil
+eine installierte Erweiterung nicht ins Projekt greifen kann. Liegt über der
+Erweiterung ein Checkout - also beim Arbeiten in diesem Repository -, gewinnt
+dessen `src/`: eine Änderung dort wirkt sofort im Panel, ohne neu zu packen.
 
 ## Was getestet wird
 

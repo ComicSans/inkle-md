@@ -154,15 +154,27 @@ export ships. It compiles the buffer rather than the file, so unsaved text
 counts, and a book that does not compile leaves the last one that did on
 screen with the error above it.
 
-No build step, no dependency and no `vsce`: a symlink is the whole install,
-and the extension loads the compiler, the runtime and the view from `src/`,
-so what you commit is what the panel plays.
+Install it by building a .vsix and handing it to VS Code. Copying or linking
+a folder into `~/.vscode/extensions` has not worked since VS Code 1.74: only
+what the CLI or the UI installed is loaded at all.
 
 ```bash
-ln -s "$PWD/tools/vscode" ~/.vscode/extensions/story-weaver
+node tools/vscode/pack.mjs
+code --install-extension build/tobiasreithmeier.story-weaver-0.1.0.vsix
 ```
 
-Restart VS Code, open a `.md` book, and:
+`pack.mjs` prints the path it wrote and the install line to go with it. If
+`code` is not on the PATH, run *Shell Command: Install 'code' command in
+PATH* from the command palette once, or use the binary inside the app bundle
+at `/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code`.
+
+The packer is 60 lines and needs nothing installed - a .vsix is a zip with a
+manifest - so the project stays dependency-free and `vsce` never appears. The
+compiler, the runtime and the view travel inside the package, but a checkout
+above the extension wins over that copy, so working in this repository means
+an edit to `src/` shows in the panel without repacking.
+
+Reload the window (*Developer: Reload Window*), open a `.md` book, and:
 
 | | |
 | --- | --- |

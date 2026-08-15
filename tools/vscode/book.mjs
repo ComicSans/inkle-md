@@ -20,6 +20,23 @@ import { existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 
 /**
+ * Where the compiler, the runtime and the view are. Two answers, in this
+ * order: the project itself, one directory above the extension - then an edit
+ * to `src/` is live in the panel without reinstalling anything - and failing
+ * that the copy packed into the extension, which is what an installed
+ * extension in `~/.vscode/extensions` has and all it has.
+ *
+ * @param {string} extensionDir the directory `extension.js` lives in
+ * @param {(path: string) => boolean} [exists]
+ * @returns {string}
+ */
+export function sourceDir(extensionDir, exists = existsSync) {
+  const project = join(extensionDir, '..', '..', 'src');
+  if (exists(join(project, 'compile.js'))) return project;
+  return join(extensionDir, 'vendor', 'src');
+}
+
+/**
  * The book a file belongs to: the nearest `book.yaml` at or above it, and
  * failing that the file itself, which is a whole book in one file (SPEC 3.1).
  *

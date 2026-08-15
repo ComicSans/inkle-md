@@ -23,20 +23,19 @@ const { readFileSync } = require('node:fs');
 const { join, dirname } = require('node:path');
 const { pathToFileURL } = require('node:url');
 
-const SRC = join(__dirname, '..', '..', 'src');
-
-/** The ES modules of the project, loaded once. */
+/**
+ * The ES modules, loaded once. Where the project's own sources are depends on
+ * how this copy was installed - see `sourceDir` - so the extension's own
+ * modules load first and answer that question.
+ */
 let modules = null;
 async function load() {
   if (modules) return modules;
-  const url = (name) => pathToFileURL(join(SRC, name)).href;
   const own = (name) => pathToFileURL(join(__dirname, name)).href;
-  const [compile, book, document] = await Promise.all([
-    import(url('compile.js')),
-    import(own('book.mjs')),
-    import(own('document.mjs')),
-  ]);
-  modules = { compile, book, document };
+  const [book, document] = await Promise.all([import(own('book.mjs')), import(own('document.mjs'))]);
+  const src = book.sourceDir(__dirname);
+  const compile = await import(pathToFileURL(join(src, 'compile.js')).href);
+  modules = { compile, book, document, src };
   return modules;
 }
 
@@ -282,9 +281,9 @@ function parseHost(text) {
  * once; everything after that is a message.
  */
 async function shell(webview) {
-  const { document } = await load();
+  const { document, src } = await load();
   const nonce = Math.random().toString(36).slice(2) + Date.now().toString(36);
-  return document.panelHtml({ nonce, cspSource: webview.cspSource });
+  return document.panelHtml({ nonce, cspSource: webview.cspSource, src });
 }
 
 module.exports = { activate, deactivate };

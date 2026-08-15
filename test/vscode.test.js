@@ -17,7 +17,10 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 import { compileFile } from '../src/compile.js';
-import { findEntry, nodeAt, nodesOf, whereIs, outline, plain, rewriteImages } from '../tools/vscode/book.mjs';
+import {
+  findEntry, nodeAt, nodesOf, whereIs, outline, plain, rewriteImages, sourceDir,
+} from '../tools/vscode/book.mjs';
+import { panelHtml } from '../tools/vscode/document.mjs';
 import { imagePaths } from '../src/emit.js';
 
 const THORNWOOD = resolve('test/fixtures/thornwood.md');
@@ -156,4 +159,26 @@ test('every image in a book gets the address its host can open', () => {
   assert.deepEqual([...new Set(seen)].sort(), [...paths].sort());
   assert.ok(JSON.stringify(copy).includes('host://'));
   assert.ok(!JSON.stringify(story).includes('host://'), 'das Buch selbst bleibt unberührt');
+});
+
+test('a checkout plays its own sources, an installed copy the ones packed with it', () => {
+  const checkout = resolve('tools/vscode');
+  assert.equal(resolve(sourceDir(checkout)), resolve('src'));
+
+  // What ~/.vscode/extensions looks like: no project above it.
+  const installed = '/somewhere/.vscode/extensions/story-weaver-0.1.0';
+  assert.equal(sourceDir(installed, () => false), `${installed}/vendor/src`);
+});
+
+test('the panel page carries the runtime, the view and the book stylesheet', async () => {
+  const html = await panelHtml({ nonce: 'n' });
+  assert.ok(html.includes('class Story'));
+  assert.ok(html.includes('function mount'));
+  assert.ok(html.includes('--paper'));
+  // Nothing is fetched: a webview under a strict policy could not load it.
+  assert.ok(!/<script[^>]+src=/.test(html));
+  assert.ok(!/<link[^>]+stylesheet/.test(html));
+
+  const guarded = await panelHtml({ nonce: 'n', cspSource: 'vscode-resource:' });
+  assert.ok(guarded.includes("script-src 'nonce-n'"));
 });

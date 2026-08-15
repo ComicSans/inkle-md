@@ -89,10 +89,13 @@ Import zum einfachen Bindestrich. Das Original setzt sie auch mitten im Wort
 macht das selbst und meldet die Anzahl, damit ein Neuimport dieselbe Datei
 ergibt.
 
-**Die VS-Code-Erweiterung liegt in `tools/vscode/`** und wird nicht gepackt.
-Sie lädt Übersetzer, Laufzeit und Ansicht aus `../../src`, also aus dem
-Projekt selbst; ein Symlink nach `~/.vscode/extensions` genügt, `vsce` kommt
-nicht vor. `extension.js` ist CommonJS, weil VS Code `main` mit `require`
+**Die VS-Code-Erweiterung liegt in `tools/vscode/`.** Installiert wird sie
+über `node tools/vscode/pack.mjs` und `code --install-extension`; ein Symlink
+nach `~/.vscode/extensions` genügt seit VS Code 1.74 nicht mehr, der Ordner
+wird nicht mehr gescannt. `pack.mjs` schreibt die .vsix selbst - ein Zip mit
+Manifest -, damit `vsce` und ein Paketmanager draußen bleiben. Im Paket liegt
+`vendor/src` als Kopie; ein Checkout über der Erweiterung gewinnt darüber
+(`sourceDir`), sodass hier eine Änderung an `src/` sofort im Panel wirkt. `extension.js` ist CommonJS, weil VS Code `main` mit `require`
 lädt; alles ohne `vscode`-API steht in `book.mjs` und `document.mjs` und wird
 von `test/vscode.test.js` mitgeprüft. Der Abnahmetest für die Erweiterung ist
 `node --test` plus F5 von Hand - ein Editor lässt sich hier nicht skripten.
