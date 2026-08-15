@@ -6,6 +6,8 @@ zählt sie etwas anderes als Stunden.
 
 {~Irgendwo über dir schließt sich leise eine Tür.|Das Räderwerk der Standuhr holt hörbar Anlauf und schlägt dann doch nicht.|Unter deinen Füßen, sehr fern, setzt Gesang ein.}
 
+{fear >= 11: Dein Herz schlägt inzwischen überall mit, in den Handgelenken, im Hals, hinter den Augen. Viel mehr davon hält es nicht.}
+
 { visits(hall) == 1 }
   ~ fear = fear + 1
 
@@ -28,7 +30,7 @@ es.
   ~ fear = fear + 1
   * [Hinabsteigen](#cellar.passage)
   * [Den Kasten schließen und so tun, als wäre er eine Uhr](#hall)
-+ [Sie Uhr sein lassen](#hall)
++ [Die Uhr Uhr sein lassen](#hall)
 ---
 -> hall
 

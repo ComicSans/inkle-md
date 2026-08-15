@@ -98,9 +98,13 @@ He does not come after you. He sits back down.
 Under the robe he carried a curved dagger, its blade waved like water into
 which someone has thrown a stone. It is not a blade for opening letters.
 
+{has("dagger"): You pocket it, blade turned away from you. The silver dagger stays where it belongs: in your hand.|You take it as a weapon. This house is not offering anything better.}
+
 * Go to the far door
 
 # The Cellar {#rite}
+
+The chanting stops as you enter. Not because of you: it is finished. The circle no longer needs anyone in any particular place. It only needs you, and you are here.
 
 {visits(rite) == 1: Twelve figures in robes, a circle of chalk, in the middle a chair. The chanting does not falter as you enter. No one turns round. Your FEAR rises.|The circle, the robes, the chanting: everything is still there, and they all know you are back.}
 
@@ -120,7 +124,9 @@ which someone has thrown a stone. It is not a blade for opening letters.
 
 {visits(rite) == 1 and knows("KRUG-GEWUERZT"): The twelve robes are no longer standing especially straight. One yawns in mid-Latin, and the precentor gives him a look that would be a dismissal in better houses.}
 
-{turns() > 60: The chanting is faster than it sounded at the door just now. Whatever is meant to be finished here: it is nearly so.}
+{visits(rite) == 3: The chanting is faster than it ever sounded at the door, and the pauses are gone. Whatever is meant to be finished here is very nearly so.}
+
+{fear >= 11: Your heart is beating everywhere now, in your wrists, in your throat, behind your eyes. It will not stand much more of this.}
 
 * Fetch your coat from the chair first
 * Speak the name the ivy covers
@@ -128,7 +134,7 @@ which someone has thrown a stone. It is not a blade for opening letters.
 * Hold up the crucifix
 * Smudge the chalk circle while the robes are swaying
 * Smudge the chalk circle with your boot
-* Back out, and close the door
+* Turn back and leave this house while it still lets you
 
 You walk in, right in, take the coat off the chair and put it on. Not one
 robe stirs. No one stops you. It is the eeriest thing this house has done to
@@ -190,6 +196,8 @@ It is larger than the room it stands in. Your mind declines to explain that,
 and you are grateful to it. Your FEAR rises.
 
 {equipped("kris"): The curved dagger grows warm in your hand, as if it recognised an old member of the family. You decide not to hold that against it.}
+
+The silver dagger stays cool in your hand, the one thing in this room that is not playing along. Your hand grows steadier around it.
 
 Behind you something comes down the stairs, four-legged and without a chain.
 The hound takes his place beside you and growls with an expertise that

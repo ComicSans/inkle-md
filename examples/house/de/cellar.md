@@ -121,13 +121,20 @@ Unter der Kutte trug er einen krummen Dolch, dessen Klinge gewellt ist wie
 Wasser, in das jemand einen Stein geworfen hat. Es ist keine Klinge, mit der
 man Briefe öffnet.
 
+{has("dagger"): Du steckst ihn ein, die Klinge von dir weg. Der Silberdolch bleibt, wo er hingehört: in deiner Hand.|Du nimmst ihn als Waffe. Etwas Besseres bietet dieses Haus nicht an.}
+
 ~ take("kris")
-~ equip("kris")
+{ not has("dagger") }
+  ~ equip("kris")
 ~ remember("SCHLAEFER-ERLEDIGT")
 
 * [Zur hinteren Tür gehen](#rite)
 
 # Der Keller {#rite}
+
+{ visits(rite) >= 4 }
+  Der Gesang hört auf, als du eintrittst. Nicht deinetwegen: Er ist fertig. Der Kreis braucht niemanden mehr an einem bestimmten Platz. Er braucht nur noch dich, und du bist da.
+  -> thing
 
 {visits(rite) == 1: Zwölf Gestalten in Kutten, ein Kreis aus Kreide, in der Mitte ein Stuhl. Der Gesang bricht nicht ab, als du eintrittst. Niemand dreht sich um. Deine ANGST steigt.|Der Kreis, die Kutten, der Gesang: Alles ist noch da, und alle wissen, dass du wieder da bist.}
 
@@ -147,7 +154,9 @@ man Briefe öffnet.
 
 {visits(rite) == 1 and knows("KRUG-GEWUERZT"): Die zwölf Kutten stehen nicht mehr besonders gerade. Einer gähnt mitten im Latein, und der Vorsänger wirft ihm einen Blick zu, der in besseren Häusern eine Kündigung wäre.}
 
-{turns() > 60: Der Gesang ist schneller, als er vorhin an der Tür geklungen hat. Was immer hier fertig werden soll: Es ist fast so weit.}
+{visits(rite) == 3: Der Gesang ist schneller, als er je an der Tür geklungen hat, und die Pausen sind fort. Was hier fertig werden soll, ist beinahe so weit.}
+
+{fear >= 11: Dein Herz schlägt inzwischen überall mit, in den Handgelenken, im Hals, hinter den Augen. Viel mehr davon hält es nicht.}
 
 { visits(rite) == 1 }
   ~ fear = fear + 2
@@ -162,7 +171,7 @@ man Briefe öffnet.
 * {has("crucifix")} [Das Kruzifix hochhalten](#break) Es wird so heiß, dass du es fast fallen lässt, und der Gesang bricht ab.
 * {knows("KRUG-GEWUERZT")} [Den Kreidekreis verwischen, solange die Kutten schwanken](#thing) Die, die dich aufhalten wollen, müssten dazu erst aufstehen. Sie versuchen es. Es sieht aus wie eine schlechte Turnstunde.
 * {not knows("KRUG-GEWUERZT")} [Den Kreidekreis mit dem Stiefel verwischen](#guards) Zwölf Köpfe drehen sich gleichzeitig, was mehr Eindruck macht als alles bisher.
-+ [Rückwärts hinausgehen und die Tür schließen](#flight)
++ [Umkehren und dieses Haus verlassen, solange es dich lässt](#flight)
 
 ## Die Wächter {#guards}
 
@@ -213,6 +222,10 @@ Es ist größer als der Raum, in dem es steht. Dein Verstand weigert sich, das
 zu erklären, und du bist ihm dankbar dafür. Deine ANGST steigt.
 
 {equipped("kris"): Der krumme Dolch wird warm in deiner Hand, als erkenne er ein altes Familienmitglied wieder. Du beschließt, ihm das nicht übelzunehmen.}
+
+{ equipped("dagger") }
+  Der Silberdolch bleibt kühl in deiner Hand, das einzige Ding in diesem Raum, das nicht mitspielt. Deine Hand wird ruhiger daran.
+  ~ arrival.calm(1)
 
 ~ fear = fear + 1
 

@@ -1,6 +1,6 @@
 # Die Landstraße {#road}
 
-{visits(road) == 1: Der Wagen ist liegengeblieben, wie Wagen es tun: ohne Vorwarnung, im Regen, achtzehn Meilen hinter der letzten Ortschaft mit einem Namen. Der Motor gibt ein Geräusch von sich, das keinerlei Hoffnung ausdrückt.|Der Regen trommelt aufs Wagendach und ist ausdauernder, als deine Geduld.}
+{visits(road) == 1: Der Wagen ist liegengeblieben, wie Wagen es tun: ohne Vorwarnung, im Regen, achtzehn Meilen hinter der letzten Ortschaft mit einem Namen. Der Motor gibt ein Geräusch von sich, das keinerlei Hoffnung ausdrückt.|Der Regen trommelt aufs Wagendach und ist ausdauernder als deine Geduld.}
 
 {&Irgendwo hinter dir bellt etwas.|Das Bellen ist näher als eben.|Jetzt bellt nichts mehr, was du für keine Verbesserung hältst.}
 

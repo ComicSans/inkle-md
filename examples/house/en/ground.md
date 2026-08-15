@@ -6,6 +6,8 @@ Perhaps it counts something other than hours.
 
 {~Somewhere above you a door closes softly.|The works of the grandfather clock audibly gather themselves and then do not strike after all.|Beneath your feet, very far down, chanting starts up.}
 
+{fear >= 11: Your heart is beating everywhere now, in your wrists, in your throat, behind your eyes. It will not stand much more of this.}
+
 * Take a closer look at the grandfather clock
 * Go into the dining room
 * Go into the kitchen

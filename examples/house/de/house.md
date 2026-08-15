@@ -52,6 +52,8 @@ Ein Läufer, der jeden Schritt schluckt. Links die Bibliothek, rechts eine Tür
 mit einem Handtuch darüber, am Ende des Flurs eine schmale Tür, geradeaus die
 Treppe hinunter.
 
+{fear >= 11: Dein Herz schlägt inzwischen überall mit, in den Handgelenken, im Hals, hinter den Augen. Viel mehr davon hält es nicht.}
+
 * [In die Bibliothek gehen](#library)
 * [Die Tür mit dem Handtuch öffnen](#bathroom)
 * {not knows("BETAEUBT")} [Zur schmalen Tür am Ende gehen](#tower-door)
@@ -164,7 +166,7 @@ Wohin solltest du schon gehen. Deine ANGST steigt.
 + [Dich verabschieden]()
 ---
 Als du dich an der Tür noch einmal umdrehst, steht sie am Fenster und sieht
-hinaus als kenne sie den Ausblick auswendig und prüfe ihn trotzdem.
+hinaus, als kenne sie den Ausblick auswendig und prüfe ihn trotzdem.
 
 -> tower-out
 

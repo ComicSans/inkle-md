@@ -50,6 +50,8 @@ A runner that swallows every step. To the left the library, to the right a
 door with a towel over it, at the end of the corridor a narrow door, straight
 ahead the stairs going down.
 
+{fear >= 11: Your heart is beating everywhere now, in your wrists, in your throat, behind your eyes. It will not stand much more of this.}
+
 * Go into the library
 * Open the door with the towel
 * Go to the narrow door at the end
