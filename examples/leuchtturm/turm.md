@@ -219,7 +219,9 @@ Was die See vom Keller hält, steht am Boden:
 * {bereit == 0 and wasser <= 2} [Schlüssel, Dichtband und Kanister aufs Podest legen](#keller)
   Du sammelst zusammen, was der Generator brauchen wird, ehe eine Suche
   daraus wird: den Werkzeugschlüssel, das Dichtband, den vollen
-  Benzinkanister.
+  Benzinkanister. Alles hinauf aufs Podest, eine Handbreit höher als
+  jede Pfütze, die hier je gestanden hat. Wer den Kanister unten stehen
+  lässt, sucht ihn später im Dunkeln unter Wasser.
   ~ zeit += 10 + (dunkel and not handlicht()) * 5
   ~ drop("schluessel")
   ~ drop("band")
@@ -236,20 +238,21 @@ Was die See vom Keller hält, steht am Boden:
   ~ zeit += 5
   ~ take("schluessel")
   ~ take("band")
-+ {gerichtet == 0 and (bereit == 1 or wasser <= 2 or (has("schluessel") and has("band")))} [Die Leitung dichten, die Verschraubung nachziehen](#keller)
++ {gerichtet == 0 and (handlicht() or not dunkel) and (bereit == 1 or (has("schluessel") and has("band")))} [Die Leitung dichten, die Verschraubung nachziehen](#keller)
   Die Benzinleitung ist mürbe bis auf den Faden, die Verschraubung am
   Vergaser sitzt lose. Das alte Band herunter, das neue dreimal stramm
   herum, mit dem Daumen angerieben; dann der Schlüssel, eine halbe
-  Umdrehung, bis es steht. {wasser >= 1: Du arbeitest mit Händen, die
+  Umdrehung, bis es steht. Das ist Arbeit für Augen: das Band muss
+  liegen, wo es liegen soll. {wasser >= 1: Du arbeitest mit Händen, die
   zwischendurch untertauchen müssen, und jeder Griff dauert doppelt.}
   ~ zeit += 15 + (wasser >= 1) * 5 + (wasser >= 3) * 5
-  ~ zeit += (dunkel and not handlicht()) * 5
   ~ gerichtet = 1
   ~ drop("schluessel")
   ~ drop("band")
-+ {tank == 0 and (bereit == 1 or wasser <= 2)} [Den Kanister in den Tank leeren](#keller)
++ {tank == 0 and bereit == 1 and netz == 0 and (handlicht() or not dunkel)} [Den Kanister in den Tank leeren](#keller)
   Der Kanister ist schwer, der Stutzen eng; das Benzin nimmt sich die
-  Zeit, die es braucht. Dann ist der Tank voll bis an den Deckel.
+  Zeit, die es braucht, und will gesehen werden, wo es hinläuft. Dann
+  ist der Tank voll bis an den Deckel.
   ~ zeit += 5 + (wasser >= 3) * 5 + (dunkel and not handlicht()) * 5
   ~ tank = 1
 + {generator == 0} [Den Generator anwerfen](#anwerfen)
