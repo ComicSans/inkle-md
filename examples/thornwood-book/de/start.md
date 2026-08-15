@@ -12,14 +12,19 @@ Du hast {gold} Goldstücke bei dir und ein Glück von {luck}.
 
 {!Dornen fahren dir über die Arme.|Du kennst den Weg durch die Dornen inzwischen.}
 
-Du siehst nichts Besonderes.
+Nur Dornen. Aber von hier aus siehst du, dass unter der Weißdornhecke der Boden absackt: Da ist ein Spalt, und er ist tiefer, als eine Hecke ihn braucht.
 
 + [Weiter, Richtung Bach](#brook)
 + [Zur Hecke zurückgehen](#begin)
 
 # Am anderen Ufer {#other-side}
 
-Hier ist nichts. Enttäuscht gehst du zurück.
+{ visits(other-side) == 1 }
+  Im Schlamm des Ufers glänzt ein flacher Kiesel, rund wie eine Münze und leichter. Du steckst ihn ein, gegen die Vernunft und für das Glück.
+  ~ luck = min(luck + 1, luck_max)
+{ else }
+  Hier ist nichts weiter. Du gehst zurück.
+
 -> brook
 
 # Am Bach {#brook}
@@ -40,4 +45,4 @@ Das Wasser ist klar genug, dass du den Grund siehst, vereinzelt einen kleinen Fi
 ---
 Der Bach zieht weiter, ohne sich um dich zu kümmern.
 
--> begin
+-> brook

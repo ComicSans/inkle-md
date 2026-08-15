@@ -14,14 +14,16 @@ You squeeze in, lantern first.
 
 {!Thorns rake across your arms.|You know the way through the thorns by now.}
 
-You see nothing of note.
+Only thorns. But from here you can see the ground give way beneath the thorn hedge: there is a gap, and it runs deeper than a hedge has any need for.
 
 * Walk on, towards the brook
 * Go back to the hedge
 
 # On the Far Bank {#other-side}
 
-There is nothing here. Disappointed, you go back.
+In the mud of the bank a flat pebble gleams, round as a coin and lighter. You pocket it, against reason and for luck.
+
+There is nothing else here. You go back.
 
 # At the Brook {#brook}
 

@@ -23,9 +23,9 @@ inventory:
   start: [lantern, provisions]
 
 items:
-  sword:      { name: { de: Schwert, en: Sword }, kind: weapon }
+  sword:      { name: { de: Schwert, en: Sword }, kind: weapon, attack_bonus: 2 }
   axe:        { name: { de: Streitaxt, en: Battleaxe }, kind: weapon,
-                attack_bonus: 1, damage_override: 3 }
+                damage_override: 3 }
   lantern:    { name: { de: Laterne, en: Lantern }, kind: gear }
   silver-key: { name: { de: Silberner Schlüssel, en: Silver Key }, kind: gear }
   provisions: { name: { de: Proviant, en: Provisions }, kind: consumable, uses: 10,
@@ -46,7 +46,7 @@ combat:
   luck_in_combat: true
 
 enemies:
-  goblin: { name: { de: Goblin, en: Goblin }, skill: 5, stamina: 6, flee_after: 3 }
+  goblin: { name: { de: Goblin, en: Goblin }, skill: 6, stamina: 6, flee_after: 3 }
 
 death:
   when: "stamina <= 0"
