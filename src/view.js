@@ -48,6 +48,14 @@ const UI = {
  * @param {string} [options.heading] tag for the book's title, 'h1' by default.
  *   A page that already has a heading of its own passes the level below it, so
  *   the document keeps one outline instead of two.
+ * @param {object|(() => object)} [options.host] the host values of SPEC 12.4,
+ *   or a function asked for them anew before every turn. Without them a book
+ *   that reads the clock or a counter plays against its fallbacks, which is
+ *   not the book. The export has no host and passes nothing; an editor
+ *   preview lets the author type the values and see what they do.
+ * @param {boolean} [options.storage] false keeps the game out of
+ *   localStorage: nothing is saved and nothing is resumed. A preview starts
+ *   where the author is looking, not where they last stopped reading.
  * @param {string} [options.lang] the language to open in, if the book has it.
  *   The export asks the browser, which is the best it can do. A page that is
  *   itself written in one language knows better, and an English page opening a
@@ -76,15 +84,39 @@ function mount(json, root, options = {}) {
     return node;
   };
 
+  const persists = options.storage !== false;
+
   function save() {
+    if (!persists) return;
     try { localStorage.setItem(key, JSON.stringify(story.save())); } catch { /* private mode */ }
   }
 
+  function forget() {
+    if (!persists) return;
+    try { localStorage.removeItem(key); } catch { /* private mode */ }
+  }
+
   function loadSaved() {
+    if (!persists) return null;
     try {
       const raw = localStorage.getItem(key);
       return raw ? JSON.parse(raw) : null;
     } catch { return null; }
+  }
+
+  /**
+   * The host's turn (SPEC 12.4): time and counters move on between one page
+   * and the next, never before the first. Events fire here, so this runs
+   * before anything is drawn - otherwise the reader sees the page the host
+   * has just overtaken.
+   */
+  let firstTurn = true;
+  function advanceHost() {
+    if (!options.host || story.setup) return;
+    if (firstTurn) { firstTurn = false; return; }
+    if (story.current.ended) return;
+    const values = typeof options.host === 'function' ? options.host() : options.host;
+    if (values) story.advance(values);
   }
 
   // --- panels ------------------------------------------------------------
@@ -235,6 +267,7 @@ function mount(json, root, options = {}) {
   // --- rendering ---------------------------------------------------------
 
   function render() {
+    advanceHost();
     root.textContent = '';
     ui = UI[story.lang] ?? UI.en;
     if (setDocumentLang) document.documentElement.lang = story.lang;
@@ -327,8 +360,9 @@ function mount(json, root, options = {}) {
   }
 
   function restart() {
-    try { localStorage.removeItem(key); } catch { /* private mode */ }
+    forget();
     story = new Story(json, { lang: story.lang });
+    firstTurn = true;
     if (!story.setup) save();
     render();
   }
@@ -351,7 +385,7 @@ function mount(json, root, options = {}) {
   }
 
   // Number keys pick a choice, as a gamebook always let you.
-  document.addEventListener('keydown', (event) => {
+  function onKeydown(event) {
     if (event.metaKey || event.ctrlKey || event.altKey) return;
     // In the export the game is the whole document, so anything goes. Embedded
     // in a page it is one region among several: a key only counts while the
@@ -367,15 +401,29 @@ function mount(json, root, options = {}) {
       const button = root.querySelector(`button[data-key="${event.key}"]`);
       if (button) { button.click(); event.preventDefault(); }
     }
-  });
+  }
+  document.addEventListener('keydown', onKeydown);
 
   const saved = loadSaved();
   if (saved) {
     try { story.load(saved); } catch {
       // An old save from another book or version: it would resume garbage,
       // so it is dropped rather than retried on every reload.
-      try { localStorage.removeItem(key); } catch { /* private mode */ }
+      forget();
     }
   }
   render();
+
+  /**
+   * A page that mounts the game once - the export - never needs this. A host
+   * that mounts it again, an editor preview restarting from another node,
+   * would otherwise leave the old game's key handler behind, still holding
+   * its own story.
+   */
+  return {
+    unmount() {
+      document.removeEventListener('keydown', onKeydown);
+      root.textContent = '';
+    },
+  };
 }

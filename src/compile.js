@@ -25,20 +25,37 @@ import { emitStory } from './emit.js';
 export const FORMAT_VERSION = 1;
 
 /**
+ * Reading a source file. An editor holds the text the author is typing, which
+ * is not yet the text on disk; it passes its own reader so that a preview
+ * shows the unsaved buffer rather than the last save.
+ *
+ * @param {string} path
+ * @param {(path: string) => string} [read]
+ */
+function readSource(path, read) {
+  return read ? read(path) : readFileSync(path, 'utf8');
+}
+
+/**
  * @param {string} entry path to a .md file or a book.yaml
+ * @param {{read?: (path: string) => string}} [options] `read` replaces the
+ *        file system for every source file, for a host that has the text
+ *        already (an editor buffer). It never sees image paths: those are
+ *        checked on disk, because that is where they have to be (SPEC 4.9).
  * @returns {{story: object, warnings: object[]}}
  */
-export function compileFile(entry) {
+export function compileFile(entry, options = {}) {
+  const { read } = options;
   if (basename(entry) === 'book.yaml' || extname(entry) === '.yaml') {
-    return compileProject(entry);
+    return compileProject(entry, read);
   }
-  const source = readFileSync(entry, 'utf8');
+  const source = readSource(entry, read);
   return compileSources([{ file: entry, source, namespace: null }], { entry, root: dirname(entry) });
 }
 
-function compileProject(bookPath) {
+function compileProject(bookPath, read) {
   const root = dirname(bookPath);
-  const data = parseYaml(readFileSync(bookPath, 'utf8'), bookPath);
+  const data = parseYaml(readSource(bookPath, read), bookPath);
   const chapters = data.chapters ?? [];
   if (chapters.length === 0) {
     throw new CompileError('E010', 'book.yaml lists no chapters', { file: bookPath, line: 1 });
@@ -64,16 +81,16 @@ function compileProject(bookPath) {
     lang,
     files: plan.map(({ file, namespace }) => {
       const path = perLanguage ? join(root, lang, file) : join(root, file);
-      return { file: path, source: readChapter(path, bookPath), namespace };
+      return { file: path, source: readChapter(path, bookPath, read), namespace };
     }),
   }));
 
   return compileSources(variants, { entry: bookPath, root, book: data });
 }
 
-function readChapter(path, bookPath) {
+function readChapter(path, bookPath, read) {
   try {
-    return readFileSync(path, 'utf8');
+    return readSource(path, read);
   } catch {
     throw new CompileError('E010', `cannot read the chapter file "${path}"`, { file: bookPath, line: 1 });
   }

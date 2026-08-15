@@ -1,0 +1,127 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * Copyright 2026 Tobias Reithmeier
+ *
+ * The panel's own chrome. The game below it keeps the book's look, which is
+ * the point of a preview; everything the panel adds around it belongs to the
+ * editor and takes the editor's colours, down to the contrast the reader
+ * chose there.
+ */
+
+body {
+  background: var(--vscode-editor-background, var(--paper));
+  color: var(--vscode-editor-foreground, var(--ink));
+  font: var(--vscode-font-size, 13px) / 1.5 var(--vscode-font-family, system-ui, sans-serif);
+  padding: 0.8rem 1rem;
+}
+
+#chrome { margin-bottom: 1rem; }
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  border-bottom: 1px solid var(--vscode-panel-border, currentColor);
+  padding-bottom: 0.6rem;
+}
+
+.bar .book { font-weight: 600; margin-right: auto; }
+
+/* Every editor colour keeps a fallback: a webview without a theme - a
+   browser, a screenshot - would otherwise draw a button with no button on
+   it. */
+#chrome button,
+#content button.link {
+  font: inherit;
+  color: var(--vscode-button-foreground, var(--paper));
+  background: var(--vscode-button-background, var(--accent));
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.6rem;
+  width: auto;
+  cursor: pointer;
+}
+
+#chrome button:hover { background: var(--vscode-button-hoverBackground, var(--accent)); }
+
+#chrome button:focus-visible,
+#content button.link:focus-visible {
+  outline: 2px solid var(--vscode-focusBorder, var(--accent));
+  outline-offset: 1px;
+}
+
+.banner {
+  white-space: pre-wrap;
+  border-left: 3px solid var(--vscode-editorError-foreground, currentColor);
+  padding: 0.4rem 0.8rem;
+  margin: 0.8rem 0 0;
+  font-family: var(--vscode-editor-font-family);
+  font-size: 0.9em;
+}
+
+.note {
+  margin: 0.6rem 0 0;
+  opacity: 0.85;
+  font-size: 0.9em;
+}
+
+/* The book's own h2 shouts; the panel's heading is a label, not a page. */
+#content .title { margin: 0; font-size: 1.2em; text-transform: none; letter-spacing: normal; }
+#content .id { margin: 0.2rem 0 1rem; font-size: 0.9em; opacity: 0.8; }
+#content .id .where { margin-left: 0.6rem; }
+#content h3 { font-size: 0.9em; text-transform: uppercase; letter-spacing: 0.04em; margin: 1.2rem 0 0.4rem; }
+
+.messages, .ways { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.4rem; }
+
+.messages li {
+  border-left: 3px solid var(--vscode-editorWarning-foreground, currentColor);
+  padding: 0.2rem 0.6rem;
+  font-size: 0.9em;
+}
+.messages li.info { border-left-color: var(--vscode-editorInfo-foreground, currentColor); }
+
+.ways li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: baseline;
+  border-bottom: 1px solid var(--vscode-panel-border, transparent);
+  padding-bottom: 0.4rem;
+}
+
+.ways .label { flex: 1 1 12rem; }
+
+.ways .tag {
+  font-size: 0.75em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 1px solid currentColor;
+  border-radius: 0.2rem;
+  padding: 0 0.3rem;
+  opacity: 0.7;
+}
+
+.ways .target { font-size: 0.9em; opacity: 0.8; }
+.ways .target.missing { color: var(--vscode-editorError-foreground, currentColor); opacity: 1; }
+
+.ways li.divert .label { font-style: italic; opacity: 0.8; }
+
+/* The game keeps the book's paper inside the editor's panel: what is being
+   previewed is the book, and it should not be mistaken for the editor. The
+   panel is one column wide, so the character sheet sits under the page
+   instead of beside it. */
+#game {
+  background: var(--paper);
+  color: var(--ink);
+  font: 1.05rem/1.6 var(--serif);
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  padding: 1rem 1.2rem;
+  display: grid;
+  gap: 1.2rem;
+}
+
+#game .sheet { margin: 0; }

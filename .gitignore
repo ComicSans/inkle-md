@@ -14,6 +14,8 @@ node_modules/
 *.swp
 .idea/
 .vscode/
+# Ausnahme: der F5-Start der Erweiterung gehört zur Erweiterung.
+!tools/vscode/.vscode/
 
 # Local tooling state
 .tokensave/

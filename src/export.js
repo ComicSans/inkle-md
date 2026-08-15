@@ -16,7 +16,13 @@ import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
-const CSS = `
+/**
+ * The look of the game, and the only place it is written. The export inlines
+ * it; an editor preview mounts the same view and needs the same rules, so it
+ * is exported rather than copied - a second copy is a second thing to keep in
+ * step, and it would drift.
+ */
+export const CSS = `
 :root {
   --ink: #1b1a17; --paper: #f6f2e8; --edge: #8f8460; --line: #cfc6b0; --accent: #7a3b2e;
   --measure: 34rem; --serif: Georgia, 'Iowan Old Style', 'Times New Roman', serif;

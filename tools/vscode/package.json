@@ -1,0 +1,59 @@
+{
+  "name": "story-weaver",
+  "displayName": "Story Weaver",
+  "description": "Den Knoten unter dem Cursor sehen und ab dort probespielen",
+  "version": "0.1.0",
+  "license": "MPL-2.0",
+  "publisher": "tobiasreithmeier",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Programming Languages", "Visualization"],
+  "main": "./extension.js",
+  "activationEvents": ["onLanguage:markdown", "workspaceContains:**/book.yaml"],
+  "contributes": {
+    "commands": [
+      {
+        "command": "storyWeaver.showPanel",
+        "title": "Story Weaver: Knoten zeigen",
+        "category": "Story Weaver"
+      },
+      {
+        "command": "storyWeaver.playHere",
+        "title": "Story Weaver: Ab hier probespielen",
+        "category": "Story Weaver"
+      },
+      {
+        "command": "storyWeaver.playFromStart",
+        "title": "Story Weaver: Von vorn probespielen",
+        "category": "Story Weaver"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "storyWeaver.playHere",
+        "key": "ctrl+alt+p",
+        "mac": "cmd+alt+p",
+        "when": "editorLangId == markdown"
+      }
+    ],
+    "configuration": {
+      "title": "Story Weaver",
+      "properties": {
+        "storyWeaver.follow": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Das Panel folgt dem Cursor. Aus bleibt es bei dem Knoten stehen, den es zeigt."
+        },
+        "storyWeaver.host": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Host-Werte für den Probelauf, als `schlüssel=wert`, mit Komma getrennt (etwa `steps=2000,elapsed=3600`). Ohne sie spielt ein Buch, das die Uhr oder einen Zähler liest, gegen seine Ersatzwerte."
+        },
+        "storyWeaver.language": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Die Sprache, in der probegespielt wird. Leer heißt: die Standardsprache des Buchs."
+        }
+      }
+    }
+  }
+}

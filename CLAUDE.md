@@ -89,6 +89,15 @@ Import zum einfachen Bindestrich. Das Original setzt sie auch mitten im Wort
 macht das selbst und meldet die Anzahl, damit ein Neuimport dieselbe Datei
 ergibt.
 
+**Die VS-Code-Erweiterung liegt in `tools/vscode/`** und wird nicht gepackt.
+Sie lädt Übersetzer, Laufzeit und Ansicht aus `../../src`, also aus dem
+Projekt selbst; ein Symlink nach `~/.vscode/extensions` genügt, `vsce` kommt
+nicht vor. `extension.js` ist CommonJS, weil VS Code `main` mit `require`
+lädt; alles ohne `vscode`-API steht in `book.mjs` und `document.mjs` und wird
+von `test/vscode.test.js` mitgeprüft. Der Abnahmetest für die Erweiterung ist
+`node --test` plus F5 von Hand - ein Editor lässt sich hier nicht skripten.
+Angenommen am 15.08.2026, bis Tobias widerspricht.
+
 **Keine swift-contracts.** Sie prüfen Regeln für App-Code; `hosts/ios/` ist ein
 Package aus einer Bridge und einer Ansicht, kein App-Target.
 

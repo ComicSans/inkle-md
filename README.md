@@ -144,6 +144,17 @@ and [`hosts/android/`](hosts/android/) is a Kotlin host that is written but
 has never been compiled. What a host owns - drawing, saving, feeding the
 clock - and what it owes its readers is set out in SPEC 12.
 
+## Writing with an editor
+
+[`tools/vscode/`](tools/vscode/) is a VS Code extension: a panel beside the
+text showing the node the cursor is in - its title, every way on with its
+target, the warnings that fall inside it - and, on one keystroke, the book
+played from that node, with the same runtime and the same view the HTML
+export ships. It compiles the buffer rather than the file, so unsaved text
+counts, and a book that does not compile leaves the last one that did on
+screen with the error above it. No build step and no dependency: a symlink
+into `~/.vscode/extensions` is the whole install.
+
 ## Importing ink
 
 ```bash
