@@ -89,7 +89,8 @@ test('a multi-file project namespaces its nodes and resolves across files', () =
 
 test('a single-file book compiles without warnings', () => {
   const { story, warnings } = compileFile(join(here, 'fixtures', 'thornwood.md'));
-  assert.equal(warnings.messages.length, 0, JSON.stringify(warnings.messages, null, 2));
+  const warned = warnings.messages.filter((m) => m.level === 'warning');
+  assert.equal(warned.length, 0, JSON.stringify(warned, null, 2));
   assert.equal(warnings.report.unreachable, 0);
   assert.equal(warnings.report.endings, 2);
   assert.equal(story.meta.start, 'begin');

@@ -26,6 +26,8 @@ export const ERRORS = {
   E060: 'Undeclared item used where a declaration is required',
   E061: 'Unknown item kind',
   E062: 'Unknown key in strings',
+  E070: 'A node exists in one language but not in another',
+  E071: 'A translation\'s paragraphs, images, choices or alternatives do not line up with the default language',
   E100: 'Choice without a link',
   E110: 'Node whose end has neither divert, choice nor combat, or text before the first node',
   E120: 'Gather not preceded by a choice',

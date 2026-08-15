@@ -17,7 +17,7 @@ import { createInterface } from 'node:readline/promises';
 import { stdin, stdout } from 'node:process';
 
 import { Story } from './runtime.js';
-import { walkOps } from './compile.js';
+import { walkOps } from './ops.js';
 
 const HELP = `
   1-9   eine Wahl treffen        a   angreifen

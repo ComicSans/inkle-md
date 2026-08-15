@@ -8,21 +8,23 @@
 /**
  * Linter per SPEC.md section 11, plus the reachability report.
  *
- * Implemented: L001, L002, L005, L006, L007, L008, L009, L010, L012, L013,
- * L016, L017, L018, L020, L021 to L028.
- * Not yet implemented: L003, L004, L011, L014, L015 - they need either
- * constant folding over variables or a prose model, and are named as
- * unimplemented in SPEC 11.
+ * All of section 11 is implemented. Three checks are deliberately
+ * conservative, and SPEC 11 says so: L003 folds literals and fixed facts,
+ * never variables; L004 speaks up only for a node that changes nothing and
+ * offers one sticky, unconditional choice; L015 sees prose after an
+ * unconditional divert in the same block, not text orphaned in subtler ways.
  */
 
-import { walkOps } from './compile.js';
+import { walkOps } from './ops.js';
 import { walkExpression } from './expr.js';
 import { STRING_KEYS } from './frontmatter.js';
 
 const LEVELS = {
-  L001: 'warning', L002: 'warning', L005: 'warning', L006: 'warning',
+  L001: 'warning', L002: 'warning', L003: 'warning', L004: 'warning',
+  L005: 'warning', L006: 'warning',
   L007: 'info', L008: 'warning', L009: 'warning', L010: 'info',
-  L012: 'warning', L013: 'info', L016: 'warning', L017: 'warning', L018: 'warning',
+  L011: 'info', L012: 'warning', L013: 'info', L014: 'info', L015: 'warning',
+  L016: 'warning', L017: 'warning', L018: 'warning',
   L020: 'warning',
   L021: 'warning', L022: 'warning', L023: 'info', L024: 'warning',
   L025: 'info', L026: 'warning', L027: 'info', L028: 'warning',
@@ -46,7 +48,7 @@ export function forHostlessOutput(messages) {
   return messages.map((m) => (m.code === 'L025' ? { ...m, level: 'warning' } : m));
 }
 
-export function lint(story, { table, config, lang }) {
+export function lint(story, { table, config, lang, sources = [] }) {
   const out = [];
   const add = (code, detail, at) => out.push({ code, level: LEVELS[code], detail, ...at });
 
@@ -58,6 +60,18 @@ export function lint(story, { table, config, lang }) {
   // death.goto is an edge like any other: every assignment can take it.
   const entries = [story.meta.start, config.death?.goto].filter(Boolean);
   const reachable = walkGraph(entries, graph);
+
+  // What is constant at compile time: literals, fixed facts, and the derived
+  // facts standing on them alone. A host fact may take any value in its
+  // range, so it stays out, and variables stay out entirely (SPEC 11, L003).
+  const staticKnown = new Map();
+  for (const [name, fact] of Object.entries(config.facts ?? {})) {
+    if (fact.source === 'fixed') staticKnown.set(name, fact.value);
+    else if (fact.source === 'derived') {
+      const value = fold(fact.value, staticKnown);
+      if (value !== undefined) staticKnown.set(name, value);
+    }
+  }
 
   for (const [id, node] of Object.entries(nodes)) {
     if (node.kind === 'function') continue;
@@ -78,6 +92,18 @@ export function lint(story, { table, config, lang }) {
     }
   }
 
+  // L014: the death node hangs only on the safety net. The same walk once
+  // more, without death.goto as an entry, says whether any divert or choice
+  // leads there on its own.
+  if (config.death?.goto && nodes[config.death.goto]) {
+    const walked = walkGraph([story.meta.start], graph);
+    if (!walked.has(config.death.goto)) {
+      add('L014',
+        `"${config.death.goto}" is reached only through death:; no divert or choice leads there`,
+        nodes[config.death.goto].source);
+    }
+  }
+
   // Variables, items and code words, collected over the whole book.
   const read = new Set(), written = new Set();
   const granted = new Set(), tested = new Set();
@@ -93,6 +119,9 @@ export function lint(story, { table, config, lang }) {
           add('L013', `node "${id}" offers ${op.items.length} choices at once`, node.source);
         }
         for (const item of op.items) {
+          if (item.when && fold(item.when, staticKnown) === 0) {
+            add('L003', `a choice in "${id}" can never appear: its condition is always false`, item.source);
+          }
           if (item.when && rolls(item.when)) {
             add('L020',
               `a choice in "${id}" decides whether to appear by rolling dice, so it flickers ` +
@@ -223,6 +252,33 @@ export function lint(story, { table, config, lang }) {
     }
   }
 
+  // L004: a node whose whole offer is one sticky, unconditional choice. The
+  // reader has nothing to decide there, and `+` promises a return that
+  // changes nothing; a divert says the same without a button.
+  for (const [id, node] of Object.entries(nodes)) {
+    if (node.kind === 'function') continue;
+    const groups = (node.body ?? []).filter((op) => op.op === 'choices');
+    if (groups.length !== 1 || groups[0].items.length !== 1) continue;
+    const only = groups[0].items[0];
+    if (!only.sticky || only.when || !only.target) continue;
+    // A node that changes state has earned its button: the press is a
+    // boundary, and in a book with a clock that is the point of resting.
+    const acts = node.body.some((op) => op.op === 'assign' || op.op === 'call')
+      || (only.body ?? []).some((op) => op.op === 'assign' || op.op === 'call');
+    if (acts) continue;
+    const after = node.body.slice(node.body.indexOf(groups[0]) + 1);
+    if (after.some((op) => op.op === 'divert' || op.op === 'combat')) continue;
+    add('L004', `the only way out of "${id}" is one sticky choice; nothing is decided there`, node.source);
+  }
+
+  // L015: prose after an unconditional divert in the same block is never
+  // read. Subtler orphans exist; this reads what a flat walk can see.
+  for (const [id, node] of Object.entries(nodes)) {
+    deadProse(node.body, (op) => {
+      add('L015', `text in "${id}" stands after a divert and can never be read`, op.source ?? node.source);
+    });
+  }
+
   // L028: a gather that sends the reader back into its own node is a loop, and
   // it is only a survivable one while some choice is certain to be there on the
   // next pass. Once every choice is once-only or conditional, the node runs out
@@ -298,7 +354,47 @@ export function lint(story, { table, config, lang }) {
     }
   }
 
+  // L011: the source text is the one thing this file otherwise never sees;
+  // the compiler hands it over for exactly this check. One report per file,
+  // not per line: prose written one line per paragraph would drown the rest.
+  for (const { file, source } of sources) {
+    const lines = (source ?? '').split('\n');
+    const long = [];
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].length > 80) long.push(i + 1);
+    }
+    if (long.length === 1) {
+      add('L011', 'one line runs past 80 characters', { file, line: long[0] });
+    } else if (long.length > 1) {
+      add('L011',
+        `${long.length} lines run past 80 characters, the first at line ${long[0]}`,
+        { file, line: long[0] });
+    }
+  }
+
   return { messages: out, report: summary };
+}
+
+/**
+ * Finds text or an image standing after a divert in the same block, one
+ * report per block: past an unconditional jump nothing is ever read (L015).
+ */
+function deadProse(ops, onDead) {
+  const list = ops ?? [];
+  const cut = list.findIndex((op) => op.op === 'divert');
+  if (cut !== -1) {
+    for (const op of list.slice(cut + 1)) {
+      if (op.op === 'text' || op.op === 'image') { onDead(op); break; }
+    }
+  }
+  for (const op of list) {
+    if (op.op === 'choices') {
+      for (const item of op.items) deadProse(item.body, onDead);
+    } else if (op.op === 'branch') {
+      for (const b of op.branches) deadProse(b.body, onDead);
+      deadProse(op.else, onDead);
+    }
+  }
 }
 
 /** Every expression the frontmatter declares. */

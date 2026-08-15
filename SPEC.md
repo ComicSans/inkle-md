@@ -1226,10 +1226,16 @@ That is the key difference to section 10: warnings do not abort compilation. `--
 | L028 | Gather diverting back into its own node while every choice can run out | warning |
 | L029 | Every choice in a node can run out, and taking one leads back into it | warning |
 
-Not every rule in this table is checked yet. L003, L004, L011, L014 and L015
-are declared so that their codes stay stable, but the linter does not
-implement them so far: they need constant folding over variables or a model
-of the prose, and neither exists in this repository yet.
+Three of these are deliberately conservative. L003 folds literals and fixed
+facts, never variables, so it reports the condition it can prove false and
+stays quiet about the rest. L004 speaks up only for a node that changes
+nothing and offers exactly one sticky, unconditional choice; a resting place
+that advances the clock has earned its button, because every press is a
+boundary (16.1). And L015 sees prose standing after an unconditional divert
+in the same block, not text orphaned in subtler ways. Each is exact about
+what it saw, never about what the author meant, the same bargain L026
+strikes in 19.2. L011 reports once per file, naming the first long line,
+because prose written one line per paragraph would otherwise drown the list.
 
 If you only remember two of these, make it L008 and L009. They are the ones that actually catch bugs in a gamebook: a key that is never granted, a code word that is never set. Both need the whole book to judge, so they run after resolution across all namespaces.
 
