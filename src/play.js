@@ -198,7 +198,7 @@ export function simulate(story, { runs = 300, maxSteps = 200, host = null, cover
   // Was ueber alle Partien hinweg schon angeboten und schon genommen wurde.
   // Ohne `coverage` bleibt es aus, denn es lenkt den Leser und wuerde die
   // Verteilung der Enden verschieben, an der ein Buch ausbalanciert wird.
-  const gesehen = coverage ? { angeboten: new Set(), genommen: new Set() } : null;
+  const gesehen = coverage ? { angeboten: new Set(), genommen: new Map() } : null;
 
   for (let seed = 1; seed <= runs; seed++) {
     const s = new Story(story, { seed });
@@ -234,6 +234,12 @@ export function simulate(story, { runs = 300, maxSteps = 200, host = null, cover
  * Fehler ist, entscheidet die Autorin. Eine Wahl hinter einem mehrstufigen
  * Plan taucht hier auf, und das ist richtig so: sie ist es wert, dass jemand
  * einmal nachrechnet, ob der Plan aufgeht.
+ *
+ * Gelenkt wird nach Haeufigkeit, nicht nach "noch nie genommen". Der
+ * Unterschied ist gross: wer nur Unbetretenes waehlt, faechert am ersten
+ * Kreuzweg auf und kommt nie in die Tiefe, weil jeder Weg dorthin schon
+ * einmal gegangen ist. Gemessen an denselben 600 Partien - `house` 85 von 94
+ * Wahlen gegen 94 von 94, `leuchtturm` 28 von 29 gegen 29 von 29.
  */
 function coverageReport(story, angeboten) {
   const lang = story.meta.default;
@@ -281,11 +287,19 @@ export function walk(s, { seed = 1, maxSteps = 200, host = null, gesehen = null 
     // Ueber alle Partien hinweg zuerst das, was noch nie jemand genommen hat:
     // so kommt eine Abdeckungsmessung an Stellen, die ein Buch hinter einem
     // mehrstufigen Plan versteckt.
-    const neu = gesehen ? choices.filter((c) => !gesehen.genommen.has(kennung(c))) : [];
-    const pool = neu.length > 0 ? neu : (fresh.length > 0 ? fresh : choices);
+    // Nach Haeufigkeit lenken, nicht nach "noch nie": wer nur Unbetretenes
+    // nimmt, faechert am ersten Kreuzweg auf und kommt nie in die Tiefe,
+    // weil jeder Weg dorthin schon einmal gegangen ist. Das Seltenste zuerst
+    // laeuft dieselben Wege wieder, nur die ausgetretenen zuletzt.
+    let pool = fresh.length > 0 ? fresh : choices;
+    if (gesehen) {
+      const zahl = (c) => gesehen.genommen.get(kennung(c)) ?? 0;
+      const min = Math.min(...choices.map(zahl));
+      pool = choices.filter((c) => zahl(c) === min);
+    }
     const pick = pool[(seed * 7 + steps * 3) % pool.length];
     taken.add(`${s.current.node}#${pick.index}`);
-    if (gesehen) gesehen.genommen.add(kennung(pick));
+    if (gesehen) gesehen.genommen.set(kennung(pick), (gesehen.genommen.get(kennung(pick)) ?? 0) + 1);
     s.choose(pick.index);
   }
   return { ended: s.current.ended, deadEnd: false, steps };

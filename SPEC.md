@@ -1349,8 +1349,11 @@ ending at whatever node it happened to stand in.
 
 `--coverage` asks a different question: not where a book ends, but what a
 reader never gets to see. It reports every choice that stood on no page in
-any of the runs, and to find them it steers - across runs, a choice nobody
-has taken yet comes first. That steering shifts the spread of endings, which
+any of the runs, and to find them it steers - across runs, the choice taken
+least often so far comes first. Least often, not never: a walker that only
+takes what nobody has taken fans out at the first crossroads and never
+reaches anything deep, because every way there has been walked once
+already. That steering shifts the spread of endings, which
 is what a book is balanced against, so it stays off unless asked for. What it
 surfaces is not by itself a fault: a choice behind a three-step plan belongs
 in that list, and what it is worth is the author's to say.
