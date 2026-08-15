@@ -208,7 +208,7 @@ test('the reachability report counts what the linter walked', () => {
 
 test('die Pfadlaenge rechnet polynomial und bleibt eine Obergrenze', () => {
   // Frueher zaehlte der Linter jeden einfachen Pfad einzeln auf.
-  // `examples/intercept.md` verbrachte damit 32 von 33 Sekunden, und ein
+  // `examples/intercept/` verbrachte damit 32 von 33 Sekunden, und ein
   // doppelt so grosses Buch waere nie fertig geworden. Jetzt: Breitensuche
   // fuer den kuerzesten Weg, und fuer den laengsten die Komponenten des
   // Graphen, nach Groesse gewichtet.

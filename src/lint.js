@@ -563,7 +563,7 @@ function report(story, nodes, graph, reachable, endings) {
  * Shortest and longest path from start to an ending, over choices.
  *
  * The shortest is a breadth-first walk. The longest used to enumerate every
- * simple path, which is exponential: `examples/intercept.md` spent 32 of the
+ * simple path, which is exponential: `examples/intercept/` spent 32 of the
  * 33 seconds it took to compile inside that walk, and a book twice its size
  * would never have finished.
  *

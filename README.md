@@ -90,15 +90,18 @@ reader is doing anything. You can play it
 
 **`leuchtturm/`** is the smallest book of the newest layer: a picture, a
 value a surrounding app supplies, an event that comes due, and a way in for
-an app.
+an app. German is its default language, English its translation.
 
-**`intercept.md`** is not written in this language at all. It is inkle's own
+**`intercept/`** is not written in this language at all. It is inkle's own
 ink demo, *The Intercept*, put through `import`, and it earns its place by
 having no character sheet, no dice and no combat: it exercises the narrative
 half of the language on someone else's writing, where nothing could be
 quietly bent to fit. It carries inkle's MIT notice, not this project's MPL
 header, and it is the one example that does not pass `--strict`: it repeats
-choice labels because the original does. You can play it
+choice labels because the original does. English is the default language and
+stays the imported text word for word; German is a catalogue beside it, which
+is the whole point of the translation rule - a second language cannot touch
+the structure it is translating. You can play it
 [here](https://www.tobiasreithmeier.de/the-intercept).
 
 ## A book inside another app
@@ -202,8 +205,14 @@ To work on the extension itself, open `tools/vscode` in VS Code and press F5.
 ## Importing ink
 
 ```bash
-node src/cli.js import TheIntercept.ink --out examples/intercept.md
+node src/cli.js import TheIntercept.ink --out examples/intercept/en/intercept.md
 ```
+
+The importer writes one file with its frontmatter at the top, which is a whole
+book per 3.1. `examples/intercept/` has since grown a German translation and
+therefore a `book.yaml`, so re-importing it means lifting the frontmatter the
+importer wrote into that `book.yaml` again. The English text below it is what
+a re-import reproduces word for word, and that is what the example is for.
 
 The importer reads a file written in ink and writes the same story in this
 language. What has a direct equivalent is carried over: passages and their
