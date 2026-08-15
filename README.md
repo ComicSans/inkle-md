@@ -234,6 +234,60 @@ logic - a plural only it branches on - it may override a whole passage, and
 the linter points at every place that happens. See
 `examples/thornwood-book/en/crypt.md`.
 
+## Writing a book that plays well
+
+None of the following is a rule of the language. It is craft, and it can be
+read off the four example books and a shelf of Fighting Fantasy paperbacks.
+Where a tool can verify a point, the tool is named.
+
+**The first part converges on a single node.** The structure is called branch
+and bottleneck; the name comes from Sam Kabo Ashwell's essay on CYOA
+structures. The alternative, a tree that keeps opening - the time cave -
+grows combinatorially until no one can write all the branches. After the
+bottleneck, the second part is allowed to know where the reader stands.
+
+**Loops are not bad - loops where nothing changes are bad.** A room the
+reader returns to is the backbone of many books; in `leuchtturm`, the
+workroom is exactly that. It carries because something is different on every
+return: the weather one step further, the water higher, the light out. L028
+and L029 report the other kind, the loop with no way out.
+
+**A place describes itself once.** On the second visit, only what has changed
+is on the page. The language carries this in the sequence without a marker:
+`{long form|short form}` stays on the short form from the second visit on.
+
+**A right path exists, and chance does not find it.** In `leuchtturm`, a
+random reader reaches the good ending in 0 of 800 runs; the intended path
+reaches it every time. Both halves can be checked: `simulate` for the chance,
+a test with a fixed sequence of moves for the path.
+
+**When time presses, it has to be seen coming.** Four stages, not two. And
+they hang on the book's clock, not on the visit count - otherwise a reader
+sees the whole escalation by looking out of the same window four times.
+
+**What opens a later door has been seen before the door.** An item or code
+word that first appears behind the door makes the decision in front of it
+impossible instead of hard. L008 and L009 report what is taken and never
+tested, and the other way round.
+
+**Death is earned.** The most criticised trait of the old books is the
+paragraph that kills without warning. Better a warning one page earlier, and
+better to cost a resource than to end the book.
+
+**Two hands, not twenty.** A carry limit turns a list into a decision. In
+`leuchtturm` there are two slots, and carrying the tools means leaving the
+lantern behind.
+
+**Seven choices on a page at most.** Beyond that it is a menu, not a scene.
+L013 says so.
+
+**In the end the numbers decide, not the feel.** `simulate` shows how the
+endings distribute. `simulate --coverage` names every choice that no run ever
+put on the page. `lint --strict` has to stay clean.
+
+What the linter reports is a find, not a verdict. A choice behind a
+multi-step plan turns up in the coverage list, and that is as it should be.
+
 ## What is in this repository
 
 `SPEC.md` is the language definition; it decides, and the code follows.
