@@ -13,7 +13,7 @@
 
 export const ERRORS = {
   E010: 'Frontmatter missing, malformed, or not at the top of the file',
-  E011: 'Unknown key in frontmatter',
+  E011: 'Unknown key or malformed declaration in the frontmatter, or a function node carrying {#id}',
   E012: 'Book-wide declaration in a chapter file',
   E020: 'Tab used for indentation',
   E021: 'Indentation not a multiple of two',
@@ -27,7 +27,7 @@ export const ERRORS = {
   E061: 'Unknown item kind',
   E062: 'Unknown key in strings',
   E100: 'Choice without a link',
-  E110: 'Node with neither divert nor choice',
+  E110: 'Node whose end has neither divert, choice nor combat, or text before the first node',
   E120: 'Gather not preceded by a choice',
   E121: 'Nesting deeper than three levels',
   E130: 'Malformed expression',
@@ -56,7 +56,7 @@ export const ERRORS = {
   E181: 'An image inside a sentence rather than on a line of its own',
   E182: 'An image without alt text',
   E183: 'An image path that is a URL, or that leaves the book\'s directory',
-  E184: 'An image file that is not in the book\'s directory',
+  E184: 'An image file that does not exist',
 };
 
 export class CompileError extends Error {

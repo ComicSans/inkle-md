@@ -201,8 +201,9 @@ chapters:
   - crypt.md
 ```
 
-From the second language on, each one gets a directory named after it, holding
-the same chapter file names: `de/start.md`, `en/start.md`. A book that declares
+As soon as a book declares a second language, every language, the default
+included, gets a directory named after it, holding the same chapter file
+names: `de/start.md`, `en/start.md`. A book that declares
 a single language keeps its chapters where they are, because naming the
 language a book is written in should not cost a directory level. A book without
 a `languages:` block has exactly one language, named `default`.
@@ -232,8 +233,12 @@ text, and no language has to break its sentences where another one did.
 Paragraphs replace paragraphs and list items replace button labels, each in
 source order, counted as two separate streams so that nesting never has to be
 mirrored. Conditional arms, gather text and combat exit text are paragraphs
-like any other. A translation with a different count is E071, and a node the
-default language does not have, or does not translate, is E070.
+like any other. Inside a paragraph, a conditional alternative keeps its arms
+and writes `?` for its condition - `{?: reich|arm}` where the default
+language wrote `{gold >= 10: rich|poor}` - because a condition is logic, and
+logic stays with the default language. A translation with a different count
+is E071, and a node the default language does not have, or does not
+translate, is E070.
 
 Because there is one structure, the ids of 9.1 line up, and those ids are what
 `taken` and `alts` in the save are keyed by. Translated headings therefore
@@ -302,8 +307,9 @@ When it happens without a choice, it sits alone on a line:
 ```
 
 The first form jumps within the file, the second across files, as you saw in
-3.3. `-> END` ends the story. A node that neither diverts nor offers a choice
-is an error, not a silent stop (E110). Every path through your book has to
+3.3. `-> END` ends the story. A node that ends with neither a divert nor a
+choice is an error, not a silent stop (E110); a fight, which you will meet in
+section 7, also counts as a way on. Every path through your book has to
 lead somewhere, even if that somewhere is the end.
 
 That is a rule about what is written, and the compiler checks it as E110. It
@@ -548,7 +554,8 @@ E184 and the one check in the whole compiler that reads the disk rather than
 the sources it was handed.
 
 Both halves are translated. In a catalogue (3.4) an image line replaces an
-image line, in source order, a third stream beside paragraphs and labels. The
+image line, in source order, a third stream beside paragraphs and labels; a
+count that does not line up is E071, as in the other two streams. The
 alt text is translated because it is text; the file is translated because a
 map with names written on it has to be redrawn, not relabelled. A translation
 that names the same file is the ordinary case and costs nothing to write.
@@ -604,7 +611,7 @@ you wonder whether something is already built in.
 | `visits(node)` | How often the node has been entered |
 | `turns()` / `turns_since(node)` | Turns total, turns since that node |
 | `choice_count()` | Number of choices currently visible |
-| `place(id)` | The index of a declared place, resolved at compile time (19.2) |
+| `place("id")` | The index of a declared place, resolved at compile time (19.2) |
 | `min(a,b)` / `max(a,b)` / `abs(a)` | Arithmetic |
 
 Two of these functions, `test()` and `test_luck()`, perform what the table
@@ -625,9 +632,9 @@ checks:
   succeeds: at-most      # at-most or at-least
 ```
 
-The defaults give you a feel for the odds: a stat of 10 succeeds about 62% of
-the time and a stat of 7 about 17%. A book with a d10 table instead writes
-`dice: "roll(1,10)"`.
+The defaults give you a feel for the odds: a stat of 10 succeeds about 92% of
+the time, a stat of 7 about 58%, and a stat of 5 barely 28%. A book with a
+d10 table instead writes `dice: "roll(1,10)"`.
 
 A few of the inventory functions deserve a closer look. `take()` fails
 silently when the inventory is full; `has("...")` after it is the way to
@@ -701,8 +708,8 @@ setup:
     from:
       - { label: Sword,    item: sword }
       - { label: Battleaxe, item: axe }
-  - title: Choose five disciplines
-    pick: 5
+  - title: Choose two disciplines
+    pick: 2
     from:
       - { label: Camouflage,  remember: CAMOUFLAGE }
       - { label: Sixth Sense, remember: SIXTH_SENSE }
@@ -830,8 +837,9 @@ runtime what the item can do:
   is used. `when:` restricts when it may be used; `in_combat` is a built-in
   variable for exactly this. The last use removes the item.
 
-The runtime shows the inventory as a list and offers Use and Equip itself, so
-eating provisions or drinking a potion needs no choice written by you.
+Whatever plays the book shows the inventory as a list and offers Use and
+Equip through the runtime's own calls (12.1), so eating provisions or
+drinking a potion needs no choice written by you.
 `slots:` counts entries, not uses, so ten provisions occupy one slot.
 
 Two things the linter catches for you: an item in `inventory.start` or in a
@@ -966,11 +974,13 @@ Let's walk through the parts that are not self-explanatory.
 
 `taken` counts how often each choice has been picked. That count is what makes `*` once-only: a choice the reader has already taken simply stops being offered. `alts` holds the position of each sequence and cycle, so an alternative picks up where it left off. Both are keyed by the ids the compiler hands out (9.1).
 
+`visits` counts how often each node has been entered; `seen` lists the same nodes once each, in the order they were first entered, and is the yes-or-no behind `turns_since()`.
+
 `story` is the title and version of the book that wrote the save. Loading rejects a save whose `story` does not match the running book, and there is a good reason for that strictness: every other field is keyed against a specific book's nodes and choice ids, so a save from another version would resume as plausible-looking garbage. This also gives you a lever as an author: bumping `version:` in the frontmatter is the way to declare old saves invalid.
 
 A refusal says why in fields, not only in a sentence: `reason` is `story` or `version`, and for `story` it names both the book the save came from and the book that turned it away. The fields are there because somebody has to act on them. A shop that ships a new edition meets this refusal on every reader who was mid-playthrough, and choosing between offering the previous edition and carrying the character across is something an app does in code, not something a reader should meet as an error message (12.6).
 
-`at` is the position inside the current node, written as an index path. `[2, 0, 1]` reads as "op 2, its item 0, op 1 inside it". It is worth saying what `at` is not: it is not a call stack. There are no return addresses and no frames of their own, which is exactly what principle 4 rules out.
+`at`, on each entry of `screen`, is the position of that op inside its node, written as an index path. `[2, 0, 1]` reads as "op 2, its item 0, op 1 inside it". It is worth saying what `at` is not: it is not a call stack. There are no return addresses and no frames of their own, which is exactly what principle 4 rules out.
 
 A cluster of fields exists purely so the page can be repainted without replaying anything: `screen` names the text ops that are visible, `picks` records what each alternative on them settled on, `visible` says which choices were offered, and `fight` lists the enemies still standing. Why store all this instead of re-deriving it? Because a condition may roll dice. Re-deciding any of it on a repaint would move the random stream and change the page under the reader. Reloading, undoing and switching language all repaint from these fields.
 
@@ -1081,8 +1091,9 @@ The compiler works in seven steps, each finishing before the next begins:
 
 1. **Read** files listed in `book.yaml`, or the single file. Assign namespaces.
 2. **Frontmatter** parsed as YAML, validated against the schema of section 6.
-   Expression strings (`start:`, `when:`, `attack:`, `damage:`, `death.when`,
-   a derived fact's `value:`, an event's `when:` and `counter:`) go through
+   Expression strings (`start:`, `when:`, `attack:`, `damage:`, `flee_cost:`,
+   the dice under `checks:`, `death.when`, a derived fact's `value:`, an
+   event's `when:` and `counter:`) go through
    the expression parser at this point, not at runtime. `effect:` and an
    event's `do:` are parsed as assignments, the same production as a `~` line
    without the `~`, and are the only YAML fields that are statements rather
@@ -1125,7 +1136,7 @@ Errors abort compilation. Every message carries file, line, column and the offen
 | Code | Error |
 |---|---|
 | E010 | Frontmatter missing, malformed, or not at the top of the file |
-| E011 | Unknown key in frontmatter |
+| E011 | Unknown key or malformed declaration in the frontmatter, or a function node carrying `{#id}` |
 | E012 | Book-wide declaration in a chapter file |
 | E020 | Tab used for indentation |
 | E021 | Indentation not a multiple of two |
@@ -1139,10 +1150,10 @@ Errors abort compilation. Every message carries file, line, column and the offen
 | E061 | Unknown item `kind:` |
 | E062 | Unknown key in `strings:`, in the book's block or an enemy's |
 | E070 | A node exists in one language but not in another |
-| E071 | A node's choices or alternatives differ between languages |
+| E071 | A translation's paragraphs, images, choices or alternatives do not line up with the default language |
 | E072 | A language table is missing a declared language |
 | E100 | Choice without a link |
-| E110 | Node with neither divert nor choice |
+| E110 | Node whose end has neither divert, choice nor combat, or text before the first node |
 | E120 | Gather not preceded by a choice |
 | E121 | Nesting deeper than three levels |
 | E130 | Malformed expression |
@@ -1171,7 +1182,7 @@ Errors abort compilation. Every message carries file, line, column and the offen
 | E181 | An image inside a sentence rather than on a line of its own |
 | E182 | An image without alt text |
 | E183 | An image path that is a URL, or that leaves the book's directory |
-| E184 | An image file that is not in the book's directory |
+| E184 | An image file that does not exist |
 
 ### 10.4 Test suite
 
@@ -1195,16 +1206,16 @@ That is the key difference to section 10: warnings do not abort compilation. `--
 | L008 | Item taken but never tested with `has()`, or tested but never granted | warning |
 | L009 | Code word remembered but never tested, or tested but never set | warning |
 | L010 | Stat declared but never used | info |
+| L011 | Line longer than 80 characters in the source | info |
+| L012 | Choice text duplicated within one node | warning |
+| L013 | Node with more than seven choices | info |
+| L014 | `death.goto` unreachable by any other route (dead-end check) | info |
+| L015 | Prose after an unconditional divert (unreachable text) | warning |
 | L016 | Item declared but never granted anywhere | warning |
 | L017 | `strings:` key left at its English default while others are overridden | warning |
 | L018 | Consumable without `effect:`, or `effect:` on a non-consumable | warning |
 | L019 | A node a translation overrides, so its state is language-specific | info |
 | L020 | A choice whose condition rolls dice, so it flickers between visits | warning |
-| L011 | Line longer than 80 characters in the source | info |
-| L012 | Choice text duplicated within one node | warning |
-| L013 | Node with more than seven choices | info |
-| L014 | `death.goto` unreachable by any other route (dead-end check) | info |
-| L015 | Prose in a node that only diverts (unreachable text) | warning |
 | L021 | Event that can never fire: its threshold exceeds the longest path | warning |
 | L022 | Event whose assignment is never read | warning |
 | L023 | Fact never read anywhere | info |
@@ -1214,6 +1225,11 @@ That is the key difference to section 10: warnings do not abort compilation. `--
 | L027 | Recurring event without `max_catchup:` | info |
 | L028 | Gather diverting back into its own node while every choice can run out | warning |
 | L029 | Every choice in a node can run out, and taking one leads back into it | warning |
+
+Not every rule in this table is checked yet. L003, L004, L011, L014 and L015
+are declared so that their codes stay stable, but the linter does not
+implement them so far: they need constant folding over variables or a model
+of the prose, and neither exists in this repository yet.
 
 If you only remember two of these, make it L008 and L009. They are the ones that actually catch bugs in a gamebook: a key that is never granted, a code word that is never set. Both need the whole book to judge, so they run after resolution across all namespaces.
 
@@ -1367,9 +1383,12 @@ You do not need the HTML export to read your own book. `story-weaver play
 <entry>` walks a book in the terminal, which is how an author reads their own
 text before anyone else does. Two flags make it a tool rather than a toy:
 
-- `--script 1,2,a,a` walks a fixed route and prints where it ended up. With a
-  seed, that route is exactly reproducible, which is what turns "it broke
-  somewhere in the crypt" into a bug report.
+- `--script 1,2,a,a` walks a fixed route and prints where it ended up. A
+  digit takes the choice at that position; in a fight, `a` attacks, `l`
+  tests luck and `f` flees; `z` takes a step back, and `u lantern` or
+  `e sword` uses or equips an item. With a seed, that route is exactly
+  reproducible, which is what turns "it broke somewhere in the crypt" into a
+  bug report.
 - `--json` returns the same as data: node, text, choices, stats, inventory,
   code words, facts, the dice counter, and a log of which move led where.
   `lint` takes the flag too.
@@ -1908,7 +1927,7 @@ Each source then asks for its own fields:
 
 | Source    | Required            | Notes                                     |
 | --------- | ------------------- | ----------------------------------------- |
-| `fixed`   | `value:`            | An integer literal, not an expression.    |
+| `fixed`   | `value:`            | An integer literal, not an expression; a `range:` may bound it. |
 | `host`    | `range:`, `fallback:` | Supplied from outside at a boundary. `holds:` optional. |
 | `derived` | `value:`            | An expression, parsed at compile time.    |
 
@@ -2140,7 +2159,7 @@ places:
 
 `enter:` is optional. It names the node a journey to that place arrives at,
 where a node is one addressable passage of your book. If the node named there
-does not exist, the linter reports E166.
+does not exist, the compiler reports E166.
 
 `variable:` is optional too. It names the stat that holds the current place
 index. Its whole job is to turn the travel warning L026 from a guess into a
@@ -2195,7 +2214,7 @@ time in and to read the snapshot back out.
 ```
 story.advance(host);        // a boundary: take host values, compute, run events
 story.facts;                // the published snapshot, read-only
-story.current;              // { text, choices, stats, facts }
+story.current;              // { node, title, text, choices, stats, facts, ended }
 ```
 
 `advance` is the only way host values enter. You do not need to call it around
@@ -2342,8 +2361,9 @@ things no unit test would have. `examples/leuchtturm` is a lighthouse on a
 sandbank: the world outside supplies the weather as a `holds:` fact, an event
 sends the tide up against the clock, and `due` is what turns a week of absence
 into one flooded cellar rather than a hundred reports of it filling. Played
-without a host, every reader comes back in the morning; played with a storm,
-a good few do not.
+without a host, the book is complete and its clock only moves when the
+reader does; played against real time, being away costs the same minutes,
+and noticeably more readers drown.
 
 ## 24. Change notes
 
@@ -2361,6 +2381,7 @@ edges.
 | 4.9     | Images built: `![alt](file)` on a line of its own, alt text required, a path that stays inside the book's directory, both halves translated, `@2x` and `@3x` optional beside the base file. |
 | 9.1     | The `image` op added to the story JSON. |
 | 10.3    | E172 and E180 to E184 added to the error table. |
+| 5, 10.1 | Frontmatter expressions are checked against the same scope as the story's (E130 to E133): a potion that healed a stat nobody declared now fails the compile instead of reaching the reader. |
 | 11, 21  | L025 is an `info` about a book and a `warning` on an output with no host, because a book does not know which output it becomes. |
 | 4.2, 11, 21 | L029 added, and with it the runtime error for a node whose choices have all been taken: E110's twin, for what is left rather than for what is written. |
 | 12      | Retitled: the web export is one host of several. 12.5 to 12.9 added, with the hosts beyond the browser, the two ways to play, the host protocol, the native bundle, and what a foreign game loop has to know. |

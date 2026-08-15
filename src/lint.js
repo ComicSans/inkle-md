@@ -11,8 +11,8 @@
  * Implemented: L001, L002, L005, L006, L007, L008, L009, L010, L012, L013,
  * L016, L017, L018, L020, L021 to L028.
  * Not yet implemented: L003, L004, L011, L014, L015 - they need either
- * constant folding over variables or a prose model, and are tracked in the
- * README.
+ * constant folding over variables or a prose model, and are named as
+ * unimplemented in SPEC 11.
  */
 
 import { walkOps } from './compile.js';

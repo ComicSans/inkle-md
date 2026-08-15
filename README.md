@@ -50,9 +50,10 @@ story-weaver import   <file.ink> [--out FILE]  translate an ink file
 story-weaver mcp                               lint, play and simulate for AI tools
 ```
 
-`play` with `--script 1,2,a,a` walks a fixed route instead of asking, and
-with `--seed` the dice fall the same every time, which turns "it broke
-somewhere in the crypt" into a reproducible bug report; `--json` returns the
+`play` with `--script 1,2,a,a` walks a fixed route instead of asking - a
+digit takes a choice, `a`, `l` and `f` play out a fight, `z` takes a step
+back - and with `--seed` the dice fall the same every time, which turns "it
+broke somewhere in the crypt" into a reproducible bug report; `--json` returns the
 same as data. `simulate` plays hundreds of games with a curious pseudo-random
 reader and reports the endings, the dead ends and the average length - a
 balance problem shows up there long before a human playtester finds it; that
@@ -62,9 +63,9 @@ the protocol AI coding tools speak, so an agent can playtest a book against
 the real runtime rather than parse terminal output.
 
 How large an export gets is mostly the book. With `--minify`, the smallest
-example is a 47 kB file that compresses to 14 kB, inside the 30 kB budget
+example is a 58 kB file that compresses to 17 kB, inside the 30 kB budget
 the spec sets for a book without images; the largest, a full imported game,
-comes to 210 kB, nearly all of it story.
+comes to 217 kB, nearly all of it story.
 
 ## The examples
 
@@ -77,7 +78,7 @@ languages. Read this one first, beside the full example at the end of the
 spec. You can play it
 [here](https://www.tobiasreithmeier.de/en/crypt-under-the-thorn).
 
-**`house/`** is full-length: 46 passages, secrets, and a fear stat that
+**`house/`** is full-length: 48 passages, secrets, and a fear stat that
 kills, so the numbers get exercised over a long game rather than a demo. You
 can play it [here](https://www.tobiasreithmeier.de/en/house-behind-the-moor).
 
@@ -107,7 +108,7 @@ also be one scene inside a larger game: an app that keeps a world of its own -
 a map, a party, a clock - opens a book at one passage, lets the reader play
 it, and takes the character sheet back when they leave. The book is never
 told which of the two is happening, and the second way needs nothing the
-first does not have: load a save, jump to a passage, play, save. Three kinds
+first does not have: load a save, jump to a passage, play, save. Two kinds
 of host can hold a book like this.
 
 **A web page.** Concatenate `src/runtime.js` and `src/view.js` with the
@@ -188,8 +189,8 @@ game - it scrolls to the page being read without taking the focus. Clicking a
 target in the structure view jumps the editor to that node, which makes the
 panel an index as well.
 
-Three settings, all under `storyWeaver`: `follow` stops the panel from
-following the cursor, `language` picks the language to play in, and `host`
+Three settings, all under `storyWeaver`: `follow`, on by default, lets the
+panel follow the cursor, `language` picks the language to play in, and `host`
 takes the host values of SPEC 12.4 as `key=value` pairs separated by commas -
 the same spelling `story-weaver play --host` uses. Without them a book that
 reads the clock or a counter plays against its fallbacks, which `nightside`
