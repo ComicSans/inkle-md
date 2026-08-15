@@ -36,7 +36,25 @@ export function emitStory({ meta, config, built }) {
     Object.fromEntries([...table].map(([id, node]) => [id, emitNode(node, fileIndex)])),
   ]));
 
-  return { format: 1, meta: { ...meta, files }, config, nodes };
+  return { format: 1, meta: { ...meta, files }, config: emitConfig(config), nodes };
+}
+
+/**
+ * The combat lines are text (SPEC 6), so they leave here as parts, under the
+ * same rule as a paragraph: a line without alternatives is a single string.
+ */
+function emitConfig(config) {
+  const enemies = Object.fromEntries(Object.entries(config.enemies ?? {}).map(([id, enemy]) => [
+    id, enemy.strings ? { ...enemy, strings: emitStringBlock(enemy.strings) } : enemy,
+  ]));
+  return { ...config, strings: emitStringBlock(config.strings), enemies };
+}
+
+function emitStringBlock(block) {
+  return Object.fromEntries(Object.entries(block ?? {}).map(([key, table]) => [
+    key,
+    Object.fromEntries(Object.entries(table ?? {}).map(([lang, parts]) => [lang, emitParts(parts)])),
+  ]));
 }
 
 function emitNode(node, fileIndex) {

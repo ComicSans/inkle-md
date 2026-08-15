@@ -14,6 +14,7 @@ import { CompileError } from './errors.js';
 import {
   parseExpression, parseStatement, walkExpression, BUILTIN_VARS, IMPURE_CALLS,
 } from './expr.js';
+import { parseInline } from './parser.js';
 
 const BOOK_KEYS = new Set([
   'title', 'author', 'version', 'start', 'chapters', 'languages',
@@ -82,6 +83,35 @@ function i18n(value, languages, what, at) {
 }
 
 /**
+ * A line the combat resolver narrates is prose (SPEC 6), so it is parsed like
+ * any other run of text and carries the alternatives of 4.6. The ids begin
+ * with "@" because no node is called that, and they are built from the key
+ * rather than counted across the block: two languages of the same line have
+ * to land on the same id, or a cycle would restart on a language switch.
+ */
+function stringParts(value, languages, what, at, scope) {
+  const table = i18n(value, languages, what, at);
+  if (table === null) return null;
+  const out = {};
+  for (const [lang, text] of Object.entries(table)) {
+    out[lang] = parseInline(text, at, { node: { id: scope }, counter: 0 }).parts;
+  }
+  return out;
+}
+
+/** The three combat lines of a book or of a single enemy (SPEC 6, 7). */
+function stringBlock(data, languages, at, scope, what) {
+  const out = {};
+  for (const [key, value] of Object.entries(data ?? {})) {
+    if (!(key in STRING_KEYS)) {
+      throw new CompileError('E062', `unknown strings key "${key}" ${what}`, at);
+    }
+    out[key] = stringParts(value, languages, `${what} strings.${key}`, at, `${scope}:${key}`);
+  }
+  return out;
+}
+
+/**
  * @param {any} data parsed YAML
  * @param {{file: string, chapter: boolean}} ctx
  * @returns {object} normalised config
@@ -126,7 +156,7 @@ export function validateFrontmatter(data, ctx) {
       succeeds: data.checks?.succeeds ?? 'at-most',
     },
     strings: Object.fromEntries(Object.entries(STRING_KEYS)
-      .map(([key, value]) => [key, i18n(value, lang, key, at)])),
+      .map(([key, value]) => [key, stringParts(value, lang, key, at, `@strings:${key}`)])),
     facts: {},
     events: {},
     places: { variable: null, table: [] },
@@ -410,6 +440,11 @@ export function validateFrontmatter(data, ctx) {
       stamina: spec.stamina ?? 0,
       flee_after: spec.flee_after ?? null,
     };
+    // What this one enemy says beats what the book says (SPEC 7). An enemy
+    // that says nothing keeps no key, so the runtime falls through by asking
+    // whether the key is there at all.
+    const own = stringBlock(spec.strings, lang, at, `@enemy:${id}`, `for enemy "${id}"`);
+    if (Object.keys(own).length > 0) config.enemies[id].strings = own;
   }
 
   if (data.death) {
@@ -424,12 +459,7 @@ export function validateFrontmatter(data, ctx) {
       `checks.succeeds is "${config.checks.succeeds}", not at-most or at-least`, at);
   }
 
-  for (const [key, value] of Object.entries(data.strings ?? {})) {
-    if (!(key in STRING_KEYS)) {
-      throw new CompileError('E062', `unknown strings key "${key}"`, at);
-    }
-    config.strings[key] = i18n(value, lang, `strings.${key}`, at);
-  }
+  Object.assign(config.strings, stringBlock(data.strings, lang, at, '@strings', 'in strings:'));
   config.overriddenStrings = Object.keys(data.strings ?? {});
 
   return config;

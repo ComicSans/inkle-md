@@ -523,6 +523,12 @@ function checkDeclarations(table, config, { multi, bag, at }) {
   const check = (expr, { firing = false } = {}) => {
     if (expr) checkExpression(expr, scope, outside, at, bag, resolve, functions, config, firing);
   };
+  // The combat lines of `strings:` see one name the rest of the frontmatter
+  // does not: `enemy`, whoever is standing in front of you (SPEC 6).
+  const narrating = new Set([...scope, 'enemy']);
+  const narrate = (expr) => {
+    if (expr) checkExpression(expr, narrating, outside, at, bag, resolve, functions, config);
+  };
 
   for (const fact of Object.values(facts)) {
     if (fact.source === 'derived') check(fact.value);
@@ -560,6 +566,23 @@ function checkDeclarations(table, config, { multi, bag, at }) {
   }
 
   checkFrontmatterExpressions(config, { check, scope, facts, bag, at });
+
+  // Prose in the frontmatter: the same two passes a paragraph gets, an
+  // ambiguous head settled against the scope and every expression checked.
+  for (const parts of narratedLines(config)) {
+    settleParts(parts, narrating);
+    walkParts(parts, narrate, at);
+  }
+}
+
+/** Every combat line a book carries, the book's own and each enemy's (SPEC 7). */
+function* narratedLines(config) {
+  const blocks = [config.strings, ...Object.values(config.enemies ?? {}).map((e) => e.strings)];
+  for (const block of blocks) {
+    for (const table of Object.values(block ?? {})) {
+      for (const parts of Object.values(table ?? {})) yield parts;
+    }
+  }
 }
 
 /**

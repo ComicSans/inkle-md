@@ -883,7 +883,12 @@ export class Story {
   // --- combat internals --------------------------------------------------
 
   #startCombat(op) {
-    const roster = op.enemies.map((id) => ({ id, ...clone(this.config.enemies[id]) }));
+    // Everything but the wordings: those are looked up by id when a round
+    // needs one, so no save carries a copy of the book's prose.
+    const roster = op.enemies.map((id) => {
+      const { strings, ...rest } = this.config.enemies[id];
+      return { id, ...clone(rest) };
+    });
     this.state.fight = { roster, index: 0, round: 0 };
     this.choices = [];
     this.combat = this.#restoreCombat(op, this.state.fight);
@@ -964,16 +969,19 @@ export class Story {
 
   // --- text --------------------------------------------------------------
 
-  #render(parts, record = false) {
+  #render(parts, record = false, overrides = null) {
     let out = '';
     for (const part of parts ?? []) {
       if (typeof part === 'string') { out += part; continue; }
-      if (part.t === 'print') { out += String(this.#evaluate(part.expr)); continue; }
+      if (part.t === 'print') { out += String(this.#evaluate(part.expr, overrides)); continue; }
       if (part.t === 'cond') {
-        out += this.#render(this.#evaluate(part.when) ? part.then : (part.else ?? []), record);
+        const arm = this.#evaluate(part.when, overrides) ? part.then : (part.else ?? []);
+        out += this.#render(arm, record, overrides);
         continue;
       }
-      if (part.t === 'alt') out += this.#render(this.#pickAlternative(part, record), record);
+      if (part.t === 'alt') {
+        out += this.#render(this.#pickAlternative(part, record), record, overrides);
+      }
     }
     return out;
   }
@@ -1214,10 +1222,27 @@ export class Story {
     this.state.phase = phase;
   }
 
+  /**
+   * What one round says. The line is prose with alternatives in it (SPEC 6),
+   * so it is rendered like any paragraph and its wordings step on in `alts`.
+   * Three levels, nearest first: this enemy, the book, the built-in default.
+   */
   #string(key, enemy) {
-    const template = flat(this.config.strings[key], this.lang) ?? '';
-    return template.replace('{enemy}', flat(enemy.name, this.lang));
+    const own = this.config.enemies?.[enemy.id]?.strings?.[key];
+    const parts = table(own ?? this.config.strings[key], this.lang) ?? [];
+    const text = this.#render(parts, true, { enemy: flat(enemy.name, this.lang) });
+    return text.replace(/\s+/g, ' ').trim();
   }
+}
+
+/**
+ * Reads a language table whose entries are text parts rather than a string
+ * (SPEC 9.1). Kept apart from `flat` because a list of parts is itself an
+ * object, and asking `flat` for one would hand back its first part.
+ */
+function table(value, lang) {
+  if (value === null || value === undefined) return null;
+  return value[lang] ?? Object.values(value)[0] ?? null;
 }
 
 /** Reads a language table, falling back to the only entry it has. */

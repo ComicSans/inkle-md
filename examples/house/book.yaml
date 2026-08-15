@@ -63,10 +63,32 @@ combat:
   luck_in_combat: true
 
 enemies:
-  hound:   { name: { de: Kettenhund, en: Chained Hound }, skill: 7, stamina: 6, flee_after: 2 }
+  # Ein Hund beißt, und was im Keller wartet, hat gar keine Zähne: wer eigene
+  # Zeilen schreibt, dem nimmt der Kampf nicht mehr denselben Satz in den Mund.
+  hound:
+    name: { de: Kettenhund, en: Chained Hound }
+    skill: 7
+    stamina: 6
+    flee_after: 2
+    strings:
+      combat.hit:   { de: "{&Der Hund weicht zurück, die Kette straff.|Du triffst ihn an der Flanke; er jault auf.}",
+                      en: "{&The hound falls back, the chain pulled taut.|You catch it in the flank and it yelps.}" }
+      combat.taken: { de: "{&Die Zähne finden deinen Unterarm.|Er reißt dich mit dem Gewicht des Sprungs von den Beinen.}",
+                      en: "{&The teeth find your forearm.|The weight of the leap takes your legs from under you.}" }
   servant: { name: { de: Der Diener, en: The Servant }, skill: 8, stamina: 9, flee_after: 4 }
   cultist: { name: { de: Verschlafener Kultist, en: Drowsy Cultist }, skill: 6, stamina: 6, flee_after: 2 }
-  thing:   { name: { de: Was im Keller wartet, en: What Waits in the Cellar }, skill: 9, stamina: 12, flee_after: 3 }
+  thing:
+    name: { de: Was im Keller wartet, en: What Waits in the Cellar }
+    skill: 9
+    stamina: 12
+    flee_after: 3
+    strings:
+      combat.hit:   { de: "{&Etwas gibt nach, wo nichts Festes sein sollte.|Der Schlag geht hinein, tiefer, als er sollte.}",
+                      en: "{&Something gives where nothing solid should be.|The blow goes in, deeper than it should.}" }
+      combat.taken: { de: "{&Es legt sich um dein Handgelenk, und du bist eine Sekunde lang woanders.|Die Kälte kommt vor dem Schmerz.}",
+                      en: "{&It closes on your wrist, and for a second you are somewhere else.|The cold arrives before the pain does.}" }
+      combat.tie:   { de: "{&Es wartet ab. Das ist das Schlimmste daran.|Nichts geschieht, und das dauert zu lange.}",
+                      en: "{&It waits. That is the worst of it.|Nothing happens, and it takes too long.}" }
 
 death:
   when: "stamina <= 0 or fear >= fear_max"
@@ -80,6 +102,12 @@ checks:
   succeeds: at-most
 
 strings:
-  combat.hit:   { de: "Du triffst {enemy}.", en: "You strike {enemy}." }
-  combat.taken: { de: "{enemy} trifft dich.", en: "{enemy} strikes you." }
-  combat.tie:   { de: "Ihr weicht einander aus, und nichts geschieht.", en: "You circle each other, and nothing comes of it." }
+  # Ein Name steht im Nominativ, also steht er als Subjekt im Satz: "Du
+  # triffst Der Diener." wäre kaputtes Deutsch, und keine Alternative
+  # repariert das.
+  combat.hit:   { de: "{enemy} {&steckt deinen Treffer ein|kommt zu spät hinter die Deckung|wankt unter deinem Schlag}.",
+                 en: "{enemy} {&takes the blow|is slow behind its guard|reels under your strike}." }
+  combat.taken: { de: "{enemy} {&trifft dich|ist schneller als du|erwischt dich an der Schulter}.",
+                 en: "{enemy} {&strikes you|is quicker than you are|catches you across the shoulder}." }
+  combat.tie:   { de: "{&Ihr weicht einander aus, und nichts geschieht.|Zwei Schläge, beide ins Leere.}",
+                 en: "{&You circle each other, and nothing comes of it.|Two blows, and both go wide.}" }

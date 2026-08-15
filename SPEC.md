@@ -716,7 +716,10 @@ combat:
 
 enemies:
   goblin:     { name: Goblin,     skill: 5, stamina: 6, flee_after: 3 }
-  cave-troll: { name: Cave Troll, skill: 9, stamina: 11 }
+  cave-troll: { name: Cave Troll, skill: 9, stamina: 11,
+                strings: {
+                  combat.hit:   "{&Your blade opens the troll's arm.|The troll takes the blow across the shoulder.}",
+                  combat.taken: "{&A fist the size of a helmet finds you.|The club comes down and you are slower than it.}" } }
 
 death:
   when: "stamina <= 0"
@@ -730,9 +733,9 @@ checks:
   succeeds: at-most
 
 strings:
-  combat.hit:   "You wound {enemy}."
-  combat.taken: "{enemy} wounds you."
-  combat.tie:   "The blades meet and nothing comes of it."
+  combat.hit:   "{&You wound|Your blade finds|You get through the guard of} {enemy}."
+  combat.taken: "{enemy} {&wounds you|gets past your guard|catches you across the ribs}."
+  combat.tie:   "{~The blades meet and nothing comes of it.|Steel on steel, and no more.}"
 ```
 
 Start with `stats:`. Every stat becomes a global variable, so once you declare
@@ -790,6 +793,23 @@ The runtime ships English defaults and a book overrides what it needs; the
 list in the example above is complete. `{enemy}` is the only placeholder. A
 book written in another language should override all of them, which is what
 L017 checks.
+
+A line here is prose, and prose is section 4.5: the alternatives of 4.6 work
+in it exactly as they do in a paragraph. `&` cycles, `!` shows each wording
+once, `~` picks at random from the dice stream, no mark steps through and
+holds the last, and a condition chooses by what is true. That is how a fight
+that lasts eight rounds stops saying the same sentence eight times. Braces do
+not nest, here as everywhere: an alternative cannot hold another, nor a
+placeholder - put `{enemy}` outside the braces, as the example does. Each wording keeps its
+place across the whole book, so a cycle carries on where the last fight left
+it rather than restarting with every fight.
+
+The counters behind that live in `alts` and `picks` like any other
+alternative (8), under ids of their own: `@strings:combat.hit:a0` for a
+book-wide line and `@enemy:goblin:combat.hit:a0` for one a single enemy
+writes. Positions decide, so a translation may offer more wordings or fewer
+than the language it translates; unlike a node (E071), nothing here has to
+line up.
 
 `facts:`, `events:` and `places:` belong in the frontmatter too, and have
 sections of their own: 15, 17 and 19.
@@ -868,6 +888,32 @@ other combat formulas see, and a malformed one is E130 like any other.
 
 When several enemies come at once, list them in sequence:
 `!combat goblin, goblin, cave-troll`.
+
+A goblin and a cave troll do not wound you the same way, and a fight reads
+better when they do not say so in the same sentence. An enemy may therefore
+carry a `strings:` block of its own, with the same three keys and the same
+prose as the book-wide one:
+
+```yaml
+enemies:
+  cave-troll:
+    name: Cave Troll
+    skill: 9
+    stamina: 11
+    strings:
+      combat.taken: "{&A fist the size of a helmet finds you.|The club comes down and you are slower than it.}"
+```
+
+Three levels, and the nearest one wins: what the enemy writes, else what the
+book writes under `strings:`, else the English default of section 6. It is
+per key, not per block, so the troll above still takes the book's wording for
+a hit and a tie. A fourth key is E062 there as it is in the book. Because the enemy is named by the block it stands in,
+`{enemy}` is rarely what you want inside it: write "the troll" outright.
+
+An enemy is declared once and fought wherever the book likes, so its wordings
+travel with it. A single fight that wants a wording of its own has the
+ordinary prose around the directive for that; the directive itself carries
+exits, not narration.
 
 Consumables whose `when:` allows it can be used between rounds from the
 inventory panel, which is how a potion mid-fight works without you writing
@@ -1017,6 +1063,8 @@ You may notice there is no op for weave, and that is on purpose. A run of choice
 
 One last convention ties this format to the save format: anything the runtime has to remember carries an id. Choices are named `node:c<n>`, alternatives `node:a<n>`. That is what `taken` and `alts` in the save are keyed by.
 
+The combat lines of `strings:` are parts like any other text, one list per language, and their alternatives carry ids too. Those ids begin with `@`, which no node name can, so a book-wide line is `@strings:combat.hit:a0` and one an enemy writes is `@enemy:cave-troll:combat.taken:a0`. An enemy that writes none keeps no `strings` key at all, and a line that is a single run of text is a single string, by the fourth rule above.
+
 ### 9.2 Save JSON
 
 Section 8 already showed you this one in full. It is versioned, and unknown fields are ignored.
@@ -1089,7 +1137,7 @@ Errors abort compilation. Every message carries file, line, column and the offen
 | E042 | Reference to a function node from a divert |
 | E060 | Undeclared item used where a declaration is required |
 | E061 | Unknown item `kind:` |
-| E062 | Unknown key in `strings:` |
+| E062 | Unknown key in `strings:`, in the book's block or an enemy's |
 | E070 | A node exists in one language but not in another |
 | E071 | A node's choices or alternatives differ between languages |
 | E072 | A language table is missing a declared language |
@@ -2319,6 +2367,7 @@ edges.
 | 15.1, 16.2 | `holds:` added to a host fact: a state stays across boundaries where a duration is consumed. E172 rejects it anywhere else. |
 | 5, 17.2 | `due` added: how many firings a scheduled event was owed at this boundary, so an absence can be folded into one firing instead of repeated or dropped. E173 rejects it anywhere else. |
 | 8, 12.6 | A refused save says why in fields, and 12.6 says what a host does about a new edition. |
+| 6, 7, 9.1 | A `strings:` line is prose, so the alternatives of 4.6 vary what a combat round says, and an enemy may carry a `strings:` block of its own that beats the book's. Their ids are `@strings:<key>:a<n>` and `@enemy:<id>:<key>:a<n>`, and `config.strings` holds parts rather than a plain string. |
 | 18.1    | A held host value rides in the save, so a reader comes back to the world they left. |
 | 22, 23  | Images, L025, the catch-up mode and the new-edition question leave the open points; what stays of 22.4 is what an alt text owes a map. |
 
