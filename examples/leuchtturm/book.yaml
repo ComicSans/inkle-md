@@ -52,7 +52,8 @@ stats:
   # Kette endet.
   im_keller: { start: 0 }
   # Zählt an der Leiter die Erschwernisse: Sturm, Dunkelheit, volle
-  # Hände. Nur der Knoten `leiter` schreibt und liest ihn.
+  # Hände. Die Leiter selbst warnt nur; geschrieben und gelesen wird er
+  # allein im Knoten `abstieg`.
   proben:    { start: 0 }
 
 # Zwei Hände, mehr nicht. Laterne, Schlüssel und Dichtband sind je ein

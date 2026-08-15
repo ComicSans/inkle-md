@@ -55,10 +55,10 @@ der Öl-Laterne|hängt eine Öl-Laterne}.
 { anzug >= 3 }
   Das Haus ist voller Lärm, das Mauerwerk dröhnt, die Scheibe steht unter
   Wasser. Du hörst das Radio nicht mehr, auch wenn es liefe.
-{ anzug >= 2 }
+{ anzug >= 2 or wetter >= 3 }
   Der Ton im Mauerwerk ist gestiegen, der Rahmen schlägt jetzt bei jeder
   Bö an. Regen kommt in Schauern gegen die Scheibe, wie geworfen.
-{ anzug >= 1 }
+{ anzug >= 1 or wetter >= 2 }
   Der Wind hat einen Ton im Mauerwerk gefunden, tief und gleichmäßig. Der
   Fensterrahmen zur Wetterseite arbeitet leise.
 { else }
@@ -107,7 +107,7 @@ solange kein Strom kommt.}
   ~ zeit += 10 + (dunkel and not handlicht()) * 10
 + [Hinüber zum Keller des Maschinenhauses](#zum_keller)
 + [Vor die Tür treten](#vortreten)
-+ [Sich aufs Bett legen, nur einen Augenblick](#schlaf)
++ {zeit >= 30} [Sich aufs Bett legen, nur einen Augenblick](#schlaf)
 * [Im Dienstbuch die alten Einträge lesen](#arbeitsraum)
   Drei Wärterjahre in einer Handschrift, die mit den Wintern krakeliger
   wird: Pegelstände, Schiffe, einmal ein Seehund auf der Bank. Man
@@ -119,10 +119,10 @@ solange kein Strom kommt.}
   { anzug >= 3 }
     Am Fenster ist nichts mehr zu sehen als Wasser auf Glas. Was du
     erfährst, erfährst du mit den Ohren, und es ist genug.
-  { anzug >= 2 }
+  { anzug >= 2 or wetter >= 3 }
     Eine Viertelstunde am Fenster, und du siehst die Brandung wachsen.
     Die Wolkenbank ist keine Bank mehr, sie ist der Himmel.
-  { anzug >= 1 }
+  { anzug >= 1 or wetter >= 2 }
     Du siehst dem Licht beim Gehen zu. Die Wolkenbank ist näher, und auf
     der See stehen die ersten weißen Kämme.
   { else }
@@ -156,6 +156,8 @@ rundum Glas.}
 
 {lampe: Die Lampe brennt. Der Strahl geht hinaus über die See und kommt
 im Takt zurück, und das Rundglas gibt Wärme in den Raum.}
+{lampe == 1 and generator == 0: Ihr Strom kommt durchs Seekabel vom
+Festland. Ob das die Nacht hält, entscheidet nicht der Turm.}
 {schalter == 0 and (netz == 1 or generator == 1): Die Lampe ist kalt,
 aber die Schiene hat Spannung.}
 {schalter == 1 and netz == 0 and generator == 0: Die Lampe ist kalt.
@@ -168,10 +170,10 @@ tot.}
   Das Glas ist blind von Gischt, der Turm arbeitet unter dir wie ein
   Schiff. Von der Insel siehst du nichts mehr - der Orkan hat sie sich
   genommen.
-{ anzug >= 2 }
+{ anzug >= 2 or wetter >= 3 }
   Der Turm nimmt die Böen auf, du spürst sie hier oben als Zittern im
   Boden. Unten liegt die Bank schon halb unter Weiß.
-{ anzug >= 1 }
+{ anzug >= 1 or wetter >= 2 }
   Rundum wird es grau, unten frisst sich die erste Brandung an der Bank
   fest. Die Wolkenbank im Westen hat Höhe bekommen.
 { else }
@@ -253,6 +255,12 @@ Was die See vom Keller hält, steht am Boden:
   hinter sich.
 { else }
   Trocken. Sicher. Der Raum wirkt wie ein Bunker auf dich.
+
+{schott == 1: Die beiden Schotttüren stehen zugedreht. Dahinter
+arbeitet die See an den Dichtungen - gebremst, nicht gestoppt.}
+{bereit == 1 and netz == 1: Auf dem Podest liegt beieinander, was der
+Generator brauchen wird. Das Benzin bleibt im Kanister, solange das
+Seekabel liefert; angebrochen wird es erst, wenn der Strom fällt.}
 
 * {has("laterne") and laterne_voll == 0 and wasser <= 2} [Die Laterne am Ölfass füllen](#keller)
   Der Hahn sitzt tief am Fass. Du füllst den Tank der Öl-Laterne,
@@ -362,6 +370,26 @@ herum, einmal, zweimal.
 Eisen, außen am Schaft, vom Salz rund gefressen. Sie spart den halben
 Turm, und sie gehört dem Wind.
 
+{ sturm }
+  Jetzt hat er sie ganz: Die Böen kommen in Reihen über die Galerie,
+  und auf jeder zweiten Sprosse hängt sein volles Gewicht. Wer da
+  hinuntersteigt, verhandelt mit ihm um jeden Griff.
+{ anzug >= 1 or wetter >= 2 }
+  Der Wind probiert die Sprossen schon aus. Noch lässt er einen durch,
+  der weiß, was er tut.
+{ else }
+  Bei stillem Wetter ist sie bloß ein kalter Weg nach unten.
+
+{nacht and lampe == 0 and not handlicht(): Unterhalb der Galerie
+beginnt die Nacht. Die Sprossen sind da; sehen wirst du sie nicht.}
+{traglast() >= 2: Deine Hände sind nicht frei, und die Leiter kennt
+keine dritte.}
+
++ [Hinuntersteigen](#abstieg)
++ [Zurück in die Kammer](#kammer)
+
+# Der Abstieg {#abstieg}
+
 ~ proben = sturm
 ~ proben += (nacht and lampe == 0 and not handlicht())
 ~ proben += (traglast() >= 2)
@@ -417,6 +445,8 @@ die See davor immer noch leer.}
 {anzug >= 1 or wetter >= 2: Die Böen greifen nach allem, was absteht, und
 der Steg zittert unter jedem Schlag der See.|Der Abend liegt glatt auf
 dem Wasser, als hätte er Zeit.}
+{anzug >= 2: Zwischen den Bohlen schlägt die See schon durch. Wenn der
+Sturm kommt, gehört der Steg ihr zuerst.}
 
 * [Warten, ob nicht doch etwas kommt](#anleger)
   Du wartest eine halbe Stunde gegen besseres Wissen. Wind und vereinzelt 
@@ -444,6 +474,8 @@ Kiefern.}
 
 {anzug >= 1 or wetter >= 2: Der Wind probiert die Kronen schon aus.|Noch
 halten die drei still, wie Tiere, die den Hund gesehen haben.}
+{anzug >= 2: Im Holz über dir knarrt es bei jeder Bö. Wenn der Sturm
+kommt, will man nicht unter Holz stehen.}
 
 * [Bis an die Kante der Düne hinausgehen](#windbruch)
   Unten arbeitet die See am Sand, geduldig wie eine Feile. Hypnotisch, 
