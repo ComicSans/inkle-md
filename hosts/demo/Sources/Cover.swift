@@ -164,14 +164,29 @@ struct Device: Shape {
             path.closeSubpath()
         case .moon:
             // Two arcs rather than a circle minus a circle: `subtracting` is
-            // macOS 14, and this package goes back to 13.
-            let r = min(rect.width, rect.height) / 2
-            let centre = CGPoint(x: rect.midX, y: rect.midY)
+            // macOS 14, and this package goes back to 13. The back is a disc,
+            // the belly is a second disc set to its right; both arcs end where
+            // the two circles cross, so the horns close without a stub.
+            //
+            // The ink of a crescent does not sit on the middle of its own
+            // circle - it lies left of it, and the whole moon has to move
+            // right by half that difference to stand in the middle of the
+            // rect. Without that it hung out over the left edge of the cover,
+            // which is what "Nachtseite" showed.
+            let bite: CGFloat = 0.62                      // how far the belly sits right
+            let horn = acos(bite / 2)                     // where back and belly meet
+            // Wide as the back plus the horns, tall as the back: the back runs
+            // over the top and the bottom of its circle, so the horns never
+            // decide the height.
+            let r = min(rect.width / (1 + bite / 2), rect.height / 2)
+            let centre = CGPoint(x: rect.midX + r * (1 - bite / 2) / 2, y: rect.midY)
+            let belly = CGPoint(x: centre.x + r * bite, y: centre.y)
             path.addArc(center: centre, radius: r,
-                        startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
-            path.addArc(center: CGPoint(x: centre.x - r * 0.5, y: centre.y),
-                        radius: r * 1.1, startAngle: .degrees(300), endAngle: .degrees(60),
-                        clockwise: true)
+                        startAngle: .radians(Double(horn)),
+                        endAngle: .radians(2 * .pi - Double(horn)), clockwise: false)
+            path.addArc(center: belly, radius: r,
+                        startAngle: .radians(Double(horn) - .pi),
+                        endAngle: .radians(.pi - Double(horn)), clockwise: true)
             path.closeSubpath()
         case .door:
             let inset = rect.insetBy(dx: rect.width * 0.22, dy: 0)
