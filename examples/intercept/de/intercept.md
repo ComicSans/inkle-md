@@ -263,7 +263,7 @@ schlägt.
 
 "Reden Sie", verlangt Harris. "Reden Sie, sofort. Sagen Sie mir, wo Sie es
 versteckt haben oder wem Sie es übergeben haben. Oder, so wahr mir Gott
-helfe, ich nehme Ihren erbärmlichen Tuntenkörper auseinander, um danach zu
+helfe, ich nehme Ihren erbärmlichen Körper auseinander, um danach zu
 suchen."
 
 # Harris kennt das schon {#harris_has_seen_it_before}
