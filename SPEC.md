@@ -2358,39 +2358,7 @@ each of them stands.
    the right answer for an archway and the wrong one for a map, and what
    12.3 should promise instead waits for a book that has one.
 
-## 23. Next steps
-
-Of the open points in section 22, one is next, and the rest wait for a book
-that needs them.
-
-1. Calendar and ephemeris (22.1, 22.2), and only once a book asks for them.
-   They are the one open point that costs the language an epoch, and that
-   price is worth paying only for a book that needs a date or a sky.
-
-Images led this list and are built (4.9), together with the hosts of 12.5 to
-12.9: the web export, a package for Apple platforms, and the two ways a book
-can be played. So is the second catch-up mode, which turned out to need no
-second field at all, only `due` (17.2). What images left behind is the one
-question in 22.4 that a book has to ask before a rule can answer it.
-
-Everything these steps stand on is already built: grammar, parser and story
-JSON per sections 10 and 9.1; the linter of section 11 with its reachability
-report; facts and the two-pass boundary; the scheduler with its catch-up
-anchor; places and L026; `play` and `simulate`, without which a book with
-scheduled content cannot be tested at all; and three examples, one of which
-puts facts, events, places and a clock through the acceptance test rather than
-leaving them to the unit tests. Every example in this document is a test case.
-
-The 0.8 layer has a written book behind it too, and writing it turned up
-things no unit test would have. `examples/leuchtturm` is a lighthouse on a
-sandbank: the world outside supplies the weather as a `holds:` fact, an event
-sends the tide up against the clock, and `due` is what turns a week of absence
-into one flooded cellar rather than a hundred reports of it filling. Played
-without a host, the book is complete and its clock only moves when the
-reader does; played against real time, being away costs the same minutes,
-and noticeably more readers drown.
-
-## 24. Change notes
+## 23. Change notes
 
 If you already know an earlier version of the language, these tables list what
 each one added, section by section, so you can jump straight to what is new.
@@ -2417,7 +2385,7 @@ edges.
 | 8, 12.6 | A refused save says why in fields, and 12.6 says what a host does about a new edition. |
 | 6, 7, 9.1 | A `strings:` line is prose, so the alternatives of 4.6 vary what a combat round says, and an enemy may carry a `strings:` block of its own that beats the book's. Their ids are `@strings:<key>:a<n>` and `@enemy:<id>:<key>:a<n>`, and `config.strings` holds parts rather than a plain string. |
 | 18.1    | A held host value rides in the save, so a reader comes back to the world they left. |
-| 22, 23  | Images, L025, the catch-up mode and the new-edition question leave the open points; what stays of 22.4 is what an alt text owes a map. |
+| 22      | Images, L025, the catch-up mode and the new-edition question leave the open points; what stays of 22.4 is what an alt text owes a map. |
 
 ### 0.6 to 0.7
 
