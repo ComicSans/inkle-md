@@ -1759,7 +1759,7 @@ undergrowth.
 
 # The Thicket {#thicket}
 
-Thorns, and a path that was a path an hour ago.
+Thorns, and a path.
 
 + [Push on until the wood thins out](#brook)
 + [Go back to the hedge](#begin)
@@ -1770,7 +1770,7 @@ The water is clear enough to show the bottom.
 
 * [Jump the brook]()
   { test("skill") }
-    You land clean on the far side and work your way to the thicket.
+    You land clean on the far side, don't find anything, and work your way back.
     -> thicket
   { else }
     You slip on the wet stone and open your knee.
