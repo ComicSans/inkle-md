@@ -6,7 +6,7 @@
  */
 
 /**
- * The host protocol of SPEC.md section 20.7.
+ * The host protocol of HOSTS 8.
  *
  * The runtime of 12.1 is a JavaScript object with two dozen members, which is
  * the right shape for a host written in JavaScript and the wrong one for a
@@ -40,7 +40,7 @@ export class Host {
    * exception, because an exception crossing a language boundary arrives as a
    * crash or as an empty string, and neither tells a host what went wrong.
    *
-   * @param {object} command `{ cmd, ...fields }` per SPEC 20.7
+   * @param {object} command `{ cmd, ...fields }` per HOSTS 8
    * @returns {object} `{ ok: true, view, did }` or `{ ok: false, error }`
    */
   command(command) {

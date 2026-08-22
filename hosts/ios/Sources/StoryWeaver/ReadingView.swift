@@ -121,7 +121,7 @@ public struct ReadingView: View {
                 }
                 // What a round did is a status message, not a new page: the
                 // focus stays on the buttons the reader is using and the
-                // sentence is announced where they are (SPEC 20.3).
+                // sentence is announced where they are (HOSTS 4).
                 if let line = last.line { announce(line) } else { latestIsFocused = true }
             }
         }

@@ -111,7 +111,7 @@ export class Story {
 
   /**
    * Switches language and re-renders the current node. State keyed by ids
-   * the other language does not have is kept but ignored, per SPEC 20.1.
+   * the other language does not have is kept but ignored, per HOSTS 2.
    */
   setLanguage(lang) {
     if (!this.json.nodes[lang]) throw new Error(`unknown language "${lang}"`);
@@ -135,7 +135,7 @@ export class Story {
     // again, every event fired again, and every alternative moved on a step,
     // so the first option of a sequence was never seen. A book without a
     // setup sets out in the constructor and has nothing left to answer, so
-    // the second call is a mistake and says so (SPEC 20.1).
+    // the second call is a mistake and says so (HOSTS 2).
     if (this.phase !== SETUP) {
       throw new Error('the story has already set out; begin() answers a setup, and there is none');
     }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// The view of SPEC 20.7: everything a page needs, as one value.
+/// The view of HOSTS 8: everything a page needs, as one value.
 ///
 /// Every field here is what the protocol sends, named as the protocol names
 /// it. Nothing is computed on this side and nothing is left out, so that a

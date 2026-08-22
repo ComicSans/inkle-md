@@ -6,7 +6,7 @@
  */
 
 /**
- * The host protocol of SPEC.md 20.7 and the native bundle of 20.8.
+ * The host protocol of HOSTS 8 and the native bundle of HOSTS 9.
  *
  * The test that matters most here is the last one. It runs the bundle in a
  * bare JavaScript realm, which is what a JSContext on iOS offers: the
@@ -102,7 +102,7 @@ test('the engine reaches for nothing above the language', () => {
   // appear: `clone` explains at length why it is not `structuredClone`.
   const engine = bundleFiles(book(), { minify: true })['story-weaver.js'];
 
-  // SPEC 20.5 states the rule; this is what keeps it from being a comment.
+  // HOSTS 6 states the rule; this is what keeps it from being a comment.
   // The realm test below catches these too, but only along the path it walks,
   // and only for a book that reaches them. This catches them on sight.
   for (const api of ['structuredClone', 'localStorage', 'setTimeout', 'fetch',

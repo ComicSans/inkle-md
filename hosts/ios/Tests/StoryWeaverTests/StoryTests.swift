@@ -249,7 +249,7 @@ extension StoryTests {
     }
 }
 
-// MARK: - Playing a book as an episode (SPEC 20.6)
+// MARK: - Playing a book as an episode (HOSTS 7)
 
 @MainActor
 final class EpisodeTests: XCTestCase {

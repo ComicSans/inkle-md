@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Playing a book as one episode inside something larger (SPEC 20.6).
+/// Playing a book as one episode inside something larger (HOSTS 7).
 ///
 /// An app with a map and a party enters a book at a node, plays one passage
 /// and takes the character back out. Nothing below is a second engine: it is

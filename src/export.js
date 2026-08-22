@@ -6,7 +6,7 @@
  */
 
 /**
- * The single-file HTML export of SPEC.md section 20: story JSON, runtime and
+ * The single-file HTML export of HOSTS 1: story JSON, runtime and
  * view in one document, no framework, no network access at runtime.
  */
 
@@ -105,7 +105,7 @@ button:disabled { opacity: .5; cursor: default; }
 /**
  * @param {object} story story JSON per SPEC 17.1
  * @param {{minify?: boolean}} options `minify` drops comments and indentation
- *        from the runtime, the view and the stylesheet (SPEC 20)
+ *        from the runtime, the view and the stylesheet (HOSTS 1)
  * @returns {string} a complete HTML document
  */
 export function exportHtml(story, options = {}) {
@@ -144,7 +144,7 @@ function read(name) {
 }
 
 /**
- * The whole minifier of SPEC 20: comment lines, blank lines and indentation
+ * The whole minifier of HOSTS 1: comment lines, blank lines and indentation
  * go, everything else stays where it is. Line breaks survive, so no semicolon
  * has to be guessed and no name is rewritten; that would need a JavaScript
  * parser, and the kilobytes it would save do not pay for one. The same pass

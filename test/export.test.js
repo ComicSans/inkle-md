@@ -6,7 +6,7 @@
  */
 
 /**
- * The web export of SPEC.md section 20, and the optional minifier that keeps
+ * The web export of HOSTS 1, and the optional minifier that keeps
  * it under the target size.
  */
 

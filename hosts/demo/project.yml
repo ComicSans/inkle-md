@@ -1,4 +1,4 @@
-# The demo of SPEC 20.6: one book, played both ways, on macOS and iOS.
+# The demo of HOSTS 7: one book, played both ways, on macOS and iOS.
 #
 # The project file is generated rather than checked in, because a .xcodeproj is
 # not a thing to read or merge by hand. `xcodegen generate` in this directory

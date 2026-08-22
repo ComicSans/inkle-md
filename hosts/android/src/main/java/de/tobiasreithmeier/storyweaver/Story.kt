@@ -15,7 +15,7 @@ import org.json.JSONObject
 import kotlin.coroutines.resume
 
 /**
- * A book being played, over the host protocol of SPEC 20.7.
+ * A book being played, over the host protocol of HOSTS 8.
  *
  * The story logic is not written twice, and not a third time either. This
  * hands `story-weaver.js` to a JavaScript engine Android already has and speaks

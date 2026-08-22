@@ -8,7 +8,7 @@
 import SwiftUI
 import StoryWeaver
 
-/// The first way to play: a book, read from its first page (SPEC 20.6).
+/// The first way to play: a book, read from its first page (HOSTS 7).
 ///
 /// This is all it takes. Open the bundle, hand the story to `ReadingView`, and
 /// the reader is in the book. The save goes to a file of the app's choosing,

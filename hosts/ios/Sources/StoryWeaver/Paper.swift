@@ -53,7 +53,7 @@ public struct PageButton: ButtonStyle {
             .foregroundStyle(foreground)
             .multilineTextAlignment(.leading)
             .frame(maxWidth: kind == .plain || kind == .primary ? .infinity : nil, alignment: .leading)
-            // 44pt on a coarse pointer, per SPEC 20.3, and it happens to be
+            // 44pt on a coarse pointer, per HOSTS 4, and it happens to be
             // the height a line of Georgia wants around it anyway.
             .frame(minHeight: 44)
             .padding(.horizontal, 14)

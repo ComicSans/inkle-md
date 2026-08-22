@@ -6,7 +6,7 @@
  */
 
 /**
- * The two ways to play of SPEC.md 20.6: a book read from its start, and a book
+ * The two ways to play of HOSTS 7: a book read from its start, and a book
  * entered as one episode inside something larger.
  *
  * Nothing here uses anything the language does not already have, and that is

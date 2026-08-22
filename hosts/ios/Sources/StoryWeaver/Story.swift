@@ -8,7 +8,7 @@
 import Foundation
 import JavaScriptCore
 
-/// A book being played, over the host protocol of SPEC 20.7.
+/// A book being played, over the host protocol of HOSTS 8.
 ///
 /// The story logic is not written twice. This holds a `JSContext` running the
 /// engine `story-weaver bundle` wrote, sends it one command per turn and decodes
@@ -133,7 +133,7 @@ public final class Story: ObservableObject {
     }
 
     /// A boundary: brings host values in and runs whatever has come due
-    /// (SPEC 21). Call it when the app returns to the foreground with time to
+    /// (HOSTS 11). Call it when the app returns to the foreground with time to
     /// hand over. The values are consumed by this boundary (16.2), so they do
     /// not also belong to the choice that follows.
     public func advance(host: [String: Double] = [:]) throws {

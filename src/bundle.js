@@ -6,7 +6,7 @@
  */
 
 /**
- * The native bundle of SPEC.md section 20.8.
+ * The native bundle of HOSTS 9.
  *
  * The web export of section 20 is one HTML file because a browser wants one.
  * A host in Swift or Kotlin wants the opposite: the story as data it can read
@@ -39,7 +39,7 @@ var storyWeaver = {
     this.host = new Host(JSON.parse(json), options ? JSON.parse(options) : {});
     return this.host.dispatch('{"cmd":"state"}');
   },
-  /** @param {string} command one command per SPEC 20.7, as text */
+  /** @param {string} command one command per HOSTS 8, as text */
   send: function (command) {
     if (!this.host) return '{"ok":false,"error":"start has not been called"}';
     return this.host.dispatch(command);

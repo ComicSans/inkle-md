@@ -6,7 +6,7 @@
  */
 
 /**
- * The view layer of SPEC.md section 20: everything a reader sees that is not
+ * The view layer of HOSTS 1: everything a reader sees that is not
  * the book's own words. Button labels, panel names and presentation live
  * here, never in the story (SPEC 7).
  *
@@ -50,7 +50,7 @@ const UI = {
  * @param {string} [options.heading] tag for the book's title, 'h1' by default.
  *   A page that already has a heading of its own passes the level below it, so
  *   the document keeps one outline instead of two.
- * @param {object|(() => object)} [options.host] the host values of SPEC 20.4,
+ * @param {object|(() => object)} [options.host] the host values of HOSTS 5,
  *   or a function asked for them anew before every turn. Without them a book
  *   that reads the clock or a counter plays against its fallbacks, which is
  *   not the book. The export has no host and passes nothing; an editor
@@ -110,7 +110,7 @@ function mount(json, root, options = {}) {
   }
 
   /**
-   * The host's turn (SPEC 20.4): time and counters move on between one page
+   * The host's turn (HOSTS 5): time and counters move on between one page
    * and the next, never before the first. Events fire here, so this runs
    * before anything is drawn - otherwise the reader sees the page the host
    * has just overtaken.
