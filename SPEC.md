@@ -1,27 +1,26 @@
 # Story Weaver, draft 0.8
 
-Welcome. Story Weaver is a gamebook language written in Markdown. It takes its
-story logic from ink, its syntax from Markdown, and it adds a fixed RPG layer
+Story Weaver is a gamebook language written in Markdown. It takes its story
+logic from ink, its syntax from Markdown, and it adds a fixed RPG layer
 modelled on the 1980s gamebooks. You write in a plain text file that stays
-readable in any editor and on GitHub. When you have read this document, you
-will be able to write anything a Fighting Fantasy or Lone Wolf volume needed.
+readable in any editor and on GitHub, and when you have read this document you
+can write anything a Fighting Fantasy or Lone Wolf volume needed.
 
-Here is a quick tour of what the language gives you. Keywords are English.
+Keywords are English.
 Combat is built in, so a fight needs no custom code. A book can span several
 files, and one file points into another with a dotted reference. The export is
 a single file plus the pictures a book links, and pictures carry alt text
-because that is not optional. The same book plays inside another program: an
-app that holds a map can enter it at one passage, let a reader play it, and
+because that is not optional. The same book also plays inside another program.
+An app that holds a map can enter it at one passage, let a reader play it, and
 take the character back out. Translations carry text but not logic, and a book
-holds no presentation, only story. On top of the story sits
-a layer of facts, values the book can read but never write. Events change
-values and never move the story somewhere else. Places live in a table and are
-addressed by index. Game time is an ordinary variable the book advances
-itself, durations are relative rather than pinned to an epoch, and there is no
-calendar. Each of these ideas has its own section later, where you will meet
-it properly.
+holds no presentation, only story. On top of the story sits a layer of facts,
+values the book can read but never write. Events change values and never move
+the story somewhere else. Places live in a table and are addressed by index.
+Game time is an ordinary variable the book advances itself, durations are
+relative rather than pinned to an epoch, and there is no calendar. Each idea
+has its own section later.
 
-And here is the road ahead. Sections 1 to 3 set the ground: the principles,
+Sections 1 to 3 set the ground: the principles,
 what this language keeps from ink and what it replaces, and how a project is
 laid out. Sections 4 to 9 are the language itself: the narrative text, the
 built-in functions, the character sheet, combat, and how the runtime saves and
@@ -36,8 +35,8 @@ and the change notes.
 
 ## 1. Principles
 
-Nine principles shape everything that follows. You will meet each of them
-again in a later section, so a short version of each is enough here.
+Nine principles shape everything that follows. Each returns in a later
+section, so the short version is enough here.
 
 1. **Where Markdown already has a spelling, use it.** A heading is a node,
    one addressable passage of the story, like a numbered section in a printed
@@ -69,11 +68,10 @@ again in a later section, so a short version of each is enough here.
    look; reality supplies the value. What the reader changes is a variable,
    not a fact.
 
-Principles 7 to 9 come to life in section 14, where the test that separates a
-fact from a variable is written out. If the distinction feels abstract right
-now, that is fine; it will click there.
+Section 14 writes out the test that separates a fact from a variable, which is
+where principles 7 to 9 stop being abstract.
 
-Choosing Markdown has a price, and it is fair to name it. The official
+Choosing Markdown has a price. The official
 `inklecate` compiler cannot check these files, and the ink documentation
 applies only by analogy. Our compiler is the only authority, so it needs
 precise errors with line numbers and a test suite from day one. Sections 10
@@ -81,10 +79,9 @@ and 11 exist for that reason.
 
 ## 2. What makes ink dense, and what replaces it
 
-ink is a fine language, but three of its habits make it hard to read cold.
-This section names them, and it says what Story Weaver does instead. You do not
-need to know ink to follow along; each point starts with the ink habit and
-ends with the simpler rule you actually write.
+ink is a fine language, but three of its habits make it hard to read cold. You
+do not need to know ink to follow along. Each point below starts with the ink
+habit and ends with the simpler rule you actually write.
 
 - **`{ }` carries six meanings** in ink: print a variable, alternatives,
   conditional text, if/else, switch, visit counts. Which one applies is
@@ -102,27 +99,26 @@ ends with the simpler rule you actually write.
 
 ## 3. Project layout and imports
 
-Before you write your first scene, it helps to know where everything lives.
-This section shows the two shapes a book can take: one file for a short story,
-or a folder of files for a longer one. You can start small and grow later.
+A book takes one of two shapes, one file for a short story or a folder of
+files for a longer one. You can start small and grow later.
 
 ### 3.1 Single file
 
 The simplest book is a single `.md` file. At the very top sits the YAML
 frontmatter, a small block of settings between two `---` lines. Below it, the
-story begins. For a short book, this is all you need.
+story begins.
 
 **A single-file book has no namespace.** A namespace is a prefix that says
 which file an id belongs to, and with only one file there is nothing to tell
 apart. So ids stay bare everywhere: in diverts, in `start:`, in `death.goto`,
 in `visits()` and in the `node` and `visits` fields of a save. A dot in a
 reference is an error there (E040). If you add a second file later, you will
-qualify your references, which is a mechanical rewrite the linter can point at.
-That moment is also why `as:` exists in 3.2.
+qualify your references, a mechanical rewrite the linter can point at, and that
+moment is why `as:` exists in 3.2.
 
 ### 3.2 Multi-file project
 
-When your book grows, you split it into chapters. The layout looks like this:
+When your book grows, you split it into chapters:
 
 ```
 my-book/
@@ -132,8 +128,8 @@ my-book/
   crypt.md
 ```
 
-`book.yaml` takes over the role of the frontmatter. It carries the
-declarations of section 6 plus the file list:
+`book.yaml` replaces the frontmatter. It carries the declarations of section 6
+plus the file list:
 
 ```yaml
 title: The Thornwood
@@ -162,14 +158,12 @@ book that simply begins at the beginning does not have to say so.
 
 ### 3.3 Namespaces and references
 
-In a multi-file project, every file is a namespace. You get the namespace name
-from the file name without extension (`crypt.md` becomes `crypt`), lowercased,
-with spaces, slashes and dots replaced by hyphens. Or you pick your own name
-with `as:` in the chapter list, as `beast` did above. Ids derived from a
+Every file in a multi-file project is a namespace, named after the file without
+its extension (`crypt.md` becomes `crypt`), lowercased, with spaces, slashes
+and dots replaced by hyphens. Or you pick your own name with `as:` in the
+chapter list, as `beast` did above. Ids derived from a
 heading are slugged the same way, so a title like "The Crypt, Pt. 2" can never
 produce a second dot.
-
-Here is how references work across that boundary:
 
 - Node ids are unique **within their file**.
 - Inside a file, `-> chamber` refers to that file's `chamber`.
@@ -259,19 +253,13 @@ changes.
 
 ### 3.5 Scope of everything else
 
-One last question before we start writing: what is namespaced, and what is
-shared? Only node ids are namespaced. Variables, inventory, memory words and
+Only node ids are namespaced. Variables, inventory, memory words and
 visit counts are global to the book. This keeps the save flat (section 8).
 
 ## 4. The narrative text
 
-This is where the writing begins. In this section you learn everything a page
-of your book is made of: nodes, diverts, choices, gathers, varying text,
-branching, assignments and functions. Each piece is small, and together they
-carry a whole story.
-
-One ground rule first. Indentation is two spaces, everywhere. Tabs are an
-error, not a style preference, because indentation carries meaning here.
+Indentation is two spaces, everywhere. Tabs are an error, not a style
+preference, because indentation carries meaning here.
 
 ### 4.1 Nodes
 
@@ -285,7 +273,7 @@ and chooses from. You write one as a Markdown heading:
 
 `#` is a node, `##` a subnode. The heading text is the title for humans; the
 id in `{# }` is the name used by diverts. Headings and subheadings are
-structure for readers only, and both produce plain nodes for the compiler. So
+structure for readers only, and both produce plain nodes for the compiler, so
 you can organize your file however reads best.
 
 You may leave the id out, and one is derived from the title. That is fine for
@@ -309,10 +297,10 @@ When it happens without a choice, it sits alone on a line:
 The first form jumps within the file, the second across files, as you saw in
 3.3. `-> END` ends the story. A node that ends with neither a divert nor a
 choice is an error, not a silent stop (E110); a fight, which you will meet in
-section 7, also counts as a way on. Every path through your book has to
-lead somewhere, even if that somewhere is the end.
+section 7, also counts as a way on. Every path through your book has to lead
+somewhere, even if that somewhere is the end.
 
-That is a rule about what is written, and the compiler checks it as E110. It
+E110 is a rule about what is written. It
 has a twin at runtime: a node whose choices have all been taken has no way on
 either, however carefully it was written. The runtime raises an error there
 rather than showing a page with nothing on it, and L029 finds most of those
@@ -329,8 +317,6 @@ items:
 * {skill > 8} [Bend the bars apart](#gate)
 * [Run](#flight)
 ```
-
-Line by line, here is what you are looking at:
 
 - `*` is once-only, `+` is sticky. A once-only choice disappears after the
   reader takes it; a sticky one stays available. Both are Markdown bullets, so
@@ -358,7 +344,7 @@ Line by line, here is what you are looking at:
 * [Leave](#road)
 ```
 
-`[Text]()` with an empty target means: stay here, then show the next level.
+`[Text]()` with an empty target means stay here, then show the next level.
 This is ink's weave with Markdown indentation: a conversation that branches
 and rejoins without leaving the page. The empty link renders as a link that
 goes nowhere, rather than one that jumps to the top of the page.
@@ -368,8 +354,8 @@ goes nowhere, rather than one that jumps to the top of the page.
 A gather is where separate threads meet again: the reader asked about the road
 or the tower, and either way the scene continues with the coin on the counter.
 You write it as a line of `---` at the indentation of the choices it gathers.
-Rendered it is a horizontal rule; read aloud it is "the threads join again
-here". An id is optional: `--- {#after-inn}`.
+Rendered it is a horizontal rule, read aloud "the threads join again here". An
+id is optional: `--- {#after-inn}`.
 
 A gather closes the level it gathers. Once the text after it has run, that
 level is done: what stands next is the level above, offered again without
@@ -417,9 +403,8 @@ better off writing it whole in each branch.
 
 ### 4.6 Varying text
 
-Sometimes a line should change from one visit to the next, or depend on what
-the reader carries. Varying text puts those small variations inline, inside
-curly braces:
+A line can change from one visit to the next, or depend on what the reader
+carries. Those variations go inline, inside curly braces:
 
 ```markdown
 {For the first time|Once again|Yet again} you stand before it.
@@ -487,8 +472,8 @@ a line, so that nothing collides with choices:
 The conditions are tried from top to bottom, and the first true one wins, with
 `{ else }` catching whatever falls through.
 
-You may wonder how the compiler tells a branch header from the varying text of
-4.6, since both start with `{`. **Disambiguation rule.** A line beginning with
+A branch header and the varying text of 4.6 both start with `{`, and the
+compiler has to tell them apart. **Disambiguation rule.** A line beginning with
 `{` is inline text if any of these hold: the first character inside is `&`,
 `!` or `~`; the contents contain `|` or `:`; or no indented line follows.
 Otherwise it is a block header. This keeps `{!A raven calls.}` and a bare
@@ -516,8 +501,8 @@ order, so
 You have {gold} coins left.
 ```
 
-prints the reduced amount. What you change first, you see next. Inside a
-choice, assignments go on their own indented lines below it.
+prints the reduced amount. Inside a choice, assignments go on their own
+indented lines below it.
 
 ### 4.9 Marking a kind of text, and images
 
@@ -591,10 +576,7 @@ called, never visited, so a divert to a function node is an error (E042).
 
 Expressions in your story can call a small set of functions that the runtime
 brings along. They cover dice, checks, the inventory, code words and a little
-bookkeeping about where the reader has been. The table below is your reference
-for all of them: the left column shows how you call a function, the right
-column says what it does. You do not need to memorise it; come back whenever
-you wonder whether something is already built in.
+bookkeeping about where the reader has been.
 
 | Function | Meaning |
 |---|---|
@@ -616,15 +598,15 @@ you wonder whether something is already built in.
 
 Two of these functions, `test()` and `test_luck()`, perform what the table
 calls **a check**. A check is the classic "Test your Luck" moment from the
-old gamebooks: you roll dice and compare the result to a stat. Here is the
-rule in full. A check rolls `checks.dice` and compares it to the value. With
+old gamebooks: you roll dice and compare the result to a stat. A check rolls
+`checks.dice` and compares it to the value. With
 `succeeds: at-most`, the roll has to come in at or under the value, which is
 the Fighting Fantasy rule and the default; with `at-least` it has to reach it.
 Both `test()` and `test_luck()` go through the same rule, so they cannot drift
 apart, and both consume the dice stream of section 8.
 
-You tune the rule in the frontmatter, under `checks:`. This snippet shows the
-default settings written out:
+You tune the rule in the frontmatter, under `checks:`, and these are the
+defaults written out:
 
 ```yaml
 checks:
@@ -636,9 +618,8 @@ The defaults give you a feel for the odds: a stat of 10 succeeds about 92% of
 the time, a stat of 7 about 58%, and a stat of 5 barely 28%. A book with a
 d10 table instead writes `dice: "roll(1,10)"`.
 
-A few of the inventory functions deserve a closer look. `take()` fails
-silently when the inventory is full; `has("...")` after it is the way to
-check. Item and code word names are plain strings, compared case-insensitively
+`take()` fails silently when the inventory is full, and `has("...")` after it
+is the way to check. Item and code word names are plain strings, compared case-insensitively
 after trimming; they appear only as arguments, never as values, which is why
 the ban on string comparison in 4.8 costs nothing.
 
@@ -670,9 +651,9 @@ scheduled events and means nothing anywhere else (17.2).
 The frontmatter is the YAML block at the top of your book. Think of it as the
 character sheet and the rulebook rolled into one: it declares the stats, the
 starting inventory, the items, the enemies and the house rules for combat and
-checks. Everything the story later does arithmetic on starts its life here.
-The example below is a complete frontmatter for a small Fighting Fantasy style
-book; the sections after it walk through every part.
+checks. Everything the story later does arithmetic on starts its life here. The
+example below is a complete frontmatter for a small Fighting Fantasy style
+book.
 
 ```yaml
 title: The Thornwood
@@ -760,7 +741,7 @@ tested - and a wall of `seen_tellme: 0` next to the prose is not a character
 sheet. A host that wants every value regardless still gets it from the
 runtime, marked as unnamed.
 
-One thing you will not find in the frontmatter: nothing here describes
+Nothing in the frontmatter describes
 presentation. How a stat is drawn, what the inventory panel is called, what
 the attack button says, which font the page uses: all of that belongs to the
 view layer of section 12, which knows about screens. A book that carries its
@@ -804,8 +785,8 @@ items:
 A scalar means the same text in every language. A table missing a declared
 language is E072.
 
-That brings us back to `strings:`. It holds the lines the combat resolver
-narrates, which you cannot write by hand because they happen round by round.
+`strings:` holds the lines the combat resolver narrates, which you cannot
+write by hand because they happen round by round.
 The runtime ships English defaults and a book overrides what it needs; the
 list in the example above is complete. `{enemy}` is the only placeholder. A
 book written in another language should override all of them, which is what
@@ -852,9 +833,8 @@ Equip through the runtime's own calls (12.1), so eating provisions or
 drinking a potion needs no choice written by you.
 `slots:` counts entries, not uses, so ten provisions occupy one slot.
 
-Two things the linter catches for you: an item in `inventory.start` or in a
-`setup:` block that is neither declared nor a bare string is an error (E060),
-and an unknown `kind:` is E061.
+An item in `inventory.start` or in a `setup:` block that is neither declared
+nor a bare string is an error (E060), and an unknown `kind:` is E061.
 
 ## 7. Combat
 
@@ -889,10 +869,10 @@ entirely. Both formulas are evaluated for the enemy too, where the equipment
 variables read zero, so `armour_defence` only ever protects the player.
 With `luck_in_combat`, the player may test luck after each hit, with the usual
 consequences (more damage dealt on a lucky hit, less taken on a lucky escape).
-`flee` appears as an exit once `flee_after` rounds have passed. Getting away
-costs something, and what it costs is yours to decide. `combat.flee_cost` is
-an expression like the other two, evaluated at the moment the player flees;
-its result is taken off stamina, never below zero:
+`flee` appears as an exit once `flee_after` rounds have passed. What getting
+away costs is yours to decide. `combat.flee_cost` is an expression like the
+other two, evaluated at the moment the player flees; its result is taken off
+stamina, never below zero:
 
 ```yaml
 combat:
@@ -950,9 +930,13 @@ choice, and never use the directive.
 
 ## 8. Runtime and save state
 
-This section, and the ones that follow it, speak mostly to people building tools: a runtime, an editor, a save manager. If you are here to write a gamebook, you can skip ahead with a clear conscience and come back if you ever wonder what happens under the hood.
+This section and the ones that follow speak mostly to people building tools: a
+runtime, an editor, a save manager. If you are here to write a gamebook, skip
+ahead.
 
-A save is a single JSON object. It captures everything a reader's playthrough has accumulated, so that closing the book and opening it again feels like never having left. Here is a complete example, taken mid-adventure:
+A save is a single JSON object. It captures everything a reader's playthrough
+has accumulated, so that closing the book and opening it again feels like
+never having left. A complete example, taken mid-adventure:
 
 ```json
 {
@@ -983,8 +967,6 @@ A save is a single JSON object. It captures everything a reader's playthrough ha
 }
 ```
 
-Let's walk through the parts that are not self-explanatory.
-
 `taken` counts how often each choice has been picked. That count is what makes `*` once-only: a choice the reader has already taken simply stops being offered. `alts` holds the position of each sequence and cycle, so an alternative picks up where it left off. Both are keyed by the ids the compiler hands out (9.1).
 
 `visits` counts how often each node has been entered; `seen` lists the same nodes once each, in the order they were first entered, and is the yes-or-no behind `turns_since()`.
@@ -993,13 +975,13 @@ Let's walk through the parts that are not self-explanatory.
 
 A refusal says why in fields, not only in a sentence: `reason` is `story` or `version`, and for `story` it names both the book the save came from and the book that turned it away. The fields are there because somebody has to act on them. A shop that ships a new edition meets this refusal on every reader who was mid-playthrough, and choosing between offering the previous edition and carrying the character across is something an app does in code, not something a reader should meet as an error message (12.6).
 
-`at`, on each entry of `screen`, is the position of that op inside its node, written as an index path. `[2, 0, 1]` reads as "op 2, its item 0, op 1 inside it". It is worth saying what `at` is not: it is not a call stack. There are no return addresses and no frames of their own, which is exactly what principle 4 rules out.
+`at`, on each entry of `screen`, is the position of that op inside its node, written as an index path. `[2, 0, 1]` reads as "op 2, its item 0, op 1 inside it". `at` is not a call stack. There are no return addresses and no frames of their own, which is exactly what principle 4 rules out.
 
-A cluster of fields exists purely so the page can be repainted without replaying anything: `screen` names the text ops that are visible, `picks` records what each alternative on them settled on, `visible` says which choices were offered, and `fight` lists the enemies still standing. Why store all this instead of re-deriving it? Because a condition may roll dice. Re-deciding any of it on a repaint would move the random stream and change the page under the reader. Reloading, undoing and switching language all repaint from these fields.
+A cluster of fields exists purely so the page can be repainted without replaying anything: `screen` names the text ops that are visible, `picks` records what each alternative on them settled on, `visible` says which choices were offered, and `fight` lists the enemies still standing. Storing all this beats re-deriving it because a condition may roll dice. Re-deciding any of it on a repaint would move the random stream and change the page under the reader. Reloading, undoing and switching language all repaint from these fields.
 
 `host`, `facts` and `events` belong to section 18, which also explains why `facts` is in a save and not in a checkpoint.
 
-`rolls` is the counter of the random stream: roll n follows deterministically from `seed` and n. This buys you two things. Any playthrough can be replayed exactly, and reloading a save produces the same roll as before rather than a fresh one.
+`rolls` is the counter of the random stream: roll n follows deterministically from `seed` and n. Any playthrough can therefore be replayed exactly, and reloading a save produces the same roll as before rather than a fresh one.
 
 ### 8.1 Undo
 
@@ -1012,23 +994,21 @@ undo:
   depth: 10        # number of root choices that can be taken back, 0 disables
 ```
 
-Here is how the runtime makes that work. It writes a checkpoint immediately before executing a level-zero choice. A checkpoint is the complete flat state of section 8, with two things left out. The undo stack itself is left out, so the stack cannot grow into itself. And `facts` are left out, because they are recomputed on restore: a checkpoint is always taken at a boundary, and principle 8 guarantees the recomputation gives the same answer (18.2).
+The runtime writes a checkpoint immediately before executing a level-zero choice. A checkpoint is the complete flat state of section 8, with two things left out. The undo stack itself is left out, so the stack cannot grow into itself. And `facts` are left out, because they are recomputed on restore: a checkpoint is always taken at a boundary, and principle 8 guarantees the recomputation gives the same answer (18.2).
 
 Checkpoints ride along in the save under `"undo": [ ... ]`, which is why `depth` is capped rather than unlimited. The stack rides in the save and stays there when a save is handed on. A reader who carries a save to another device can take back the same choices they could have taken back where they left. A save is one thing in one format, and an export that quietly dropped a field would be a second one.
 
-`rolls` is restored with everything else. That has a pleasant consequence: repeating the same choice reproduces the same dice, so undo cannot be used to re-roll a failed luck test. It only lets a reader take a different path. That is also why undo past a death is allowed: it costs nothing that determinism has not already closed off.
+`rolls` is restored with everything else, so repeating the same choice reproduces the same dice. Undo cannot be used to re-roll a failed luck test, only to take a different path. That is also why undo past a death is allowed: it costs nothing that determinism has not already closed off.
 
-Two small loose ends, and then you know everything about saves. Node references in a save are qualified exactly as the book writes them: the example above is a multi-file project, while a single-file book saves `"node": "chamber"`. And on loading, unknown fields are ignored, but a `version` higher than the runtime knows is refused with a clear message rather than partially applied.
+Node references in a save are qualified exactly as the book writes them: the example above is a multi-file project, while a single-file book saves `"node": "chamber"`. And on loading, unknown fields are ignored, but a `version` higher than the runtime knows is refused with a clear message rather than partially applied.
 
 ## 9. The two JSON formats
 
-This section is written for people building tools around Story Weaver, such as a runtime or an exporter. If you are writing a book, nothing here changes how you write; feel free to skim or skip.
-
-There are exactly two JSON formats in the whole system: the story JSON the compiler emits, and the save JSON from section 8. Let's look at each in turn.
+There are exactly two JSON formats in the whole system: the story JSON the compiler emits, and the save JSON from section 8.
 
 ### 9.1 Story JSON, the compiler output
 
-The compiler turns your Markdown into a single JSON file. The design goal is that you can read and check it by hand, which is the deliberate contrast to ink's container bytecode. Here is what a small book looks like after compilation:
+The compiler turns your Markdown into a single JSON file. The design goal is that you can read and check it by hand, which is the deliberate contrast to ink's container bytecode. A small book after compilation:
 
 ```json
 {
@@ -1082,19 +1062,19 @@ Expressions are small prefix trees: `{ "op": ">=", "args": [{ "var": "gold" }, {
 
 The ops you will meet are `text`, `image`, `choices`, `branch`, `divert`, `combat`, `assign`, `call`, `return` and `label` (a named gather). Text is a list of parts: `lit`, `print`, `alt` and `cond`. An image is `{ "op": "image", "src": "gruft.png", "alt": "…" }`, both required, with a `class` when the book wrote one. `-> END` is `{ "end": true }` in place of a `ref`.
 
-You may notice there is no op for weave, and that is on purpose. A run of choices at one depth is one `choices` op, and whatever follows it in the same container is the gather. A choice with `"target": null` runs its own body and then falls through to exactly that.
+There is no op for weave, and that is on purpose. A run of choices at one depth is one `choices` op, and whatever follows it in the same container is the gather. A choice with `"target": null` runs its own body and then falls through to exactly that.
 
-One last convention ties this format to the save format: anything the runtime has to remember carries an id. Choices are named `node:c<n>`, alternatives `node:a<n>`. That is what `taken` and `alts` in the save are keyed by.
+Anything the runtime has to remember carries an id, which is what ties this format to the save format. Choices are named `node:c<n>`, alternatives `node:a<n>`. That is what `taken` and `alts` in the save are keyed by.
 
 The combat lines of `strings:` are parts like any other text, one list per language, and their alternatives carry ids too. Those ids begin with `@`, which no node name can, so a book-wide line is `@strings:combat.hit:a0` and one an enemy writes is `@enemy:cave-troll:combat.taken:a0`. An enemy that writes none keeps no `strings` key at all, and a line that is a single run of text is a single string, by the fourth rule above.
 
 ### 9.2 Save JSON
 
-Section 8 already showed you this one in full. It is versioned, and unknown fields are ignored.
+Section 8 showed this one in full. It is versioned, and unknown fields are ignored.
 
 ## 10. Parser
 
-This section describes how the compiler reads your files. It is aimed at people who want to build or fix the tooling; as an author you will mostly meet it through the error messages listed in 10.3, and it is fine to treat the rest as background reading.
+This section describes how the compiler reads your files. As an author you will mostly meet it through the error messages listed in 10.3.
 
 The grammar is line-oriented: the kind of each line is decided by its first non-space characters. Only three cases are ambiguous, and all three are resolved in the sections above.
 
@@ -1120,13 +1100,13 @@ The compiler works in seven steps, each finishing before the next begins:
 6. **Check** the rules of section 11.
 7. **Emit** story JSON.
 
-A useful consequence of step 2: everything that can be malformed in your frontmatter fails at compile time, long before a reader ever sees the book.
+Because of step 2, everything that can be malformed in your frontmatter fails at compile time, long before a reader ever sees the book.
 
-Being well formed is not the whole of it, though. Those expressions run through the same checks as the ones in the story, against the same scope: the declared stats, their `_max`, the facts and the built-in variables of section 5. An item that heals a stat nobody declared is E131 there exactly as it is in a node, a call to a function nobody wrote is E131, `due` outside an event's `do:` is E173, and a name argument that is not a name is E133. Until 0.8 none of it was looked at, and the mistake reached the reader as a potion that healed nothing.
+Being well formed is not the whole of it. Those expressions run through the same checks as the ones in the story, against the same scope: the declared stats, their `_max`, the facts and the built-in variables of section 5. An item that heals a stat nobody declared is E131 there exactly as it is in a node, a call to a function nobody wrote is E131, `due` outside an event's `do:` is E173, and a name argument that is not a name is E133. Until 0.8 none of it was looked at, and the mistake reached the reader as a potion that healed nothing.
 
 ### 10.2 Line kinds
 
-This table is the whole classifier. Given the first characters of a line, you can read off what the parser will make of it:
+This table is the whole classifier: the first characters of a line decide what the parser makes of it.
 
 | Starts with | Kind | Note |
 |---|---|---|
@@ -1144,7 +1124,7 @@ There is one exception to "the first characters decide everything". Inside the i
 
 ### 10.3 Error codes
 
-Errors abort compilation. Every message carries file, line, column and the offending text, so you always know where to look. The codes are stable: tools may match on them, and books may reference them in their build setup.
+Errors abort compilation. Every message carries file, line, column and the offending text. The codes are stable: tools may match on them, and books may reference them in their build setup.
 
 | Code | Error |
 |---|---|
@@ -1203,9 +1183,9 @@ Every example in this document is a test case. Each error code needs at least on
 
 ## 11. Linter
 
-Like the parser chapter before it, this one is mostly for tool builders and for anyone setting up a build. As an author you meet the linter as a friendly proofreader: it points at things that are probably mistakes, without stopping you.
+As an author you meet the linter as a friendly proofreader: it points at things that are probably mistakes, without stopping you.
 
-That is the key difference to section 10: warnings do not abort compilation. `--strict` turns them into errors, and CI uses `--strict`. The codes are stable, just like the error codes, so tools can match on them.
+Warnings do not abort compilation, which is the key difference to section 10. `--strict` turns them into errors, and CI uses `--strict`. The codes are stable, just like the error codes, so tools can match on them.
 
 | Code | Rule | Level |
 |---|---|---|
@@ -1250,16 +1230,16 @@ what it saw, never about what the author meant, the same bargain L026
 strikes in 19.2. L011 reports once per file, naming the first long line,
 because prose written one line per paragraph would otherwise drown the list.
 
-If you only remember two of these, make it L008 and L009. They are the ones that actually catch bugs in a gamebook: a key that is never granted, a code word that is never set. Both need the whole book to judge, so they run after resolution across all namespaces.
+L008 and L009 are the ones that actually catch bugs in a gamebook: a key that is never granted, a code word that is never set. Both need the whole book to judge, so they run after resolution across all namespaces.
 
 Beyond the warnings, the linter also emits a **reachability report**: node count, unreachable nodes, endings found, longest and shortest path from start to an ending, counted over choices without evaluating conditions. That report is the closest thing to proofreading a branching book.
 
-Two of the warnings above lean on that same walk, and it helps to see how. The reachability walk behind the report is run a second time with every host fact at its `fallback:`, and L025 reads the difference between the two runs. The report itself carries the numbers of the first run: a reader with no host gets a smaller book, and saying so is the warning's job, not the report's. A book whose good ending needs a host is a book that quietly loses content when it is played as one file, which is why L025 is the one check whose level depends on what is being built (21). L021 needs nothing new beyond the first run: the longest path answers the question a branching book cannot be proofread for, whether the relief that was scheduled for turn three hundred can arrive at all.
+Two of the warnings above lean on that same walk. The reachability walk behind the report is run a second time with every host fact at its `fallback:`, and L025 reads the difference between the two runs. The report itself carries the numbers of the first run: a reader with no host gets a smaller book, and saying so is the warning's job, not the report's. A book whose good ending needs a host is a book that quietly loses content when it is played as one file, which is why L025 is the one check whose level depends on what is being built (21). L021 needs nothing new beyond the first run: the longest path answers the question a branching book cannot be proofread for, whether the relief that was scheduled for turn three hundred can arrive at all.
 
 ## 12. Export and hosts
 
-Once your book lints clean, you will want to hand it to readers. That is what
-the export is for. `story-weaver export book.yaml --out play.html` produces a
+Once your book lints clean, you hand it to readers.
+`story-weaver export book.yaml --out play.html` produces a
 single HTML file: the story JSON embedded as a
 `<script type="application/json">`, the runtime below it. No framework, no
 external resources, no network access at runtime. You can put that one file on
@@ -1290,8 +1270,8 @@ size above is written for.
 
 The runtime is the piece of JavaScript that actually plays the story: it
 holds the state, evaluates conditions and hands the host the text to show. It
-is one class, so the same code serves the export and any embedding. If you
-want your book inside your own app or website, you talk to this:
+is one class, so the same code serves the export and any embedding. A book
+inside your own app or website talks to this:
 
 ```js
 const story = new Story(json, { lang: 'de' });
@@ -1325,8 +1305,8 @@ book, is refused rather than obeyed: setting out twice would run every
 assignment in the first node again, fire its events again, and move every
 alternative on a step, so the first option of a sequence was never seen.
 
-Most of these calls do what their name says. Language switching deserves a
-closer look, because it touches the save. `setLanguage` re-renders the
+Most of these calls do what their name says. Language switching touches the
+save. `setLanguage` re-renders the
 current node in the new language and keeps the whole save: the ids of 9.1 are
 shared between languages, so `taken` and `alts` carry over. In a node where
 one language overrides (3.4), the ids are that language's own, so on a switch
@@ -1340,7 +1320,7 @@ carrying `image` and `alt` where a paragraph carries `text` (4.9). Combat is
 exposed as state plus `attack()` and `flee()`, never as a blocking loop, so
 your interface stays in charge of its own event loop.
 
-`go` is the odd one out, and worth a sentence. Everywhere else the story
+`go` is the odd one out. Everywhere else the story
 decides where it goes next: a divert moves it, a choice moves it, an event
 never does. `go` is the door in the side wall, for a host that already knows
 where it wants to be - a chapter picker, a debug jump, an episode entered
@@ -1352,8 +1332,8 @@ outside.
 
 ### 12.2 Presentation
 
-Section 6 keeps looks out of the book, so the looks have to live somewhere.
-They live here, and only here: the export ships a stylesheet with CSS custom
+Section 6 keeps looks out of the book, so they live here and only here: the
+export ships a stylesheet with CSS custom
 properties for font, measure and four colours each for light and dark, plus a
 rule per `{.name}` a book uses, plus the labels for its own buttons and
 panels in each language the book declares. None of that is readable from the
@@ -1377,7 +1357,7 @@ is the reader's own act. A book that wants a secret keeps it out of
 ### 12.3 Accessibility
 
 Accessibility is part of the export, not a later pass. Every exported book
-gives you all of this without any work on the author's side:
+gives you this without work on the author's side:
 
 - choices are real buttons in a list, reachable and operable by keyboard, with
   number keys 1 to 9 as shortcuts. The number is shown next to the label and
@@ -1406,7 +1386,7 @@ You do not need the HTML export to read your own book. `story-weaver play
 <entry>` walks a book in the terminal, which is how an author reads their own
 text before anyone else does. A declared `blurb:` (6) is printed before the
 setup; a `--script` walk and `--json` output skip it, because neither is
-reading for pleasure. Two flags make it a tool rather than a toy:
+reading for pleasure. Three flags make it a tool rather than a toy:
 
 - `--script 1,2,a,a` walks a fixed route and prints where it ended up. A
   digit takes the choice at that position; in a fight, `a` attacks, `l`
@@ -1424,8 +1404,8 @@ reading for pleasure. Two flags make it a tool rather than a toy:
   host fact stays at its `fallback:`, which is the same book a reader gets
   offline.
 
-Beyond walking one route, you can let the machine play for you. `Story Weaver
-simulate <entry> --runs 300 --host elapsed=60` plays many games with
+You can also let the machine play for you. `story-weaver simulate <entry>
+--runs 300 --host elapsed=60` plays many games with
 pseudo-random choices and reports the endings, the dead ends and the average
 length. A balance problem shows up there long before it shows up in a
 playthrough: the fear stat of the house example punished every second visit
@@ -1475,7 +1455,8 @@ A host written in Swift or Kotlin cannot talk to that API, because it cannot
 call a JavaScript method. So it embeds a JavaScript engine, hands it the
 runtime unchanged, and speaks the protocol of 12.7.
 
-Why embed rather than port the runtime into each language? Principle 5. Seed
+The reason to embed rather than port the runtime into each language is
+principle 5. Seed
 plus counter has to produce the same die on every platform, or a save carried
 from a phone to a browser resumes as a different story. One implementation
 cannot disagree with itself. A second one is a second sequence, a second set
@@ -1518,8 +1499,7 @@ nothing more: a choice is a label and an index, never a rendered button.
 A book is normally read from its start to one of its endings. It can also be
 one episode inside something larger: an app holds a map, a party and a
 clock, and at some point on that map a book is entered, one passage is
-played, and the app takes over again. Both are ways of playing, and this
-section says how the second one works.
+played, and the app takes over again.
 
 It needs nothing the language does not already have, and that is deliberate.
 The book does not know which of the two is happening, in exactly the way it
@@ -1538,7 +1518,7 @@ story.go(node);            // in at the passage the map points to
 story.save();              // out, with everything it changed
 ```
 
-Three things are worth knowing before you write that loop.
+Four things are worth knowing before you write that loop.
 
 **Load first, then go.** `go` jumps, it does not set out: it rolls no stats,
 so a reader who arrives by `go` alone has none and dies of the first blow.
@@ -1711,11 +1691,10 @@ book is one episode among many.
 
 ## 13. Full example
 
-Here is a complete little book, start to finish. There is nothing new in it:
-every line uses something you have already met. The frontmatter is section
-6's character sheet, the dice come from section 5, the choices and varying
-text from section 4, the combat from section 7. Read it once as a story, then
-once more with the walkthrough below.
+A complete little book, start to finish, with nothing new in it: every line
+uses something you have already met. The frontmatter is section 6's character
+sheet, the dice come from section 5, the choices and varying text from section
+4, the combat from section 7.
 
 ```markdown
 ---
@@ -1893,10 +1872,9 @@ fact is something the book asks about rather than owns: a value computed
 from state the world supplies, the way a gamebook might tell you to check
 whether it is night before entering the graveyard.
 
-Three of the principles from section 1 carry everything from here to section
-20: the book holds no time, a fact is a pure function of its state, and
-facts are read-only to the book. Those are principles 7 to 9. A book that
-keeps all three can be replayed from a seed and a save, which is what the
+Principles 7 to 9 carry everything from here to section 20: the book holds no
+time, a fact is a pure function of its state, and facts are read-only to the
+book. A book that keeps all three can be replayed from a seed and a save, which is what the
 rest of this document spends its rules on. Break any one of them and a
 replay stops matching the game it replays: a book that reads a clock on its
 own gives a different answer tomorrow, a fact that rolls dice gives a
@@ -1904,9 +1882,8 @@ different answer on the same day, and a fact the book could write to is not
 a fact at all, just a variable wearing a costume.
 
 When you design a book, you will meet values that could plausibly be either.
-Here is the test that separates a fact from a variable, and the one to apply
-when a case is unclear: does the reader change the world, or only which
-slice of it we are looking at? The sun's height over a place is true whether
+The test: does the reader change the world, or only which slice of it we are
+looking at? The sun's height over a place is true whether
 or not anyone stands there; the reader who travels changes where we look,
 not where the sun is, so it is a fact. Air in a suit is not: it drains
 because the reader wears the suit and breathes, so the reader is changing
@@ -1921,7 +1898,7 @@ because the reader acted is a variable.
 
 ## 15. Facts
 
-Up to now, everything your book knows is something it wrote down itself: a variable you set, a stat you changed, a counter that ticked. A **fact** is different. A fact is a value your book looks up rather than stores. Think of the weather outside your window: you do not decide it, you glance at it. Some facts never change, some are computed from other values, and some arrive from the world outside the book. This section shows you how to declare all three.
+Up to now, everything your book knows is something it wrote down itself: a variable you set, a stat you changed, a counter that ticked. A **fact** is different. A fact is a value your book looks up rather than stores. Think of the weather outside your window: you do not decide it, you glance at it. Some facts never change, some are computed from other values, and some arrive from the world outside the book.
 
 ### 15.1 Declaration
 
@@ -1939,7 +1916,7 @@ facts:
                 value: 'time % day_length >= 20 or time % day_length < 6' }
 ```
 
-You may wonder why `time` sits under `stats:` here. `time` above is a stat, not a fact, and that is principle 7: the clock is something the book declares and advances, and the runtime never learns what its unit means. Your book owns its own clock; facts are for the things it does not own.
+`time` sits under `stats:` because it is a stat, not a fact, and that is principle 7: the clock is something the book declares and advances, and the runtime never learns what its unit means. Your book owns its own clock, and facts are for the things it does not own.
 
 Two fields work the same for every fact, whatever its source:
 
@@ -1977,13 +1954,13 @@ more: is this an amount that is used up, or a state that simply is? `holds:`
 on anything but a `host` fact is E172, because nothing supplies a `fixed` or
 `derived` fact in the first place.
 
-A few rules keep declarations tidy. A fact name shares the namespace of variables and stats: a collision is E170. Facts are global to the book, like variables (3.5). An unknown `source:` is E160, a missing required field E161, and a `fixed` value or a `fallback` outside its own `range:` is E162.
+A fact name shares the namespace of variables and stats: a collision is E170. Facts are global to the book, like variables (3.5). An unknown `source:` is E160, a missing required field E161, and a `fixed` value or a `fallback` outside its own `range:` is E162.
 
 Values are integers, per 4.8. A fact that wants a fraction states its unit smaller: minutes rather than hours, thousandths of a degree rather than degrees. A condition stores as `1` or `0`, which is what the save in 18.1 shows.
 
 ### 15.2 Reading a fact
 
-Here is the good news: once a fact is declared, you already know how to use it. A fact is read wherever a variable is read: in text, in a choice condition, in a branch, in an event. There is no new spelling.
+Once a fact is declared, you already know how to use it. A fact is read wherever a variable is read: in text, in a choice condition, in a branch, in an event. There is no new spelling.
 
 ```
 {is_night: The gallery lies in the dark.|Daylight falls through the hatch.}
@@ -1999,9 +1976,9 @@ A derived fact is a value your book computes from values it already has. Think o
 
 A derived fact may read variables, stats, counters and facts declared **before** it. That gives a total order without a dependency solver, the same answer 4.7 gives to ambiguity: declaration order decides. A reference to a later fact, or a cycle, is E163.
 
-There is one more promise a derived fact makes. A derived fact is a pure function of its state, per principle 8: from the same state you always get the same value. Dice and anything that changes state are E169, so `{ source: derived, value: 'roll(1,6)' }` does not compile. Without that check principle 8 would be a promise nothing keeps, and the test that computes each fact twice from an identical state would pass on a book that breaks it every second boundary.
+A derived fact is a pure function of its state, per principle 8: from the same state you always get the same value. Dice and anything that changes state are E169, so `{ source: derived, value: 'roll(1,6)' }` does not compile. Without that check principle 8 would be a promise nothing keeps, and the test that computes each fact twice from an identical state would pass on a book that breaks it every second boundary.
 
-This purity is not a limitation; it is where your book keeps interpretive control. The layer below hands out numbers; twilight is a definition, and the book writes its own:
+This purity is not a limitation but where your book keeps interpretive control. The layer below hands out numbers. Twilight is a definition, and the book writes its own:
 
 ```yaml
   dusk:      { source: derived, value: 'sun_elevation < 0 and sun_elevation > -6' }
@@ -2010,9 +1987,9 @@ This purity is not a limitation; it is where your book keeps interpretive contro
 
 ### 15.4 Host facts
 
-A **host** is whatever runs your book: a reading app, a website, an export playing in a browser. A host fact is the one thing the language cannot compute for itself. The host supplies it at a boundary (16.1); a boundary, explained fully in section 16, is simply the moment the story moves from one page to the next. The runtime clamps the supplied value into `range:` and never reads anything on its own, which is what keeps principle 8 true.
+A **host** is whatever runs your book: a reading app, a website, an export playing in a browser. A host fact is the one thing the language cannot compute for itself. The host supplies it at a boundary (16.1), the moment the story moves from one page to the next. The runtime clamps the supplied value into `range:` and never reads anything on its own, which is what keeps principle 8 true.
 
-What if there is no host, or the host stays silent? Without a host, or when a host supplies nothing, `fallback:` applies. A book therefore always plays: the single-file export of section 12 stays a complete game, and no book may require a network, per principle 6.
+Without a host, or when a host supplies nothing, `fallback:` applies. A book therefore always plays: the single-file export of section 12 stays a complete game, and no book may require a network, per principle 6.
 
 Exactly one host fact is defined by convention, because a book that wants elapsed real time should not invent its own name:
 
@@ -2020,7 +1997,7 @@ Exactly one host fact is defined by convention, because a book that wants elapse
 | --------- | ------- | ------------------------------------------------ |
 | `elapsed` | seconds | Time passed since the previous boundary          |
 
-You can rely on this value behaving well. `elapsed` is never negative and is `0` at the first boundary. A clock that has moved backwards, a changed time zone and a resynchronised device all arrive as `0` rather than as a negative number, because a story clock that runs backwards produces states no book can be written against.
+`elapsed` is never negative and is `0` at the first boundary. A clock that has moved backwards, a changed time zone and a resynchronised device all arrive as `0` rather than as a negative number, because a story clock that runs backwards produces states no book can be written against.
 
 The value is not capped by the runtime. A reader who returns after a month gets the month. Capping is a book's decision and is written as a derived fact, where it is visible:
 
@@ -2032,19 +2009,19 @@ Keeping the raw value alongside is what lets a book say "you were away for three
 
 ## 16. Boundaries
 
-The last section kept mentioning boundaries. Time to meet them properly. A **boundary** is the moment your story steps from one page to the next, like the instant between turning a page of a paper gamebook and reading the new one. Everything time-related in this language happens in that instant, and nothing happens between two of them.
+A **boundary** is the moment your story steps from one page to the next, like the instant between turning a page of a paper gamebook and reading the new one. Everything time-related in this language happens in that instant, and nothing happens between two of them.
 
 ### 16.1 What a boundary is
 
 A boundary is the moment a node is entered and the moment a choice has been taken. Nothing else. Host values arrive there, facts are computed there, events run there.
 
-Why so strict? Because it gives your reader a stable page. Between two boundaries the fact snapshot does not change. A page that offers an option cannot lose it while it is being read, which is the same promise L020 makes about dice.
+The strictness gives your reader a stable page. Between two boundaries the fact snapshot does not change. A page that offers an option cannot lose it while it is being read, which is the same promise L020 makes about dice.
 
 **One boundary per completed transition.** A choice that runs a body and then diverts is one boundary, not two, and a chain of diverts arriving at the page the reader ends up on is still one. Concretely: `begin`, `choose`, `advance` and leaving a fight through one of its exits each publish exactly one snapshot. Without that rule an event with a `when:` and no counter would fire once or twice per click depending on whether the author happened to write a divert, which is a difference a reader can see.
 
 Two moments deliberately have none. A **combat round** is not a boundary: the fight is one page, and an event firing between two swings would be a page contradicting itself mid-round. The **death page an event sent the reader to** is not one either, because the event that killed them would otherwise run again on the page it chose.
 
-Where exactly does the boundary sit inside a choice? The boundary falls after the choice's own effects and before the page that follows them is built. `~ time += 5` in a choice is the departure; the arrival reads the clock it left behind. Follow-on text written on the choice itself belongs to the departure and renders before the boundary, which is the one place where text sees the older snapshot, and the reason 19.2 spells travel as an assignment on the choice rather than as something on the node it arrives at.
+Inside a choice, the boundary falls after the choice's own effects and before the page that follows them is built. `~ time += 5` in a choice is the departure; the arrival reads the clock it left behind. Follow-on text written on the choice itself belongs to the departure and renders before the boundary, which is the one place where text sees the older snapshot, and the reason 19.2 spells travel as an assignment on the choice rather than as something on the node it arrives at.
 
 ### 16.2 Order within a boundary
 
@@ -2057,7 +2034,7 @@ Inside that one instant, four things happen, always in the same order:
 
 The fourth step exists for the events. The second pass is what events see reflected. It is a single pass, not a fixed point: two events at one boundary cannot chain through a derived fact, because nothing is recomputed between them. They can chain through a variable, because assignments take effect in order (4.8).
 
-**Variables chain, facts do not.** An author will meet this rule once; it belongs in the error message, not only here.
+**Variables chain, facts do not.** An author will meet this rule once, so it belongs in the error message, not only here.
 
 Host values also come with an expiry date. A host value is **consumed** by the boundary that takes it in: afterwards the fact falls back to its `fallback:` until the next `advance`. `elapsed` is a duration since the previous boundary, so a `choose` that followed an `advance` without this rule would spend the same seconds a second time.
 
@@ -2132,11 +2109,11 @@ The condition plays fair here too. A `when:` that is false forfeits that boundar
 
 ### 17.3 Death
 
-One consequence follows from what you already know. `death.when` is evaluated after every assignment (6), and an event assigns. An event can therefore kill without the reader having done anything. That is intended, and a book that does not want it writes its condition so that it cannot.
+`death.when` is evaluated after every assignment (6), and an event assigns. An event can therefore kill without the reader having done anything. That is intended, and a book that does not want it writes its condition so that it cannot.
 
 ## 18. State, save and undo
 
-Facts and events need a place in the save file and an answer to the undo question. Both fit into what you already know from section 8; this section adds the details.
+Facts and events need a place in the save file and an answer to the undo question. Both fit into section 8.
 
 ### 18.1 New fields
 
@@ -2153,7 +2130,7 @@ Three fields join the save:
 
 `host` is also where a `holds:` value lives between boundaries (15.1), and that is why it survives a save: a reader who puts the book down on a stormy ridge picks it up on the same ridge, and the host never has to remember to say so again.
 
-You might expect facts to be recomputed at load rather than stored. `facts` is a cache. It is in the save because a save may be written in the middle of a node, where variables have moved on since the last boundary; recomputing at load would then show the reader different numbers than the page they left. It is not in a checkpoint, because a checkpoint is always taken at a boundary (8.1) and principle 8 guarantees the same result.
+`facts` is a cache. It is in the save rather than recomputed at load because a save may be written in the middle of a node, where variables have moved on since the last boundary; recomputing at load would then show the reader different numbers than the page they left. It is not in a checkpoint, because a checkpoint is always taken at a boundary (8.1) and principle 8 guarantees the same result.
 
 ### 18.2 Undo
 
@@ -2161,13 +2138,12 @@ A checkpoint carries `host` and `events` and omits `facts`, which are recomputed
 
 Undo therefore takes back a firing. The counter returns to what it was, the condition is false again, and going forward again reaches the same event. That is section 8.1's rule unchanged: undo opens a different path, it does not undo a consequence.
 
-One consequence is worth stating plainly. Story time is restored by undo, real time is not. A book that feeds its clock from `elapsed` lets a reader spend the same real seconds twice. In a single-player book this is harmless and deliberate, not a defect.
+Story time is restored by undo, real time is not. A book that feeds its clock from `elapsed` lets a reader spend the same real seconds twice. In a single-player book this is harmless and deliberate, not a defect.
 
 ## 19. Places
 
 A place is somewhere your book can be: the base camp, the ridge, the crypt.
-This section shows how you declare your places once, in a small table, and how
-the story then travels between them.
+You declare them once, in a small table, and the story travels between them.
 
 ### 19.1 The table
 
@@ -2182,9 +2158,8 @@ places:
     - { id: ridge, name: { de: Grat,  en: Ridge },  enter: ridge.arrival }
 ```
 
-`enter:` is optional. It names the node a journey to that place arrives at,
-where a node is one addressable passage of your book. If the node named there
-does not exist, the compiler reports E166.
+`enter:` is optional. It names the node a journey to that place arrives at. If
+the node named there does not exist, the compiler reports E166.
 
 `variable:` is optional too. It names the stat that holds the current place
 index. Its whole job is to turn the travel warning L026 from a guess into a
@@ -2199,7 +2174,7 @@ write that number yourself. Instead you write `place("ridge")`, which resolves
 to the index at compile time, so the linter can check the name for you. An
 unknown id is E165.
 
-Here is what travel looks like in a choice:
+Travel in a choice looks like this:
 
 ```
 * [Set out for the ridge](#ridge.arrival)
@@ -2208,8 +2183,8 @@ Here is what travel looks like in a choice:
 ```
 
 Three lines, three familiar spellings: an assignment sets the new place, a
-second assignment advances the clock, and the divert, the jump written in the
-choice target, moves the reader to the arrival node. Travel is deliberately not
+second assignment advances the clock, and the divert in the choice target
+moves the reader to the arrival node. Travel is deliberately not
 a directive of its own. Three spellings already exist for these three things,
 and principle 2 forbids inventing a fourth for their combination. That keeps
 the part only your story knows, such as how long the journey takes for a reader
@@ -2227,8 +2202,7 @@ it saw, never about what the author meant.
 ## 20. Runtime API: boundaries and facts
 
 If you embed a book in an app or a website, that app is the host, and this is
-the part of the API it talks to. Two words carry this section. A boundary is
-the moment between two turns when the story takes in values from the host,
+the part of the API it talks to. A boundary is the moment between two turns when the story takes in values from the host,
 recomputes what depends on them and runs any events that have come due. A fact
 is such a computed value: the story derives it fresh at each boundary rather
 than storing it.
@@ -2245,21 +2219,20 @@ story.current;              // { node, title, text, choices, stats, facts, ended
 `advance` is the only way host values enter. You do not need to call it around
 every turn: `begin` and `choose` perform a boundary themselves. `advance`
 exists for a host that wants to bring time in without the reader having chosen,
-say when the app returns to the foreground after an hour. One thing to know
-about the flow: a host value is consumed by the boundary that takes it (16.2).
-So a host feeding real time calls `advance` and then lets the reader choose,
+say when the app returns to the foreground after an hour. A host value is
+consumed by the boundary that takes it (16.2), so a host feeding real time
+calls `advance` and then lets the reader choose,
 rather than trying to hand the same seconds to both.
 
 Nothing in the runtime reads a clock. A host that wants real time measures it
-and passes it in. That may seem roundabout, but it is what makes a scripted
-replay reproducible: the same inputs always play the same story.
+and passes it in. That is what makes a scripted replay reproducible: the same
+inputs always play the same story.
 
 ## 21. Why these checks exist
 
 Every check has its formal home elsewhere: errors in the table of 10.3,
-warnings in the table of section 11. This section tells the story behind the
-ones you might otherwise take for arbitrary, so that when the linter speaks up
-you know what it is protecting.
+warnings in the table of section 11. Here is the reasoning behind the ones you
+might otherwise take for arbitrary.
 
 E169 rejects a fact expression that draws dice or changes state. A fact is
 meant to be a pure computation, and principle 8 says so. Without this error the
@@ -2333,9 +2306,8 @@ see it; this catches every other way a book arrives there.
 
 ## 22. Open points
 
-The language does not try to do everything at once. These are the ideas that
-came up along the way and are not part of the language yet, together with where
-each of them stands.
+These are the ideas that came up along the way and are not part of the
+language yet, together with where each of them stands.
 
 1. **Calendar and ephemeris.** Two further fact sources, `clock` and
    `ephemeris`, would turn an absolute instant and a place into a date or a
@@ -2360,13 +2332,12 @@ each of them stands.
 
 ## 23. Change notes
 
-If you already know an earlier version of the language, these tables list what
-each one added, section by section, so you can jump straight to what is new.
+These tables list what each version added, section by section.
 
 ### 0.7 to 0.8
 
 0.8 is the version that lets a book live inside a program that is not its
-own. Nothing changes in how a book is written; everything new sits at the
+own. Nothing changes in how a book is written. Everything new sits at the
 edges.
 
 | Section | Change                                                                 |
