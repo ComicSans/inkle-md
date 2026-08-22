@@ -1,37 +1,154 @@
 # Story Weaver, draft 0.8
 
-Story Weaver is a gamebook language written in Markdown. It takes its story
-logic from ink, its syntax from Markdown, and it adds a fixed RPG layer
-modelled on the 1980s gamebooks. You write in a plain text file that stays
-readable in any editor and on GitHub, and when you have read this document you
-can write anything a Fighting Fantasy or Lone Wolf volume needed.
+Story Weaver is a gamebook language written in Markdown. You write in a plain
+text file that stays readable in any editor and on GitHub, and when you have
+read this document you can write anything a Fighting Fantasy or Lone Wolf
+volume needed.
 
-Keywords are English.
-Combat is built in, so a fight needs no custom code. A book can span several
-files, and one file points into another with a dotted reference. The export is
-a single file plus the pictures a book links, and pictures carry alt text
-because that is not optional. The same book also plays inside another program.
-An app that holds a map can enter it at one passage, let a reader play it, and
-take the character back out. Translations carry text but not logic, and a book
-holds no presentation, only story. On top of the story sits a layer of facts,
-values the book can read but never write. Events change values and never move
-the story somewhere else. Places live in a table and are addressed by index.
-Game time is an ordinary variable the book advances itself, durations are
-relative rather than pinned to an epoch, and there is no calendar. Each idea
-has its own section later.
+This document is written to be read from front to back. It assumes you know
+what a text file is and nothing else: not ink, not YAML, not what a gamebook
+was in 1982. Every term it uses is explained where it first appears and listed
+again in 1.3. Keywords are English throughout.
 
-Sections 2 to 3 set the ground: the principles,
-what this language keeps from ink and what it replaces, and how a project is
-laid out. Sections 5 to 9 are the language itself: the narrative text, the
-built-in functions, the character sheet, combat, and how the runtime saves and
-restores a game. Sections 18 to 12 describe the tools that keep a book
-honest: the parser, the linter, the web export, and what it takes to embed a
-book in a program of your own. Section 14 is a complete
-small book you can read in one sitting. Sections 9 to 20 add the reality
-layer: facts, boundaries, events, state and undo, places, and the runtime
-calls behind them. Section 22 says why the parser and the linter check what
-they check. Sections 23 to 24 close the document with open points, next steps,
-and the change notes.
+It is also the language definition. Where the prose and the compiler disagree,
+one of the two is wrong and it has to be settled, not smoothed over.
+
+## 1. Start here
+
+### 1.1 What a gamebook is
+
+A gamebook is a novel you play. Instead of reading page 2 after page 1, you
+read a numbered section, reach a decision at the end of it, and turn to the
+number your decision names. "If you open the door, turn to 137. If you walk
+away, turn to 42." The reader's path through the book is their own, and no
+two playthroughs need be the same.
+
+The books this language is modelled on added dice to that. *Fighting Fantasy*
+gave you three numbers rolled at the start, Skill, Stamina and Luck, and a
+fight was resolved by rolling against them round after round. *Lone Wolf* gave
+you a list of disciplines to choose from and code words to write down when
+something happened, so that a book could ask two hundred sections later
+whether you had been there. Story Weaver builds all of that in, so you write
+the story and not the machinery underneath it.
+
+### 1.2 What Story Weaver is
+
+Story Weaver is a plain text format for writing such a book. It borrows from
+two places.
+
+**Markdown** is the syntax. Markdown is the lightweight way of writing
+formatted text that GitHub, Reddit and most note apps use: `#` starts a
+heading, `*` starts a list item, `[text](target)` is a link. Story Weaver
+gives those three spellings a job. A heading is a section of the gamebook, a
+list item is a choice, and a link is the "turn to 137".
+
+**ink** is the story logic. ink is the scripting language inkle wrote for
+their own games (*80 Days*, *Heaven's Vault*, *Sorcery!*) and released for
+everyone. It is very good at branching narrative, and Story Weaver keeps its
+ideas while replacing its punctuation with Markdown's. You do not need to know
+ink to read this document. Where a rule exists because ink does it one way and
+we do it another, the text says so.
+
+Here is a complete, playable book. It is four sections long, and everything in
+it is explained in the sections that follow.
+
+```markdown
+---
+title: The Door
+start: hall
+---
+
+# The Hall {#hall}
+
+Dust hangs in the light from the one high window. A door stands ajar to
+the north, and the stairs behind you lead back out.
+
+* [Push the door open](#door) The hinges give without a sound.
+* [Take the stairs](#away)
+
+# Beyond the Door {#door}
+
+The room is smaller than the hall, and someone has been here recently.
+
+-> away
+
+# Back in the Daylight {#away}
+
+You have had enough of the place. The gate closes behind you.
+
+-> END
+```
+
+Three headings, three sections of the gamebook. Two list items in the first
+one, so the reader picks. One arrow at the end of the second, so the story
+moves on without asking. `-> END` in the third, so the book stops there. The
+block at the top between the two `---` lines is the frontmatter, where a book
+declares its settings; this one declares almost nothing, and section 7 is
+where Skill, Stamina and Luck join it.
+
+### 1.3 The words this document uses
+
+Every term below has a section of its own later on. This table is here so that
+none of them arrives unexplained, and so that you can look one up without
+leaving your place.
+
+| Term | What it means |
+|---|---|
+| **node** | One addressable section of the gamebook, written as a Markdown heading. The "137" a reader turns to. See 5.1. |
+| **divert** | A jump from one node to another, written `-> name`. The "turn to 137" itself. See 5.2. |
+| **choice** | A decision offered to the reader, written as a Markdown list item. See 5.3. |
+| **once-only / sticky** | A once-only choice (`*`) disappears after it is taken; a sticky one (`+`) stays. See 5.3. |
+| **gather** | The point where choices that branched come back together, written `---`. See 5.4. |
+| **weave** | Choices nested inside choices that rejoin without leaving the node. ink's word, kept. See 5.3. |
+| **glue** | `<>`, which joins two pieces of text into one paragraph across a choice. See 5.5. |
+| **alternative** | Text that changes between visits, written `{like\|this}`. See 5.6. |
+| **frontmatter** | The block of settings at the top of a file, between two `---` lines, written in YAML. See 7. |
+| **YAML** | A plain-text format for settings, built from `key: value` lines and indentation. |
+| **stat** | A number on the character sheet, such as Skill or Gold. Declared in the frontmatter. See 7. |
+| **variable** | Any value the book itself writes. Stats are variables. See 9. |
+| **fact** | A value the book only ever reads, computed from state it does not own. See 9 and 10. |
+| **host fact** | A fact whose value comes from outside the book, such as elapsed real time. See 10.4. |
+| **derived fact** | A fact the book computes from other values with a formula. See 10.3. |
+| **boundary** | The instant between one page and the next, when facts are computed and events run. See 11. |
+| **event** | A rule that watches a condition at every boundary and changes state when it holds. See 12. |
+| **place** | Somewhere the book can be, declared once in a table and addressed by index. See 13. |
+| **check** | A dice roll compared against a stat, the "Test your Luck" of the old books. See 6. |
+| **code word** | A word the reader notes down, which the book can ask about later. Lone Wolf's device. See 6. |
+| **namespace** | The prefix that says which file a node id belongs to, in a book split across files. See 4.3. |
+| **catalogue** | A translated file: the same text in another language, carrying no logic. See 4.4. |
+| **seed** | The number the random stream starts from. The same seed replays the same dice. See 15. |
+| **runtime** | The piece of code that actually plays a compiled book. See 20.1. |
+| **host** | Whatever the runtime runs inside: a web page, a phone app, a terminal. See 20.5. |
+| **story JSON** | What the compiler emits from your Markdown. See 17.1. |
+| **save JSON** | One reader's playthrough, as a single JSON object. See 15. |
+| **episode** | A book played as one passage inside a larger program rather than start to finish. See 20.6. |
+| **linter** | The checker that points at what is probably a mistake without refusing to compile. See 19. |
+
+### 1.4 The road ahead
+
+The document is in four parts.
+
+**Sections 2 to 4 set the ground.** The nine principles the language is built
+on, what it keeps from ink and what it replaces, and how a project is laid out
+on disk.
+
+**Sections 5 to 8 are the language you write.** The narrative text, the
+built-in functions, the character sheet, and combat. If you only ever write
+books that stay inside their own covers, these four sections and section 14
+are all you need.
+
+**Sections 9 to 13 add the world outside the book.** Facts, boundaries, events
+and places let a story ask about things it does not own: what time it is,
+where the reader is, what the weather did. A book that needs none of this is a
+complete book, so this part can be read late or not at all.
+
+**Section 14 is a whole small book**, annotated line by line.
+
+**Sections 15 to 22 are for people building tools**: how a game is saved, what
+the two JSON formats hold, how the parser and the linter work, how a book is
+exported and embedded, and why each check exists. Section 23 lists what is
+deliberately not in the language yet, and section 24 says what each version
+added.
 
 ## 2. Principles
 
@@ -931,13 +1048,13 @@ choice, and never use the directive.
 ## 9. What is a fact, and what is a variable
 
 Everything so far has been about variables: stats, gold, items, code words.
-A variable is state the story owns and the reader changes by playing. The
-sections from here to section 21 add a second kind of value, the fact. A
+A variable is state the story owns and the reader changes by playing.
+Sections 10 to 13 add a second kind of value, the fact. A
 fact is something the book asks about rather than owns: a value computed
 from state the world supplies, the way a gamebook might tell you to check
 whether it is night before entering the graveyard.
 
-Principles 7 to 9 carry everything from here to section 21: the book holds no
+Principles 7 to 9 carry those four sections: the book holds no
 time, a fact is a pure function of its state, and facts are read-only to the
 book. A book that keeps all three can be replayed from a seed and a save, which is what the
 rest of this document spends its rules on. Break any one of them and a
@@ -1404,10 +1521,16 @@ stat. Beyond it the story ends well and prints the gold; the death node ends it
 the other way. Both endings are `-> END`, which is the explicit ending every
 path must reach one way or another.
 
-That is the whole language in one page, and it compiles: a test in this
+That is the whole language a story needs, and it compiles: a test in this
 repository lifts this very block out of the file and runs the compiler over it,
-so an example that stopped being true would fail the build. Everything after
-this section adds the fact layer on top; nothing changes what you just read.
+so an example that stopped being true would fail the build.
+
+The book above declares no facts, no events and no places, which is why none
+of sections 10 to 13 shows up in it. That is the ordinary case. A book set in
+one room at one hour of one day never asks the world outside it anything, and
+it is a complete book. Everything from here on is written for people building
+tools rather than books: how a game is saved, what the compiler emits, what
+the linter checks, and how a book reaches a reader.
 
 ## 15. Runtime and save state
 
