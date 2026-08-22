@@ -103,7 +103,7 @@ leaving your place.
 | **glue** | `<>`, which joins two pieces of text into one paragraph across a choice. See 5.5. |
 | **alternative** | Text that changes between visits, written `{like\|this}`. See 5.6. |
 | **frontmatter** | The block of settings at the top of a file, between two `---` lines, written in YAML. See 7. |
-| **YAML** | A plain-text format for settings, built from `key: value` lines and indentation. |
+| **YAML** | A plain-text format for settings, built from `key: value` lines and indentation. Used for the frontmatter and for `book.yaml`. See 7. |
 | **stat** | A number on the character sheet, such as Skill or Gold. Declared in the frontmatter. See 7. |
 | **variable** | Any value the book itself writes. Stats are variables. See 9. |
 | **fact** | A value the book only ever reads, computed from state it does not own. See 9 and 10. |
@@ -118,7 +118,7 @@ leaving your place.
 | **catalogue** | A translated file: the same text in another language, carrying no logic. See 4.4. |
 | **seed** | The number the random stream starts from. The same seed replays the same dice. See 15. |
 | **runtime** | The piece of code that actually plays a compiled book. See 20.1. |
-| **host** | Whatever the runtime runs inside: a web page, a phone app, a terminal. See 20.5. |
+| **host** | Whatever the runtime runs inside: a web page, a phone app, a terminal. See 10.4 for what it supplies a book, and 20.5 for what one has to write. |
 | **story JSON** | What the compiler emits from your Markdown. See 17.1. |
 | **save JSON** | One reader's playthrough, as a single JSON object. See 15. |
 | **episode** | A book played as one passage inside a larger program rather than start to finish. See 20.6. |
@@ -126,7 +126,7 @@ leaving your place.
 
 ### 1.4 The road ahead
 
-The document is in four parts.
+The document is in six parts.
 
 **Sections 2 to 4 set the ground.** The nine principles the language is built
 on, what it keeps from ink and what it replaces, and how a project is laid out
@@ -146,9 +146,18 @@ complete book, so this part can be read late or not at all.
 
 **Sections 15 to 22 are for people building tools**: how a game is saved, what
 the two JSON formats hold, how the parser and the linter work, how a book is
-exported and embedded, and why each check exists. Section 23 lists what is
-deliberately not in the language yet, and section 24 says what each version
-added.
+exported and embedded, and why each check exists.
+
+**Sections 23 and 24 close the document**: what is deliberately not in the
+language yet, and what each version added.
+
+One convention runs through all of it. A code like `E040` is a compile error:
+the compiler refuses the book and says why. A code like `L005` is a lint
+warning: the book compiles, and a separate checker points at what is probably
+a mistake. Every error code is listed in 18.3, every warning in 19, and
+section 22 says why the less obvious ones exist. When a rule below ends in a
+code, that code is the thing you will actually see on your screen when you
+break it.
 
 ## 2. Principles
 
@@ -192,7 +201,7 @@ Choosing Markdown has a price. The official
 `inklecate` compiler cannot check these files, and the ink documentation
 applies only by analogy. Our compiler is the only authority, so it needs
 precise errors with line numbers and a test suite from day one. Sections 18
-and 11 exist for that reason.
+and 19 exist for that reason.
 
 ## 3. What makes ink dense, and what replaces it
 
@@ -484,6 +493,13 @@ A gather must follow a choice or a choice's indented block, never a paragraph:
 `---` under a paragraph turns that paragraph into a heading in every Markdown
 renderer. The compiler rejects it (E120).
 
+The frontmatter is fenced by `---` too (4.1), and the two never collide. The
+frontmatter is only the frontmatter when it opens the very first line of the
+file, and it closes at its second `---`. Every `---` after that is a gather,
+and a gather is only a gather where a choice stands above it. A file that
+begins with a story rather than a frontmatter has no fence to close and no
+ambiguity to resolve.
+
 ### 5.5 Paragraphs
 
 A paragraph runs to the next blank line, exactly as in Markdown. The line
@@ -639,9 +655,9 @@ An image is Markdown's own spelling, on a line of its own:
 
 It takes a `{.name}` like a paragraph does, and it is a line, never part of a
 sentence. A picture sits between paragraphs, so one written mid-sentence is
-E181. Without that error it would reach the reader quietly, as literal
-Markdown, which is exactly what diverts in prose used to do before they were
-caught.
+E181. Without that error it would reach the reader quietly, printed as the
+literal characters `![alt](file)` in the middle of a sentence, which is the
+kind of mistake nobody sees while writing and everybody sees on the page.
 
 The alt text is required, and E182 when it is missing. That one rule decides
 a lot: this language has no decorative image, because a picture worth putting
@@ -927,7 +943,7 @@ than the language it translates; unlike a node (E071), nothing here has to
 line up.
 
 `facts:`, `events:` and `places:` belong in the frontmatter too, and have
-sections of their own: 15, 17 and 19.
+sections of their own: 10, 12 and 13.
 
 ### 7.1 Items
 
@@ -1080,7 +1096,7 @@ because the reader acted is a variable.
 
 ## 10. Facts
 
-A variable you set, a stat you changed, a counter that ticked: everything your book knows so far is something it wrote down itself. A **fact** is a value it looks up rather than stores. Think of the weather outside your window: you do not decide it, you glance at it. Some facts never change, some are computed from other values, and some arrive from the world outside the book.
+Section 9 drew the line: a variable is what the book writes, a fact is what it only reads. This section is how you declare one. Think of the weather outside your window: you do not decide it, you glance at it. Some facts never change, some are computed from other values, and some arrive from the world outside the book.
 
 ### 10.1 Declaration
 
@@ -1163,9 +1179,15 @@ A derived fact is a pure function of its state, per principle 8: from the same s
 This purity is not a limitation but where your book keeps interpretive control. The layer below hands out numbers. Twilight is a definition, and the book writes its own:
 
 ```yaml
-  dusk:      { source: derived, value: 'sun_elevation < 0 and sun_elevation > -6' }
-  long_gone: { source: derived, value: 'elapsed > 259200' }
+  sun_elevation: { source: host, range: [-90, 90], fallback: 45, holds: true }
+  dusk:          { source: derived, value: 'sun_elevation < 0 and sun_elevation > -6' }
+  long_gone:     { source: derived, value: 'elapsed > 259200' }
 ```
+
+`sun_elevation` is a host fact, the next section's subject: an app that knows
+where and when the reader is hands the number over, and the book decides what
+counts as dusk. Both derived facts read a fact declared above them, which is
+the rule this section opened with.
 
 ### 10.4 Host facts
 
@@ -1199,7 +1221,7 @@ A boundary is the moment a node is entered and the moment a choice has been take
 
 The strictness gives your reader a stable page. Between two boundaries the fact snapshot does not change. A page that offers an option cannot lose it while it is being read, which is the same promise L020 makes about dice.
 
-**One boundary per completed transition.** A choice that runs a body and then diverts is one boundary, not two, and a chain of diverts arriving at the page the reader ends up on is still one. Concretely: `begin`, `choose`, `advance` and leaving a fight through one of its exits each publish exactly one snapshot. Without that rule an event with a `when:` and no counter would fire once or twice per click depending on whether the author happened to write a divert, which is a difference a reader can see.
+**One boundary per completed transition.** A choice that runs a body and then diverts is one boundary, not two, and a chain of diverts arriving at the page the reader ends up on is still one. Concretely: `begin`, `choose` and `advance` are the three calls a program makes to move a book along (21), and each of them, like leaving a fight through one of its exits, publishes exactly one snapshot. Without that rule an event with a `when:` and no counter would fire once or twice per click depending on whether the author happened to write a divert, which is a difference a reader can see.
 
 Two moments deliberately have none. A **combat round** is not a boundary: the fight is one page, and an event firing between two swings would be a page contradicting itself mid-round. The **death page an event sent the reader to** is not one either, because the event that killed them would otherwise run again on the page it chose.
 
@@ -1357,7 +1379,7 @@ it saw, never about what the author meant.
 A complete little book, start to finish, with nothing new in it: every line
 uses something you have already met. The frontmatter is section 7's character
 sheet, the dice come from section 6, the choices and varying text from section
-4, the combat from section 8.
+5, the combat from section 8.
 
 ```markdown
 ---
@@ -1540,7 +1562,10 @@ ahead.
 
 A save is a single JSON object. It captures everything a reader's playthrough
 has accumulated, so that closing the book and opening it again feels like
-never having left. A complete example, taken mid-adventure:
+never having left. A complete example, taken mid-adventure. It comes from the
+multi-file Thornwood of section 4, not from the single-file book of section
+14, which is why its node ids carry a namespace and why `silver key` is a bare
+string here where section 14 declared a `silver-key` item (7.1 allows both):
 
 ```json
 {
@@ -1579,7 +1604,7 @@ never having left. A complete example, taken mid-adventure:
 
 A refusal says why in fields, not only in a sentence: `reason` is `story` or `version`, and for `story` it names both the book the save came from and the book that turned it away. The fields are there because somebody has to act on them. A shop that ships a new edition meets this refusal on every reader who was mid-playthrough, and choosing between offering the previous edition and carrying the character across is something an app does in code, not something a reader should meet as an error message (20.6).
 
-`at`, on each entry of `screen`, is the position of that op inside its node, written as an index path. `[2, 0, 1]` reads as "op 2, its item 0, op 1 inside it". `at` is not a call stack. There are no return addresses and no frames of their own, which is exactly what principle 4 rules out.
+An **op** is one instruction in a compiled node: a run of text, a set of choices, a divert. Section 17.1 lists them all. `at`, on each entry of `screen`, is the position of that op inside its node, written as an index path. `[2, 0, 1]` reads as "op 2, its item 0, op 1 inside it". `at` is not a call stack. There are no return addresses and no frames of their own, which is exactly what principle 4 rules out.
 
 A cluster of fields exists purely so the page can be repainted without replaying anything: `screen` names the text ops that are visible, `picks` records what each alternative on them settled on, `visible` says which choices were offered, and `fight` lists the enemies still standing. Storing all this beats re-deriving it because a condition may roll dice. Re-deciding any of it on a repaint would move the random stream and change the page under the reader. Reloading, undoing and switching language all repaint from these fields.
 
@@ -1685,15 +1710,17 @@ A story file is shipped to every reader, so nothing redundant is emitted. Four r
 - `line` appears only where something can fail at runtime, which means on
   assignments, calls, combat, conditional choices and branch arms;
 - defaults are left out. A choice is once-only, unconditional, targetless and
-  without a body unless it says otherwise, and `target` is a plain string, or
-  `0` for the end of the story;
+  without a body unless it says otherwise, and `target` is a plain string: a
+  node id, or `"END"` for the end of the story. It is never absent-but-falsy,
+  because an absent `target` already means something else, namely "run the
+  body, then fall through to the gather";
 - a run of plain text is a string rather than `{"t":"lit","v":"…"}`.
 
 For the two-chapter example, these four rules together make the output 40% smaller than the verbose form, and easier to read by eye, which was the point of not shipping ink's bytecode.
 
 Expressions are small prefix trees: `{ "op": ">=", "args": [{ "var": "gold" }, { "lit": 10 }] }`.
 
-The ops you will meet are `text`, `image`, `choices`, `branch`, `divert`, `combat`, `assign`, `call`, `return` and `label` (a named gather). Text is a list of parts: `lit`, `print`, `alt` and `cond`. An image is `{ "op": "image", "src": "gruft.png", "alt": "…" }`, both required, with a `class` when the book wrote one. `-> END` is `{ "end": true }` in place of a `ref`.
+The ops you will meet are `text`, `image`, `choices`, `branch`, `divert`, `combat`, `assign`, `call`, `return` and `label` (a named gather). Text is a list of parts: `lit`, `print`, `alt` and `cond`. An image is `{ "op": "image", "src": "gruft.png", "alt": "…" }`, both required, with a `class` when the book wrote one. `-> END` compiles to `{ "op": "divert", "target": "END" }`, the same shape as any other divert.
 
 There is no op for weave, and that is on purpose. A run of choices at one depth is one `choices` op, and whatever follows it in the same container is the gather. A choice with `"target": null` runs its own body and then falls through to exactly that.
 
@@ -1912,7 +1939,7 @@ story.setup;                          // creation blocks, or null
 story.begin(picks);                   // answers the setup, rolls the stats (once)
 story.choose(index);                  // take a choice
 story.advance(host);                  // a boundary: take host values, compute, run events
-story.go(node);                       // enter a node from outside the story (12.6)
+story.go(node);                       // enter a node from outside the story (20.6)
 story.facts;                          // the published snapshot, read-only
 story.current;                        // { node, title, text, choices, stats, facts, ended }
 story.combat;                         // active combat, or null
@@ -1925,7 +1952,7 @@ story.undo();                         // back to before the last root choice
 story.lang;                           // current language
 story.languages;                      // what the book offers
 story.setLanguage('en');              // allowed at any point, including mid-combat
-story.save();                         // save JSON per section 8
+story.save();                         // save JSON per section 15
 story.load(save);
 story.seed(n);
 ```
@@ -2033,7 +2060,7 @@ reading for pleasure. Three flags make it a tool rather than a toy:
 - `--host elapsed=60` supplies host values, arriving at every boundary the
   walk performs. A boundary is the point where the book pauses and asks the
   outside world for values, and a host fact is a fact whose value that
-  outside world supplies; both are section 10's territory. Without the flag a
+  outside world supplies; boundaries are section 11 and facts section 10. Without the flag a
   host fact stays at its `fallback:`, which is the same book a reader gets
   offline.
 
@@ -2138,8 +2165,10 @@ The book does not know which of the two is happening, in exactly the way it
 does not know which output it becomes (20.5). An entry point is a node, and
 a book already declares nodes. What comes back is variables, an inventory
 and code words, and a book already declares those too. Adding `episodes:` to
-the frontmatter would put the host's business into the book, which is the
-mistake L025 was corrected for.
+the frontmatter would put the host's business into the book, and a book does
+not know which output it becomes. That is the same reasoning L025 rests on
+(22): what differs between outputs is settled where the output is built, never
+declared in the story.
 
 So an episode is four calls the host already has:
 
@@ -2173,7 +2202,7 @@ not on the book.
 
 **A new edition is another book.** Bumping `version:` changes what a save is
 keyed against, so the save a reader has stops loading; that is the strictness
-of 8 doing its job. In a shop it is also a reader losing a playthrough to an
+of 15 doing its job. In a shop it is also a reader losing a playthrough to an
 update they never asked for. A host that ships editions therefore decides
 between two answers: keep the previous story JSON in the app and let anyone
 mid-playthrough finish there, or carry the character across as above and let
@@ -2323,10 +2352,8 @@ book is one episode among many.
 ## 21. Runtime API: boundaries and facts
 
 If you embed a book in an app or a website, that app is the host, and this is
-the part of the API it talks to. A boundary is the moment between two turns when the story takes in values from the host,
-recomputes what depends on them and runs any events that have come due. A fact
-is such a computed value: the story derives it fresh at each boundary rather
-than storing it.
+the part of the API it talks to. Sections 10 and 11 defined facts and
+boundaries; this section is only the three calls that reach them.
 
 The calls of 20.1 stay as they are. These three are what a host needs to bring
 time in and to read the snapshot back out.
