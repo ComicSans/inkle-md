@@ -1221,7 +1221,7 @@ A boundary is the moment a node is entered and the moment a choice has been take
 
 The strictness gives your reader a stable page. Between two boundaries the fact snapshot does not change. A page that offers an option cannot lose it while it is being read, which is the same promise L020 makes about dice.
 
-**One boundary per completed transition.** A choice that runs a body and then diverts is one boundary, not two, and a chain of diverts arriving at the page the reader ends up on is still one. Concretely: `begin`, `choose` and `advance` are the three calls a program makes to move a book along (21), and each of them, like leaving a fight through one of its exits, publishes exactly one snapshot. Without that rule an event with a `when:` and no counter would fire once or twice per click depending on whether the author happened to write a divert, which is a difference a reader can see.
+**One boundary per completed transition.** A choice that runs a body and then diverts is one boundary, not two, and a chain of diverts arriving at the page the reader ends up on is still one. Concretely: `begin`, `choose` and `advance` are three of the calls a program makes to move a book along (20.1), and each of them, like leaving a fight through one of its exits, publishes exactly one snapshot. Without that rule an event with a `when:` and no counter would fire once or twice per click depending on whether the author happened to write a divert, which is a difference a reader can see.
 
 Two moments deliberately have none. A **combat round** is not a boundary: the fight is one page, and an event firing between two swings would be a page contradicting itself mid-round. The **death page an event sent the reader to** is not one either, because the event that killed them would otherwise run again on the page it chose.
 
@@ -1580,9 +1580,9 @@ string here where section 14 declared a `silver-key` item (7.1 allows both):
   "memory": ["KRAKEN"],
   "visits": { "crypt.crypt": 2, "forest.clearing": 1 },
   "lang": "de",
-  "taken": { "crypt.chamber:c0": 1 },
-  "alts": { "crypt.crypt:a0": 2 },
-  "picks": { "crypt.crypt:a0": 1 },
+  "taken": { "chamber:c0": 1 },
+  "alts": { "crypt:a0": 2 },
+  "picks": { "crypt:a0": 1 },
   "visible": [0, 1],
   "screen": [{ "node": "crypt.chamber", "at": [0], "class": null }],
   "fight": null,
@@ -1598,7 +1598,7 @@ string here where section 14 declared a `silver-key` item (7.1 allows both):
 
 `taken` counts how often each choice has been picked. That count is what makes `*` once-only: a choice the reader has already taken stops being offered. `alts` holds the position of each sequence and cycle, so an alternative picks up where it left off. Both are keyed by the ids the compiler hands out (17.1).
 
-`visits` counts how often each node has been entered; `seen` lists the same nodes once each, in the order they were first entered, and is the yes-or-no behind `turns_since()`.
+`visits` counts how often each node has been entered. `seen` lists the same nodes once each, in the order they were first entered, and is what `turns_since()` consults to tell whether a node has been reached at all. `turn` counts the turns this playthrough has taken, and is what `turns()` returns.
 
 `story` is the title and version of the book that wrote the save. Loading rejects a save whose `story` does not match the running book, and there is a good reason for that strictness: every other field is keyed against a specific book's nodes and choice ids, so a save from another version would resume as plausible-looking garbage. This also gives you a lever as an author: bumping `version:` in the frontmatter is the way to declare old saves invalid.
 
@@ -1606,7 +1606,7 @@ A refusal says why in fields, not only in a sentence: `reason` is `story` or `ve
 
 An **op** is one instruction in a compiled node: a run of text, a set of choices, a divert. Section 17.1 lists them all. `at`, on each entry of `screen`, is the position of that op inside its node, written as an index path. `[2, 0, 1]` reads as "op 2, its item 0, op 1 inside it". `at` is not a call stack. There are no return addresses and no frames of their own, which is exactly what principle 4 rules out.
 
-A cluster of fields exists purely so the page can be repainted without replaying anything: `screen` names the text ops that are visible, `picks` records what each alternative on them settled on, `visible` says which choices were offered, and `fight` lists the enemies still standing. Storing all this beats re-deriving it because a condition may roll dice. Re-deciding any of it on a repaint would move the random stream and change the page under the reader. Reloading, undoing and switching language all repaint from these fields.
+A cluster of fields exists purely so the page can be repainted without replaying anything: `screen` names the text ops that are visible, `picks` records what each alternative on them settled on (nothing to do with `pick:` in `setup:`, which is a count of choices offered at character creation), `visible` says which choices were offered, and `fight` lists the enemies still standing. Storing all this beats re-deriving it because a condition may roll dice. Re-deciding any of it on a repaint would move the random stream and change the page under the reader. Reloading, undoing and switching language all repaint from these fields.
 
 `host`, `facts` and `events` belong to section 16, which also explains why `facts` is in a save and not in a checkpoint.
 
