@@ -6,9 +6,9 @@
  */
 
 /**
- * The view layer of SPEC.md section 12: everything a reader sees that is not
+ * The view layer of SPEC.md section 20: everything a reader sees that is not
  * the book's own words. Button labels, panel names and presentation live
- * here, never in the story (SPEC 6).
+ * here, never in the story (SPEC 7).
  *
  * Written as a plain script, no imports: the exporter inlines it verbatim.
  */
@@ -39,7 +39,7 @@ const UI = {
 };
 
 /**
- * @param {object} json story JSON per SPEC 9.1
+ * @param {object} json story JSON per SPEC 17.1
  * @param {HTMLElement} root where the game is drawn
  * @param {object} [options] only for a host that is not the export
  * @param {boolean} [options.setDocumentLang] write the book's language to
@@ -50,7 +50,7 @@ const UI = {
  * @param {string} [options.heading] tag for the book's title, 'h1' by default.
  *   A page that already has a heading of its own passes the level below it, so
  *   the document keeps one outline instead of two.
- * @param {object|(() => object)} [options.host] the host values of SPEC 12.4,
+ * @param {object|(() => object)} [options.host] the host values of SPEC 20.4,
  *   or a function asked for them anew before every turn. Without them a book
  *   that reads the clock or a counter plays against its fallbacks, which is
  *   not the book. The export has no host and passes nothing; an editor
@@ -73,7 +73,7 @@ function mount(json, root, options = {}) {
     : preferredLanguage(json);
   let story = new Story(json, { lang: wanted });
   let ui = UI[story.lang] ?? UI.en;
-  // The back of the book (SPEC 6): shown once, before anything begins. A
+  // The back of the book (SPEC 7): shown once, before anything begins. A
   // reader returning to a saved game has read it already.
   let coverPending = Boolean(json.meta.blurb);
 
@@ -110,7 +110,7 @@ function mount(json, root, options = {}) {
   }
 
   /**
-   * The host's turn (SPEC 12.4): time and counters move on between one page
+   * The host's turn (SPEC 20.4): time and counters move on between one page
    * and the next, never before the first. Events fire here, so this runs
    * before anything is drawn - otherwise the reader sees the page the host
    * has just overtaken.
@@ -128,7 +128,7 @@ function mount(json, root, options = {}) {
 
   function characterPanel() {
     const stats = el('dl', { class: 'stats' });
-    // Namenlose Werte sind intern (SPEC 6). Ein importiertes Buch bringt
+    // Namenlose Werte sind intern (SPEC 7). Ein importiertes Buch bringt
     // Dutzende davon mit, und die gehören nicht neben die Prosa.
     const named = story.stats.filter((stat) => stat.named);
     for (const stat of named) {

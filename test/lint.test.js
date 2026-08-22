@@ -6,9 +6,9 @@
  */
 
 /**
- * The five source-level linter checks of SPEC 11 that read what a static
+ * The five source-level linter checks of SPEC 19 that read what a static
  * walk can prove: L003, L004, L011, L014 and L015. Each test carries the
- * trigger and the near-miss that must stay quiet, per SPEC 10.4.
+ * trigger and the near-miss that must stay quiet, per SPEC 18.4.
  */
 
 import test from 'node:test';

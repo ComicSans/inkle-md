@@ -6,7 +6,7 @@
  */
 
 /**
- * The web export of SPEC.md section 12, and the optional minifier that keeps
+ * The web export of SPEC.md section 20, and the optional minifier that keeps
  * it under the target size.
  */
 
@@ -46,7 +46,7 @@ test('--minify drops comments and indentation, and the result still parses', () 
   const small = exportHtml(book(), { minify: true });
 
   assert.ok(small.length < plain.length * 0.9, `${small.length} is not much smaller than ${plain.length}`);
-  assert.ok(gzipSync(small).length < 30 * 1024, 'the target size of section 12 holds');
+  assert.ok(gzipSync(small).length < 30 * 1024, 'the target size of section 20 holds');
 
   const js = script(small);
   assert.doesNotMatch(js, /^\s*\/\//m, 'no line comment is left');

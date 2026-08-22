@@ -6,7 +6,7 @@
  */
 
 /**
- * The runtime of SPEC.md 8 and 12.1, driven against the compiled examples.
+ * The runtime of SPEC.md 15 and 12.1, driven against the compiled examples.
  */
 
 import test from 'node:test';
@@ -467,7 +467,7 @@ test('the nightside advances its own clock, and events read it', () => {
   assert.ok(s.state.vars.air <= air, 'story time costs air');
 
   // `elapsed` is a host fact: without a host it stays at its fallback, and the
-  // book still plays (SPEC 15.4).
+  // book still plays (SPEC 10.4).
   assert.equal(s.facts.elapsed, 0);
   s.advance({ elapsed: 1800 });
   assert.equal(s.facts.elapsed, 1800);
@@ -561,7 +561,7 @@ test('a folded conditional still joins the line before it', () => {
 });
 
 test('a node whose choices have all run out is an error, not a silent stop', () => {
-  // SPEC 4.2: a node with no way on is an error. E110 says that about what is
+  // SPEC 5.2: a node with no way on is an error. E110 says that about what is
   // written; this says it about what is left at runtime. Before it existed,
   // the reader was shown the previous node's choices under this node's text,
   // and could take them.

@@ -13,7 +13,7 @@
  * Sprachwechsel. Der zweite Weg wendete den Klebstoff nie an, also zerfiel
  * jeder ueber eine Wahl geklebte Satz beim Laden in zwei Absaetze. Gefunden
  * in `examples/intercept/`, dem einzigen Buch, das Glue benutzt; geprueft
- * wird hier an dem Beispiel aus SPEC 4.5, weil intercept eine halbe Minute
+ * wird hier an dem Beispiel aus SPEC 5.5, weil intercept eine halbe Minute
  * zum Kompilieren braucht.
  */
 

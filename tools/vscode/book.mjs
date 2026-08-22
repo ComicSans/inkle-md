@@ -38,7 +38,7 @@ export function sourceDir(extensionDir, exists = existsSync) {
 
 /**
  * The book a file belongs to: the nearest `book.yaml` at or above it, and
- * failing that the file itself, which is a whole book in one file (SPEC 3.1).
+ * failing that the file itself, which is a whole book in one file (SPEC 4.1).
  *
  * @param {string} filePath an absolute path to a .md file or a book.yaml
  * @param {{stop?: string, exists?: (path: string) => boolean}} [options]
@@ -65,7 +65,7 @@ export function findEntry(filePath, options = {}) {
 
 /**
  * Whether an entry is a book at all. A `book.yaml` is one by definition; a
- * lone `.md` file only when it carries the frontmatter SPEC 3.1 asks for.
+ * lone `.md` file only when it carries the frontmatter SPEC 4.1 asks for.
  *
  * The panel needs the distinction because `findEntry` answers every markdown
  * file with itself once no `book.yaml` stands above it - a README, a note, a
@@ -89,7 +89,7 @@ export function isBookEntry(entry, source) {
  * editor can compare. `meta.files` holds the paths as the compiler was given
  * them, so the extension passes absolute ones and gets absolute ones back.
  *
- * @param {object} story story JSON per SPEC 9.1
+ * @param {object} story story JSON per SPEC 17.1
  * @param {string} [lang] defaults to the book's own default language
  */
 export function nodesOf(story, lang) {
@@ -244,7 +244,7 @@ function messagesFor(self, all, messages) {
 /**
  * Rewrites every image path in a book, in place on a copy. A host that cannot
  * open a file by its path - a webview - needs its own kind of address for
- * them, and the book is written with paths (SPEC 4.9).
+ * them, and the book is written with paths (SPEC 5.9).
  *
  * @param {object} story
  * @param {(src: string) => string} address

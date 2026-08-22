@@ -92,7 +92,7 @@ test('a visit count on a choice label becomes a flag that the choice sets', () =
   assert.match(markdown, /seen_plan: \{ start: 0 \}/);
 });
 
-test("ink's multi-line conditional becomes the block branching of SPEC 4.7", () => {
+test("ink's multi-line conditional becomes the block branching of SPEC 5.7", () => {
   const { markdown } = build(`
 VAR drugged = false
 === start ===
@@ -279,7 +279,7 @@ He drags me up to my feet.
 With that, he hustles me out of the door.
 -> END
 `);
-  // Without the blank lines SPEC 4.5 would read all three as one paragraph.
+  // Without the blank lines SPEC 5.5 would read all three as one paragraph.
   assert.match(markdown, /feet\.\n\n"You think/);
   assert.match(markdown, /everything\."\n\nWith that/);
 });

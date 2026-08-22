@@ -6,7 +6,7 @@
  */
 
 /**
- * The host protocol of SPEC.md section 12.5.
+ * The host protocol of SPEC.md section 20.7.
  *
  * The runtime of 12.1 is a JavaScript object with two dozen members, which is
  * the right shape for a host written in JavaScript and the wrong one for a
@@ -28,7 +28,7 @@ const READS = new Set(['state', 'save']);
 
 export class Host {
   /**
-   * @param {object} json story JSON per SPEC 9.1
+   * @param {object} json story JSON per SPEC 17.1
    * @param {{lang?: string, seed?: number}} options
    */
   constructor(json, options = {}) {
@@ -40,7 +40,7 @@ export class Host {
    * exception, because an exception crossing a language boundary arrives as a
    * crash or as an empty string, and neither tells a host what went wrong.
    *
-   * @param {object} command `{ cmd, ...fields }` per SPEC 12.5
+   * @param {object} command `{ cmd, ...fields }` per SPEC 20.7
    * @returns {object} `{ ok: true, view, did }` or `{ ok: false, error }`
    */
   command(command) {
@@ -158,7 +158,7 @@ function combatView(story) {
 }
 
 /**
- * The setup blocks of SPEC 6, with every label resolved to the current
+ * The setup blocks of SPEC 7, with every label resolved to the current
  * language. The runtime hands them out as the book declared them, one string
  * per language, because its own view layer resolves them itself. A host in
  * another language should not have to reimplement that lookup, and one that

@@ -6,7 +6,7 @@
  */
 
 /**
- * Story JSON emission per SPEC.md 9.1.
+ * Story JSON emission per SPEC.md 17.1.
  *
  * The compiler works with a verbose tree; what ships is the same tree with
  * everything redundant taken out:
@@ -40,7 +40,7 @@ export function emitStory({ meta, config, built }) {
 }
 
 /**
- * The combat lines are text (SPEC 6), so they leave here as parts, under the
+ * The combat lines are text (SPEC 7), so they leave here as parts, under the
  * same rule as a paragraph: a line without alternatives is a single string.
  */
 function emitConfig(config) {

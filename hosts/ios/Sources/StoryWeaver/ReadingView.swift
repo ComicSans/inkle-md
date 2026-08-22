@@ -27,7 +27,7 @@ public struct ReadingView: View {
     ///   - story: the book being read.
     ///   - labels: the words this app puts on its own controls. Omit them and
     ///     they follow the book's language.
-    ///   - showCover: whether to open on the back of the book (SPEC 6) when
+    ///   - showCover: whether to open on the back of the book (SPEC 7) when
     ///     the book has one. Pass `false` when a save was loaded: a reader
     ///     returning to a game has read the cover already.
     public init(story: Story, labels: Labels? = nil, showCover: Bool = true) {
@@ -121,7 +121,7 @@ public struct ReadingView: View {
                 }
                 // What a round did is a status message, not a new page: the
                 // focus stays on the buttons the reader is using and the
-                // sentence is announced where they are (SPEC 12.3).
+                // sentence is announced where they are (SPEC 20.3).
                 if let line = last.line { announce(line) } else { latestIsFocused = true }
             }
         }
@@ -281,7 +281,7 @@ public struct ReadingView: View {
                         _ = try? story.undo()
                         // Undo takes back the page too: the account should not
                         // keep a passage the reader has just unmade. A round is
-                        // no undo point (SPEC 8), so a fight unwinds whole:
+                        // no undo point (SPEC 15), so a fight unwinds whole:
                         // every line said in it goes with the page it stood on.
                         while passages.count > 1, passages.last?.node != story.view.node {
                             passages.removeLast()

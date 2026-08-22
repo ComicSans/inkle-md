@@ -8,7 +8,7 @@
 /**
  * The walk over a compiled node's ops, shared by the compiler, the linter
  * and the simulator. It lives in a file of its own so that the linter never
- * has to import the compiler that calls it (SPEC 10.1, step 6).
+ * has to import the compiler that calls it (SPEC 18.1, step 6).
  */
 
 /** Walks every op, and every expression inside it. */

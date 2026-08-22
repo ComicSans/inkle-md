@@ -6,8 +6,8 @@
  */
 
 /**
- * Story parser per SPEC.md section 4: lexed lines become nodes whose body is
- * a list of ops, the shape section 9.1 emits.
+ * Story parser per SPEC.md section 5: lexed lines become nodes whose body is
+ * a list of ops, the shape section 17.1 emits.
  *
  * Weave works by container: a run of choices at one depth becomes a single
  * `choices` op, and whatever follows it in the same container is the gather.
@@ -303,7 +303,7 @@ export function parseInline(text, at, state) {
     throw new CompileError('E181', 'an image is a line of its own, not part of a sentence', at);
   }
 
-  // Glue (SPEC 4.5): the line joins the one printed before it, or the one
+  // Glue (SPEC 5.5): the line joins the one printed before it, or the one
   // after it, instead of standing as a paragraph of its own.
   const glue = {};
   let source = text;
@@ -360,7 +360,7 @@ function inlinePart(inner, at, state) {
   const colon = colonOutsideStrings(inner);
   if (colon >= 0 && looksLikeCondition(inner.slice(0, colon))) {
     // In a translation the condition is written as "?": it belongs to the
-    // default language, and repeating it would duplicate logic (SPEC 3.4).
+    // default language, and repeating it would duplicate logic (SPEC 4.4).
     const head = inner.slice(0, colon).trim();
     if (head === '?') {
       if (!state.catalog) {
@@ -391,7 +391,7 @@ function inlinePart(inner, at, state) {
 
 /**
  * Whether the text before a colon is a condition or the first words of a
- * sequence (SPEC 4.4). Prose has colons in it - "Im Dienstbuch: der letzte
+ * sequence (SPEC 5.4). Prose has colons in it - "Im Dienstbuch: der letzte
  * Eintrag" - and before this rule every one of them turned its paragraph
  * into a conditional and then into E130.
  *
@@ -404,7 +404,7 @@ function inlinePart(inner, at, state) {
  * settles it.
  */
 function looksLikeCondition(head) {
-  // The placeholder of a translation (SPEC 3.4) is a condition and nothing
+  // The placeholder of a translation (SPEC 4.4) is a condition and nothing
   // else; it parses as no expression at all.
   if (head.trim() === '?') return true;
   if (/[<>=!]=|[<>]|\band\b|\bor\b|\bnot\b|\)/.test(head)) return true;
@@ -466,7 +466,7 @@ function refOrEnd(target, at) {
 }
 
 /**
- * One image line, `![alt](file)` per SPEC 4.9.
+ * One image line, `![alt](file)` per SPEC 5.9.
  *
  * Alt text is required rather than optional, which is why there is no
  * decorative image in this language: a book that has nothing to say about a

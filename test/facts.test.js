@@ -6,7 +6,7 @@
  */
 
 /**
- * Facts, boundaries, events and places: SPEC.md sections 14 to 21.
+ * Facts, boundaries, events and places: SPEC.md sections 9 to 13, and the runtime calls of 21.
  *
  * Every example in those sections appears here, plus the two checks section
  * 24 asks for by name: a fact computed twice from an identical state, and the

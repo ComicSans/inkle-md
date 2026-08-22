@@ -6,7 +6,7 @@
  */
 
 /**
- * Translations per SPEC.md 3.4: the default language owns the logic, a
+ * Translations per SPEC.md 4.4: the default language owns the logic, a
  * translation carries text, and an override is the escape hatch.
  */
 

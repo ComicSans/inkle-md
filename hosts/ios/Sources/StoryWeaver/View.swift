@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// The view of SPEC 12.7: everything a page needs, as one value.
+/// The view of SPEC 20.7: everything a page needs, as one value.
 ///
 /// Every field here is what the protocol sends, named as the protocol names
 /// it. Nothing is computed on this side and nothing is left out, so that a
@@ -61,7 +61,7 @@ public struct StoryView: Decodable, Sendable {
 
 /// One thing on the page: a paragraph, or an image between two of them.
 ///
-/// The protocol tells them apart by which field is there (SPEC 4.9), and so
+/// The protocol tells them apart by which field is there (SPEC 5.9), and so
 /// does `kind` below, so a `switch` on this side is exhaustive.
 public struct Paragraph: Decodable, Sendable, Identifiable {
     /// Position on the page. A fresh `UUID` per decode would give every
@@ -75,7 +75,7 @@ public struct Paragraph: Decodable, Sendable, Identifiable {
     /// Required wherever `image` is set: the language has no decorative image.
     public let alt: String?
     /// The `{.name}` a book wrote, or `nil`. What it looks like is this side's
-    /// business: SPEC 6 keeps presentation out of the book on purpose.
+    /// business: SPEC 7 keeps presentation out of the book on purpose.
     public let styleName: String?
 
     public enum Kind: Sendable {
@@ -114,7 +114,7 @@ public struct Stat: Decodable, Sendable, Identifiable {
     public let name: String
     public let label: String
     /// False for a stat the book declared without a `name:`: it drives the
-    /// story and is not meant to be shown (SPEC 6).
+    /// story and is not meant to be shown (SPEC 7).
     public let named: Bool
     /// Absent before `begin`, where no stat has been rolled yet.
     public let value: Int?
@@ -155,7 +155,7 @@ public struct SetupOption: Decodable, Sendable, Identifiable {
 public struct Combat: Decodable, Sendable {
     public let round: Int
     public let enemy: Enemy
-    /// How many more enemies come after this one (SPEC 7).
+    /// How many more enemies come after this one (SPEC 8).
     public let waiting: Int
     public let log: [Round]
     /// Set after a hit when the book allows a luck test, naming who was hit.

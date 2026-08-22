@@ -6,10 +6,10 @@
  */
 
 /**
- * Linter per SPEC.md section 11, plus the reachability report.
+ * Linter per SPEC.md section 19, plus the reachability report.
  *
- * All of section 11 is implemented. Three checks are deliberately
- * conservative, and SPEC 11 says so: L003 folds literals and fixed facts,
+ * All of section 19 is implemented. Three checks are deliberately
+ * conservative, and SPEC 19 says so: L003 folds literals and fixed facts,
  * never variables; L004 speaks up only for a node that changes nothing and
  * offers one sticky, unconditional choice; L015 sees prose after an
  * unconditional divert in the same block, not text orphaned in subtler ways.
@@ -63,7 +63,7 @@ export function lint(story, { table, config, lang, sources = [] }) {
 
   // What is constant at compile time: literals, fixed facts, and the derived
   // facts standing on them alone. A host fact may take any value in its
-  // range, so it stays out, and variables stay out entirely (SPEC 11, L003).
+  // range, so it stays out, and variables stay out entirely (SPEC 19, L003).
   const staticKnown = new Map();
   for (const [name, fact] of Object.entries(config.facts ?? {})) {
     if (fact.source === 'fixed') staticKnown.set(name, fact.value);
@@ -431,7 +431,7 @@ function configExpressions(config) {
 /**
  * True when a node ends on choices that can all disappear: none of them is
  * both sticky and unconditional, and nothing after them carries the ending.
- * A node that ends on a divert or a fight never runs out (SPEC 11, L029).
+ * A node that ends on a divert or a fight never runs out (SPEC 19, L029).
  */
 function runsOut(ops) {
   const groups = (ops ?? []).filter((op) => op.op === 'choices');

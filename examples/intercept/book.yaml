@@ -27,7 +27,7 @@
 # hand-written; this book carries inkle's notice rather than the project's
 # MPL-2.0 header. The declarations below stood in that file's frontmatter
 # until the book gained a second language and with it a `book.yaml`.
-# `de/intercept.md` is a catalogue per SPEC 3.4: text only, no structure, so
+# `de/intercept.md` is a catalogue per SPEC 4.4: text only, no structure, so
 # the imported half stays what the importer wrote.
 
 title: The Intercept

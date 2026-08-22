@@ -6,7 +6,7 @@
  */
 
 /**
- * Translations per SPEC.md 3.4.
+ * Translations per SPEC.md 4.4.
  *
  * The default language owns structure and logic; a translation is a catalogue
  * of text. Paragraphs replace paragraphs and list items replace button labels,

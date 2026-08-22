@@ -19,7 +19,7 @@ the ones no playthrough has reached.
 
 **Play** is the book itself, with the same runtime and the same view the HTML
 export ships. What stands here is what a reader reads. Play starts from the
-node the cursor is in; the opening choice from SPEC 7.2 still happens,
+node the cursor is in; the opening choice from SPEC 7 still happens,
 otherwise the hero would stand there with no pack and empty stats. A test run
 writes nothing to disk: it starts where the author is writing, not where
 someone last read.
@@ -49,11 +49,11 @@ of the page being read - without taking the focus.
 
 The book belonging to the file in the editor: the nearest `book.yaml` above
 it, and if there is none, the file itself - provided that file carries the
-frontmatter a single-file book needs (SPEC 3.1). A markdown file without one
+frontmatter a single-file book needs (SPEC 4.1). A markdown file without one
 is no book, and the panel leaves it alone rather than reporting compile
 errors in someone's README. What the editor holds is what gets read, not what
 is on disk - unsaved text counts too. Images are the exception: they are
-looked up on disk, because that is where they have to be (SPEC 4.9).
+looked up on disk, because that is where they have to be (SPEC 5.9).
 
 Whatever does not compile leaves the last state that did on screen, with the
 error above it. While typing, a file is invalid most of the time, and an

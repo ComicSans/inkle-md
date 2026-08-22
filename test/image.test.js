@@ -6,7 +6,7 @@
  */
 
 /**
- * Images per SPEC.md 4.9: a line of their own, alt text required, a file
+ * Images per SPEC.md 5.9: a line of their own, alt text required, a file
  * beside the output rather than a URL, and both halves translated.
  */
 

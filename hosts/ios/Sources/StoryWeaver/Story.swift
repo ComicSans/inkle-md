@@ -8,7 +8,7 @@
 import Foundation
 import JavaScriptCore
 
-/// A book being played, over the host protocol of SPEC 12.7.
+/// A book being played, over the host protocol of SPEC 20.7.
 ///
 /// The story logic is not written twice. This holds a `JSContext` running the
 /// engine `story-weaver bundle` wrote, sends it one command per turn and decodes
@@ -24,7 +24,7 @@ public final class Story: ObservableObject {
     /// `nil` when the book was opened from strings rather than a directory.
     public let directory: URL?
 
-    /// The back of the book (SPEC 6), per language. `nil` when the book has
+    /// The back of the book (SPEC 7), per language. `nil` when the book has
     /// none. Read from `meta` here because the view of 12.7 carries the page,
     /// not the cover (12.8).
     public private(set) var blurb: [String: String]?
@@ -133,7 +133,7 @@ public final class Story: ObservableObject {
     }
 
     /// A boundary: brings host values in and runs whatever has come due
-    /// (SPEC 20). Call it when the app returns to the foreground with time to
+    /// (SPEC 21). Call it when the app returns to the foreground with time to
     /// hand over. The values are consumed by this boundary (16.2), so they do
     /// not also belong to the choice that follows.
     public func advance(host: [String: Double] = [:]) throws {
@@ -184,7 +184,7 @@ public final class Story: ObservableObject {
 
     // MARK: - Saving
 
-    /// The save of SPEC 8, as the JSON text a host writes to a file. It is the
+    /// The save of SPEC 15, as the JSON text a host writes to a file. It is the
     /// same format the web export keeps in `localStorage`; where it is kept
     /// was never part of it (12.5).
     public func save() throws -> Data {

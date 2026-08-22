@@ -9,7 +9,7 @@ import SwiftUI
 
 /// A cover for a book on the shelf, drawn rather than shipped.
 ///
-/// The books in this project carry no cover: SPEC 6 keeps presentation out of
+/// The books in this project carry no cover: SPEC 7 keeps presentation out of
 /// the book, and a picture of a book is presentation about it. So the shelf
 /// draws its own, from the title and nothing else. Same title, same cover,
 /// every time.

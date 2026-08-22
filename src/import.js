@@ -10,8 +10,8 @@
  *
  * The importer covers the part of ink that story-weaver has a word for. Where ink
  * says something this language does not, the importer says so with the ink
- * line number rather than guessing: a note is not an error code from SPEC 10.3
- * or a warning from SPEC 11, because its subject is the ink source, and that
+ * line number rather than guessing: a note is not an error code from SPEC 18.3
+ * or a warning from SPEC 19, because its subject is the ink source, and that
  * is not an story-weaver document.
  *
  * What is carried over: knots, stitches, weaves with their gathers and labels,
@@ -19,7 +19,7 @@
  * constants, assignments, and the inline forms of varying text.
  *
  * What is reported instead: tunnels, threads, lists, external functions, and
- * weaves nested deeper than the three levels of SPEC 4.3.
+ * weaves nested deeper than the three levels of SPEC 5.3.
  */
 
 const RE = {
@@ -37,7 +37,7 @@ const RE = {
   thread: /^\s*<-\s/,
 };
 
-/** ink's `raise(ref x)` mutates its argument; SPEC 4.10 has no such thing. */
+/** ink's `raise(ref x)` mutates its argument; SPEC 5.10 has no such thing. */
 const REF_FUNCTIONS = new Map([
   ['raise', (arg) => `${arg} = ${arg} + 1`],
   ['lower', (arg) => `${arg} = ${arg} - 1`],
@@ -70,7 +70,7 @@ export function importInk(source, options = {}) {
   const knots = readKnots(body, notes);
 
   resolveTunnels(knots, notes);
-  // ink's `temp` is scoped to its knot; SPEC 3.5 keeps every variable global,
+  // ink's `temp` is scoped to its knot; SPEC 4.5 keeps every variable global,
   // so a temporary becomes an ordinary one declared with the rest.
   for (const knot of knots) {
     for (const item of allItems(knot.items)) {
@@ -106,7 +106,7 @@ export function importInk(source, options = {}) {
  * Spreads ink's one-line conditional divert over the block form.
  *
  * `{flag: -> other}` is a divert in ink. Written inline it is varying text to
- * SPEC 4.7, so the arrow would be printed rather than followed - the reader
+ * SPEC 5.7, so the arrow would be printed rather than followed - the reader
  * sees "-> other" in the middle of the prose. The block form says the same
  * thing in a way this language reads as a divert:
  *
@@ -160,10 +160,10 @@ function stripComments(lines, notes) {
 }
 
 /**
- * Welds what ink glued. Inside a paragraph SPEC 4.5 joins the lines already,
+ * Welds what ink glued. Inside a paragraph SPEC 5.5 joins the lines already,
  * but glue also reaches across a conditional block, and there the sentence
  * would break into three. A block whose arms only print becomes inline
- * conditional text (SPEC 4.6); what it also assigns stays a block, moved in
+ * conditional text (SPEC 5.6); what it also assigns stays a block, moved in
  * front of the paragraph so it still runs before the line is printed.
  */
 function weldGlue(children, notes) {
@@ -238,7 +238,7 @@ function weld(left, right) {
   return /^[.,;:!?'"\u2019\u201d)]/.test(right) ? `${left}${right}` : `${left} ${right}`;
 }
 
-/** What ink's HTML means in Markdown. SPEC 4.9 has no other formatting. */
+/** What ink's HTML means in Markdown. SPEC 5.9 has no other formatting. */
 const MARKUP = new Map([
   ['i', '*'],
   ['em', '*'],
@@ -251,7 +251,7 @@ const MARKUP = new Map([
  * a mark for becomes that mark; anything else is dropped, with a note, rather
  * than written into a book that has no place for it. `*emphasis*` at the
  * start of a line stays emphasis: a choice marker needs a space after it
- * (SPEC 4.3).
+ * (SPEC 5.3).
  */
 function markup(text, line, notes) {
   let out = text;
@@ -425,7 +425,7 @@ function* allItems(items) {
 
 /**
  * Turns tunnels into plain diverts. A tunnel returns to the line after the
- * call; one arrow cannot express that (SPEC 2). Where every call names the
+ * call; one arrow cannot express that (SPEC 3). Where every call names the
  * same place to come back to, that place becomes the target of the tunnelled
  * knot's returns and nothing is lost. Where the calls disagree, the importer
  * takes the one named and says so, because a return that goes nowhere would
@@ -544,7 +544,7 @@ function readItem(line, notes) {
 
   // `I say nothing as -> lift_up_cup`: in ink an arrow on the same line as
   // text follows without a break, so the line and the text it arrives at are
-  // one sentence. That is glue (SPEC 4.5), and it has to be written down,
+  // one sentence. That is glue (SPEC 5.5), and it has to be written down,
   // because here the arrow becomes a divert on a line of its own and a divert
   // otherwise ends the paragraph.
   const trailing = text.match(/^(.*?)\s*->\s*([\w.]+)\s*$/);
@@ -567,7 +567,7 @@ function readChoiceBody(rest, line, notes) {
   if (label) body = body.slice(label[0].length);
 
   // A leading `{...}` is a condition only when it has no `|` or `:`, which
-  // would make it varying text that happens to open the line (SPEC 4.7).
+  // would make it varying text that happens to open the line (SPEC 5.7).
   const conditions = [];
   for (;;) {
     const cond = body.match(RE.condition);
@@ -588,7 +588,7 @@ function readChoiceBody(rest, line, notes) {
 
   // ink: text before `[` shows in both, inside `[ ]` only on the button, after
   // `]` only in the text. story-weaver prints the button and the follow-on text
-  // separately, so the shared part is written twice (SPEC 4.3).
+  // separately, so the shared part is written twice (SPEC 5.3).
   const open = body.indexOf('[');
   const close = body.indexOf(']');
   let button;
@@ -728,7 +728,7 @@ function weave(items, ctx) {
       while (stack.length > item.depth) stack.pop();
       const parent = stack[stack.length - 1];
       // ink writes a plain block of text as a gather too. Only one that
-      // actually follows a choice is a gather in the sense of SPEC 4.4; the
+      // actually follows a choice is a gather in the sense of SPEC 5.4; the
       // rest would trip E120, so they become ordinary text.
       const node = {
         ...item,
@@ -942,7 +942,7 @@ function liftTargets(nodes, ctx) {
 }
 
 /**
- * SPEC 4.3 stops at three levels. A weave that goes deeper is moved into a
+ * SPEC 5.3 stops at three levels. A weave that goes deeper is moved into a
  * node of its own, and the choice that carried it diverts there. Where the
  * lifted block runs out, it goes on to whatever the weave would have joined
  * next, so the reader lands where ink would have put them.
@@ -1072,7 +1072,7 @@ function checkDepth(root, notes) {
   walk(root);
 }
 
-/** Rewrites an ink expression into one SPEC 4.8 accepts. */
+/** Rewrites an ink expression into one SPEC 5.8 accepts. */
 function expression(code, ctx) {
   let out = code;
   for (const [name, expand] of ctx.refFunctions) {
@@ -1094,7 +1094,7 @@ function expression(code, ctx) {
 }
 
 /**
- * SPEC 4.6 has no alternatives inside alternatives, so a nested one is spread
+ * SPEC 5.6 has no alternatives inside alternatives, so a nested one is spread
  * into whole sentences: the surrounding text is repeated once per arm, which
  * is exactly what the language asks an author to write by hand.
  *
@@ -1146,7 +1146,7 @@ function splitTopLevel(text) {
 
 /**
  * Rewrites the inline `{...}` forms inside a run of text, and drops ink's
- * glue. Inside a paragraph SPEC 4.5 already joins the lines, so glue is only
+ * glue. Inside a paragraph SPEC 5.5 already joins the lines, so glue is only
  * lost where it reached across a choice or a gather, and there it costs a
  * sentence break rather than a wrong turn.
  */
@@ -1231,7 +1231,7 @@ function emitProse(source, pad, level, out, ctx, glue) {
   if (!nested) {
     const text = inlineText(source, ctx);
     // In ink every line is a paragraph of its own; here two lines with no
-    // blank one between them are a single paragraph (SPEC 4.5), so the blank
+    // blank one between them are a single paragraph (SPEC 5.5), so the blank
     // line is what keeps the original's shape. Glue is the exception: there
     // the two halves are meant to join.
     if (text) out.push(`${pad}${mark(text)}`, glue?.after ? null : '');
@@ -1266,7 +1266,7 @@ function emitNode(node, level, out, ctx) {
   }
 
   if (node.kind === 'branch') {
-    // SPEC 4.7 reads a `{...}` line with nothing indented under it as varying
+    // SPEC 5.7 reads a `{...}` line with nothing indented under it as varying
     // text, so an arm that renders to nothing is left out entirely.
     const arms = [];
     for (const arm of node.arms) {

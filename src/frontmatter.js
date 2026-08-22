@@ -6,8 +6,8 @@
  */
 
 /**
- * Frontmatter validation per SPEC.md section 6.
- * Expression fields are parsed here, not at runtime (SPEC 10.1 step 2).
+ * Frontmatter validation per SPEC.md section 7.
+ * Expression fields are parsed here, not at runtime (SPEC 18.1 step 2).
  */
 
 import { CompileError } from './errors.js';
@@ -39,7 +39,7 @@ const ITEM_KINDS = new Set(['weapon', 'armour', 'gear', 'consumable']);
 
 /**
  * Only what the combat resolver narrates. Button labels and panel names are
- * the view layer's business (SPEC 6 and 12.2).
+ * the view layer's business (SPEC 7 and 12.2).
  */
 export const STRING_KEYS = {
   'combat.hit': 'You wound {enemy}.',
@@ -50,7 +50,7 @@ export const STRING_KEYS = {
 
 export const DEFAULT_LANGUAGE = 'default';
 
-/** Reads the language list of a book (SPEC 3.4). */
+/** Reads the language list of a book (SPEC 4.4). */
 export function languagesOf(data) {
   const available = data?.languages?.available;
   if (!Array.isArray(available) || available.length === 0) {
@@ -65,7 +65,7 @@ export function languagesOf(data) {
 }
 
 /**
- * Normalises a reader-visible field into a language table (SPEC 6).
+ * Normalises a reader-visible field into a language table (SPEC 7).
  * A scalar means the same text in every language.
  */
 function i18n(value, languages, what, at) {
@@ -84,7 +84,7 @@ function i18n(value, languages, what, at) {
 }
 
 /**
- * A line the combat resolver narrates is prose (SPEC 6), so it is parsed like
+ * A line the combat resolver narrates is prose (SPEC 7), so it is parsed like
  * any other run of text and carries the alternatives of 4.6. The ids begin
  * with "@" because no node is called that, and they are built from the key
  * rather than counted across the block: two languages of the same line have
@@ -100,7 +100,7 @@ function stringParts(value, languages, what, at, scope) {
   return out;
 }
 
-/** The three combat lines of a book or of a single enemy (SPEC 6, 7). */
+/** The three combat lines of a book or of a single enemy (SPEC 7, 7). */
 function stringBlock(data, languages, at, scope, what) {
   const out = {};
   for (const [key, value] of Object.entries(data ?? {})) {
@@ -376,7 +376,7 @@ export function validateFrontmatter(data, ctx) {
       // The name a reader sees is the author's, and translatable; the key
       // stays the identifier the story does arithmetic on. A stat without one
       // is internal and carries no name at all: it drives the story, but no
-      // sheet lists it (SPEC 6). An imported book is full of those.
+      // sheet lists it (SPEC 7). An imported book is full of those.
       ...(spec.name === undefined
         ? {}
         : { name: i18n(spec.name, lang, `stat "${name}" name`, at) }),
@@ -425,7 +425,7 @@ export function validateFrontmatter(data, ctx) {
       attack: asExpression(data.combat.attack, 'combat.attack', at),
       damage: asExpression(data.combat.damage ?? 2, 'combat.damage', at),
       // Two stamina is the Fighting Fantasy rule, and a default rather than a
-      // fixture: a book that wants another price writes one (SPEC 7).
+      // fixture: a book that wants another price writes one (SPEC 8).
       flee_cost: asExpression(data.combat.flee_cost ?? 2, 'combat.flee_cost', at),
       rule: data.combat.rule ?? 'higher-wins',
       luck_in_combat: data.combat.luck_in_combat ?? false,
@@ -442,7 +442,7 @@ export function validateFrontmatter(data, ctx) {
       stamina: spec.stamina ?? 0,
       flee_after: spec.flee_after ?? null,
     };
-    // What this one enemy says beats what the book says (SPEC 7). An enemy
+    // What this one enemy says beats what the book says (SPEC 8). An enemy
     // that says nothing keeps no key, so the runtime falls through by asking
     // whether the key is there at all.
     const own = stringBlock(spec.strings, lang, at, `@enemy:${id}`, `for enemy "${id}"`);

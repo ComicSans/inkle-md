@@ -6,7 +6,7 @@
  */
 
 /**
- * The compile pipeline of SPEC.md 10.1: read, frontmatter, line scan, parse,
+ * The compile pipeline of SPEC.md 18.1: read, frontmatter, line scan, parse,
  * resolve, check, emit.
  */
 
@@ -42,7 +42,7 @@ function readSource(path, read) {
  * @param {{read?: (path: string) => string}} [options] `read` replaces the
  *        file system for every source file, for a host that has the text
  *        already (an editor buffer). It never sees image paths: those are
- *        checked on disk, because that is where they have to be (SPEC 4.9).
+ *        checked on disk, because that is where they have to be (SPEC 5.9).
  * @returns {{story: object, warnings: object[]}}
  */
 export function compileFile(entry, options = {}) {
@@ -74,7 +74,7 @@ function compileProject(bookPath, read) {
     return { file, namespace };
   });
 
-  // One directory per language, holding the same chapter file names (SPEC 3.4).
+  // One directory per language, holding the same chapter file names (SPEC 4.4).
   // A book with a single language keeps its chapters in the root: declaring
   // `languages:` to name that language should not cost a directory level.
   const perLanguage = languages.available.length > 1;
@@ -189,7 +189,7 @@ export function compileSources(input, ctx = {}) {
 }
 
 /**
- * The images a book links have to be there, per language (SPEC 4.9, 22.4).
+ * The images a book links have to be there, per language (SPEC 5.9, 22.4).
  *
  * This is the one check in the compiler that reads the disk. Everything else
  * answers from the sources it was handed; whether a file exists is a fact
@@ -219,7 +219,7 @@ function checkImages(built, ctx, bag) {
   }
 }
 
-/** Builds one non-default language from its catalogue (SPEC 3.4). */
+/** Builds one non-default language from its catalogue (SPEC 4.4). */
 function translateVariant(variant, defaultTable, ctx, bag) {
   let table = new Map();
   for (const file of variant.files) {
@@ -228,7 +228,7 @@ function translateVariant(variant, defaultTable, ctx, bag) {
     const catalogue = parseCatalog(body, {
       file: file.file, startLine: bodyStartLine, namespace: file.namespace,
     });
-    // The ambiguous heads of SPEC 4.6 have to be settled before the catalogue
+    // The ambiguous heads of SPEC 5.6 have to be settled before the catalogue
     // is matched against the default language, or a colon in prose lands as a
     // seq on one side and a cond on the other and E071 fires on good text.
     const scope = declaredNames(ctx.config);
@@ -331,7 +331,7 @@ function buildVariant(variant, bookConfig, ctx, bag) {
     } else if (data) {
       config = validateFrontmatter(data, { file: file.file, chapter: false });
     } else if (!config) {
-      // Without a book.yaml the file carries its own frontmatter (SPEC 3.1).
+      // Without a book.yaml the file carries its own frontmatter (SPEC 4.1).
       // The check stands before the body is parsed, because a file that is no
       // book at all - a README, a note - is full of text that reads like
       // gamebook syntax, and an E130 inside a code fence tells its author
@@ -391,7 +391,7 @@ function buildVariant(variant, bookConfig, ctx, bag) {
   return { config, table, parsed };
 }
 
-/** start: defaults to the first node of the first file (SPEC 3.2). */
+/** start: defaults to the first node of the first file (SPEC 4.2). */
 function resolveStart(primary, config, ctx, bag) {
   const first = [...primary.table.values()].find((n) => n.kind !== 'function');
   const start = config.start ?? first?.qualified ?? null;
@@ -404,7 +404,7 @@ function resolveStart(primary, config, ctx, bag) {
 
 /**
  * Resolves every reference in `nodes` against `table` and runs the checks of
- * SPEC 10.3 on them. Used for a language's own nodes and again for the nodes
+ * SPEC 18.3 on them. Used for a language's own nodes and again for the nodes
  * a translation overrides, which resolve against the default language.
  */
 export function checkAndResolve(nodes, table, { config, multi, bag }) {
@@ -536,7 +536,7 @@ function checkDeclarations(table, config, { multi, bag, at }) {
     if (expr) checkExpression(expr, scope, outside, at, bag, resolve, functions, config, firing);
   };
   // The combat lines of `strings:` see one name the rest of the frontmatter
-  // does not: `enemy`, whoever is standing in front of you (SPEC 6).
+  // does not: `enemy`, whoever is standing in front of you (SPEC 7).
   const narrating = new Set([...scope, 'enemy']);
   const narrate = (expr) => {
     if (expr) checkExpression(expr, narrating, outside, at, bag, resolve, functions, config);
@@ -587,7 +587,7 @@ function checkDeclarations(table, config, { multi, bag, at }) {
   }
 }
 
-/** Every combat line a book carries, the book's own and each enemy's (SPEC 7). */
+/** Every combat line a book carries, the book's own and each enemy's (SPEC 8). */
 function* narratedLines(config) {
   const blocks = [config.strings, ...Object.values(config.enemies ?? {}).map((e) => e.strings)];
   for (const block of blocks) {
@@ -667,7 +667,7 @@ function namesPlace(expr) {
 }
 
 /**
- * Settles what the parser left open (SPEC 4.4): `{lampe: an|aus}` is a
+ * Settles what the parser left open (SPEC 5.4): `{lampe: an|aus}` is a
  * condition when `lampe` is declared and the first words of a sequence when
  * it is not. The parser carries both readings; here the scope decides.
  */
@@ -708,7 +708,7 @@ function settleHeads(ops, scope) {
 }
 
 /**
- * The rule of SPEC 5 for the first argument of the functions in NAME_ARGS and
+ * The rule of SPEC 6 for the first argument of the functions in NAME_ARGS and
  * of place(): it is a name in quotes, and nothing else. Only the first one;
  * take("rope", 3) counts uses in the second.
  *

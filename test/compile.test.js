@@ -120,7 +120,7 @@ test('a single-file book compiles without warnings', () => {
   assert.equal(warnings.report.endings, 2);
   assert.equal(story.meta.start, 'begin');
   assert.equal(story.meta.default, 'de');   // the book names its language
-  // A combat line ships as text parts (SPEC 9.1), and one without
+  // A combat line ships as text parts (SPEC 17.1), and one without
   // alternatives in it is a single run of text.
   assert.deepEqual(story.config.strings['combat.tie'].de,
     ['Die Klingen kreuzen sich, ohne dass etwas daraus wird.']);

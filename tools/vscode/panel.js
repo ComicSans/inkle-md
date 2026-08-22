@@ -171,7 +171,7 @@
 
   /**
    * Plays the book from one node. The start is moved rather than the story
-   * jumped, so the opening choices of SPEC 7.2 still happen: a hero without
+   * jumped, so the opening choices of SPEC 7 still happen: a hero without
    * their belongings would be a different book, and every value would read
    * empty.
    */

@@ -9,7 +9,7 @@ import Foundation
 
 /// The words this host puts on its own controls, per language.
 ///
-/// SPEC 6 keeps presentation out of the book, so a button that says "Attack"
+/// SPEC 7 keeps presentation out of the book, so a button that says "Attack"
 /// is not the book's word but the host's, and every host carries its own set
 /// (12.5). These are the same words the web view uses, because a reader who
 /// moves between the two should not have to learn a second vocabulary.

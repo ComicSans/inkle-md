@@ -6,7 +6,7 @@
  */
 
 /**
- * Compile errors per SPEC.md section 10.3 and lint codes per section 11.
+ * Compile errors per SPEC.md section 18.3 and lint codes per section 19.
  * Every error carries file, line and column so a message can point at the
  * offending text rather than at the book.
  */

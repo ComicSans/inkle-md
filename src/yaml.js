@@ -6,7 +6,7 @@
  */
 
 /**
- * A small YAML reader for exactly the frontmatter subset SPEC.md section 6
+ * A small YAML reader for exactly the frontmatter subset SPEC.md section 7
  * uses: nested mappings by indentation, block sequences, flow mappings and
  * sequences (which may span lines), comments, and scalars.
  *

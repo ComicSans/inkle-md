@@ -6,11 +6,11 @@
  */
 
 /**
- * The runtime of SPEC.md section 8 and 12.1.
+ * The runtime of SPEC.md section 15 and 12.1.
  *
  * Browser and Node both run this file unchanged: no imports, no globals
  * beyond the standard library. It renders text, resolves choices, runs
- * combat, and keeps the flat save of section 8.
+ * combat, and keeps the flat save of section 15.
  *
  * Position inside a node is an index path (`at`), not a call stack: there are
  * no return addresses and no frames carrying their own state, which is what
@@ -23,7 +23,7 @@ const MAX_DIVERTS = 100;
 
 /**
  * A deep copy of anything this file copies, which is state and config, and
- * both are JSON by definition (principle 4, section 8). `structuredClone`
+ * both are JSON by definition (principle 4, section 15). `structuredClone`
  * would read better and is out: it is a web API, not part of the language, so
  * it is missing from a bare JavaScript engine such as the JSContext an iOS
  * host embeds (12.5). A runtime that claims to need nothing beyond the
@@ -31,7 +31,7 @@ const MAX_DIVERTS = 100;
  *
  * The two differ in one place: a key whose value is `undefined` survives
  * `structuredClone` and does not survive this. That is not a loss but a check.
- * A save is JSON (section 8), `undefined` is not a JSON value, and a state
+ * A save is JSON (section 15), `undefined` is not a JSON value, and a state
  * carrying one would lose it the moment a host wrote the save to a file. The
  * copy now fails in the same place the file would, which is where a test can
  * see it.
@@ -53,7 +53,7 @@ const ENDED = 'ended';
 
 export class Story {
   /**
-   * @param {object} json story JSON per SPEC 9.1
+   * @param {object} json story JSON per SPEC 17.1
    * @param {{lang?: string, seed?: number}} options
    */
   constructor(json, options = {}) {
@@ -111,7 +111,7 @@ export class Story {
 
   /**
    * Switches language and re-renders the current node. State keyed by ids
-   * the other language does not have is kept but ignored, per SPEC 12.1.
+   * the other language does not have is kept but ignored, per SPEC 20.1.
    */
   setLanguage(lang) {
     if (!this.json.nodes[lang]) throw new Error(`unknown language "${lang}"`);
@@ -135,7 +135,7 @@ export class Story {
     // again, every event fired again, and every alternative moved on a step,
     // so the first option of a sequence was never seen. A book without a
     // setup sets out in the constructor and has nothing left to answer, so
-    // the second call is a mistake and says so (SPEC 12.1).
+    // the second call is a mistake and says so (SPEC 20.1).
     if (this.phase !== SETUP) {
       throw new Error('the story has already set out; begin() answers a setup, and there is none');
     }
@@ -228,7 +228,7 @@ export class Story {
     return Object.entries(this.config.stats).map(([name, stat]) => ({
       name,
       label: flat(stat.name, this.lang) ?? name,
-      // Ohne `name:` im Frontmatter ist der Wert intern (SPEC 6): er treibt
+      // Ohne `name:` im Frontmatter ist der Wert intern (SPEC 7): er treibt
       // die Geschichte, aber niemand liest ihn. Der Wert steht trotzdem hier,
       // damit ein Werkzeug ihn sehen kann - nur die Anzeige lässt ihn weg.
       named: stat.name !== undefined,
@@ -265,7 +265,7 @@ export class Story {
     const choice = this.choices[index];
     if (!choice) throw new Error(`no choice ${index}`);
 
-    // Undo reaches back to the last root choice only (SPEC 8.1).
+    // Undo reaches back to the last root choice only (SPEC 15.1).
     if (choice.path.length === 1 && this.config.undo.depth > 0) this.#checkpoint();
 
     this.state.taken[choice.id] = (this.state.taken[choice.id] ?? 0) + 1;
@@ -370,7 +370,7 @@ export class Story {
       line.text = this.#string('combat.tie', enemy);
     }
 
-    // The dying sentence (SPEC 7): when an enemy falls, the resolver says so
+    // The dying sentence (SPEC 8): when an enemy falls, the resolver says so
     // in the same breath as the blow that felled it.
     if (enemy.stamina <= 0) line.text += ` ${this.#string('combat.down', enemy)}`;
 
@@ -416,7 +416,7 @@ export class Story {
     this.#diverts = 0;
     const fight = this.combat;
     if (!fight?.canFlee) return false;
-    // What running away costs is the book's to set (SPEC 7); a story JSON
+    // What running away costs is the book's to set (SPEC 8); a story JSON
     // from before that was so falls back to the Fighting Fantasy two.
     const cost = this.config.combat.flee_cost
       ? Math.max(0, this.#evaluate(this.config.combat.flee_cost))
@@ -726,7 +726,7 @@ export class Story {
    * going outwards when that container runs out.
    *
    * A gather joins the threads of its own level and the scene goes on above
-   * it (SPEC 4.4). Stopping at the end of the enclosing body instead would
+   * it (SPEC 5.4). Stopping at the end of the enclosing body instead would
    * leave the nested choices standing, and the reader would be offered the
    * same level again with no way back out to the one that holds it.
    */
@@ -734,7 +734,7 @@ export class Story {
     const last = this.text[this.text.length - 1];
     // A paragraph of conditions where none is true renders to nothing, and
     // the newline between its lines leaves a space behind. That is not a
-    // paragraph and never reaches a host (SPEC 4.6); it only keeps the glue
+    // paragraph and never reaches a host (SPEC 5.6); it only keeps the glue
     // running, so a sentence broken across it still closes.
     if (paragraph.text !== undefined) {
       // The same emptiness in its milder form: one line of the paragraph said
@@ -814,7 +814,7 @@ export class Story {
 
         case 'image':
           // An image is an entry in `text` like a paragraph, carrying `image`
-          // and `alt` instead of `text` (SPEC 4.9). It joins `screen` for the
+          // and `alt` instead of `text` (SPEC 5.9). It joins `screen` for the
           // same reason a paragraph does: a repaint must not lose it.
           this.state.screen.push({ node: this.state.node, at: [...path, i], class: op.class ?? null });
           this.text.push({ image: op.src, alt: op.alt, class: op.class ?? null });
@@ -1002,7 +1002,7 @@ export class Story {
 
   #pickAlternative(part, record) {
     // Re-rendering the same screen must not move a cycle on, so a screen
-    // remembers what each alternative settled on (SPEC 8).
+    // remembers what each alternative settled on (SPEC 15).
     if (!record) {
       const settled = this.state.picks[part.id];
       return settled === undefined ? [] : (part.items[settled] ?? []);
@@ -1192,7 +1192,7 @@ export class Story {
 
   /**
    * Roll n of the stream, from seed and the counter alone: reloading a save
-   * gives the same roll as before rather than a fresh one (SPEC 8).
+   * gives the same roll as before rather than a fresh one (SPEC 15).
    */
   #random(min, max) {
     const n = this.state.rolls++;
@@ -1237,7 +1237,7 @@ export class Story {
   }
 
   /**
-   * What one round says. The line is prose with alternatives in it (SPEC 6),
+   * What one round says. The line is prose with alternatives in it (SPEC 7),
    * so it is rendered like any paragraph and its wordings step on in `alts`.
    * Three levels, nearest first: this enemy, the book, the built-in default.
    */
@@ -1251,7 +1251,7 @@ export class Story {
 
 /**
  * Reads a language table whose entries are text parts rather than a string
- * (SPEC 9.1). Kept apart from `flat` because a list of parts is itself an
+ * (SPEC 17.1). Kept apart from `flat` because a list of parts is itself an
  * object, and asking `flat` for one would hand back its first part.
  */
 function table(value, lang) {

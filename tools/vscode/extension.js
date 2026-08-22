@@ -96,7 +96,7 @@ function isBook(document) {
     || document.fileName.endsWith('book.yml');
 }
 
-/** Whether the file in an editor belongs to a book (SPEC 3.1, 3.2). */
+/** Whether the file in an editor belongs to a book (SPEC 4.1, 3.2). */
 async function holdsBook(editor) {
   const { book } = await load();
   const entry = book.findEntry(editor.document.uri.fsPath, { stop: workspaceRoot(editor) });
@@ -276,7 +276,7 @@ function titleOf(story, lang) {
 /**
  * A webview may not open a file by its path, so every image in the book gets
  * the URI the webview can load. The alt text carries the page either way
- * (SPEC 4.9), so a picture that fails to resolve costs the picture, not the
+ * (SPEC 5.9), so a picture that fails to resolve costs the picture, not the
  * sentence.
  */
 function forWebview(story, entry, book) {

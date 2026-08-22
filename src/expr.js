@@ -6,12 +6,12 @@
  */
 
 /**
- * Expressions and assignments per SPEC.md 4.7.
+ * Expressions and assignments per SPEC.md 5.7.
  *
  * Integers only, word forms of the logical operators, no string comparison.
- * Strings exist solely as arguments to the built-ins in section 5.
+ * Strings exist solely as arguments to the built-ins in section 6.
  *
- * AST shapes, matching the story JSON of section 9.1:
+ * AST shapes, matching the story JSON of section 17.1:
  *   { lit: 12 } | { lit: "sword" } | { var: "gold" }
  *   { op: ">=", args: [a, b] }
  *   { call: "roll", args: [a, b] }
@@ -227,7 +227,7 @@ export function parseExpression(source, at = {}) {
 
 /**
  * An assignment or a call used as a statement: the body of a `~` line and the
- * only YAML field that is a statement, `effect:` (SPEC 10.1 step 2).
+ * only YAML field that is a statement, `effect:` (SPEC 18.1 step 2).
  * @returns {{op: 'assign', target: string, value: object}
  *          |{op: 'call', fn: string, args: object[]}
  *          |{op: 'return', value: object|null}}

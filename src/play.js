@@ -33,7 +33,7 @@ const HELP = `
  */
 export async function play(story, options = {}) {
   const s = new Story(story, { seed: options.seed, lang: options.lang });
-  // The back of the book (SPEC 6), read before anything begins. A script or
+  // The back of the book (SPEC 7), read before anything begins. A script or
   // a JSON consumer is not reading for pleasure and skips it.
   if (story.meta.blurb && !options.script && !options.json) {
     const blurb = story.meta.blurb[s.lang] ?? Object.values(story.meta.blurb)[0];
@@ -143,7 +143,7 @@ function line(paragraph) {
 
 function render(s) {
   // Kein Filter gegen leere Absaetze: die Runtime laesst sie gar nicht erst
-  // entstehen (SPEC 4.6), und ein Host, der hier siebt, verdeckt nur, wenn
+  // entstehen (SPEC 5.6), und ein Host, der hier siebt, verdeckt nur, wenn
   // sie es doch tut.
   const out = [];
   for (const paragraph of s.current.text) out.push(wrap(line(paragraph)));

@@ -147,7 +147,7 @@ cannot disagree with itself.
 reading view, [`hosts/demo/`](hosts/demo/) is an example app built on it,
 and [`hosts/android/`](hosts/android/) is a Kotlin host that is written but
 has never been compiled. What a host owns - drawing, saving, feeding the
-clock - and what it owes its readers is set out in SPEC 12.
+clock - and what it owes its readers is set out in SPEC 20.
 
 ## Writing with an editor
 
@@ -194,7 +194,7 @@ index as well.
 
 Three settings, all under `storyWeaver`: `follow`, on by default, lets the
 panel follow the cursor, `language` picks the language to play in, and `host`
-takes the host values of SPEC 12.4 as `key=value` pairs separated by commas -
+takes the host values of SPEC 20.4 as `key=value` pairs separated by commas -
 the same spelling `story-weaver play --host` uses. Without them a book that
 reads the clock or a counter plays against its fallbacks, which `nightside`
 and `leuchtturm` do.

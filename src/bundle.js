@@ -6,15 +6,15 @@
  */
 
 /**
- * The native bundle of SPEC.md section 12.5.
+ * The native bundle of SPEC.md section 20.8.
  *
- * The web export of section 12 is one HTML file because a browser wants one.
+ * The web export of section 20 is one HTML file because a browser wants one.
  * A host in Swift or Kotlin wants the opposite: the story as data it can read
  * and the engine as a script it can hand to a JavaScript engine, each in its
  * own file, so that neither has to be cut out of the other at runtime.
  *
  * What lands in the bundle is the runtime, the host fassade and the story.
- * The view of section 12.2 does not: a native host draws its own.
+ * The view of section 20.2 does not: a native host draws its own.
  */
 
 import { readFileSync } from 'node:fs';
@@ -34,12 +34,12 @@ const here = dirname(fileURLToPath(import.meta.url));
 const BOOT = `
 var storyWeaver = {
   host: null,
-  /** @param {string} json story JSON per SPEC 9.1, as text */
+  /** @param {string} json story JSON per SPEC 17.1, as text */
   start: function (json, options) {
     this.host = new Host(JSON.parse(json), options ? JSON.parse(options) : {});
     return this.host.dispatch('{"cmd":"state"}');
   },
-  /** @param {string} command one command per SPEC 12.5, as text */
+  /** @param {string} command one command per SPEC 20.7, as text */
   send: function (command) {
     if (!this.host) return '{"ok":false,"error":"start has not been called"}';
     return this.host.dispatch(command);
@@ -54,7 +54,7 @@ const NOTICE = `/* The engine below is story-weaver, under the Mozilla Public Li
 `;
 
 /**
- * @param {object} story story JSON per SPEC 9.1
+ * @param {object} story story JSON per SPEC 17.1
  * @param {{minify?: boolean}} options
  * @returns {Record<string, string>} file name to contents
  */

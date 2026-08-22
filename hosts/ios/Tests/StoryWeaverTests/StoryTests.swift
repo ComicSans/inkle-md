@@ -199,7 +199,7 @@ extension StoryTests {
         let nodes: [String]
         let stats: [Int]
         let text: [String]
-        /// The dice counter of SPEC 8: roll n follows from seed and n.
+        /// The dice counter of SPEC 15: roll n follows from seed and n.
         let rolls: Int
     }
 
@@ -249,7 +249,7 @@ extension StoryTests {
     }
 }
 
-// MARK: - Playing a book as an episode (SPEC 12.6)
+// MARK: - Playing a book as an episode (SPEC 20.6)
 
 @MainActor
 final class EpisodeTests: XCTestCase {

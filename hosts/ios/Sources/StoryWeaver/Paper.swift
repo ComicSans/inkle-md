@@ -9,7 +9,7 @@ import SwiftUI
 
 /// What this app looks like.
 ///
-/// SPEC 6 keeps presentation out of the book, so it has to live somewhere, and
+/// SPEC 7 keeps presentation out of the book, so it has to live somewhere, and
 /// this is the somewhere. The palette is the web export's, because a reader
 /// who moves between the two should recognise the thing they are reading: warm
 /// paper, dark ink, one accent, and a rule that is a rule and not a shadow.
@@ -53,7 +53,7 @@ public struct PageButton: ButtonStyle {
             .foregroundStyle(foreground)
             .multilineTextAlignment(.leading)
             .frame(maxWidth: kind == .plain || kind == .primary ? .infinity : nil, alignment: .leading)
-            // 44pt on a coarse pointer, per SPEC 12.3, and it happens to be
+            // 44pt on a coarse pointer, per SPEC 20.3, and it happens to be
             // the height a line of Georgia wants around it anyway.
             .frame(minHeight: 44)
             .padding(.horizontal, 14)

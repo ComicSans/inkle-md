@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Playing a book as one episode inside something larger (SPEC 12.6).
+/// Playing a book as one episode inside something larger (SPEC 20.6).
 ///
 /// An app with a map and a party enters a book at a node, plays one passage
 /// and takes the character back out. Nothing below is a second engine: it is
@@ -108,7 +108,7 @@ public extension Story {
 
 /// Why a save was refused, in fields rather than in a sentence.
 ///
-/// A save belongs to one book and one runtime (SPEC 8). An app meets this on
+/// A save belongs to one book and one runtime (SPEC 15). An app meets this on
 /// the day it ships a new edition: every reader who was mid-playthrough has a
 /// save the new book will not take. What to do about it is the app's call and
 /// nobody else's, and this is what it needs to make it.

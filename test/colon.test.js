@@ -6,7 +6,7 @@
  */
 
 /**
- * SPEC 4.6: a colon does not always mean a condition.
+ * SPEC 5.6: a colon does not always mean a condition.
  *
  * Every colon outside quotes used to open a conditional, so a sentence like
  * "Im Dienstbuch: der letzte Eintrag" inside a sequence became E130 and the

@@ -45,7 +45,7 @@ node src/cli.js bundle examples/thornwood-book/book.yaml \
 Two files land there: `story.json` is the book as data, `story-weaver.js` is
 the engine that plays it. What an app owes its readers on top - the
 accessibility the web export gives them, in Android's own terms - is set out
-in SPEC 12.
+in SPEC 20.
 
 ## Why a WebView
 

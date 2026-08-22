@@ -15,7 +15,7 @@ import org.json.JSONObject
 import kotlin.coroutines.resume
 
 /**
- * A book being played, over the host protocol of SPEC 12.7.
+ * A book being played, over the host protocol of SPEC 20.7.
  *
  * The story logic is not written twice, and not a third time either. This
  * hands `story-weaver.js` to a JavaScript engine Android already has and speaks
@@ -120,7 +120,7 @@ class Story private constructor(
 
     // --- saving -------------------------------------------------------------
 
-    /** The save of SPEC 8, as the JSON a host writes wherever it likes. */
+    /** The save of SPEC 15, as the JSON a host writes wherever it likes. */
     suspend fun save(): JSONObject = send(JSONObject().put("cmd", "save")) as JSONObject
 
     suspend fun load(save: JSONObject) = send(JSONObject().put("cmd", "load").put("save", save))

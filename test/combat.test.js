@@ -6,7 +6,7 @@
  */
 
 /**
- * What a combat round says (SPEC 6, 7): the lines of `strings:` are prose,
+ * What a combat round says (SPEC 7, 7): the lines of `strings:` are prose,
  * they carry the alternatives of 4.6, and an enemy may bring its own.
  */
 
@@ -116,7 +116,7 @@ Vorbei.
   // wordings keep alternating across the seam between the fights.
   for (let i = 0; i < said.length; i++) {
     if (said[i] === undefined) break;
-    // The felling round carries the dying sentence on top (SPEC 7), so the
+    // The felling round carries the dying sentence on top (SPEC 8), so the
     // cycle is asserted on the round's own wording, not on the whole line.
     const expected = i % 2 === 0 ? 'Du triffst Kobold.' : 'Deine Klinge findet Kobold.';
     assert.ok(said[i].startsWith(expected), `round ${i}: ${said[i]}`);

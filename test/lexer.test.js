@@ -6,7 +6,7 @@
  */
 
 /**
- * The three collision rules of SPEC.md 4.3, 4.4 and 4.6, table-driven, plus
+ * The three collision rules of SPEC.md 5.3, 4.4 and 4.6, table-driven, plus
  * the indentation rules. These are where a Markdown dialect breaks first.
  */
 
