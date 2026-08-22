@@ -300,9 +300,9 @@ choice is an error, not a silent stop (E110); a fight, which you will meet in
 section 7, also counts as a way on. Every path through your book has to lead
 somewhere, even if that somewhere is the end.
 
-E110 is a rule about what is written. It
-has a twin at runtime: a node whose choices have all been taken has no way on
-either, however carefully it was written. The runtime raises an error there
+E110 is a rule about what is written. It has a twin at runtime: a node whose
+choices have all been taken has no way on either, however carefully it was
+written. The runtime raises an error there
 rather than showing a page with nothing on it, and L029 finds most of those
 nodes before a reader ever does (11, 21).
 
@@ -1270,8 +1270,8 @@ size above is written for.
 
 The runtime is the piece of JavaScript that actually plays the story: it
 holds the state, evaluates conditions and hands the host the text to show. It
-is one class, so the same code serves the export and any embedding. A book
-inside your own app or website talks to this:
+is one class, so the same code serves the export and any embedding. A host
+that puts your book inside an app or a website talks to this:
 
 ```js
 const story = new Story(json, { lang: 'de' });
@@ -1456,9 +1456,8 @@ call a JavaScript method. So it embeds a JavaScript engine, hands it the
 runtime unchanged, and speaks the protocol of 12.7.
 
 The reason to embed rather than port the runtime into each language is
-principle 5. Seed
-plus counter has to produce the same die on every platform, or a save carried
-from a phone to a browser resumes as a different story. One implementation
+principle 5. Seed plus counter has to produce the same die on every platform,
+or a save carried from a phone to a browser resumes as a different story. One implementation
 cannot disagree with itself. A second one is a second sequence, a second set
 of rounding rules, and a bug that appears on one platform only, which is the
 kind nobody finds. The same argument covers everything in sections 5 to 7:
