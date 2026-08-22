@@ -6,9 +6,9 @@
  */
 
 /**
- * The book printed in SPEC.md section 13, compiled.
+ * The book printed in SPEC.md section 14, compiled.
  *
- * Section 23 claims that every example in the document is a test case. It was
+ * Section 18.4 claims that every example in the document is a test case. It was
  * not true of the one that calls itself the full example: it declared keys the
  * language does not have, linked two nodes it did not contain, and handed out
  * an item nobody had declared. None of that is visible by reading, which is
@@ -26,19 +26,19 @@ import { Story } from '../src/runtime.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
-/** The one fenced block in section 13. */
+/** The one fenced block in section 14. */
 function fullExample() {
   const spec = readFileSync(join(here, '..', 'SPEC.md'), 'utf8');
-  const section = spec.slice(spec.indexOf('## 13. Full example'), spec.indexOf('## 14.'));
+  const section = spec.slice(spec.indexOf('## 14. Full example'), spec.indexOf('## 15.'));
   const fence = section.match(/```markdown\n([\s\S]*?)\n```/);
-  assert.ok(fence, 'section 13 has a markdown block');
+  assert.ok(fence, 'section 14 has a markdown block');
   return `${fence[1]}\n`;
 }
 
-test('the full example of section 13 compiles', () => {
+test('the full example of section 14 compiles', () => {
   const { story, warnings } = compileSources(
-    [{ file: 'SPEC.md#13', source: fullExample(), namespace: null }],
-    { entry: 'SPEC.md#13' });
+    [{ file: 'SPEC.md#14', source: fullExample(), namespace: null }],
+    { entry: 'SPEC.md#14' });
 
   assert.equal(story.format, 1);
   // Clean, not merely compiling: a book the document holds up as the whole
@@ -51,8 +51,8 @@ test('the full example of section 13 compiles', () => {
 
 test('the full example plays from its first page to an ending', () => {
   const { story } = compileSources(
-    [{ file: 'SPEC.md#13', source: fullExample(), namespace: null }],
-    { entry: 'SPEC.md#13' });
+    [{ file: 'SPEC.md#14', source: fullExample(), namespace: null }],
+    { entry: 'SPEC.md#14' });
 
   const s = new Story(story, { seed: 4 });
   assert.equal(s.current.node, 'begin');
