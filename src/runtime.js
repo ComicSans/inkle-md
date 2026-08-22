@@ -1108,10 +1108,6 @@ export class Story {
       case 'knows': return this.state.memory.includes(key(value(0)));
       case 'visits': return this.state.visits[value(0)] ?? 0;
       case 'turns': return this.state.turn;
-      case 'turns_since': {
-        const target = value(0);
-        return this.state.seen.includes(target) ? this.state.turn : -1;
-      }
       case 'choice_count': return this.choices.length;
       case 'min': return Math.min(value(0), value(1));
       case 'max': return Math.max(value(0), value(1));

@@ -57,6 +57,15 @@ test('only declared stats may be read or written', () => {
   expectError('# A {#a}\n\n{mana}\n-> END\n', 'E131');
 });
 
+test('turns_since is gone, and a book that still calls it is told so', () => {
+  // It never returned turns since anything: the save records which nodes have
+  // been seen, not when. A book that wants elapsed turns sets its own variable
+  // from turns(), or schedules an event on it (SPEC 12).
+  expectError('# A {#a}\n\n{turns_since("a")}\n-> END\n', 'E131');
+  const { story } = compile('# A {#a}\n\n{turns()} {visits("a")}\n-> END\n');
+  assert.ok(nodesOf(story).a, 'turns() and visits() stay');
+});
+
 test('built-in variables need no declaration', () => {
   const { story } = compile('# A {#a}\n\n{in_combat: yes|no} {gold_max}\n-> END\n');
   assert.ok(nodesOf(story).a);

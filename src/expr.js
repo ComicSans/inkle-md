@@ -38,7 +38,6 @@ export const BUILTINS = {
   forget: [1, 1, []],
   visits: [1, 1, [0]],
   turns: [0, 0, []],
-  turns_since: [1, 1, [0]],
   choice_count: [0, 0, []],
   // Folded to the place's index at compile time, so the runtime never sees it.
   place: [1, 1, []],

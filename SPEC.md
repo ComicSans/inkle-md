@@ -294,7 +294,7 @@ produce a second dot.
 
 In a multi-file project the qualified form is used everywhere an id appears
 outside its own file: diverts, choice links (`[Go down](#crypt.chamber)`),
-`visits()`, `turns_since()`, `goto:` and `start:` in `book.yaml`, and the
+`visits()`, `goto:` and `start:` in `book.yaml`, and the
 `node`, `visits` and `seen` fields of a save. A single-file book keeps all of
 these bare, per 4.1.
 
@@ -722,7 +722,7 @@ bookkeeping about where the reader has been.
 | `equip("item")` / `equipped("item")` | Equip a weapon or armour, and test whether that item is the equipped one |
 | `remember("word")` / `knows("word")` / `forget("word")` | Code words, Lone Wolf style |
 | `visits(node)` | How often the node has been entered |
-| `turns()` / `turns_since(node)` | Turns total, turns since that node |
+| `turns()` | Turns taken so far |
 | `choice_count()` | Number of choices currently visible |
 | `place("id")` | The index of a declared place, resolved at compile time (13.2) |
 | `min(a,b)` / `max(a,b)` / `abs(a)` | Arithmetic |
@@ -1594,7 +1594,7 @@ string here where section 14 declared a `silver-key` item (7.1 allows both):
 
 `taken` counts how often each choice has been picked. That count is what makes `*` once-only: a choice the reader has already taken stops being offered. `alts` holds the position of each sequence and cycle, so an alternative picks up where it left off. Both are keyed by the ids the compiler hands out (17.1).
 
-`visits` counts how often each node has been entered. `seen` lists the same nodes once each, in the order they were first entered, and is what `turns_since()` consults to tell whether a node has been reached at all. `turn` counts the turns this playthrough has taken, and is what `turns()` returns.
+`visits` counts how often each node has been entered. `seen` lists the same nodes once each, in the order they were first entered, which a host can read to show a reader where they have been. `turn` counts the turns this playthrough has taken, and is what `turns()` returns.
 
 `story` is the title and version of the book that wrote the save. Loading rejects a save whose `story` does not match the running book, and there is a good reason for that strictness: every other field is keyed against a specific book's nodes and choice ids, so a save from another version would resume as plausible-looking garbage. This also gives you a lever as an author: bumping `version:` in the frontmatter is the way to declare old saves invalid.
 
@@ -1752,7 +1752,7 @@ The compiler works in seven steps, each finishing before the next begins:
    errors here.
 4. **Parse** each block into ops, expressions through a Pratt parser.
 5. **Resolve** ids: collect all node ids per namespace, then resolve every
-   divert, choice link, `visits()`, `turns_since()`, `goto:` and `start:`.
+   divert, choice link, `visits()`, `goto:` and `start:`.
 6. **Check** the rules of section 19.
 7. **Emit** story JSON.
 
@@ -2496,6 +2496,7 @@ edges.
 | 15, 20.6    | A refused save says why in fields, and 20.6 says what a host does about a new edition. |
 | 7, 8, 17.1  | A `strings:` line is prose, so the alternatives of 5.6 vary what a combat round says, and an enemy may carry a `strings:` block of its own that beats the book's. Their ids are `@strings:<key>:a<n>` and `@enemy:<id>:<key>:a<n>`, and `config.strings` holds parts rather than a plain string. |
 | 16.1        | A held host value rides in the save, so a reader comes back to the world they left. |
+| 6, 15       | `turns_since()` removed. It never returned turns since anything: the save records which nodes have been seen, not when, so the call answered with the total turn count or `-1`. An event on `counter: 'turns()'`, or a variable the book sets itself, does what it promised. |
 | 23          | Images, L025, the catch-up mode and the new-edition question leave the open points; what stays of 23.4 is what an alt text owes a map. |
 
 ### 0.6 to 0.7
