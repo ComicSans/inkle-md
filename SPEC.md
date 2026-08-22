@@ -3,10 +3,7 @@
 Story Weaver is a gamebook language written in Markdown. You write in a plain
 text file that stays readable in any editor and on GitHub, and when you have
 read this document you can write anything a Fighting Fantasy or Lone Wolf
-volume needed.
-
-It assumes you know what a text file is and nothing else: not ink, not YAML,
-not what a gamebook was in 1982. Keywords are English throughout.
+volume needed. Keywords are English throughout.
 
 ## 1. Start here
 
@@ -28,8 +25,7 @@ the story and not the machinery underneath it.
 
 ### 1.2 What Story Weaver is
 
-Story Weaver is a plain text format for writing such a book. It borrows from
-two places.
+Story Weaver borrows from two places.
 
 **Markdown** is the syntax. Markdown is the lightweight way of writing
 formatted text that GitHub, Reddit and most note apps use: `#` starts a
@@ -41,11 +37,9 @@ list item is a choice, and a link is the "turn to 137".
 their own games (*80 Days*, *Heaven's Vault*, *Sorcery!*) and released for
 everyone. It is very good at branching narrative, and Story Weaver keeps its
 ideas while replacing its punctuation with Markdown's. You do not need to know
-ink to read this document. Where a rule exists because ink does it one way and
-we do it another, the text says so.
+ink to read this document.
 
-Here is a complete, playable book. It is four sections long, and everything in
-it is explained in the sections that follow.
+Here is a complete, playable book.
 
 ```markdown
 ---
@@ -81,11 +75,7 @@ block at the top between the two `---` lines is the frontmatter, where a book
 declares its settings. This one declares almost nothing, and section 7 is
 where Skill, Stamina and Luck join it.
 
-### 1.3 The words this document uses
-
-Every term below has a section of its own later on. This table is here so that
-none of them arrives unexplained, and so that you can look one up without
-leaving your place.
+### 1.3 The words
 
 | Term | What it means |
 |---|---|
@@ -146,7 +136,7 @@ exported and embedded, and why each check exists.
 **Sections 23 and 24 close the document**: what is deliberately not in the
 language yet, and what each version added.
 
-One convention runs through all of it. A code like `E040` is a compile error:
+A code like `E040` is a compile error:
 the compiler refuses the book and says why. A code like `L005` is a lint
 warning: the book compiles, and a separate checker points at what is probably
 a mistake. Every error code is listed in 18.3, every warning in 19, and
@@ -1070,8 +1060,7 @@ whether it is night before entering the graveyard.
 
 Principles 7 to 9 carry those four sections: the book holds no
 time, a fact is a pure function of its state, and facts are read-only to the
-book. A book that keeps all three can be replayed from a seed and a save, which is what the
-rest of this document spends its rules on. Break any one of them and a
+book. A book that keeps all three can be replayed from a seed and a save. Break any one of them and a
 replay stops matching the game it replays: a book that reads a clock on its
 own gives a different answer tomorrow, a fact that rolls dice gives a
 different answer on the same day, and a fact the book could write to is not
@@ -1094,7 +1083,7 @@ because the reader acted is a variable.
 
 ## 10. Facts
 
-Section 9 drew the line: a variable is what the book writes, a fact is what it only reads. This section is how you declare one. Think of the weather outside your window: you do not decide it, you glance at it. Some facts never change, some are computed from other values, and some arrive from the world outside the book.
+Section 9 drew the line: a variable is what the book writes, a fact is what it only reads. Think of the weather outside your window: you do not decide it, you glance at it. Some facts never change, some are computed from other values, and some arrive from the world outside the book.
 
 ### 10.1 Declaration
 
@@ -1184,8 +1173,7 @@ This purity is not a limitation but where your book keeps interpretive control. 
 
 `sun_elevation` is a host fact, the next section's subject: an app that knows
 where and when the reader is hands the number over, and the book decides what
-counts as dusk. Both derived facts read a fact declared above them, which is
-the rule this section opened with.
+counts as dusk. Both derived facts read a fact declared above them, in that order.
 
 ### 10.4 Host facts
 
@@ -1552,10 +1540,6 @@ the linter checks, and how a book reaches a reader.
 
 ## 15. Runtime and save state
 
-This section and the ones that follow speak mostly to people building tools: a
-runtime, an editor, a save manager. If you are here to write a gamebook, skip
-ahead.
-
 A save is a single JSON object. It captures everything a reader's playthrough
 has accumulated, so that closing the book and opening it again feels like
 never having left. A complete example, taken mid-adventure. It comes from the
@@ -1730,7 +1714,7 @@ Section 15 showed this one in full. It is versioned, and unknown fields are igno
 
 ## 18. Parser
 
-This section describes how the compiler reads your files. As an author you will mostly meet it through the error messages listed in 18.3.
+As an author you will mostly meet the compiler through the error messages listed in 18.3.
 
 The grammar is line-oriented: the kind of each line is decided by its first non-space characters. Only three cases are ambiguous, and all three are resolved in the sections above.
 
@@ -1762,7 +1746,7 @@ Being well formed is not the whole of it. Those expressions run through the same
 
 ### 18.2 Line kinds
 
-This table is the whole classifier: the first characters of a line decide what the parser makes of it.
+The first characters of a line decide what the parser makes of it, and nothing else is consulted.
 
 | Starts with | Kind | Note |
 |---|---|---|
@@ -2302,9 +2286,8 @@ Strings in, strings out. That is what a `JSContext` on Apple platforms and a
 The hosts of this section so far share one assumption: the reader acts, and
 then the program waits. A game engine does not wait. It has a loop of its
 own, running many times a second, and a book living inside it has to fit
-that loop rather than the other way round. Four rules make that work. None
-of them is new. They are what the rest of this document already implies,
-stated where an engine programmer will look for them.
+that loop rather than the other way round. Four rules make that work. None of them is new,
+but an engine programmer will look for them here.
 
 **A frame is not a boundary.** This is the rule that costs a bug when it is
 missed. Every boundary computes facts and runs events (11.2), so calling
@@ -2345,11 +2328,9 @@ book is one episode among many.
 ## 21. Runtime API: boundaries and facts
 
 If you embed a book in an app or a website, that app is the host, and this is
-the part of the API it talks to. Sections 10 and 11 defined facts and
-boundaries. This section is only the three calls that reach them.
-
-The calls of 20.1 stay as they are. These three are what a host needs to bring
-time in and to read the snapshot back out.
+the part of the API it talks to. Facts are section 10, boundaries section 11. The calls of 20.1 stay as they
+are, and these three are what a host needs to bring time in and read the
+snapshot back out.
 
 ```
 story.advance(host);        // a boundary: take host values, compute, run events
