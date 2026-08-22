@@ -2004,7 +2004,7 @@ gives you this without work on the author's side:
   remaining uses in each button's accessible name, and a status message after
   every use so the effect is not visible only in a bar;
 - no animation under `prefers-reduced-motion`;
-- contrast at least 5.5:1 for text in both themes, and at least 3:1 for the
+- contrast at least 4.5:1 for text in both themes, and at least 3:1 for the
   outline of anything operable, which is a different value and the one that
   gets forgotten; nothing conveyed by colour alone;
 - what a combat round did is a status message, so it reaches a screen reader
@@ -2071,7 +2071,7 @@ hundred, and a book that measures seconds needs someone to hand it seconds.
 There is a third way in, for tools rather than people. `story-weaver mcp` serves
 the same three checks - lint, play, simulate - as MCP tools over stdio, so an
 agent can playtest a book against the real runtime instead of parsing
-terminal output. The server speaks JSON-RPC 3.0, one message per line, and
+terminal output. The server speaks JSON-RPC 2.0, one message per line, and
 needs no dependency.
 
 ### 20.5 Hosts beyond the browser
@@ -2461,35 +2461,35 @@ These tables list what each version added, section by section.
 own. Nothing changes in how a book is written. Everything new sits at the
 edges.
 
-| Section | Change                                                                 |
-| ------- | ---------------------------------------------------------------------- |
-| 5.9     | Images built: `![alt](file)` on a line of its own, alt text required, a path that stays inside the book's directory, both halves translated, `@2x` and `@3x` optional beside the base file. |
-| 17.1     | The `image` op added to the story JSON. |
-| 18.3    | E172 and E180 to E184 added to the error table. |
-| 5, 18.1 | Frontmatter expressions are checked against the same scope as the story's (E130 to E133): a potion that healed a stat nobody declared now fails the compile instead of reaching the reader. |
-| 6, 12   | `blurb:` added: the back of the book, a language table shown before setup and first page by the export and by `play`, and readable from `meta` by any host. |
-| 6, 7    | `combat.down` added to `strings:`: the dying sentence, spoken in the same breath as the blow that fells an enemy, overridable per enemy like the other three. |
-| 11, 21  | L025 is an `info` about a book and a `warning` on an output with no host, because a book does not know which output it becomes. |
-| 5.2, 11, 21 | L029 added, and with it the runtime error for a node whose choices have all been taken: E110's twin, for what is left rather than for what is written. |
-| 12      | Retitled: the web export is one host of several. 20.5 to 20.9 added, with the hosts beyond the browser, the two ways to play, the host protocol, the native bundle, and what a foreign game loop has to know. |
-| 10.1, 11.2 | `holds:` added to a host fact: a state stays across boundaries where a duration is consumed. E172 rejects it anywhere else. |
-| 5, 12.2 | `due` added: how many firings a scheduled event was owed at this boundary, so an absence can be folded into one firing instead of repeated or dropped. E173 rejects it anywhere else. |
-| 8, 20.6 | A refused save says why in fields, and 20.6 says what a host does about a new edition. |
-| 6, 7, 17.1 | A `strings:` line is prose, so the alternatives of 5.6 vary what a combat round says, and an enemy may carry a `strings:` block of its own that beats the book's. Their ids are `@strings:<key>:a<n>` and `@enemy:<id>:<key>:a<n>`, and `config.strings` holds parts rather than a plain string. |
-| 16.1    | A held host value rides in the save, so a reader comes back to the world they left. |
-| 22      | Images, L025, the catch-up mode and the new-edition question leave the open points; what stays of 23.4 is what an alt text owes a map. |
+| Section     | Change                                                                 |
+| ----------- | ---------------------------------------------------------------------- |
+| 5.9         | Images built: `![alt](file)` on a line of its own, alt text required, a path that stays inside the book's directory, both halves translated, `@2x` and `@3x` optional beside the base file. |
+| 17.1        | The `image` op added to the story JSON. |
+| 18.3        | E172 and E180 to E184 added to the error table. |
+| 6, 18.1     | Frontmatter expressions are checked against the same scope as the story's (E130 to E133): a potion that healed a stat nobody declared now fails the compile instead of reaching the reader. |
+| 7, 20       | `blurb:` added: the back of the book, a language table shown before setup and first page by the export and by `play`, and readable from `meta` by any host. |
+| 7, 8        | `combat.down` added to `strings:`: the dying sentence, spoken in the same breath as the blow that fells an enemy, overridable per enemy like the other three. |
+| 19, 22      | L025 is an `info` about a book and a `warning` on an output with no host, because a book does not know which output it becomes. |
+| 5.2, 19, 22 | L029 added, and with it the runtime error for a node whose choices have all been taken: E110's twin, for what is left rather than for what is written. |
+| 20          | Retitled: the web export is one host of several. 20.5 to 20.9 added, with the hosts beyond the browser, the two ways to play, the host protocol, the native bundle, and what a foreign game loop has to know. |
+| 10.1, 11.2  | `holds:` added to a host fact: a state stays across boundaries where a duration is consumed. E172 rejects it anywhere else. |
+| 6, 12.2     | `due` added: how many firings a scheduled event was owed at this boundary, so an absence can be folded into one firing instead of repeated or dropped. E173 rejects it anywhere else. |
+| 15, 20.6    | A refused save says why in fields, and 20.6 says what a host does about a new edition. |
+| 7, 8, 17.1  | A `strings:` line is prose, so the alternatives of 5.6 vary what a combat round says, and an enemy may carry a `strings:` block of its own that beats the book's. Their ids are `@strings:<key>:a<n>` and `@enemy:<id>:<key>:a<n>`, and `config.strings` holds parts rather than a plain string. |
+| 16.1        | A held host value rides in the save, so a reader comes back to the world they left. |
+| 23          | Images, L025, the catch-up mode and the new-edition question leave the open points; what stays of 23.4 is what an alt text owes a map. |
 
 ### 0.6 to 0.7
 
-| Section | Change                                                                 |
-| ------- | ---------------------------------------------------------------------- |
-| 1       | Principles 7 to 9 added, and section 9 with the test behind them.     |
-| 5       | `place(id)` added to the built-in functions.                           |
-| 6       | `facts:`, `events:` and `places:` added to the book-wide declarations, and therefore to what E012 rejects in a chapter file. |
-| 8       | `host`, `facts` and `events` added to the save; 15.1 states that a checkpoint omits `facts`. |
-| 17.1     | `config` gains `facts`, `events` and `places`.                         |
-| 18.1    | Fact and event expressions are parsed in step 2, with the other frontmatter expressions. |
-| 18.3    | E160 to E171 added to the error table.                                 |
-| 11      | L021 to L028 added; the reachability walk is repeated with host facts at their fallbacks, and L025 reads the difference. |
-| 20.1    | `advance` and `facts` added to the runtime API.                        |
-| 20.4    | `play` gains `--host` to supply host values per boundary; `simulate` takes the same flag as its policy for how counters and `elapsed` advance per turn, without which no scheduled content is ever tested. |
+| Section     | Change                                                                 |
+| ----------- | ---------------------------------------------------------------------- |
+| 2           | Principles 7 to 9 added, and section 9 with the test behind them.     |
+| 6           | `place(id)` added to the built-in functions.                           |
+| 7           | `facts:`, `events:` and `places:` added to the book-wide declarations, and therefore to what E012 rejects in a chapter file. |
+| 15          | `host`, `facts` and `events` added to the save; 15.1 states that a checkpoint omits `facts`. |
+| 17.1        | `config` gains `facts`, `events` and `places`.                         |
+| 18.1        | Fact and event expressions are parsed in step 2, with the other frontmatter expressions. |
+| 18.3        | E160 to E171 added to the error table.                                 |
+| 19          | L021 to L028 added; the reachability walk is repeated with host facts at their fallbacks, and L025 reads the difference. |
+| 20.1        | `advance` and `facts` added to the runtime API.                        |
+| 20.4        | `play` gains `--host` to supply host values per boundary; `simulate` takes the same flag as its policy for how counters and `elapsed` advance per turn, without which no scheduled content is ever tested. |
