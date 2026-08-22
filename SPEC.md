@@ -154,7 +154,7 @@ are book-wide in exactly the same way, and E012 rejects them in a chapter file
 like the rest.
 
 `start:` is optional and defaults to the first node of the first chapter. So a
-book that simply begins at the beginning does not have to say so.
+book that begins at the beginning does not have to say so.
 
 ### 3.3 Namespaces and references
 
@@ -967,7 +967,7 @@ never having left. A complete example, taken mid-adventure:
 }
 ```
 
-`taken` counts how often each choice has been picked. That count is what makes `*` once-only: a choice the reader has already taken simply stops being offered. `alts` holds the position of each sequence and cycle, so an alternative picks up where it left off. Both are keyed by the ids the compiler hands out (9.1).
+`taken` counts how often each choice has been picked. That count is what makes `*` once-only: a choice the reader has already taken stops being offered. `alts` holds the position of each sequence and cycle, so an alternative picks up where it left off. Both are keyed by the ids the compiler hands out (9.1).
 
 `visits` counts how often each node has been entered; `seen` lists the same nodes once each, in the order they were first entered, and is the yes-or-no behind `turns_since()`.
 
@@ -1613,9 +1613,8 @@ An image is an entry in that same list, carrying `image` and `alt` where a
 paragraph carries `text`: a host walks one list in order and tells the two
 apart by which field is there. It is not a part inside a text run, because a
 picture sits between paragraphs, not inside a sentence (4.9). What a host
-makes of a class, or of a picture, is the host's own business, and that is
-the point of this section: one story, one logic, as many surfaces as there
-are hosts.
+makes of a class, or of a picture, is the host's own business. One story, one
+logic, as many surfaces as there are hosts.
 
 ### 12.8 The native bundle
 
@@ -1898,7 +1897,7 @@ because the reader acted is a variable.
 
 ## 15. Facts
 
-Up to now, everything your book knows is something it wrote down itself: a variable you set, a stat you changed, a counter that ticked. A **fact** is different. A fact is a value your book looks up rather than stores. Think of the weather outside your window: you do not decide it, you glance at it. Some facts never change, some are computed from other values, and some arrive from the world outside the book.
+A variable you set, a stat you changed, a counter that ticked: everything your book knows so far is something it wrote down itself. A **fact** is a value it looks up rather than stores. Think of the weather outside your window: you do not decide it, you glance at it. Some facts never change, some are computed from other values, and some arrive from the world outside the book.
 
 ### 15.1 Declaration
 
@@ -2088,7 +2087,7 @@ The point of an event is one declaration instead of the same condition in forty 
 
 ### 17.2 Catching up
 
-Picture a reader who puts the book down for a month and comes back. Their counter has jumped forward by a lot at a single boundary. A recurring event whose counter jumped forward would otherwise fire once per step. `max_catchup:` bounds that, and the anchor advances by the number of steps the counter actually took, so a bounded catch-up is not replayed at the next boundary: the missed firings are dropped, not queued. An event with `max_catchup: 1` whose counter jumped by fifty fires once and starts counting again from where the counter now stands.
+Picture a reader who puts the book down for a month and comes back. Their counter has jumped forward by a lot at a single boundary, and a recurring event would otherwise fire once per step. `max_catchup:` bounds that, and the anchor advances by the number of steps the counter actually took, so a bounded catch-up is not replayed at the next boundary: the missed firings are dropped, not queued. An event with `max_catchup: 1` whose counter jumped by fifty fires once and starts counting again from where the counter now stands.
 
 Without a bound a book that was closed for a month wakes up dead. With one the author decides whether time away is dangerous or merely long.
 
@@ -2306,8 +2305,8 @@ see it; this catches every other way a book arrives there.
 
 ## 22. Open points
 
-These are the ideas that came up along the way and are not part of the
-language yet, together with where each of them stands.
+Some ideas came up along the way without becoming part of the language. Here
+is where each of them stands.
 
 1. **Calendar and ephemeris.** Two further fact sources, `clock` and
    `ephemeris`, would turn an absolute instant and a place into a date or a
